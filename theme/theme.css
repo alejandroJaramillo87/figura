@@ -1,0 +1,79 @@
+/* Slidegen theme — color/type/spacing tokens and shared animation classes.
+   Slides must use these variables; inline color literals fail validate. */
+
+:root {
+  /* Color tokens */
+  --bg: #0f1420;
+  --surface: #1a2130;
+  --ink: #e8ecf4;
+  --ink-muted: #9aa5b8;
+  --accent: #5b9dff;
+  --accent-warm: #ffb454;
+  --highlight: #3ddc97;
+
+  /* Type tokens */
+  --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --size-title: 72px;
+  --size-subtitle: 40px;
+  --size-body: 28px;
+  --size-caption: 20px;
+
+  /* Spacing tokens */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 32px;
+  --space-4: 64px;
+  --space-5: 128px;
+}
+
+.slide {
+  position: relative;
+  width: 1600px;
+  height: 900px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+}
+
+/* Shared animation utilities.
+   All are finite and use forwards fill; authors set duration/delay so
+   delay + duration fits inside data-loop-ms (validate enforces this). */
+
+.anim-fade-in {
+  opacity: 0;
+  animation-name: sg-fade-in;
+  animation-duration: 600ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes sg-fade-in {
+  to { opacity: 1; }
+}
+
+.anim-rise-in {
+  opacity: 0;
+  animation-name: sg-rise-in;
+  animation-duration: 700ms;
+  animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation-fill-mode: forwards;
+}
+
+@keyframes sg-rise-in {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.anim-sweep-underline {
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation-name: sg-sweep;
+  animation-duration: 800ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-fill-mode: forwards;
+}
+
+@keyframes sg-sweep {
+  to { transform: scaleX(1); }
+}
