@@ -38,3 +38,58 @@
   --sa-dur-step: 700ms;
   --sa-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/*
+ * ---------------------------------------------------------------------
+ * Palette variant: pastel-on-dark (--sa-pd-*)
+ * ---------------------------------------------------------------------
+ * Dark slate panels with soft pastel accents. Use for glow/comet-heavy
+ * diagrams — light effects pop hardest against the dark background.
+ * All accents are 200-level pastels with high contrast on the dark bg,
+ * safe as text and strokes.
+ */
+:root {
+  --sa-pd-bg: #0f172a;
+  --sa-pd-panel: #1e293b;
+  --sa-pd-panel-hover: #2b3a52;
+  --sa-pd-border: #3b4a63;
+  --sa-pd-text: #f8fafc;
+  --sa-pd-muted: #a5b4cd;
+  --sa-pd-line: #7c8db0;
+
+  --sa-pd-mint: #a7f3d0;
+  --sa-pd-lavender: #c4b5fd;
+  --sa-pd-peach: #fed7aa;
+  --sa-pd-rose: #fda4af;
+  --sa-pd-blue: #bae6fd;
+}
+
+/*
+ * ---------------------------------------------------------------------
+ * Palette variant: pastel-light (--sa-pl-*)
+ * ---------------------------------------------------------------------
+ * Soft cream panel with pastel blocks and muted ink text. Gentler look
+ * for conceptual posts. Accents are fill/stroke/text TRIPLETS: pastel
+ * fill, saturated stroke, dark readable text (text colors are ≥4.5:1 on
+ * their fills — always pair them, never put muted ink on a pastel fill).
+ *
+ * MANDATORY panel treatment (the cream panel must still read as a panel
+ * on the blog's white page):
+ *   border: 1px solid var(--sa-pl-border);
+ *   box-shadow: 0 2px 12px rgba(120, 100, 60, 0.10);
+ */
+:root {
+  --sa-pl-bg: #fdfbf7;
+  --sa-pl-panel: #f6f1e7;
+  --sa-pl-panel-hover: #efe8da;
+  --sa-pl-border: #e3dbc9;
+  --sa-pl-text: #3f3a33;
+  --sa-pl-muted: #8a8172;
+  --sa-pl-line: #b3a98f;
+
+  --sa-pl-mint-fill: #d1fae5;     --sa-pl-mint-stroke: #34d399;     --sa-pl-mint-text: #065f46;
+  --sa-pl-lavender-fill: #ede9fe; --sa-pl-lavender-stroke: #a78bfa; --sa-pl-lavender-text: #5b21b6;
+  --sa-pl-peach-fill: #ffedd5;    --sa-pl-peach-stroke: #fb923c;    --sa-pl-peach-text: #9a3412;
+  --sa-pl-rose-fill: #ffe4e6;     --sa-pl-rose-stroke: #fb7185;     --sa-pl-rose-text: #9f1239;
+  --sa-pl-blue-fill: #e0f2fe;     --sa-pl-blue-stroke: #38bdf8;     --sa-pl-blue-text: #075985;
+}
