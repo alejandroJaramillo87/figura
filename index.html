@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>figura — diagram gallery</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 2rem 1rem 4rem;
+  background: #f5f5f5; color: #333;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+header { max-width: 760px; margin: 0 auto 2rem; }
+h1 { font-size: 1.4rem; margin: 0 0 0.4rem; }
+header p { color: #666; margin: 0; font-size: 0.95rem; }
+.entry { max-width: 760px; margin: 0 auto 3rem; }
+.entry h2 { font-size: 1.05rem; margin: 0 0 0.2rem; }
+.entry .meta { color: #888; font-size: 0.8rem; margin: 0 0 0.75rem; }
+.entry .meta code { background: #e8e8e8; padding: 1px 5px; border-radius: 4px; }
+.entry p.desc { color: #555; font-size: 0.9rem; margin: 0 0 1rem; }
+.dup-note { color: #888; font-size: 0.8rem; font-style: italic; margin: 1rem 0 0.5rem; }
+.error { max-width: 760px; margin: 0 auto; color: #b91c1c; }
+</style>
+</head>
+<body>
+<header>
+  <h1>figura — diagram gallery</h1>
+  <p>Every diagram in the library, inlined exactly as the blog inlines it.
+     Serve this page over HTTP (<code>python3 -m http.server</code>) — the manifest fetch fails over <code>file://</code>.
+     The first diagram is rendered twice to verify that multiple instances on one page don't interfere.</p>
+</header>
+<main id="gallery"></main>
+<script>
+(async () => {
+  const main = document.getElementById('gallery');
+  let manifest;
+  try {
+    manifest = await (await fetch('manifest.json')).json();
+  } catch (e) {
+    main.innerHTML = '<p class="error">Could not load manifest.json — serve this page over HTTP.</p>';
+    return;
+  }
+
+  const EMBED_RE = /<!-- fg:embed-start -->([\s\S]*?)<!-- fg:embed-end -->/;
+
+  async function embed(container, path) {
+    const html = await (await fetch(path)).text();
+    const m = html.match(EMBED_RE);
+    if (!m) throw new Error('no embed markers in ' + path);
+    // Insert markup, then re-create scripts so they execute (innerHTML won't run them).
+    const holder = document.createElement('div');
+    holder.innerHTML = m[1];
+    holder.querySelectorAll('script').forEach((old) => {
+      const s = document.createElement('script');
+      s.textContent = old.textContent;
+      old.replaceWith(s);
+    });
+    container.appendChild(holder);
+  }
+
+  for (let i = 0; i < manifest.length; i++) {
+    const d = manifest[i];
+    const section = document.createElement('section');
+    section.className = 'entry';
+    section.innerHTML =
+      '<h2></h2><p class="meta"><code></code> · post: <span></span></p><p class="desc"></p>';
+    section.querySelector('h2').textContent = d.title;
+    section.querySelector('code').textContent = d.path;
+    section.querySelector('.meta span').textContent = d.post;
+    section.querySelector('.desc').textContent = d.description;
+    main.appendChild(section);
+    try {
+      await embed(section, d.path);
+      if (i === 0) {
+        const note = document.createElement('p');
+        note.className = 'dup-note';
+        note.textContent = 'Duplicate instance (multi-instance regression check):';
+        section.appendChild(note);
+        await embed(section, d.path);
+      }
+    } catch (e) {
+      const err = document.createElement('p');
+      err.className = 'error';
+      err.textContent = 'Failed to embed: ' + e.message;
+      section.appendChild(err);
+    }
+  }
+})();
+</script>
+</body>
+</html>

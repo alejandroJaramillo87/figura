@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Transformer block dataflow</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Transformer block dataflow</h1>
+<p>Hover a block to inspect it. Dashed lines animate the residual stream flowing through attention and MLP sublayers.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-block-dataflow">
+<style>
+.fg-block-dataflow {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --violet: #a78bfa; --ok: #34d399; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-block-dataflow svg { display: block; width: 100%; height: auto; }
+.fg-block-dataflow text { font-family: inherit; }
+
+.fg-block-dataflow .tbd-block {
+  fill: var(--panel); stroke: var(--border); stroke-width: 2;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-block-dataflow .tbd-group:hover .tbd-block { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-block-dataflow .tbd-norm { stroke: var(--violet); }
+.fg-block-dataflow .tbd-group:hover .tbd-norm { stroke: var(--violet); }
+.fg-block-dataflow .tbd-title { fill: var(--text); font-size: 15px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-block-dataflow .tbd-sub   { fill: var(--muted); font-size: 11.5px; text-anchor: middle; pointer-events: none; }
+.fg-block-dataflow .tbd-side  { fill: var(--muted); font-size: 12px; }
+
+.fg-block-dataflow .tbd-flow {
+  stroke: var(--line); stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; animation: fg-tbd-flow 1.4s linear infinite;
+}
+.fg-block-dataflow .tbd-residual {
+  stroke: var(--ok); stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; animation: fg-tbd-flow 1.4s linear infinite; opacity: 0.85;
+}
+@keyframes fg-tbd-flow { to { stroke-dashoffset: -18; } }
+
+.fg-block-dataflow .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 4.6em;
+  transition: color 0.3s;
+}
+.fg-block-dataflow .fg-caption.is-active { color: var(--text); }
+.fg-block-dataflow .fg-caption strong { color: var(--accent); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-block-dataflow .tbd-flow, .fg-block-dataflow .tbd-residual { animation: none; }
+}
+</style>
+
+<svg viewBox="0 0 560 640" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Dataflow through a pre-norm transformer block: input embeddings flow through RMSNorm, multi-head attention, a residual add, RMSNorm, an MLP, and a second residual add.">
+  <defs>
+    <marker id="tbd-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="tbd-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <!-- main vertical flow (bottom → top) -->
+  <path class="tbd-flow" d="M 280 580 L 280 548" marker-end="url(#tbd-arrow)"/>
+  <path class="tbd-flow" d="M 280 500 L 280 468" marker-end="url(#tbd-arrow)"/>
+  <path class="tbd-flow" d="M 280 420 L 280 384" marker-end="url(#tbd-arrow)"/>
+  <path class="tbd-flow" d="M 280 348 L 280 316" marker-end="url(#tbd-arrow)"/>
+  <path class="tbd-flow" d="M 280 268 L 280 236" marker-end="url(#tbd-arrow)"/>
+  <path class="tbd-flow" d="M 280 188 L 280 152" marker-end="url(#tbd-arrow)"/>
+  <path class="tbd-flow" d="M 280 116 L 280 84"  marker-end="url(#tbd-arrow)"/>
+
+  <!-- residual skips -->
+  <path class="tbd-residual" d="M 280 564 C 110 564, 110 366, 262 366" marker-end="url(#tbd-arrow-ok)"/>
+  <path class="tbd-residual" d="M 280 402 C 110 402, 110 134, 262 134" marker-end="url(#tbd-arrow-ok)"/>
+  <text x="66" y="470" class="tbd-side" transform="rotate(-90 66 470)">residual stream</text>
+
+  <!-- blocks, bottom to top -->
+  <g class="tbd-group" data-info="Token ids are mapped to d_model-dim vectors; rotary position information is applied later inside attention (RoPE), not added here.">
+    <rect class="tbd-block" x="170" y="580" width="220" height="52" rx="8"/>
+    <text class="tbd-title" x="280" y="602">Input Embeddings</text>
+    <text class="tbd-sub"   x="280" y="620">tokens × d_model</text>
+  </g>
+
+  <g class="tbd-group" data-info="Pre-norm: RMSNorm rescales each token vector before attention, stabilizing training without recentering (no mean subtraction, unlike LayerNorm).">
+    <rect class="tbd-block tbd-norm" x="190" y="500" width="180" height="48" rx="8"/>
+    <text class="tbd-title" x="280" y="521">RMSNorm</text>
+    <text class="tbd-sub"   x="280" y="538">pre-attention</text>
+  </g>
+
+  <g class="tbd-group" data-info="Q, K, V projections per head; scores = softmax(QKᵀ/√d_k) with a causal mask; heads are concatenated and projected back to d_model. This is where the KV cache reads/writes happen at inference.">
+    <rect class="tbd-block" x="150" y="420" width="260" height="48" rx="8"/>
+    <text class="tbd-title" x="280" y="441">Multi-Head Attention</text>
+    <text class="tbd-sub"   x="280" y="458">causal · RoPE · h heads</text>
+  </g>
+
+  <g class="tbd-group" data-info="Residual add: attention output is summed with the unnormalized input. Gradients and features flow through this addition untouched — the backbone of the residual stream.">
+    <circle class="tbd-block" cx="280" cy="366" r="18"/>
+    <text class="tbd-title" x="280" y="372">+</text>
+  </g>
+
+  <g class="tbd-group" data-info="Second pre-norm, applied to the post-attention residual before the MLP.">
+    <rect class="tbd-block tbd-norm" x="190" y="268" width="180" height="48" rx="8"/>
+    <text class="tbd-title" x="280" y="289">RMSNorm</text>
+    <text class="tbd-sub"   x="280" y="306">pre-MLP</text>
+  </g>
+
+  <g class="tbd-group" data-info="Gated MLP (SwiGLU): up- and gate-projections to the hidden dim (~2.7× d_model in Llama), elementwise SiLU gating, then down-projection. Most of the block's parameters and FLOPs live here.">
+    <rect class="tbd-block" x="150" y="188" width="260" height="48" rx="8"/>
+    <text class="tbd-title" x="280" y="209">Feed-Forward (SwiGLU)</text>
+    <text class="tbd-sub"   x="280" y="226">gate ⊙ SiLU(up) → down</text>
+  </g>
+
+  <g class="tbd-group" data-info="Second residual add: MLP output joins the stream. The block's entire contribution is what attention and the MLP wrote into the residual.">
+    <circle class="tbd-block" cx="280" cy="134" r="18"/>
+    <text class="tbd-title" x="280" y="140">+</text>
+  </g>
+
+  <g class="tbd-group" data-info="The updated residual stream feeds the next of N identical blocks; after the last block, a final norm and the LM head produce next-token logits.">
+    <rect class="tbd-block" x="170" y="32" width="220" height="52" rx="8"/>
+    <text class="tbd-title" x="280" y="54">To next block</text>
+    <text class="tbd-sub"   x="280" y="72">× N layers</text>
+  </g>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over any block to inspect what happens there.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over any block to inspect what happens there.';
+  root.querySelectorAll('.tbd-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      const title = g.querySelector('.tbd-title').textContent;
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = title === '+' ? 'Residual add' : title;
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
