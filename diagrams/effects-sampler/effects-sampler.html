@@ -10,10 +10,10 @@
 <h1>Effects sampler</h1>
 <p>Every catalog effect running live, in both pastel palettes. Hover a cell for the technique. This diagram is the canonical reference for shared/effects.css.</p>
 
-<!-- sa:embed-start -->
-<div class="sa-diagram sa-effects-sampler">
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-effects-sampler">
 <style>
-.sa-effects-sampler {
+.fg-effects-sampler {
   /* pastel-on-dark */
   --pd-bg: #0f172a; --pd-panel: #1e293b; --pd-border: #3b4a63;
   --pd-text: #f8fafc; --pd-muted: #a5b4cd;
@@ -31,38 +31,38 @@
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
 }
-.sa-effects-sampler .efs-panel { border-radius: 12px; padding: 6px 10px 10px; }
-.sa-effects-sampler .efs-dark {
+.fg-effects-sampler .efs-panel { border-radius: 12px; padding: 6px 10px 10px; }
+.fg-effects-sampler .efs-dark {
   background: var(--pd-bg);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   margin-bottom: 14px;
 }
-.sa-effects-sampler .efs-light {
+.fg-effects-sampler .efs-light {
   background: var(--pl-bg);
   border: 1px solid var(--pl-border);
   box-shadow: 0 2px 12px rgba(120, 100, 60, 0.10);
 }
-.sa-effects-sampler svg { display: block; width: 100%; height: auto; }
-.sa-effects-sampler text { font-family: inherit; }
-.sa-effects-sampler .efs-cell-label { font-size: 12px; text-anchor: middle; }
-.sa-effects-sampler .efs-title { font-size: 14px; font-weight: 600; }
-.sa-effects-sampler .efs-hex { font-size: 9.5px; text-anchor: middle; font-family: ui-monospace, Menlo, Consolas, monospace; }
-.sa-effects-sampler .efs-dark .efs-cell-label, .sa-effects-sampler .efs-dark .efs-hex { fill: var(--pd-muted); }
-.sa-effects-sampler .efs-dark .efs-title { fill: var(--pd-text); }
-.sa-effects-sampler .efs-light .efs-cell-label, .sa-effects-sampler .efs-light .efs-hex { fill: var(--pl-muted); }
-.sa-effects-sampler .efs-light .efs-title { fill: var(--pl-text); }
-.sa-effects-sampler .efs-hit { fill: transparent; cursor: help; }
+.fg-effects-sampler svg { display: block; width: 100%; height: auto; }
+.fg-effects-sampler text { font-family: inherit; }
+.fg-effects-sampler .efs-cell-label { font-size: 12px; text-anchor: middle; }
+.fg-effects-sampler .efs-title { font-size: 14px; font-weight: 600; }
+.fg-effects-sampler .efs-hex { font-size: 9.5px; text-anchor: middle; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.fg-effects-sampler .efs-dark .efs-cell-label, .fg-effects-sampler .efs-dark .efs-hex { fill: var(--pd-muted); }
+.fg-effects-sampler .efs-dark .efs-title { fill: var(--pd-text); }
+.fg-effects-sampler .efs-light .efs-cell-label, .fg-effects-sampler .efs-light .efs-hex { fill: var(--pl-muted); }
+.fg-effects-sampler .efs-light .efs-title { fill: var(--pl-text); }
+.fg-effects-sampler .efs-hit { fill: transparent; cursor: help; }
 
 /* --- glow: static-blurred halo behind node, opacity animated -------- */
-.sa-effects-sampler .efs-glow-halo {
+.fg-effects-sampler .efs-glow-halo {
   filter: blur(6px); opacity: 0.25;
-  animation: sa-efs-glow 2s var(--ease) infinite alternate;
+  animation: fg-efs-glow 2s var(--ease) infinite alternate;
 }
-@keyframes sa-efs-glow { to { opacity: 0.85; } }
+@keyframes fg-efs-glow { to { opacity: 0.85; } }
 
 /* --- sweep: clipped bright stripe, translateX --------------------- */
-.sa-effects-sampler .efs-sweep { animation: sa-efs-sweep 2.6s var(--ease) infinite; }
-@keyframes sa-efs-sweep {
+.fg-effects-sampler .efs-sweep { animation: fg-efs-sweep 2.6s var(--ease) infinite; }
+@keyframes fg-efs-sweep {
   0%   { transform: translateX(0); opacity: 0; }
   15%  { opacity: 0.7; }
   60%  { transform: translateX(120px); opacity: 0.7; }
@@ -70,58 +70,58 @@
 }
 
 /* --- draw-in: pathLength dash, ambient loop ----------------------- */
-.sa-effects-sampler .efs-draw {
+.fg-effects-sampler .efs-draw {
   stroke-dasharray: 1; fill: none; stroke-width: 2.5; stroke-linecap: round;
-  animation: sa-efs-draw 2.4s var(--ease) infinite;
+  animation: fg-efs-draw 2.4s var(--ease) infinite;
 }
-@keyframes sa-efs-draw {
+@keyframes fg-efs-draw {
   0% { stroke-dashoffset: 1; }
   55%, 80% { stroke-dashoffset: 0; opacity: 1; }
   100% { stroke-dashoffset: 0; opacity: 0; }
 }
 
 /* --- ripple: concentric scaled rings ------------------------------ */
-.sa-effects-sampler .efs-ripple {
+.fg-effects-sampler .efs-ripple {
   fill: none; stroke-width: 2;
   transform-box: fill-box; transform-origin: center;
-  animation: sa-efs-ripple 1.8s var(--ease) infinite;
+  animation: fg-efs-ripple 1.8s var(--ease) infinite;
 }
-.sa-effects-sampler .efs-ripple-2 { animation-delay: 0.6s; }
-@keyframes sa-efs-ripple {
+.fg-effects-sampler .efs-ripple-2 { animation-delay: 0.6s; }
+@keyframes fg-efs-ripple {
   0%   { transform: scale(0.4); opacity: 0.9; }
   100% { transform: scale(2.4); opacity: 0; }
 }
 
 /* --- shimmer: skewed stripe across panel cell --------------------- */
-.sa-effects-sampler .efs-shimmer { animation: sa-efs-shimmer 3.2s linear infinite; }
-@keyframes sa-efs-shimmer {
+.fg-effects-sampler .efs-shimmer { animation: fg-efs-shimmer 3.2s linear infinite; }
+@keyframes fg-efs-shimmer {
   from { transform: translateX(-60px) skewX(-20deg); }
   to   { transform: translateX(140px) skewX(-20deg); }
 }
 
 /* --- flash: one-shot color blink, retriggered by JS --------------- */
-.sa-effects-sampler .efs-flashable.is-flashing { animation: sa-efs-flash 0.6s var(--ease) 1; }
-@keyframes sa-efs-flash { 30% { fill: var(--flash-fill); stroke: var(--flash-stroke); } }
+.fg-effects-sampler .efs-flashable.is-flashing { animation: fg-efs-flash 0.6s var(--ease) 1; }
+@keyframes fg-efs-flash { 30% { fill: var(--flash-fill); stroke: var(--flash-stroke); } }
 
 /* --- caption ------------------------------------------------------ */
-.sa-effects-sampler .sa-caption {
+.fg-effects-sampler .fg-caption {
   margin-top: 10px; padding: 10px 14px; min-height: 3.2em;
   background: var(--pd-panel); border-left: 3px solid var(--pd-blue);
   border-radius: 0 8px 8px 0; color: var(--pd-muted); font-size: 13px;
   transition: color 0.3s;
 }
-.sa-effects-sampler .sa-caption.is-active { color: var(--pd-text); }
-.sa-effects-sampler .sa-caption strong { color: var(--pd-blue); font-weight: 600; }
+.fg-effects-sampler .fg-caption.is-active { color: var(--pd-text); }
+.fg-effects-sampler .fg-caption strong { color: var(--pd-blue); font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) {
-  .sa-effects-sampler .efs-glow-halo { animation: none; opacity: 0.5; }
-  .sa-effects-sampler .efs-sweep, .sa-effects-sampler .efs-shimmer { display: none; }
-  .sa-effects-sampler .efs-draw { animation: none; stroke-dashoffset: 0; }
-  .sa-effects-sampler .efs-ripple { animation: none; transform: scale(1.4); opacity: 0.25; }
-  .sa-effects-sampler .efs-ripple-2 { opacity: 0; }
-  .sa-effects-sampler .efs-comet { display: none; }
-  .sa-effects-sampler .efs-comet-fallback { opacity: 1 !important; }
-  .sa-effects-sampler .efs-flashable.is-flashing { animation: none; }
+  .fg-effects-sampler .efs-glow-halo { animation: none; opacity: 0.5; }
+  .fg-effects-sampler .efs-sweep, .fg-effects-sampler .efs-shimmer { display: none; }
+  .fg-effects-sampler .efs-draw { animation: none; stroke-dashoffset: 0; }
+  .fg-effects-sampler .efs-ripple { animation: none; transform: scale(1.4); opacity: 0.25; }
+  .fg-effects-sampler .efs-ripple-2 { opacity: 0; }
+  .fg-effects-sampler .efs-comet { display: none; }
+  .fg-effects-sampler .efs-comet-fallback { opacity: 1 !important; }
+  .fg-effects-sampler .efs-flashable.is-flashing { animation: none; }
 }
 </style>
 
@@ -197,7 +197,7 @@
 
   <!-- flash -->
   <g data-info="Flash — a one-shot 600ms color blink triggered by re-adding a class after a forced reflow (restartAnimation in snippets.js). Reduced motion swaps the color instantly instead.">
-    <rect class="efs-flashable" data-sa="flash-dark" x="170" y="170" width="70" height="50" rx="8"
+    <rect class="efs-flashable" data-fg="flash-dark" x="170" y="170" width="70" height="50" rx="8"
           fill="var(--pd-panel)" stroke="var(--pd-border)" stroke-width="2"
           style="--flash-fill: #14352a; --flash-stroke: var(--pd-mint);"/>
     <text x="205" y="240" class="efs-cell-label">flash</text>
@@ -281,7 +281,7 @@
   </g>
 
   <g data-info="Flash on light — blinks to the mint fill/stroke pair. Text on pastel fills always uses the triplet's dark text color, never the muted ink.">
-    <rect class="efs-flashable" data-sa="flash-light" x="170" y="170" width="70" height="50" rx="8"
+    <rect class="efs-flashable" data-fg="flash-light" x="170" y="170" width="70" height="50" rx="8"
           fill="var(--pl-panel)" stroke="var(--pl-border)" stroke-width="2"
           style="--flash-fill: var(--pl-mint-f); --flash-stroke: var(--pl-mint-s);"/>
     <text x="205" y="240" class="efs-cell-label">flash</text>
@@ -300,11 +300,11 @@
 </svg>
 </div>
 
-<div class="sa-caption" data-sa="caption">Hover any cell for the technique behind its effect.</div>
+<div class="fg-caption" data-fg="caption">Hover any cell for the technique behind its effect.</div>
 
 <script>(() => {
-  const root = document.currentScript.closest('.sa-diagram');
-  const caption = root.querySelector('[data-sa="caption"]');
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
   const DEFAULT = 'Hover any cell for the technique behind its effect.';
   root.querySelectorAll('[data-info]').forEach((g) => {
     g.addEventListener('mouseenter', () => {
@@ -334,6 +334,6 @@
   }
 })();</script>
 </div>
-<!-- sa:embed-end -->
+<!-- fg:embed-end -->
 </body>
 </html>

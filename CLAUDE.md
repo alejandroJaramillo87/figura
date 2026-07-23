@@ -37,35 +37,35 @@ one or two before writing a new one.
 <h1>Title</h1>
 <p>One-line description for standalone viewing.</p>
 
-<!-- sa:embed-start -->
-<div class="sa-diagram sa-<diagram-name>">
-  <style>/* everything scoped under .sa-<diagram-name> */</style>
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-<diagram-name>">
+  <style>/* everything scoped under .fg-<diagram-name> */</style>
   <svg viewBox="0 0 W H" role="img" aria-label="...">…</svg>
-  <!-- optional: .sa-caption box, .sa-controls bar -->
+  <!-- optional: .fg-caption box, .fg-controls bar -->
   <script>(() => {
-    const root = document.currentScript.closest('.sa-diagram');
+    const root = document.currentScript.closest('.fg-diagram');
     /* query only within root */
   })();</script>
 </div>
-<!-- sa:embed-end -->
+<!-- fg:embed-end -->
 </body>
 </html>
 ```
 
-Only the fragment between `<!-- sa:embed-start -->` and `<!-- sa:embed-end -->`
+Only the fragment between `<!-- fg:embed-start -->` and `<!-- fg:embed-end -->`
 is inlined into the blog. Everything the diagram needs must live inside it.
 
 ## Hard rules (the blog inlines this fragment into a busy page)
 
-- **Scoping.** Root element carries `sa-diagram sa-<diagram-name>`. Every CSS
-  selector is prefixed with `.sa-<diagram-name>`. No bare element selectors,
-  no styling `body`/`html`, no global keyframe names (prefix: `sa-<abbrev>-*`).
+- **Scoping.** Root element carries `fg-diagram fg-<diagram-name>`. Every CSS
+  selector is prefixed with `.fg-<diagram-name>`. No bare element selectors,
+  no styling `body`/`html`, no global keyframe names (prefix: `fg-<abbrev>-*`).
 - **Namespaced ids.** SVG ids (markers, gradients, clips) are document-global
   once inlined — prefix them per diagram (e.g. `kvcf-arrowhead`). If the same
   diagram appears twice on a page, duplicate marker ids resolve to the first
   instance's definition; that's fine because definitions are identical.
 - **Scoped JS.** One IIFE per diagram. Resolve the root via
-  `document.currentScript.closest('.sa-diagram')` and query only within it.
+  `document.currentScript.closest('.fg-diagram')` and query only within it.
   No globals, no `DOMContentLoaded` (the script sits after its markup), no
   `getElementById`.
 - **Self-contained.** No external network requests: no webfonts, no CDN
@@ -93,16 +93,16 @@ is inlined into the blog. Everything the diagram needs must live inside it.
 Three palettes live in `shared/tokens.css` (copy values, never link). Pick
 per diagram:
 
-- **Classic dark** (`--sa-*`, table below) — the default for dense
+- **Classic dark** (`--fg-*`, table below) — the default for dense
   technical diagrams (grids, matrices, pipelines).
-- **Pastel-on-dark** (`--sa-pd-*`) — dark slate panel, soft pastel accents
+- **Pastel-on-dark** (`--fg-pd-*`) — dark slate panel, soft pastel accents
   (mint `#a7f3d0`, lavender `#c4b5fd`, peach `#fed7aa`, rose `#fda4af`,
   baby-blue `#bae6fd`). Use for effect-heavy diagrams — glows and comets
   pop hardest on dark. Accents are contrast-safe as text and strokes.
-- **Pastel-light** (`--sa-pl-*`) — cream panel (`#fdfbf7`/`#f6f1e7`) with
+- **Pastel-light** (`--fg-pl-*`) — cream panel (`#fdfbf7`/`#f6f1e7`) with
   pastel fill / saturated stroke / dark text TRIPLETS per accent. Gentler
   look for conceptual posts. Two hard rules: the panel MUST carry
-  `border: 1px solid var(--sa-pl-border)` +
+  `border: 1px solid var(--fg-pl-border)` +
   `box-shadow: 0 2px 12px rgba(120,100,60,.10)` so it reads as a panel on
   the white blog page, and text on a pastel fill always uses that
   triplet's dark text color, never the muted ink.
@@ -115,7 +115,7 @@ is `diagrams/effects-sampler/effects-sampler.html`.
 `shared/effects.css` is the copy-source catalog of animation patterns:
 **glow, highlight sweep, comet, draw-in, pulse/ripple, shimmer, flash** —
 each with markup, technique, and reduced-motion fallback. Rename the
-`sa-XX-*` keyframe placeholders to the diagram's abbreviation when
+`fg-XX-*` keyframe placeholders to the diagram's abbreviation when
 copying. Additional hard rules that come with the effects:
 
 - **Never animate SVG filter primitives.** Filters re-render per frame
@@ -131,7 +131,7 @@ copying. Additional hard rules that come with the effects:
 
 Step-triggered one-shots use `restartAnimation()` and `launchComets()`
 from `shared/snippets.js` (comets authored with `begin="indefinite"`,
-kicked from the `sa:step` handler; trails chain off the head via
+kicked from the `fg:step` handler; trails chain off the head via
 syncbase timing, e.g. `begin="xx-head.begin+0.1s"`).
 
 ### Classic dark tokens
@@ -160,7 +160,7 @@ Font: `"Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif`
 Interaction patterns to reuse (see `shared/snippets.js`):
 - **Step timeline** — root class `is-step-N` drives CSS states; prev/play/next
   controls; good for loops, cache fills, pipelines.
-- **Hover-to-inspect** — blocks carry `data-info`; a `.sa-caption` box below
+- **Hover-to-inspect** — blocks carry `data-info`; a `.fg-caption` box below
   the SVG shows details; good for architecture block diagrams.
 - **Ambient flow** — dashed `stroke-dasharray` lines with a `stroke-dashoffset`
   keyframe animation for data flowing along paths.

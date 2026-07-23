@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>slide-animator — diagram gallery</title>
+<title>figura — diagram gallery</title>
 <style>
 * { box-sizing: border-box; }
 body {
@@ -25,7 +25,7 @@ header p { color: #666; margin: 0; font-size: 0.95rem; }
 </head>
 <body>
 <header>
-  <h1>slide-animator — diagram gallery</h1>
+  <h1>figura — diagram gallery</h1>
   <p>Every diagram in the library, inlined exactly as the blog inlines it.
      Serve this page over HTTP (<code>python3 -m http.server</code>) — the manifest fetch fails over <code>file://</code>.
      The first diagram is rendered twice to verify that multiple instances on one page don't interfere.</p>
@@ -42,7 +42,7 @@ header p { color: #666; margin: 0; font-size: 0.95rem; }
     return;
   }
 
-  const EMBED_RE = /<!-- sa:embed-start -->([\s\S]*?)<!-- sa:embed-end -->/;
+  const EMBED_RE = /<!-- fg:embed-start -->([\s\S]*?)<!-- fg:embed-end -->/;
 
   async function embed(container, path) {
     const html = await (await fetch(path)).text();

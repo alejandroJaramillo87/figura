@@ -10,10 +10,10 @@
 <h1>Attention pattern: prefill vs decode</h1>
 <p>The causal attention matrix. Prefill computes all prompt rows in one batched pass; decode computes exactly one new row per step.</p>
 
-<!-- sa:embed-start -->
-<div class="sa-diagram sa-attention-pattern">
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-attention-pattern">
 <style>
-.sa-attention-pattern {
+.fg-attention-pattern {
   --bg: #0f172a; --panel: #1e293b; --border: #334155;
   --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
   --ok: #34d399; --warn: #fbbf24; --line: #64748b;
@@ -24,71 +24,71 @@
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.sa-attention-pattern svg { display: block; width: 100%; height: auto; }
-.sa-attention-pattern text { font-family: inherit; }
+.fg-attention-pattern svg { display: block; width: 100%; height: auto; }
+.fg-attention-pattern text { font-family: inherit; }
 
-.sa-attention-pattern .apf-lab  { fill: var(--muted); font-size: 13px; text-anchor: middle; }
-.sa-attention-pattern .apf-head { fill: var(--text); font-size: 15px; font-weight: 600; }
-.sa-attention-pattern .apf-sub  { fill: var(--muted); font-size: 12px; }
+.fg-attention-pattern .apf-lab  { fill: var(--muted); font-size: 13px; text-anchor: middle; }
+.fg-attention-pattern .apf-head { fill: var(--text); font-size: 15px; font-weight: 600; }
+.fg-attention-pattern .apf-sub  { fill: var(--muted); font-size: 12px; }
 
-.sa-attention-pattern .apf-cell {
+.fg-attention-pattern .apf-cell {
   fill: var(--panel); stroke: var(--border); stroke-width: 1;
   transition: fill 0.45s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.45s;
 }
-.sa-attention-pattern .apf-cell.apf-masked { fill: transparent; stroke: #24314a; stroke-dasharray: 3 3; }
+.fg-attention-pattern .apf-cell.apf-masked { fill: transparent; stroke: #24314a; stroke-dasharray: 3 3; }
 
 /* Step states.
    0: empty. 1: prefill fills all causal cells of rows 0-3 at once (green).
    2,3,4: decode rows 4,5,6 fill one per step (amber), previous decode rows persist. */
-.sa-attention-pattern.is-step-1 .apf-r0 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-1 .apf-r1 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-1 .apf-r2 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-1 .apf-r3 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-2 .apf-r0 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-2 .apf-r1 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-2 .apf-r2 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-2 .apf-r3 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-3 .apf-r0 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-3 .apf-r1 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-3 .apf-r2 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-3 .apf-r3 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-4 .apf-r0 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-4 .apf-r1 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-4 .apf-r2 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-4 .apf-r3 .apf-cell:not(.apf-masked) { fill: #0e4429; stroke: var(--ok); }
+.fg-attention-pattern.is-step-1 .apf-r0 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-1 .apf-r1 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-1 .apf-r2 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-1 .apf-r3 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-2 .apf-r0 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-2 .apf-r1 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-2 .apf-r2 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-2 .apf-r3 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-3 .apf-r0 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-3 .apf-r1 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-3 .apf-r2 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-3 .apf-r3 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-4 .apf-r0 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-4 .apf-r1 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-4 .apf-r2 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-4 .apf-r3 .apf-cell:not(.apf-masked) { fill: #0e4429; stroke: var(--ok); }
 
-.sa-attention-pattern.is-step-2 .apf-r4 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-3 .apf-r4 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-4 .apf-r4 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-3 .apf-r5 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-4 .apf-r5 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-4 .apf-r6 .apf-cell:not(.apf-masked) { fill: #4a3608; stroke: var(--warn); }
+.fg-attention-pattern.is-step-2 .apf-r4 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-3 .apf-r4 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-4 .apf-r4 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-3 .apf-r5 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-4 .apf-r5 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-4 .apf-r6 .apf-cell:not(.apf-masked) { fill: #4a3608; stroke: var(--warn); }
 
 /* highlight the row being computed this step */
-.sa-attention-pattern.is-step-2 .apf-r4 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-3 .apf-r5 .apf-cell:not(.apf-masked),
-.sa-attention-pattern.is-step-4 .apf-r6 .apf-cell:not(.apf-masked) { stroke: var(--accent); stroke-width: 2; }
+.fg-attention-pattern.is-step-2 .apf-r4 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-3 .apf-r5 .apf-cell:not(.apf-masked),
+.fg-attention-pattern.is-step-4 .apf-r6 .apf-cell:not(.apf-masked) { stroke: var(--accent); stroke-width: 2; }
 
 /* phase captions */
-.sa-attention-pattern .apf-phase { opacity: 0; transition: opacity 0.45s; }
-.sa-attention-pattern.is-step-0 .apf-phase-idle,
-.sa-attention-pattern.is-step-1 .apf-phase-prefill,
-.sa-attention-pattern.is-step-2 .apf-phase-decode,
-.sa-attention-pattern.is-step-3 .apf-phase-decode,
-.sa-attention-pattern.is-step-4 .apf-phase-decode { opacity: 1; }
+.fg-attention-pattern .apf-phase { opacity: 0; transition: opacity 0.45s; }
+.fg-attention-pattern.is-step-0 .apf-phase-idle,
+.fg-attention-pattern.is-step-1 .apf-phase-prefill,
+.fg-attention-pattern.is-step-2 .apf-phase-decode,
+.fg-attention-pattern.is-step-3 .apf-phase-decode,
+.fg-attention-pattern.is-step-4 .apf-phase-decode { opacity: 1; }
 
-.sa-attention-pattern .sa-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-.sa-attention-pattern .sa-controls button {
+.fg-attention-pattern .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-attention-pattern .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
   cursor: pointer; padding: 0; line-height: 1;
 }
-.sa-attention-pattern .sa-controls button:hover { border-color: var(--accent); }
-.sa-attention-pattern .sa-controls [data-sa="counter"] {
+.fg-attention-pattern .fg-controls button:hover { border-color: var(--accent); }
+.fg-attention-pattern .fg-controls [data-fg="counter"] {
   color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
 }
 @media (prefers-reduced-motion: reduce) {
-  .sa-attention-pattern * { transition: none !important; }
+  .fg-attention-pattern * { transition: none !important; }
 }
 </style>
 
@@ -101,7 +101,7 @@
   <!-- grid cells injected by JS below (57 cells would be unwieldy by hand;
        injection happens at parse time inside this fragment, so the embed
        stays self-contained) -->
-  <g data-sa="grid"></g>
+  <g data-fg="grid"></g>
 
   <!-- legend -->
   <g>
@@ -119,19 +119,19 @@
   <text x="60" y="552" class="apf-sub apf-phase apf-phase-decode">Decode: one query row per step — a skinny matvec against all cached keys.</text>
 </svg>
 
-<div class="sa-controls">
-  <button data-sa="prev" aria-label="Previous step">‹</button>
-  <button data-sa="play" aria-label="Play or pause">▶</button>
-  <button data-sa="next" aria-label="Next step">›</button>
-  <span data-sa="counter"></span>
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
 </div>
 
 <script>(() => {
-  const root = document.currentScript.closest('.sa-diagram');
+  const root = document.currentScript.closest('.fg-diagram');
   const NS = 'http://www.w3.org/2000/svg';
 
   // Build the 7x7 grid: cell size 56, gap 6, origin (72, 44)
-  const grid = root.querySelector('[data-sa="grid"]');
+  const grid = root.querySelector('[data-fg="grid"]');
   const N = 7, SIZE = 56, GAP = 6, OX = 72, OY = 44;
   const tokens = ['The', 'cat', 'sat', 'on', 'the', 'mat', '.'];
   for (let r = 0; r < N; r++) {
@@ -163,7 +163,7 @@
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
-    root.dispatchEvent(new CustomEvent('sa:step', { detail: { step } }));
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
   }
   const tl = {
     get step() { return step; },
@@ -174,7 +174,7 @@
     play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
     pause() { clearInterval(timer); timer = null; },
   };
-  const btn = (name) => root.querySelector('[data-sa="' + name + '"]');
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
   btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
   btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
   btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
@@ -182,8 +182,8 @@
     btn('counter').textContent = tl.step + ' / ' + TOTAL;
     btn('play').textContent = tl.playing ? '❚❚' : '▶';
   }
-  root.addEventListener('sa:step', sync);
-  root.querySelectorAll('.sa-controls button').forEach((b) => b.addEventListener('click', sync));
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
   apply();
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -197,6 +197,6 @@
   }
 })();</script>
 </div>
-<!-- sa:embed-end -->
+<!-- fg:embed-end -->
 </body>
 </html>

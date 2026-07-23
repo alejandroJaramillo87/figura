@@ -10,10 +10,10 @@
 <h1>KV cache fill during the decode loop</h1>
 <p>Prefill writes K/V for the whole prompt in one pass; each decode step appends exactly one row and attends over everything cached so far.</p>
 
-<!-- sa:embed-start -->
-<div class="sa-diagram sa-kv-cache-fill">
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-kv-cache-fill">
 <style>
-.sa-kv-cache-fill {
+.fg-kv-cache-fill {
   --bg: #0f172a; --panel: #1e293b; --border: #334155;
   --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
   --ok: #34d399; --warn: #fbbf24; --violet: #a78bfa; --line: #64748b;
@@ -24,91 +24,91 @@
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.sa-kv-cache-fill svg { display: block; width: 100%; height: auto; }
-.sa-kv-cache-fill text { font-family: inherit; }
+.fg-kv-cache-fill svg { display: block; width: 100%; height: auto; }
+.fg-kv-cache-fill text { font-family: inherit; }
 
 /* --- static styling ------------------------------------------------ */
-.sa-kv-cache-fill .kvcf-label { fill: var(--text); font-size: 15px; font-weight: 600; }
-.sa-kv-cache-fill .kvcf-sub   { fill: var(--muted); font-size: 12px; }
-.sa-kv-cache-fill .kvcf-mono { font-family: ui-monospace, Menlo, Consolas, monospace; }
-.sa-kv-cache-fill .kvcf-cell  {
+.fg-kv-cache-fill .kvcf-label { fill: var(--text); font-size: 15px; font-weight: 600; }
+.fg-kv-cache-fill .kvcf-sub   { fill: var(--muted); font-size: 12px; }
+.fg-kv-cache-fill .kvcf-mono { font-family: ui-monospace, Menlo, Consolas, monospace; }
+.fg-kv-cache-fill .kvcf-cell  {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
   transition: fill 0.45s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.45s;
 }
-.sa-kv-cache-fill .kvcf-tok {
+.fg-kv-cache-fill .kvcf-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
   transition: fill 0.45s, stroke 0.45s;
 }
-.sa-kv-cache-fill .kvcf-tok-t { fill: var(--muted); font-size: 13px; text-anchor: middle; transition: fill 0.45s; }
-.sa-kv-cache-fill .kvcf-arrow { stroke: var(--line); stroke-width: 2; fill: none; opacity: 0; transition: opacity 0.45s; }
-.sa-kv-cache-fill .kvcf-read  { stroke: var(--accent); stroke-width: 2; fill: none; stroke-dasharray: 5 4; opacity: 0; transition: opacity 0.45s; }
+.fg-kv-cache-fill .kvcf-tok-t { fill: var(--muted); font-size: 13px; text-anchor: middle; transition: fill 0.45s; }
+.fg-kv-cache-fill .kvcf-arrow { stroke: var(--line); stroke-width: 2; fill: none; opacity: 0; transition: opacity 0.45s; }
+.fg-kv-cache-fill .kvcf-read  { stroke: var(--accent); stroke-width: 2; fill: none; stroke-dasharray: 5 4; opacity: 0; transition: opacity 0.45s; }
 
 /* --- step states ---------------------------------------------------
    Step 0: empty cache, prompt waiting.
    Step 1: prefill — all 4 prompt rows fill at once.
    Steps 2-4: decode — one generated token appended per step,
               attention reads over every filled row. */
-.sa-kv-cache-fill[class*="is-step-"] .kvcf-phase { transition: opacity 0.45s; }
+.fg-kv-cache-fill[class*="is-step-"] .kvcf-phase { transition: opacity 0.45s; }
 
-.sa-kv-cache-fill.is-step-1 .kvcf-row-p .kvcf-cell,
-.sa-kv-cache-fill.is-step-2 .kvcf-row-p .kvcf-cell,
-.sa-kv-cache-fill.is-step-3 .kvcf-row-p .kvcf-cell,
-.sa-kv-cache-fill.is-step-4 .kvcf-row-p .kvcf-cell { fill: #0e4429; stroke: var(--ok); }
+.fg-kv-cache-fill.is-step-1 .kvcf-row-p .kvcf-cell,
+.fg-kv-cache-fill.is-step-2 .kvcf-row-p .kvcf-cell,
+.fg-kv-cache-fill.is-step-3 .kvcf-row-p .kvcf-cell,
+.fg-kv-cache-fill.is-step-4 .kvcf-row-p .kvcf-cell { fill: #0e4429; stroke: var(--ok); }
 
-.sa-kv-cache-fill.is-step-2 .kvcf-row-d0 .kvcf-cell,
-.sa-kv-cache-fill.is-step-3 .kvcf-row-d0 .kvcf-cell,
-.sa-kv-cache-fill.is-step-4 .kvcf-row-d0 .kvcf-cell { fill: #4a3608; stroke: var(--warn); }
-.sa-kv-cache-fill.is-step-3 .kvcf-row-d1 .kvcf-cell,
-.sa-kv-cache-fill.is-step-4 .kvcf-row-d1 .kvcf-cell { fill: #4a3608; stroke: var(--warn); }
-.sa-kv-cache-fill.is-step-4 .kvcf-row-d2 .kvcf-cell { fill: #4a3608; stroke: var(--warn); }
+.fg-kv-cache-fill.is-step-2 .kvcf-row-d0 .kvcf-cell,
+.fg-kv-cache-fill.is-step-3 .kvcf-row-d0 .kvcf-cell,
+.fg-kv-cache-fill.is-step-4 .kvcf-row-d0 .kvcf-cell { fill: #4a3608; stroke: var(--warn); }
+.fg-kv-cache-fill.is-step-3 .kvcf-row-d1 .kvcf-cell,
+.fg-kv-cache-fill.is-step-4 .kvcf-row-d1 .kvcf-cell { fill: #4a3608; stroke: var(--warn); }
+.fg-kv-cache-fill.is-step-4 .kvcf-row-d2 .kvcf-cell { fill: #4a3608; stroke: var(--warn); }
 
-.sa-kv-cache-fill.is-step-1 .kvcf-tok-p { stroke: var(--ok); }
-.sa-kv-cache-fill.is-step-1 .kvcf-tok-p + .kvcf-tok-t { fill: var(--text); }
-.sa-kv-cache-fill.is-step-2 .kvcf-tok-g0,
-.sa-kv-cache-fill.is-step-3 .kvcf-tok-g0,
-.sa-kv-cache-fill.is-step-4 .kvcf-tok-g0 { stroke: var(--warn); }
-.sa-kv-cache-fill.is-step-3 .kvcf-tok-g1,
-.sa-kv-cache-fill.is-step-4 .kvcf-tok-g1 { stroke: var(--warn); }
-.sa-kv-cache-fill.is-step-4 .kvcf-tok-g2 { stroke: var(--warn); }
-.sa-kv-cache-fill.is-step-2 .kvcf-tok-g0 + .kvcf-tok-t,
-.sa-kv-cache-fill.is-step-3 .kvcf-tok-g0 + .kvcf-tok-t,
-.sa-kv-cache-fill.is-step-4 .kvcf-tok-g0 + .kvcf-tok-t,
-.sa-kv-cache-fill.is-step-3 .kvcf-tok-g1 + .kvcf-tok-t,
-.sa-kv-cache-fill.is-step-4 .kvcf-tok-g1 + .kvcf-tok-t,
-.sa-kv-cache-fill.is-step-4 .kvcf-tok-g2 + .kvcf-tok-t { fill: var(--text); }
+.fg-kv-cache-fill.is-step-1 .kvcf-tok-p { stroke: var(--ok); }
+.fg-kv-cache-fill.is-step-1 .kvcf-tok-p + .kvcf-tok-t { fill: var(--text); }
+.fg-kv-cache-fill.is-step-2 .kvcf-tok-g0,
+.fg-kv-cache-fill.is-step-3 .kvcf-tok-g0,
+.fg-kv-cache-fill.is-step-4 .kvcf-tok-g0 { stroke: var(--warn); }
+.fg-kv-cache-fill.is-step-3 .kvcf-tok-g1,
+.fg-kv-cache-fill.is-step-4 .kvcf-tok-g1 { stroke: var(--warn); }
+.fg-kv-cache-fill.is-step-4 .kvcf-tok-g2 { stroke: var(--warn); }
+.fg-kv-cache-fill.is-step-2 .kvcf-tok-g0 + .kvcf-tok-t,
+.fg-kv-cache-fill.is-step-3 .kvcf-tok-g0 + .kvcf-tok-t,
+.fg-kv-cache-fill.is-step-4 .kvcf-tok-g0 + .kvcf-tok-t,
+.fg-kv-cache-fill.is-step-3 .kvcf-tok-g1 + .kvcf-tok-t,
+.fg-kv-cache-fill.is-step-4 .kvcf-tok-g1 + .kvcf-tok-t,
+.fg-kv-cache-fill.is-step-4 .kvcf-tok-g2 + .kvcf-tok-t { fill: var(--text); }
 
-.sa-kv-cache-fill.is-step-1 .kvcf-arrow-prefill { opacity: 1; }
-.sa-kv-cache-fill.is-step-2 .kvcf-arrow-d0,
-.sa-kv-cache-fill.is-step-3 .kvcf-arrow-d1,
-.sa-kv-cache-fill.is-step-4 .kvcf-arrow-d2 { opacity: 1; }
-.sa-kv-cache-fill.is-step-2 .kvcf-read,
-.sa-kv-cache-fill.is-step-3 .kvcf-read,
-.sa-kv-cache-fill.is-step-4 .kvcf-read { opacity: 1; }
+.fg-kv-cache-fill.is-step-1 .kvcf-arrow-prefill { opacity: 1; }
+.fg-kv-cache-fill.is-step-2 .kvcf-arrow-d0,
+.fg-kv-cache-fill.is-step-3 .kvcf-arrow-d1,
+.fg-kv-cache-fill.is-step-4 .kvcf-arrow-d2 { opacity: 1; }
+.fg-kv-cache-fill.is-step-2 .kvcf-read,
+.fg-kv-cache-fill.is-step-3 .kvcf-read,
+.fg-kv-cache-fill.is-step-4 .kvcf-read { opacity: 1; }
 
 /* phase captions */
-.sa-kv-cache-fill .kvcf-phase { opacity: 0; }
-.sa-kv-cache-fill.is-step-0 .kvcf-phase-idle,
-.sa-kv-cache-fill.is-step-1 .kvcf-phase-prefill,
-.sa-kv-cache-fill.is-step-2 .kvcf-phase-decode,
-.sa-kv-cache-fill.is-step-3 .kvcf-phase-decode,
-.sa-kv-cache-fill.is-step-4 .kvcf-phase-decode { opacity: 1; }
+.fg-kv-cache-fill .kvcf-phase { opacity: 0; }
+.fg-kv-cache-fill.is-step-0 .kvcf-phase-idle,
+.fg-kv-cache-fill.is-step-1 .kvcf-phase-prefill,
+.fg-kv-cache-fill.is-step-2 .kvcf-phase-decode,
+.fg-kv-cache-fill.is-step-3 .kvcf-phase-decode,
+.fg-kv-cache-fill.is-step-4 .kvcf-phase-decode { opacity: 1; }
 
 /* --- controls ------------------------------------------------------ */
-.sa-kv-cache-fill .sa-controls {
+.fg-kv-cache-fill .fg-controls {
   display: flex; align-items: center; gap: 8px; margin-top: 10px;
 }
-.sa-kv-cache-fill .sa-controls button {
+.fg-kv-cache-fill .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
   cursor: pointer; padding: 0; line-height: 1;
 }
-.sa-kv-cache-fill .sa-controls button:hover { border-color: var(--accent); }
-.sa-kv-cache-fill .sa-controls [data-sa="counter"] {
+.fg-kv-cache-fill .fg-controls button:hover { border-color: var(--accent); }
+.fg-kv-cache-fill .fg-controls [data-fg="counter"] {
   color: var(--muted); font-size: 12px; margin-left: 4px;
   font-variant-numeric: tabular-nums;
 }
 @media (prefers-reduced-motion: reduce) {
-  .sa-kv-cache-fill * { transition: none !important; }
+  .fg-kv-cache-fill * { transition: none !important; }
 }
 </style>
 
@@ -183,22 +183,22 @@
   <text x="30" y="400" class="kvcf-sub kvcf-phase kvcf-phase-decode">Decode: each step appends one K/V row, then reads the whole cache (memory-bound).</text>
 </svg>
 
-<div class="sa-controls">
-  <button data-sa="prev" aria-label="Previous step">‹</button>
-  <button data-sa="play" aria-label="Play or pause">▶</button>
-  <button data-sa="next" aria-label="Next step">›</button>
-  <span data-sa="counter"></span>
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
 </div>
 
 <script>(() => {
-  const root = document.currentScript.closest('.sa-diagram');
+  const root = document.currentScript.closest('.fg-diagram');
   const TOTAL = 4, STEP_MS = 1400;
   let step = 0, timer = null;
 
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
-    root.dispatchEvent(new CustomEvent('sa:step', { detail: { step } }));
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
   }
   const tl = {
     get step() { return step; },
@@ -210,7 +210,7 @@
     pause() { clearInterval(timer); timer = null; },
   };
 
-  const btn = (name) => root.querySelector('[data-sa="' + name + '"]');
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
   btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
   btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
   btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
@@ -218,8 +218,8 @@
     btn('counter').textContent = tl.step + ' / ' + TOTAL;
     btn('play').textContent = tl.playing ? '❚❚' : '▶';
   }
-  root.addEventListener('sa:step', sync);
-  root.querySelectorAll('.sa-controls button').forEach((b) => b.addEventListener('click', sync));
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
   apply();
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -233,6 +233,6 @@
   }
 })();</script>
 </div>
-<!-- sa:embed-end -->
+<!-- fg:embed-end -->
 </body>
 </html>

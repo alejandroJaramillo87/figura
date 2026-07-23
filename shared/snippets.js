@@ -1,5 +1,5 @@
 /*
- * snippets.js — reference helper patterns for slide-animator diagrams.
+ * snippets.js — reference helper patterns for figura diagrams.
  *
  * This file is NEVER loaded at runtime. It is a copy source: when generating
  * a new diagram, copy the snippets you need into the diagram's inline IIFE
@@ -10,7 +10,7 @@
  * Every snippet assumes it runs inside the diagram's IIFE:
  *
  *   <script>(() => {
- *     const root = document.currentScript.closest('.sa-diagram');
+ *     const root = document.currentScript.closest('.fg-diagram');
  *     ...
  *   })();</script>
  */
@@ -26,7 +26,7 @@ function makeTimeline(root, totalSteps, stepMs) {
   function apply() {
     for (let i = 0; i <= totalSteps; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
-    root.dispatchEvent(new CustomEvent('sa:step', { detail: { step } }));
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
   }
 
   const tl = {
@@ -53,15 +53,15 @@ function makeTimeline(root, totalSteps, stepMs) {
 /* ------------------------------------------------------------------ */
 /* 2. Control bar: prev / play-pause / next / step counter.            */
 /*    Expects markup (keeps DOM authored, not generated):              */
-/*      <div class="sa-controls">                                      */
-/*        <button data-sa="prev" aria-label="Previous step">‹</button> */
-/*        <button data-sa="play" aria-label="Play or pause">▶</button> */
-/*        <button data-sa="next" aria-label="Next step">›</button>     */
-/*        <span data-sa="counter"></span>                              */
+/*      <div class="fg-controls">                                      */
+/*        <button data-fg="prev" aria-label="Previous step">‹</button> */
+/*        <button data-fg="play" aria-label="Play or pause">▶</button> */
+/*        <button data-fg="next" aria-label="Next step">›</button>     */
+/*        <span data-fg="counter"></span>                              */
 /*      </div>                                                         */
 /* ------------------------------------------------------------------ */
 function wireControls(root, tl, totalSteps) {
-  const btn = (name) => root.querySelector('[data-sa="' + name + '"]');
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
   const counter = btn('counter');
   btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
   btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
@@ -70,8 +70,8 @@ function wireControls(root, tl, totalSteps) {
     if (counter) counter.textContent = tl.step + ' / ' + totalSteps;
     btn('play').textContent = tl.playing ? '❚❚' : '▶';
   }
-  root.addEventListener('sa:step', sync);
-  root.querySelectorAll('.sa-controls button').forEach((b) => b.addEventListener('click', sync));
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
   sync();
 }
 
@@ -109,18 +109,18 @@ function restartAnimation(el, cls) {
 function launchComets(root, selector) {
   root.querySelectorAll(selector + ' animateMotion').forEach((m) => m.beginElement());
 }
-/* usage: root.addEventListener('sa:step', (e) => {
+/* usage: root.addEventListener('fg:step', (e) => {
  *   if (e.detail.step === 1) launchComets(root, '.trl-comet-fwd');
  * }); */
 
 /* ------------------------------------------------------------------ */
 /* 4. Hover-to-inspect caption: blocks carry data-info; a caption box  */
 /*    shows details for the hovered block.                             */
-/*      <g class="sa-block" data-info="...">…</g>                      */
-/*      <div class="sa-caption" data-sa="caption">default text</div>   */
+/*      <g class="fg-block" data-info="...">…</g>                      */
+/*      <div class="fg-caption" data-fg="caption">default text</div>   */
 /* ------------------------------------------------------------------ */
 function wireHoverCaption(root, defaultText) {
-  const caption = root.querySelector('[data-sa="caption"]');
+  const caption = root.querySelector('[data-fg="caption"]');
   root.querySelectorAll('[data-info]').forEach((el) => {
     el.addEventListener('mouseenter', () => {
       caption.textContent = el.getAttribute('data-info');

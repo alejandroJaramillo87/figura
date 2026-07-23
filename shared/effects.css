@@ -1,11 +1,11 @@
 /*
  * effects.css — the effects catalog: copy-source animation patterns for
- * slide-animator diagrams.
+ * figura diagrams.
  *
  * NEVER linked at runtime. Copy the rules you need into the diagram's
  * scoped <style>, prefix every selector with the diagram's root class,
- * and rename every `sa-XX-*` keyframe to the diagram's abbreviation
- * (e.g. `sa-trl-comet-fade`). The canonical live demonstration of every
+ * and rename every `fg-XX-*` keyframe to the diagram's abbreviation
+ * (e.g. `fg-trl-comet-fade`). The canonical live demonstration of every
  * effect is diagrams/effects-sampler/effects-sampler.html.
  *
  * Two hard rules that apply to every effect here (also in CLAUDE.md):
@@ -33,14 +33,14 @@
  *   <rect class="XX-glow-halo" x=... (same geometry, accent fill)/>
  *   <rect class="XX-node" x=.../>
  */
-.sa-scope .XX-glow-halo {
+.fg-scope .XX-glow-halo {
   filter: blur(6px);                 /* static blur — applied once */
   opacity: 0.25;
-  animation: sa-XX-glow 2s var(--ease, ease-in-out) infinite alternate;
+  animation: fg-XX-glow 2s var(--ease, ease-in-out) infinite alternate;
 }
-@keyframes sa-XX-glow { to { opacity: 0.8; } }
+@keyframes fg-XX-glow { to { opacity: 0.8; } }
 @media (prefers-reduced-motion: reduce) {
-  .sa-scope .XX-glow-halo { animation: none; opacity: 0.5; } /* frozen halo */
+  .fg-scope .XX-glow-halo { animation: none; opacity: 0.5; } /* frozen halo */
 }
 
 /* =====================================================================
@@ -55,17 +55,17 @@
  *           fill="url(#XX-sweep-grad)"/>   <!-- soft-edged vertical grad -->
  *   </g>
  */
-.sa-scope .XX-sweep {
-  animation: sa-XX-sweep 2.6s var(--ease, ease-in-out) infinite;
+.fg-scope .XX-sweep {
+  animation: fg-XX-sweep 2.6s var(--ease, ease-in-out) infinite;
 }
-@keyframes sa-XX-sweep {
+@keyframes fg-XX-sweep {
   0%   { transform: translateX(-60px); opacity: 0; }
   15%  { opacity: 0.7; }
   60%  { transform: translateX(var(--region-w, 300px)); opacity: 0.7; }
   75%, 100% { transform: translateX(var(--region-w, 300px)); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sa-scope .XX-sweep { display: none; }
+  .fg-scope .XX-sweep { display: none; }
 }
 
 /* =====================================================================
@@ -91,14 +91,14 @@
  *   </g>
  *
  * Step-triggered comets: author with begin="indefinite" and call
- * .beginElement() on the <animateMotion> from the sa:step handler
+ * .beginElement() on the <animateMotion> from the fg:step handler
  * (see snippets.js). Hide comet groups outside their step with CSS.
  *
  * Reduced motion: SMIL keeps running regardless — the CSS gate below is
  * MANDATORY for every comet group.
  */
 @media (prefers-reduced-motion: reduce) {
-  .sa-scope .XX-comet { display: none; }
+  .fg-scope .XX-comet { display: none; }
 }
 
 /* =====================================================================
@@ -108,14 +108,14 @@
  *   <path class="XX-draw" pathLength="1" d="M ..."/>
  * Trigger by step class on the root (transition) or ambient (keyframes).
  */
-.sa-scope .XX-draw {
+.fg-scope .XX-draw {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
   transition: stroke-dashoffset 0.9s var(--ease, ease-in-out);
 }
-.sa-scope.is-step-1 .XX-draw { stroke-dashoffset: 0; }
+.fg-scope.is-step-1 .XX-draw { stroke-dashoffset: 0; }
 @media (prefers-reduced-motion: reduce) {
-  .sa-scope .XX-draw { stroke-dashoffset: 0; transition: none; }
+  .fg-scope .XX-draw { stroke-dashoffset: 0; transition: none; }
 }
 
 /* =====================================================================
@@ -126,19 +126,19 @@
  *   <circle class="XX-ripple XX-ripple-2" .../>
  * transform-box makes scale() originate from the circle itself.
  */
-.sa-scope .XX-ripple {
+.fg-scope .XX-ripple {
   transform-box: fill-box;
   transform-origin: center;
-  animation: sa-XX-ripple 1.6s var(--ease, ease-out) infinite;
+  animation: fg-XX-ripple 1.6s var(--ease, ease-out) infinite;
 }
-.sa-scope .XX-ripple-2 { animation-delay: 0.5s; }
-@keyframes sa-XX-ripple {
+.fg-scope .XX-ripple-2 { animation-delay: 0.5s; }
+@keyframes fg-XX-ripple {
   0%   { transform: scale(0.4); opacity: 0.9; }
   100% { transform: scale(2.2); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sa-scope .XX-ripple { animation: none; transform: scale(1.4); opacity: 0.25; }
-  .sa-scope .XX-ripple-2 { opacity: 0; }
+  .fg-scope .XX-ripple { animation: none; transform: scale(1.4); opacity: 0.25; }
+  .fg-scope .XX-ripple-2 { opacity: 0; }
 }
 
 /* =====================================================================
@@ -153,15 +153,15 @@
  *           fill="#fff" opacity="0.1" transform="skewX(-20)"/>
  *   </g>
  */
-.sa-scope .XX-shimmer {
-  animation: sa-XX-shimmer 3.2s linear infinite;
+.fg-scope .XX-shimmer {
+  animation: fg-XX-shimmer 3.2s linear infinite;
 }
-@keyframes sa-XX-shimmer {
+@keyframes fg-XX-shimmer {
   from { transform: translateX(-80px) skewX(-20deg); }
   to   { transform: translateX(var(--panel-w, 320px)) skewX(-20deg); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sa-scope .XX-shimmer { display: none; }
+  .fg-scope .XX-shimmer { display: none; }
 }
 
 /* =====================================================================
@@ -171,12 +171,12 @@
  * restartAnimation() in snippets.js). End state = base color; for a
  * persistent state change, also swap a state class.
  */
-.sa-scope .XX-flashable.is-flashing {
-  animation: sa-XX-flash 0.6s var(--ease, ease-out) 1;
+.fg-scope .XX-flashable.is-flashing {
+  animation: fg-XX-flash 0.6s var(--ease, ease-out) 1;
 }
-@keyframes sa-XX-flash {
+@keyframes fg-XX-flash {
   30% { fill: var(--flash-color, #a7f3d0); stroke: var(--flash-color, #a7f3d0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sa-scope .XX-flashable.is-flashing { animation: none; } /* state class alone shows the change */
+  .fg-scope .XX-flashable.is-flashing { animation: none; } /* state class alone shows the change */
 }
