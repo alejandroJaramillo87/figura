@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Winograd toggle: one verb re-points a pronoun</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Winograd toggle</h1>
+<p>Switch a single verb and watch "they" point at a different noun phrase. The arc shows what information the pronoun's interpretation needs — not what any attention head does.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-winograd-toggle">
+<style>
+.fg-winograd-toggle {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-winograd-toggle svg { display: block; width: 100%; height: auto; }
+.fg-winograd-toggle text { font-family: inherit; }
+
+.fg-winograd-toggle .wgt-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-winograd-toggle .wgt-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+.fg-winograd-toggle .wgt-note { fill: var(--muted); font-size: 11px; }
+
+/* the toggled verb block */
+.fg-winograd-toggle .wgt-verb .wgt-tok { stroke: var(--warn); cursor: pointer; }
+.fg-winograd-toggle .wgt-verb:hover .wgt-tok { fill: var(--panel-hover); }
+.fg-winograd-toggle .wgt-verb .wgt-word { fill: var(--warn); }
+
+/* the pronoun */
+.fg-winograd-toggle .wgt-pron .wgt-tok { stroke: var(--accent); }
+.fg-winograd-toggle .wgt-pron .wgt-word { fill: var(--accent); font-weight: 600; }
+
+/* candidate antecedents: active one lights up per state */
+.fg-winograd-toggle .wgt-cand .wgt-tok { transition: fill 0.7s, stroke 0.7s; }
+.fg-winograd-toggle:not(.is-advocated) .wgt-council .wgt-tok,
+.fg-winograd-toggle.is-advocated .wgt-demo .wgt-tok { stroke: var(--ok); fill: var(--panel-hover); }
+
+/* information-need arcs: one visible per state */
+.fg-winograd-toggle .wgt-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-winograd-toggle .wgt-arc-council { opacity: 1; }
+.fg-winograd-toggle .wgt-arc-demo { opacity: 0; }
+.fg-winograd-toggle.is-advocated .wgt-arc-council { opacity: 0; }
+.fg-winograd-toggle.is-advocated .wgt-arc-demo { opacity: 1; }
+
+/* verb text swap */
+.fg-winograd-toggle .wgt-v-feared { opacity: 1; transition: opacity 0.35s; }
+.fg-winograd-toggle .wgt-v-advocated { opacity: 0; transition: opacity 0.35s; }
+.fg-winograd-toggle.is-advocated .wgt-v-feared { opacity: 0; }
+.fg-winograd-toggle.is-advocated .wgt-v-advocated { opacity: 1; }
+
+.fg-winograd-toggle .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-winograd-toggle .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-winograd-toggle .fg-controls button:hover { border-color: var(--warn); background: var(--panel-hover); }
+
+.fg-winograd-toggle .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-winograd-toggle .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-winograd-toggle .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-winograd-toggle .wgt-tok, .fg-winograd-toggle .wgt-arc,
+  .fg-winograd-toggle .wgt-v-feared, .fg-winograd-toggle .wgt-v-advocated { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A Winograd sentence: The city councilmen refused the demonstrators a permit because they feared violence. An arc connects the pronoun they backward to its antecedent. Toggling the verb between feared and advocated moves the arc between the councilmen and the demonstrators, although every other token is unchanged.">
+  <defs>
+    <marker id="wgt-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <!-- line 1 -->
+  <g class="wgt-cand wgt-council">
+    <rect class="wgt-tok" x="40" y="60" width="180" height="36" rx="6"/>
+    <text class="wgt-word" x="130" y="83">The city councilmen</text>
+  </g>
+  <rect class="wgt-tok" x="230" y="60" width="76" height="36" rx="6"/>
+  <text class="wgt-word" x="268" y="83">refused</text>
+  <g class="wgt-cand wgt-demo">
+    <rect class="wgt-tok" x="316" y="60" width="170" height="36" rx="6"/>
+    <text class="wgt-word" x="401" y="83">the demonstrators</text>
+  </g>
+  <rect class="wgt-tok" x="496" y="60" width="86" height="36" rx="6"/>
+  <text class="wgt-word" x="539" y="83">a permit</text>
+
+  <!-- line 2 -->
+  <rect class="wgt-tok" x="130" y="150" width="82" height="36" rx="6"/>
+  <text class="wgt-word" x="171" y="173">because</text>
+  <g class="wgt-pron">
+    <rect class="wgt-tok" x="222" y="150" width="56" height="36" rx="6"/>
+    <text class="wgt-word" x="250" y="173">they</text>
+  </g>
+  <g class="wgt-verb" data-fg="verb" role="button" tabindex="0" aria-label="Toggle the verb between feared and advocated">
+    <rect class="wgt-tok" x="288" y="150" width="112" height="36" rx="6"/>
+    <text class="wgt-word wgt-v-feared" x="344" y="173">feared</text>
+    <text class="wgt-word wgt-v-advocated" x="344" y="173">advocated</text>
+  </g>
+  <rect class="wgt-tok" x="410" y="150" width="90" height="36" rx="6"/>
+  <text class="wgt-word" x="455" y="173">violence.</text>
+
+  <!-- information-need arcs (backward: the pronoun imports its content) -->
+  <path class="wgt-arc wgt-arc-council" d="M 240 150 C 220 118, 175 112, 140 100" marker-end="url(#wgt-arrow)"/>
+  <path class="wgt-arc wgt-arc-demo" d="M 262 150 C 290 122, 350 116, 392 100" marker-end="url(#wgt-arrow)"/>
+
+  <text class="wgt-note" x="40" y="34">arc = information the interpretation of "they" needs &#8212; a fact about the language, not about any attention head</text>
+  <text class="wgt-note" x="514" y="173">&#8592; click the verb</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Toggle the verb between feared and advocated">Switch verb</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>feared</strong> &#8212; "they" points at <strong>the councilmen</strong>: authorities fear violence from a crowd. Every token except the verb is identical in both readings; nothing about <code>they</code> itself changed.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const CAP = {
+    feared: '<strong>feared</strong> — "they" points at <strong>the councilmen</strong>: authorities fear violence from a crowd. Every token except the verb is identical in both readings; nothing about <code>they</code> itself changed.',
+    advocated: '<strong>advocated</strong> — "they" points at <strong>the demonstrators</strong>: protesters advocate, authorities refuse. One distant verb re-wired the pronoun; the missing information was imported from context.'
+  };
+  const toggle = () => {
+    const on = root.classList.toggle('is-advocated');
+    caption.innerHTML = on ? CAP.advocated : CAP.feared;
+  };
+  root.querySelector('[data-fg="toggle"]').addEventListener('click', toggle);
+  const verb = root.querySelector('[data-fg="verb"]');
+  verb.addEventListener('click', toggle);
+  verb.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
