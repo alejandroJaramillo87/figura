@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vllm-gpu entrypoint: env vars to vllm serve</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>vllm-gpu entrypoint: env vars to vllm serve</h1>
+<p>Hover a group: one required variable, tuned serving defaults, precision and quantization selectors, and the vllm serve command they assemble.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-vllm-entry">
+<style>
+.fg-vllm-entry {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-vllm-entry svg { display: block; width: 100%; height: auto; }
+.fg-vllm-entry text { font-family: inherit; }
+
+.fg-vllm-entry .vle-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-vllm-entry .vle-group:hover .vle-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-vllm-entry .vle-req .vle-box { stroke: var(--hot); }
+.fg-vllm-entry .vle-mem .vle-box { stroke: var(--warn); }
+.fg-vllm-entry .vle-prec .vle-box { stroke: var(--violet); }
+.fg-vllm-entry .vle-feat .vle-box { stroke: var(--line); }
+.fg-vllm-entry .vle-cmd .vle-box { stroke: var(--accent); stroke-width: 2; }
+.fg-vllm-entry .vle-exec .vle-box { stroke: var(--ok); stroke-width: 2; }
+
+.fg-vllm-entry .vle-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-vllm-entry .vle-sub { fill: var(--muted); font-size: 10px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-vllm-entry .vle-label { fill: var(--muted); font-size: 12px; }
+
+.fg-vllm-entry .vle-flow {
+  stroke: var(--line); stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; animation: fg-vle-flow 1.4s linear infinite;
+}
+@keyframes fg-vle-flow { to { stroke-dashoffset: -18; } }
+
+.fg-vllm-entry .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.4em;
+  transition: color 0.3s;
+}
+.fg-vllm-entry .fg-caption.is-active { color: var(--text); }
+.fg-vllm-entry .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-vllm-entry .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-vllm-entry .vle-flow { animation: none; }
+  .fg-vllm-entry .vle-box { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Flow of the vllm-gpu entrypoint: MODEL_PATH is the single required variable; VRAM and batching defaults, precision and quantization selectors, and feature flags assemble into a vllm serve command that becomes the container's main process.">
+  <defs>
+    <marker id="vle-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <text class="vle-label" x="16" y="26">environment (docker-compose.yaml / env.example)</text>
+
+  <g class="vle-group vle-req" data-title="Required — fail fast" data-info="MODEL_PATH is the only required variable; the entrypoint exits with an error if it is unset. Everything else carries a default tuned for the RTX 5090, so the minimal deployment is one variable.">
+    <rect class="vle-box" x="16" y="40" width="330" height="64" rx="8"/>
+    <text class="vle-title" x="181" y="62">required (1)</text>
+    <text class="vle-sub" x="181" y="80">MODEL_PATH</text>
+    <text class="vle-sub" x="181" y="94">everything else has a default</text>
+  </g>
+
+  <g class="vle-group vle-mem" data-title="VRAM and batching" data-info="GPU_MEMORY_UTILIZATION 0.85 reserves 85% of the 32GB up front for weights plus the paged KV pool. MAX_NUM_SEQS 256 bounds concurrent requests; MAX_NUM_BATCHED_TOKENS 32768 bounds each engine step; MAX_MODEL_LEN 16384 sets the context ceiling. These four are the throughput levers.">
+    <rect class="vle-box" x="374" y="40" width="330" height="64" rx="8"/>
+    <text class="vle-title" x="539" y="62">VRAM &amp; batching (4)</text>
+    <text class="vle-sub" x="539" y="80">GPU_MEM_UTIL 0.85 · MAX_SEQS 256</text>
+    <text class="vle-sub" x="539" y="94">BATCHED_TOKENS 32768 · LEN 16384</text>
+  </g>
+
+  <g class="vle-group vle-prec" data-title="Precision and quantization" data-info="DTYPE auto lets the model config choose (bf16 for most). KV_CACHE_DTYPE auto, or fp8 to halve KV memory. QUANTIZATION passes fp8/awq/gptq only when set. ATTENTION_BACKEND defaults to flashinfer — the Blackwell-tuned kernels installed at build time.">
+    <rect class="vle-box" x="16" y="124" width="330" height="64" rx="8"/>
+    <text class="vle-title" x="181" y="146">precision (4)</text>
+    <text class="vle-sub" x="181" y="164">DTYPE · KV_CACHE_DTYPE · QUANT</text>
+    <text class="vle-sub" x="181" y="178">ATTENTION_BACKEND flashinfer</text>
+  </g>
+
+  <g class="vle-group vle-feat" data-title="Feature flags — and absent flags" data-info="TRUST_REMOTE_CODE opt-in per model (it executes repo code); DISABLE_LOG_STATS quiets per-step logging; NSYS_PROFILE wraps in Nsight like llama-gpu. Notably absent: --enable-prefix-caching and --enable-chunked-prefill — default-on in the V1 engine, so the entrypoint no longer passes them.">
+    <rect class="vle-box" x="374" y="124" width="330" height="64" rx="8"/>
+    <text class="vle-title" x="539" y="146">feature flags (3)</text>
+    <text class="vle-sub" x="539" y="164">TRUST_REMOTE_CODE · LOG_STATS</text>
+    <text class="vle-sub" x="539" y="178">NSYS_PROFILE · (V1 defaults omitted)</text>
+  </g>
+
+  <path class="vle-flow" d="M 181 188 L 240 232" marker-end="url(#vle-arrow)"/>
+  <path class="vle-flow" d="M 539 188 L 480 232" marker-end="url(#vle-arrow)"/>
+
+  <g class="vle-group vle-cmd" data-title="vllm serve" data-info="Not the legacy python -m vllm.entrypoints… invocation — vllm serve is the supported CLI. The command carries the tuned defaults plus --download-dir /app/cache so model artifacts land in the writable cache directory.">
+    <rect class="vle-box" x="160" y="236" width="400" height="60" rx="8"/>
+    <text class="vle-title" x="360" y="260">vllm serve $MODEL_PATH --gpu-memory-utilization …</text>
+    <text class="vle-sub" x="360" y="278">defaults + conditional appends</text>
+  </g>
+
+  <path class="vle-flow" d="M 360 296 L 360 320" marker-end="url(#vle-arrow)"/>
+
+  <g class="vle-group vle-exec" data-title="Serve — 300s runway" data-info="The server becomes the container's main process on port 8003. GPU memory is reported via nvidia-smi before the load, and the healthcheck allows a 300-second start period — large transformer models take time to shard into VRAM.">
+    <rect class="vle-box" x="160" y="324" width="400" height="52" rx="8"/>
+    <text class="vle-title" x="360" y="346">serving on :8003</text>
+    <text class="vle-sub" x="360" y="362">healthcheck start-period 300s</text>
+  </g>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over a group to see how it reaches the command line.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over a group to see how it reaches the command line.';
+  root.querySelectorAll('.vle-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = g.getAttribute('data-title');
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

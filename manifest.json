@@ -82,5 +82,54 @@
     "title": "Agent sandbox egress flow",
     "post": "sandboxing-agents",
     "description": "The agent on an internal network with no internet route, the Squid proxy as the only door, and the allow/deny verdict per request. Step timeline with controls."
+  },
+  {
+    "id": "engine-comparison",
+    "path": "diagrams/inference-containers/engine-comparison.html",
+    "title": "Three engines, one workstation",
+    "post": "inference-containers-overview",
+    "description": "Grid comparing llama-cpu, llama-gpu, and vllm-gpu: hardware, optimization target, image build style, and entrypoint pattern. Hover-to-inspect."
+  },
+  {
+    "id": "llama-cpu-build-pipeline",
+    "path": "diagrams/inference-containers/llama-cpu-build-pipeline.html",
+    "title": "llama-cpu: the multi-stage build pipeline",
+    "post": "inference-containers-llama-cpu",
+    "description": "Shared trixie-slim base, Zen 5 toolchain, SHA-pinned llama.cpp, AVX-512 cmake configuration, and the minimal runtime stage. Step timeline with controls."
+  },
+  {
+    "id": "llama-cpu-entrypoint-flow",
+    "path": "diagrams/inference-containers/llama-cpu-entrypoint-flow.html",
+    "title": "llama-cpu entrypoint: env vars to server flags",
+    "post": "inference-containers-llama-cpu",
+    "description": "Required, defaulted, feature-flag, and advanced env var groups feeding the CMD_ARGS bash array, ending in exec. Hover-to-inspect."
+  },
+  {
+    "id": "llama-gpu-stage-split",
+    "path": "diagrams/inference-containers/llama-gpu-stage-split.html",
+    "title": "llama-gpu: devel to runtime, and the stub trick",
+    "post": "inference-containers-llama-gpu",
+    "description": "CUDA devel builder with sm_120 flags and the stub libcuda, the runtime stage receiving only the binary, and the host driver arriving at run time. Hover-to-inspect."
+  },
+  {
+    "id": "llama-gpu-entrypoint-flow",
+    "path": "diagrams/inference-containers/llama-gpu-entrypoint-flow.html",
+    "title": "llama-gpu entrypoint: env vars to server flags",
+    "post": "inference-containers-llama-gpu",
+    "description": "Base config, GPU offload knobs, feature flags, and the NSYS_PROFILE wrapper assembling the GPU server command. Hover-to-inspect."
+  },
+  {
+    "id": "vllm-build-vs-wheel",
+    "path": "diagrams/inference-containers/vllm-build-vs-wheel.html",
+    "title": "vllm-gpu: the build that retired",
+    "post": "inference-containers-vllm",
+    "description": "The retired from-source sm_120 build versus the current single-stage cu130 wheel install with pinned uv and FlashInfer. Hover-to-inspect."
+  },
+  {
+    "id": "vllm-entrypoint-flow",
+    "path": "diagrams/inference-containers/vllm-entrypoint-flow.html",
+    "title": "vllm-gpu entrypoint: env vars to vllm serve",
+    "post": "inference-containers-vllm",
+    "description": "MODEL_PATH as the single required variable, VRAM and batching defaults, precision selectors, and the assembled vllm serve command. Hover-to-inspect."
   }
 ]
