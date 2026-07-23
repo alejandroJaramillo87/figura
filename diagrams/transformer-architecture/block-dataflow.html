@@ -10,10 +10,10 @@
 <h1>Transformer block dataflow</h1>
 <p>Hover a block to inspect it. Dashed lines animate the residual stream flowing through attention and MLP sublayers.</p>
 
-<!-- sa:embed-start -->
-<div class="sa-diagram sa-block-dataflow">
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-block-dataflow">
 <style>
-.sa-block-dataflow {
+.fg-block-dataflow {
   --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
   --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
   --violet: #a78bfa; --ok: #34d399; --line: #64748b;
@@ -24,31 +24,31 @@
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.sa-block-dataflow svg { display: block; width: 100%; height: auto; }
-.sa-block-dataflow text { font-family: inherit; }
+.fg-block-dataflow svg { display: block; width: 100%; height: auto; }
+.fg-block-dataflow text { font-family: inherit; }
 
-.sa-block-dataflow .tbd-block {
+.fg-block-dataflow .tbd-block {
   fill: var(--panel); stroke: var(--border); stroke-width: 2;
   transition: fill 0.3s, stroke 0.3s; cursor: pointer;
 }
-.sa-block-dataflow .tbd-group:hover .tbd-block { fill: var(--panel-hover); stroke: var(--accent); }
-.sa-block-dataflow .tbd-norm { stroke: var(--violet); }
-.sa-block-dataflow .tbd-group:hover .tbd-norm { stroke: var(--violet); }
-.sa-block-dataflow .tbd-title { fill: var(--text); font-size: 15px; font-weight: 600; text-anchor: middle; pointer-events: none; }
-.sa-block-dataflow .tbd-sub   { fill: var(--muted); font-size: 11.5px; text-anchor: middle; pointer-events: none; }
-.sa-block-dataflow .tbd-side  { fill: var(--muted); font-size: 12px; }
+.fg-block-dataflow .tbd-group:hover .tbd-block { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-block-dataflow .tbd-norm { stroke: var(--violet); }
+.fg-block-dataflow .tbd-group:hover .tbd-norm { stroke: var(--violet); }
+.fg-block-dataflow .tbd-title { fill: var(--text); font-size: 15px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-block-dataflow .tbd-sub   { fill: var(--muted); font-size: 11.5px; text-anchor: middle; pointer-events: none; }
+.fg-block-dataflow .tbd-side  { fill: var(--muted); font-size: 12px; }
 
-.sa-block-dataflow .tbd-flow {
+.fg-block-dataflow .tbd-flow {
   stroke: var(--line); stroke-width: 2; fill: none;
-  stroke-dasharray: 5 4; animation: sa-tbd-flow 1.4s linear infinite;
+  stroke-dasharray: 5 4; animation: fg-tbd-flow 1.4s linear infinite;
 }
-.sa-block-dataflow .tbd-residual {
+.fg-block-dataflow .tbd-residual {
   stroke: var(--ok); stroke-width: 2; fill: none;
-  stroke-dasharray: 5 4; animation: sa-tbd-flow 1.4s linear infinite; opacity: 0.85;
+  stroke-dasharray: 5 4; animation: fg-tbd-flow 1.4s linear infinite; opacity: 0.85;
 }
-@keyframes sa-tbd-flow { to { stroke-dashoffset: -18; } }
+@keyframes fg-tbd-flow { to { stroke-dashoffset: -18; } }
 
-.sa-block-dataflow .sa-caption {
+.fg-block-dataflow .fg-caption {
   margin-top: 12px; padding: 10px 14px;
   background: var(--panel); border-left: 3px solid var(--accent);
   border-radius: 0 8px 8px 0;
@@ -56,11 +56,11 @@
   color: var(--muted); font-size: 13px; min-height: 4.6em;
   transition: color 0.3s;
 }
-.sa-block-dataflow .sa-caption.is-active { color: var(--text); }
-.sa-block-dataflow .sa-caption strong { color: var(--accent); font-weight: 600; }
+.fg-block-dataflow .fg-caption.is-active { color: var(--text); }
+.fg-block-dataflow .fg-caption strong { color: var(--accent); font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) {
-  .sa-block-dataflow .tbd-flow, .sa-block-dataflow .tbd-residual { animation: none; }
+  .fg-block-dataflow .tbd-flow, .fg-block-dataflow .tbd-residual { animation: none; }
 }
 </style>
 
@@ -137,11 +137,11 @@
   </g>
 </svg>
 
-<div class="sa-caption" data-sa="caption">Hover over any block to inspect what happens there.</div>
+<div class="fg-caption" data-fg="caption">Hover over any block to inspect what happens there.</div>
 
 <script>(() => {
-  const root = document.currentScript.closest('.sa-diagram');
-  const caption = root.querySelector('[data-sa="caption"]');
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
   const DEFAULT = 'Hover over any block to inspect what happens there.';
   root.querySelectorAll('.tbd-group[data-info]').forEach((g) => {
     g.addEventListener('mouseenter', () => {
@@ -160,6 +160,6 @@
   });
 })();</script>
 </div>
-<!-- sa:embed-end -->
+<!-- fg:embed-end -->
 </body>
 </html>

@@ -10,10 +10,10 @@
 <h1>The training loop</h1>
 <p>One optimization step: activations flow forward, the loss lights up, gradients comet backward, and every layer pulses as its weights update.</p>
 
-<!-- sa:embed-start -->
-<div class="sa-diagram sa-training-loop">
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-training-loop">
 <style>
-.sa-training-loop {
+.fg-training-loop {
   --bg: #0f172a; --panel: #1e293b; --border: #3b4a63;
   --text: #f8fafc; --muted: #a5b4cd; --line: #7c8db0;
   --mint: #a7f3d0; --lavender: #c4b5fd; --peach: #fed7aa;
@@ -26,105 +26,105 @@
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.sa-training-loop svg { display: block; width: 100%; height: auto; }
-.sa-training-loop text { font-family: inherit; }
+.fg-training-loop svg { display: block; width: 100%; height: auto; }
+.fg-training-loop text { font-family: inherit; }
 
-.sa-training-loop .trl-node { fill: var(--panel); stroke: var(--border); stroke-width: 2; transition: stroke 0.4s, fill 0.4s; }
-.sa-training-loop .trl-title { fill: var(--text); font-size: 14px; font-weight: 600; text-anchor: middle; }
-.sa-training-loop .trl-sub   { fill: var(--muted); font-size: 11px; text-anchor: middle; }
-.sa-training-loop .trl-lab   { fill: var(--muted); font-size: 12px; }
+.fg-training-loop .trl-node { fill: var(--panel); stroke: var(--border); stroke-width: 2; transition: stroke 0.4s, fill 0.4s; }
+.fg-training-loop .trl-title { fill: var(--text); font-size: 14px; font-weight: 600; text-anchor: middle; }
+.fg-training-loop .trl-sub   { fill: var(--muted); font-size: 11px; text-anchor: middle; }
+.fg-training-loop .trl-lab   { fill: var(--muted); font-size: 12px; }
 
 /* forward edges: draw-in on step 1, stay lit through step 2 */
-.sa-training-loop .trl-fwd {
+.fg-training-loop .trl-fwd {
   stroke: var(--blue); stroke-width: 2; fill: none; stroke-linecap: round;
   stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.35;
   transition: stroke-dashoffset 0.7s var(--ease), opacity 0.4s;
 }
-.sa-training-loop.is-step-1 .trl-fwd,
-.sa-training-loop.is-step-2 .trl-fwd { stroke-dashoffset: 0; opacity: 0.9; }
-.sa-training-loop.is-step-1 .trl-fwd-1 { transition-delay: 0s; }
-.sa-training-loop.is-step-1 .trl-fwd-2 { transition-delay: 0.18s; }
-.sa-training-loop.is-step-1 .trl-fwd-3 { transition-delay: 0.36s; }
-.sa-training-loop.is-step-1 .trl-fwd-4 { transition-delay: 0.54s; }
-.sa-training-loop.is-step-3 .trl-fwd,
-.sa-training-loop.is-step-4 .trl-fwd { stroke-dashoffset: 0; opacity: 0.18; }
+.fg-training-loop.is-step-1 .trl-fwd,
+.fg-training-loop.is-step-2 .trl-fwd { stroke-dashoffset: 0; opacity: 0.9; }
+.fg-training-loop.is-step-1 .trl-fwd-1 { transition-delay: 0s; }
+.fg-training-loop.is-step-1 .trl-fwd-2 { transition-delay: 0.18s; }
+.fg-training-loop.is-step-1 .trl-fwd-3 { transition-delay: 0.36s; }
+.fg-training-loop.is-step-1 .trl-fwd-4 { transition-delay: 0.54s; }
+.fg-training-loop.is-step-3 .trl-fwd,
+.fg-training-loop.is-step-4 .trl-fwd { stroke-dashoffset: 0; opacity: 0.18; }
 
 /* backward edge (single long path under the chain) */
-.sa-training-loop .trl-bwd {
+.fg-training-loop .trl-bwd {
   stroke: var(--rose); stroke-width: 2; fill: none; stroke-linecap: round;
   stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.35;
   transition: stroke-dashoffset 1.1s var(--ease), opacity 0.4s;
 }
-.sa-training-loop.is-step-3 .trl-bwd,
-.sa-training-loop.is-step-4 .trl-bwd { stroke-dashoffset: 0; opacity: 0.9; }
-.sa-training-loop.is-step-4 .trl-bwd { opacity: 0.25; }
+.fg-training-loop.is-step-3 .trl-bwd,
+.fg-training-loop.is-step-4 .trl-bwd { stroke-dashoffset: 0; opacity: 0.9; }
+.fg-training-loop.is-step-4 .trl-bwd { opacity: 0.25; }
 
 /* comets: hidden except in their step; SMIL is kicked by JS */
-.sa-training-loop .trl-comet-fwd, .sa-training-loop .trl-comet-bwd { opacity: 0; transition: opacity 0.3s; }
-.sa-training-loop.is-step-1 .trl-comet-fwd { opacity: 1; }
-.sa-training-loop.is-step-3 .trl-comet-bwd { opacity: 1; }
+.fg-training-loop .trl-comet-fwd, .fg-training-loop .trl-comet-bwd { opacity: 0; transition: opacity 0.3s; }
+.fg-training-loop.is-step-1 .trl-comet-fwd { opacity: 1; }
+.fg-training-loop.is-step-3 .trl-comet-bwd { opacity: 1; }
 
 /* loss glow: pre-blurred halo, opacity pulse only during step 2 */
-.sa-training-loop .trl-loss-halo { filter: blur(7px); opacity: 0; transition: opacity 0.4s; }
-.sa-training-loop.is-step-2 .trl-loss-halo { animation: sa-trl-glow 1.4s var(--ease) infinite alternate; }
-@keyframes sa-trl-glow { from { opacity: 0.3; } to { opacity: 0.85; } }
-.sa-training-loop.is-step-2 .trl-loss-node { stroke: var(--peach); }
-.sa-training-loop.is-step-2 .trl-loss-edge { opacity: 0.9; }
-.sa-training-loop .trl-loss-edge {
+.fg-training-loop .trl-loss-halo { filter: blur(7px); opacity: 0; transition: opacity 0.4s; }
+.fg-training-loop.is-step-2 .trl-loss-halo { animation: fg-trl-glow 1.4s var(--ease) infinite alternate; }
+@keyframes fg-trl-glow { from { opacity: 0.3; } to { opacity: 0.85; } }
+.fg-training-loop.is-step-2 .trl-loss-node { stroke: var(--peach); }
+.fg-training-loop.is-step-2 .trl-loss-edge { opacity: 0.9; }
+.fg-training-loop .trl-loss-edge {
   stroke: var(--peach); stroke-width: 2; fill: none; stroke-dasharray: 4 4; opacity: 0.25; transition: opacity 0.4s;
 }
 
 /* logits flash on step 2 */
-.sa-training-loop .trl-flashable.is-flashing { animation: sa-trl-flash 0.6s var(--ease) 1; }
-@keyframes sa-trl-flash { 30% { fill: #14352a; stroke: var(--mint); } }
+.fg-training-loop .trl-flashable.is-flashing { animation: fg-trl-flash 0.6s var(--ease) 1; }
+@keyframes fg-trl-flash { 30% { fill: #14352a; stroke: var(--mint); } }
 
 /* weight-update ripples, staggered per layer, only in step 4 */
-.sa-training-loop .trl-ripple {
+.fg-training-loop .trl-ripple {
   fill: none; stroke: var(--mint); stroke-width: 2; opacity: 0;
   transform-box: fill-box; transform-origin: center;
 }
-.sa-training-loop.is-step-4 .trl-ripple { animation: sa-trl-ripple 1.5s var(--ease) infinite; }
-.sa-training-loop.is-step-4 .trl-ripple-l1 { animation-delay: 0s; }
-.sa-training-loop.is-step-4 .trl-ripple-l2 { animation-delay: 0.25s; }
-.sa-training-loop.is-step-4 .trl-ripple-l3 { animation-delay: 0.5s; }
-.sa-training-loop.is-step-4 .trl-ripple-emb { animation-delay: 0.75s; }
-@keyframes sa-trl-ripple {
+.fg-training-loop.is-step-4 .trl-ripple { animation: fg-trl-ripple 1.5s var(--ease) infinite; }
+.fg-training-loop.is-step-4 .trl-ripple-l1 { animation-delay: 0s; }
+.fg-training-loop.is-step-4 .trl-ripple-l2 { animation-delay: 0.25s; }
+.fg-training-loop.is-step-4 .trl-ripple-l3 { animation-delay: 0.5s; }
+.fg-training-loop.is-step-4 .trl-ripple-emb { animation-delay: 0.75s; }
+@keyframes fg-trl-ripple {
   0%   { transform: scale(0.5); opacity: 0.9; }
   100% { transform: scale(2.1); opacity: 0; }
 }
-.sa-training-loop.is-step-4 .trl-layer { stroke: var(--mint); }
+.fg-training-loop.is-step-4 .trl-layer { stroke: var(--mint); }
 
 /* idle shimmer across the layer chain (step 0 only) */
-.sa-training-loop .trl-shimmer { opacity: 0; }
-.sa-training-loop.is-step-0 .trl-shimmer { opacity: 1; animation: sa-trl-shimmer 3.4s linear infinite; }
-@keyframes sa-trl-shimmer {
+.fg-training-loop .trl-shimmer { opacity: 0; }
+.fg-training-loop.is-step-0 .trl-shimmer { opacity: 1; animation: fg-trl-shimmer 3.4s linear infinite; }
+@keyframes fg-trl-shimmer {
   from { transform: translateX(0) skewX(-20deg); }
   to   { transform: translateX(620px) skewX(-20deg); }
 }
 
 /* phase captions */
-.sa-training-loop .trl-phase { opacity: 0; transition: opacity 0.45s; }
-.sa-training-loop.is-step-0 .trl-phase-0, .sa-training-loop.is-step-1 .trl-phase-1,
-.sa-training-loop.is-step-2 .trl-phase-2, .sa-training-loop.is-step-3 .trl-phase-3,
-.sa-training-loop.is-step-4 .trl-phase-4 { opacity: 1; }
+.fg-training-loop .trl-phase { opacity: 0; transition: opacity 0.45s; }
+.fg-training-loop.is-step-0 .trl-phase-0, .fg-training-loop.is-step-1 .trl-phase-1,
+.fg-training-loop.is-step-2 .trl-phase-2, .fg-training-loop.is-step-3 .trl-phase-3,
+.fg-training-loop.is-step-4 .trl-phase-4 { opacity: 1; }
 
 /* controls */
-.sa-training-loop .sa-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-.sa-training-loop .sa-controls button {
+.fg-training-loop .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-training-loop .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
   cursor: pointer; padding: 0; line-height: 1;
 }
-.sa-training-loop .sa-controls button:hover { border-color: var(--blue); }
-.sa-training-loop .sa-controls [data-sa="counter"] {
+.fg-training-loop .fg-controls button:hover { border-color: var(--blue); }
+.fg-training-loop .fg-controls [data-fg="counter"] {
   color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sa-training-loop * { transition: none !important; animation: none !important; }
-  .sa-training-loop .trl-comet-fwd, .sa-training-loop .trl-comet-bwd, .sa-training-loop .trl-shimmer { display: none; }
-  .sa-training-loop.is-step-2 .trl-loss-halo { opacity: 0.5; }
-  .sa-training-loop.is-step-4 .trl-ripple { opacity: 0.25; transform: scale(1.4); }
+  .fg-training-loop * { transition: none !important; animation: none !important; }
+  .fg-training-loop .trl-comet-fwd, .fg-training-loop .trl-comet-bwd, .fg-training-loop .trl-shimmer { display: none; }
+  .fg-training-loop.is-step-2 .trl-loss-halo { opacity: 0.5; }
+  .fg-training-loop.is-step-4 .trl-ripple { opacity: 0.25; transform: scale(1.4); }
 }
 </style>
 
@@ -210,22 +210,22 @@
   <text class="trl-sub trl-phase trl-phase-4" x="24" y="376" style="text-anchor: start">Update: the optimizer nudges every weight matrix — the network is now a different function.</text>
 </svg>
 
-<div class="sa-controls">
-  <button data-sa="prev" aria-label="Previous step">‹</button>
-  <button data-sa="play" aria-label="Play or pause">▶</button>
-  <button data-sa="next" aria-label="Next step">›</button>
-  <span data-sa="counter"></span>
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
 </div>
 
 <script>(() => {
-  const root = document.currentScript.closest('.sa-diagram');
+  const root = document.currentScript.closest('.fg-diagram');
   const TOTAL = 4, STEP_MS = 2400;
   let step = 0, timer = null;
 
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
-    root.dispatchEvent(new CustomEvent('sa:step', { detail: { step } }));
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
   }
   const tl = {
     get step() { return step; },
@@ -237,7 +237,7 @@
     pause() { clearInterval(timer); timer = null; },
   };
 
-  const btn = (name) => root.querySelector('[data-sa="' + name + '"]');
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
   btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
   btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
   btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
@@ -245,8 +245,8 @@
     btn('counter').textContent = tl.step + ' / ' + TOTAL;
     btn('play').textContent = tl.playing ? '❚❚' : '▶';
   }
-  root.addEventListener('sa:step', sync);
-  root.querySelectorAll('.sa-controls button').forEach((b) => b.addEventListener('click', sync));
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -255,7 +255,7 @@
     if (reduced) return;
     root.querySelectorAll(selector).forEach((m) => m.beginElement());
   }
-  root.addEventListener('sa:step', (e) => {
+  root.addEventListener('fg:step', (e) => {
     if (e.detail.step === 1) launchComets('#trl-cf-head');
     if (e.detail.step === 3) launchComets('#trl-cb-head');
   });
@@ -272,6 +272,6 @@
   }
 })();</script>
 </div>
-<!-- sa:embed-end -->
+<!-- fg:embed-end -->
 </body>
 </html>

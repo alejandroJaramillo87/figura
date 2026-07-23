@@ -1,4 +1,4 @@
-# slide-animator
+# figura
 
 A growing library of animated, interactive technical diagrams — SVG + CSS +
 vanilla JS, one self-contained HTML file per diagram — for the
@@ -8,7 +8,7 @@ blog (LLM internals, mech interp, inference engines).
 ## How it works
 
 - Each diagram is a standalone HTML page you can open directly in a browser.
-  The portion between `<!-- sa:embed-start -->` / `<!-- sa:embed-end -->` is a
+  The portion between `<!-- fg:embed-start -->` / `<!-- fg:embed-end -->` is a
   fully self-contained fragment (scoped styles, namespaced SVG ids, IIFE JS).
 - The blog mounts this repo as a git submodule at `static/diagrams` and a Hugo
   shortcode inlines the fragment at build time — no iframes, no runtime deps:
