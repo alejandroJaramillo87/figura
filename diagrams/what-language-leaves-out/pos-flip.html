@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>POS flip: fruit flies like a banana</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>POS flip</h1>
+<p>Same five tokens, two grammars: "flies" is a noun or a verb, "like" is a verb or a preposition, and the sentence means something completely different each way.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-pos-flip">
+<style>
+.fg-pos-flip {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-pos-flip svg { display: block; width: 100%; height: auto; }
+.fg-pos-flip text { font-family: inherit; }
+
+.fg-pos-flip .psf-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-pos-flip .psf-word { fill: var(--text); font-size: 15px; text-anchor: middle; pointer-events: none; }
+.fg-pos-flip .psf-note { fill: var(--muted); font-size: 11px; }
+
+/* POS labels under each token: pair per ambiguous token, cross-faded */
+.fg-pos-flip .psf-pos {
+  font-family: var(--mono); font-size: 11px; text-anchor: middle;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-pos-flip .psf-pos-fixed { fill: var(--muted); }
+.fg-pos-flip .psf-pos-a { fill: var(--warn); opacity: 1; }
+.fg-pos-flip .psf-pos-b { fill: var(--violet); opacity: 0; }
+.fg-pos-flip.is-critter .psf-pos-a { opacity: 0; }
+.fg-pos-flip.is-critter .psf-pos-b { opacity: 1; }
+
+/* ambiguous tokens highlighted */
+.fg-pos-flip .psf-amb .psf-tok { stroke: var(--warn); }
+.fg-pos-flip.is-critter .psf-amb .psf-tok { stroke: var(--violet); }
+
+/* grouping brackets: which tokens form a unit, per reading */
+.fg-pos-flip .psf-grp {
+  fill: none; stroke-width: 2; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-pos-flip .psf-grp-a { stroke: var(--warn); opacity: 1; }
+.fg-pos-flip .psf-grp-b { stroke: var(--violet); opacity: 0; }
+.fg-pos-flip.is-critter .psf-grp-a { opacity: 0; }
+.fg-pos-flip.is-critter .psf-grp-b { opacity: 1; }
+.fg-pos-flip .psf-grp-label {
+  font-size: 11px; text-anchor: middle;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-pos-flip .psf-grp-label.psf-grp-a { fill: var(--warn); stroke: none; }
+.fg-pos-flip .psf-grp-label.psf-grp-b { fill: var(--violet); stroke: none; }
+
+.fg-pos-flip .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-pos-flip .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-pos-flip .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-pos-flip .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-pos-flip .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-pos-flip .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-pos-flip .psf-tok, .fg-pos-flip .psf-pos,
+  .fg-pos-flip .psf-grp, .fg-pos-flip .psf-grp-label { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: Fruit flies like a banana, shown as five token blocks. In one reading, flies is a verb and like is a preposition: fruit soars the way a banana does. In the other, fruit flies is a compound noun and like is a verb: the insects enjoy a banana. Part-of-speech labels under the tokens and grouping brackets above them flip between the readings.">
+  <text class="psf-note" x="40" y="28">same five tokens &#8212; the parts of speech are not stored in the tokens</text>
+
+  <!-- grouping brackets above tokens -->
+  <!-- reading A (soaring fruit): [Fruit]=subject, [flies]=verb, [like a banana]=modifier -->
+  <path class="psf-grp psf-grp-a" d="M 44 78 L 44 68 L 116 68 L 116 78"/>
+  <text class="psf-grp-label psf-grp-a" x="80" y="60">subject</text>
+  <path class="psf-grp psf-grp-a" d="M 300 78 L 300 68 L 560 68 L 560 78"/>
+  <text class="psf-grp-label psf-grp-a" x="430" y="60">how it flies</text>
+  <!-- reading B (hungry insects): [Fruit flies]=subject, [like]=verb, [a banana]=object -->
+  <path class="psf-grp psf-grp-b" d="M 44 78 L 44 68 L 216 68 L 216 78"/>
+  <text class="psf-grp-label psf-grp-b" x="130" y="60">subject (the insects)</text>
+  <path class="psf-grp psf-grp-b" d="M 400 78 L 400 68 L 560 68 L 560 78"/>
+  <text class="psf-grp-label psf-grp-b" x="480" y="60">object</text>
+
+  <!-- tokens -->
+  <rect class="psf-tok" x="44" y="88" width="72" height="38" rx="6"/>
+  <text class="psf-word" x="80" y="112">Fruit</text>
+  <g class="psf-amb">
+    <rect class="psf-tok" x="128" y="88" width="88" height="38" rx="6"/>
+    <text class="psf-word" x="172" y="112">flies</text>
+  </g>
+  <g class="psf-amb">
+    <rect class="psf-tok" x="228" y="88" width="72" height="38" rx="6"/>
+    <text class="psf-word" x="264" y="112">like</text>
+  </g>
+  <rect class="psf-tok" x="312" y="88" width="46" height="38" rx="6"/>
+  <text class="psf-word" x="335" y="112">a</text>
+  <rect class="psf-tok" x="370" y="88" width="100" height="38" rx="6"/>
+  <text class="psf-word" x="420" y="112">banana.</text>
+
+  <!-- POS labels -->
+  <text class="psf-pos psf-pos-fixed" x="80" y="148">noun</text>
+  <text class="psf-pos psf-pos-a" x="172" y="148">verb</text>
+  <text class="psf-pos psf-pos-b" x="172" y="148">noun</text>
+  <text class="psf-pos psf-pos-a" x="264" y="148">preposition</text>
+  <text class="psf-pos psf-pos-b" x="264" y="148">verb</text>
+  <text class="psf-pos psf-pos-fixed" x="335" y="148">det</text>
+  <text class="psf-pos psf-pos-fixed" x="420" y="148">noun</text>
+
+  <!-- companion line -->
+  <text class="psf-note" x="40" y="200">The template sentence &#8212; "Time flies like an arrow" &#8212; has the same two grammars.</text>
+  <text class="psf-note" x="40" y="220">English speakers never notice, because world knowledge pre-selects one parse per sentence.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Switch between the two readings">Switch reading</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Reading 1</strong> &#8212; fruit <strong>soars</strong> the way a banana does: <code>flies</code> is the verb, <code>like</code> a preposition. Absurd, but grammatically perfect.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const CAP = {
+    soar: '<strong>Reading 1</strong> — fruit <strong>soars</strong> the way a banana does: <code>flies</code> is the verb, <code>like</code> a preposition. Absurd, but grammatically perfect.',
+    critter: '<strong>Reading 2</strong> — the insects called <strong>fruit flies</strong> enjoy a banana: <code>flies</code> is now a noun, <code>like</code> the verb. Same tokens, different grammar, different world.'
+  };
+  root.querySelector('[data-fg="toggle"]').addEventListener('click', () => {
+    const on = root.classList.toggle('is-critter');
+    caption.innerHTML = on ? CAP.critter : CAP.soar;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
