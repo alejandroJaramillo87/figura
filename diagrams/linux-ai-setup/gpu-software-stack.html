@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The NVIDIA GPU software stack</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>The NVIDIA GPU software stack</h1>
+<p>Hover a layer to inspect what it provides and how to verify it. Dashed lines animate calls flowing down the stack to the silicon.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-gpu-software-stack">
+<style>
+.fg-gpu-software-stack {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-gpu-software-stack svg { display: block; width: 100%; height: auto; }
+.fg-gpu-software-stack text { font-family: inherit; }
+
+.fg-gpu-software-stack .gss-block {
+  fill: var(--panel); stroke: var(--border); stroke-width: 2;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-gpu-software-stack .gss-group:hover .gss-block { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-gpu-software-stack .gss-hw { stroke: var(--ok); }
+.fg-gpu-software-stack .gss-driver { stroke: var(--accent); }
+.fg-gpu-software-stack .gss-cuda { stroke: var(--warn); }
+.fg-gpu-software-stack .gss-cudnn { stroke: var(--violet); }
+.fg-gpu-software-stack .gss-title { fill: var(--text); font-size: 15px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-gpu-software-stack .gss-sub   { fill: var(--muted); font-size: 11.5px; text-anchor: middle; pointer-events: none; }
+.fg-gpu-software-stack .gss-tag   { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-gpu-software-stack .gss-side  { fill: var(--muted); font-size: 12px; }
+
+.fg-gpu-software-stack .gss-flow {
+  stroke: var(--line); stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; animation: fg-gss-flow 1.4s linear infinite;
+}
+@keyframes fg-gss-flow { to { stroke-dashoffset: -18; } }
+
+.fg-gpu-software-stack .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.8em;
+  transition: color 0.3s;
+}
+.fg-gpu-software-stack .fg-caption.is-active { color: var(--text); }
+.fg-gpu-software-stack .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-gpu-software-stack .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-gpu-software-stack .gss-flow { animation: none; }
+  .fg-gpu-software-stack .gss-block { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 560 540" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The NVIDIA GPU software stack, top to bottom: AI frameworks and containers, cuDNN, the CUDA toolkit and runtime, the NVIDIA driver with its kernel modules, and the RTX 5090 GPU hardware.">
+  <defs>
+    <marker id="gss-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- calls flow top → bottom toward the silicon -->
+  <path class="gss-flow" d="M 280 84  L 280 112" marker-end="url(#gss-arrow)"/>
+  <path class="gss-flow" d="M 280 176 L 280 204" marker-end="url(#gss-arrow)"/>
+  <path class="gss-flow" d="M 280 268 L 280 296" marker-end="url(#gss-arrow)"/>
+  <path class="gss-flow" d="M 280 368 L 280 396" marker-end="url(#gss-arrow)"/>
+  <text x="500" y="290" class="gss-side" transform="rotate(90 500 290)">calls flow down</text>
+
+  <g class="gss-group" data-info="llama.cpp, vLLM, and PyTorch sit at the top. Inside containers they see the GPU through the NVIDIA Container Toolkit, which mounts the host driver libraries into the container — the driver is never installed inside the image.">
+    <rect class="gss-block" x="110" y="20" width="340" height="64" rx="8"/>
+    <text class="gss-title" x="280" y="46">Frameworks &amp; containers</text>
+    <text class="gss-sub"   x="280" y="66">llama.cpp · vLLM · PyTorch · NVIDIA Container Toolkit</text>
+  </g>
+
+  <g class="gss-group" data-info="cuDNN provides tuned deep-learning primitives (convolutions, attention, normalization) on top of CUDA, with FP16/FP8 paths for Blackwell tensor cores. Install tracks the CUDA major version. Verify: dpkg -l | grep cudnn">
+    <rect class="gss-block gss-cudnn" x="110" y="112" width="340" height="64" rx="8"/>
+    <text class="gss-title" x="280" y="138">cuDNN 9.13</text>
+    <text class="gss-sub"   x="280" y="158">deep-learning primitives for tensor cores</text>
+  </g>
+
+  <g class="gss-group" data-info="The CUDA platform: nvcc compiler, runtime and math libraries (cuBLAS, cuFFT), and headers. Targets the RTX 5090's sm_120 architecture. Needs PATH and LD_LIBRARY_PATH pointing at /usr/local/cuda. Verify: nvcc --version">
+    <rect class="gss-block gss-cuda" x="110" y="204" width="340" height="64" rx="8"/>
+    <text class="gss-title" x="280" y="230">CUDA Toolkit 13.0</text>
+    <text class="gss-sub"   x="280" y="250">nvcc · runtime · cuBLAS · sm_120</text>
+  </g>
+
+  <g class="gss-group" data-info="The driver bridges user space and silicon: kernel modules (nvidia, nvidia-uvm, nvidia-modeset, nvidia-drm) plus user-space libraries like libcuda.so. Persistence mode keeps it initialized between runs; the power limit caps the card at 600W. Verify: nvidia-smi">
+    <rect class="gss-block gss-driver" x="110" y="296" width="340" height="72" rx="8"/>
+    <text class="gss-title" x="280" y="324">NVIDIA driver 580</text>
+    <text class="gss-sub"   x="280" y="344">kernel modules · libcuda.so · nvidia-smi</text>
+    <text class="gss-tag"   x="280" y="360">persistence mode on · power limit 600W</text>
+  </g>
+
+  <g class="gss-group" data-info="The silicon: 21,760 CUDA cores, 32GB GDDR7, PCIe Gen5. Everything above exists to keep this layer fed. Verify link width and generation: nvidia-smi -q | grep -A 2 'Link Width'">
+    <rect class="gss-block gss-hw" x="110" y="396" width="340" height="72" rx="8"/>
+    <text class="gss-title" x="280" y="424">RTX 5090 (Blackwell)</text>
+    <text class="gss-sub"   x="280" y="444">21,760 CUDA cores · 32GB GDDR7 · PCIe Gen5</text>
+    <text class="gss-tag"   x="280" y="460">compute capability sm_120</text>
+  </g>
+
+  <text x="280" y="510" class="gss-side" text-anchor="middle">each layer only talks to its neighbors — version-match the seams</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over any layer to see what it provides and how to verify it.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over any layer to see what it provides and how to verify it.';
+  root.querySelectorAll('.gss-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      const title = g.querySelector('.gss-title').textContent;
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = title;
+      caption.appendChild(strong);
+      const info = g.getAttribute('data-info');
+      // render a trailing "Verify: <cmd>" as inline code
+      const m = info.match(/^(.*?)(?:\s*Verify(?:\s[^:]*)?:\s*(.+))?$/s);
+      caption.appendChild(document.createTextNode(' — ' + (m[1] || info)));
+      if (m[2]) {
+        caption.appendChild(document.createTextNode(' Verify: '));
+        const code = document.createElement('code');
+        code.textContent = m[2];
+        caption.appendChild(code);
+      }
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

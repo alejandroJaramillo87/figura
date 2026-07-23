@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dual-SSD storage layout for AI workloads</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Dual-SSD storage layout for AI workloads</h1>
+<p>Hover a block to inspect it: the OS lives on one NVMe drive, models and caches on a second drive mounted at /mnt/ai-data.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-storage-layout">
+<style>
+.fg-storage-layout {
+  --bg: #fdfbf7; --panel: #f6f1e7; --panel-hover: #efe8da; --border: #e3dbc9;
+  --text: #3f3a33; --muted: #8a8172; --line: #b3a98f;
+  --mint-fill: #d1fae5; --mint-stroke: #34d399; --mint-text: #065f46;
+  --blue-fill: #e0f2fe; --blue-stroke: #38bdf8; --blue-text: #075985;
+  --peach-fill: #ffedd5; --peach-stroke: #fb923c; --peach-text: #9a3412;
+  --lavender-fill: #ede9fe; --lavender-stroke: #a78bfa; --lavender-text: #5b21b6;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 2px 12px rgba(120, 100, 60, 0.10);
+}
+.fg-storage-layout svg { display: block; width: 100%; height: auto; }
+.fg-storage-layout text { font-family: inherit; }
+
+.fg-storage-layout .stl-drive {
+  fill: var(--panel); stroke: var(--line); stroke-width: 1.5; rx: 10;
+}
+.fg-storage-layout .stl-drive-label { fill: var(--text); font-size: 14px; font-weight: 600; }
+.fg-storage-layout .stl-drive-sub   { fill: var(--muted); font-size: 11.5px; }
+
+.fg-storage-layout .stl-block { stroke-width: 1.5; transition: filter 0.3s, transform 0.3s; cursor: pointer; }
+.fg-storage-layout .stl-group:hover .stl-block { filter: brightness(0.96) saturate(1.15); }
+.fg-storage-layout .stl-os     { fill: var(--blue-fill); stroke: var(--blue-stroke); }
+.fg-storage-layout .stl-models { fill: var(--mint-fill); stroke: var(--mint-stroke); }
+.fg-storage-layout .stl-data   { fill: var(--peach-fill); stroke: var(--peach-stroke); }
+.fg-storage-layout .stl-cache  { fill: var(--lavender-fill); stroke: var(--lavender-stroke); }
+
+.fg-storage-layout .stl-t-os     { fill: var(--blue-text); }
+.fg-storage-layout .stl-t-models { fill: var(--mint-text); }
+.fg-storage-layout .stl-t-data   { fill: var(--peach-text); }
+.fg-storage-layout .stl-t-cache  { fill: var(--lavender-text); }
+.fg-storage-layout .stl-title { font-size: 13.5px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-storage-layout .stl-sub   { font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; opacity: 0.85; }
+
+.fg-storage-layout .stl-link {
+  stroke: var(--line); stroke-width: 1.5; fill: none;
+  stroke-dasharray: 4 4; animation: fg-stl-link 1.6s linear infinite;
+}
+@keyframes fg-stl-link { to { stroke-dashoffset: -16; } }
+.fg-storage-layout .stl-link-label { fill: var(--muted); font-size: 11px; text-anchor: middle; }
+
+.fg-storage-layout .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--mint-stroke);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.2em;
+  transition: color 0.3s;
+}
+.fg-storage-layout .fg-caption.is-active { color: var(--text); }
+.fg-storage-layout .fg-caption strong { color: var(--mint-text); font-weight: 600; }
+.fg-storage-layout .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--peach-text);
+  background: rgba(120, 100, 60, 0.10); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-storage-layout .stl-link { animation: none; }
+  .fg-storage-layout .stl-block { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 560 470" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Dual-SSD storage layout: a 2TB OS drive holding the root filesystem and home directory, and a separate data drive mounted at /mnt/ai-data holding models, datasets, caches, and workspace, with framework cache directories symlinked from home onto the data drive.">
+
+  <!-- OS drive -->
+  <rect class="stl-drive" x="20" y="30" width="240" height="180" rx="10"/>
+  <text class="stl-drive-label" x="36" y="56">OS SSD — Samsung 990 Pro</text>
+  <text class="stl-drive-sub"   x="36" y="74">2TB NVMe · ext4</text>
+
+  <g class="stl-group" data-info="Ubuntu 24.04 LTS root filesystem on the faster drive: OS, applications, Docker images, and dotfiles. Kept lean — nothing model-sized lives here, so OS reinstalls and Clonezilla images stay small.">
+    <rect class="stl-block stl-os" x="36" y="90" width="208" height="48" rx="6"/>
+    <text class="stl-title stl-t-os" x="140" y="110">/ (root)</text>
+    <text class="stl-sub stl-t-os"   x="140" y="127">Ubuntu 24.04 · Docker · tools</text>
+  </g>
+
+  <g class="stl-group" data-info="Home holds config and code only. The heavyweight cache directories inside it (~/.cache/huggingface and friends) are symlinks that resolve onto the data drive — tools keep their default paths, bytes land on the data SSD.">
+    <rect class="stl-block stl-os" x="36" y="148" width="208" height="48" rx="6"/>
+    <text class="stl-title stl-t-os" x="140" y="168">/home/user</text>
+    <text class="stl-sub stl-t-os"   x="140" y="185">configs · code · symlinked caches</text>
+  </g>
+
+  <!-- data drive -->
+  <rect class="stl-drive" x="300" y="30" width="240" height="360" rx="10"/>
+  <text class="stl-drive-label" x="316" y="56">Data SSD — Samsung 990 EVO</text>
+  <text class="stl-drive-sub"   x="316" y="74">/mnt/ai-data · ext4, noatime</text>
+
+  <g class="stl-group" data-info="All model weights in one tree: models/gguf for llama.cpp quantizations, models/hf for Hugging Face safetensors. Formatted with huge_file and mounted noatime so multi-gigabyte reads skip access-time writes.">
+    <rect class="stl-block stl-models" x="316" y="90" width="208" height="60" rx="6"/>
+    <text class="stl-title stl-t-models" x="420" y="114">models/</text>
+    <text class="stl-sub stl-t-models"   x="420" y="132">gguf · hf · embeddings</text>
+  </g>
+
+  <g class="stl-group" data-info="Training and evaluation data, kept separate from model weights so either can be pruned independently.">
+    <rect class="stl-block stl-data" x="316" y="160" width="208" height="52" rx="6"/>
+    <text class="stl-title stl-t-data" x="420" y="182">datasets/</text>
+    <text class="stl-sub stl-t-data"   x="420" y="199">training · eval corpora</text>
+  </g>
+
+  <g class="stl-group" data-info="Download caches for Hugging Face, torch, and other tools. This is the symlink target from home: delete-safe, re-downloadable, and off the OS drive.">
+    <rect class="stl-block stl-cache" x="316" y="222" width="208" height="52" rx="6"/>
+    <text class="stl-title stl-t-cache" x="420" y="244">cache/</text>
+    <text class="stl-sub stl-t-cache"   x="420" y="261">hf · torch · tool caches</text>
+  </g>
+
+  <g class="stl-group" data-info="Scratch space for experiments plus service logs — anything large and disposable that should never compete with the OS drive for space.">
+    <rect class="stl-block stl-data" x="316" y="284" width="208" height="52" rx="6"/>
+    <text class="stl-title stl-t-data" x="420" y="306">workspace/ · logs/</text>
+    <text class="stl-sub stl-t-data"   x="420" y="323">experiments · service logs</text>
+  </g>
+
+  <!-- symlink connector -->
+  <path class="stl-link" d="M 244 172 C 290 172, 270 248, 316 248"/>
+  <text class="stl-link-label" x="278" y="230">symlinks</text>
+
+  <text class="stl-drive-sub" x="316" y="372">defaults,noatime,commit=30 in /etc/fstab</text>
+
+  <text class="stl-link-label" x="280" y="440">one drive for the OS, one for the data it serves — provisioned by setup_data_ssd.sh</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over any block to see why it lives on that drive.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over any block to see why it lives on that drive.';
+  root.querySelectorAll('.stl-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      const title = g.querySelector('.stl-title').textContent;
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = title;
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

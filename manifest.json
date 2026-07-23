@@ -33,5 +33,26 @@
     "title": "The training loop: forward, loss, backward, update",
     "post": "future — LLM training series",
     "description": "One optimization step in pastel-on-dark: forward comets through the layer chain, loss glow, backward gradient comets, weight-update ripples. Step timeline with controls."
+  },
+  {
+    "id": "gpu-software-stack",
+    "path": "diagrams/linux-ai-setup/gpu-software-stack.html",
+    "title": "The NVIDIA GPU software stack",
+    "post": "linux-ai-setup",
+    "description": "Five layers from frameworks and containers down to the RTX 5090 silicon: cuDNN, CUDA toolkit, driver and kernel modules. Hover-to-inspect with per-layer verify commands."
+  },
+  {
+    "id": "storage-layout",
+    "path": "diagrams/linux-ai-setup/storage-layout.html",
+    "title": "Dual-SSD storage layout for AI workloads",
+    "post": "linux-ai-setup",
+    "description": "OS drive vs data drive mounted at /mnt/ai-data: models, datasets, caches, workspace, and the cache symlinks that keep home lean. Pastel-light, hover-to-inspect."
+  },
+  {
+    "id": "setup-pipeline",
+    "path": "diagrams/linux-ai-setup/setup-pipeline.html",
+    "title": "The OS setup pipeline, in order",
+    "post": "linux-ai-setup",
+    "description": "Eight-stage setup order from Ubuntu install to Docker with the NVIDIA Container Toolkit, each stage tagged with its automation script and reboot points. Step timeline with controls."
   }
 ]
