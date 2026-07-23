@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agreement at a distance: the verb must skip the distractor</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Subject–verb agreement across distance</h1>
+<p>"The keys to the cabinet are on the table." The verb's number comes from "keys", not the nearer singular "cabinet" — the agreement arc must hop the distractor.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-agreement-distance">
+<style>
+.fg-agreement-distance {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-agreement-distance svg { display: block; width: 100%; height: auto; }
+.fg-agreement-distance text { font-family: inherit; }
+
+.fg-agreement-distance .agd-note { fill: var(--muted); font-size: 11px; }
+.fg-agreement-distance .agd-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-agreement-distance .agd-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+.fg-agreement-distance .agd-lab { font-size: 10px; text-anchor: middle; letter-spacing: 0.05em; }
+
+/* subject and verb always lit */
+.fg-agreement-distance .agd-keys .agd-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-agreement-distance .agd-verb .agd-tok { stroke: var(--ok); }
+
+/* short state: distractor PP faded out entirely */
+.fg-agreement-distance .agd-mid { opacity: 0.15; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-agreement-distance.is-long .agd-mid { opacity: 1; }
+
+/* attractor flags only in long state */
+.fg-agreement-distance .agd-attractor { opacity: 0; transition: opacity 0.7s; }
+.fg-agreement-distance.is-long .agd-attractor { opacity: 1; }
+.fg-agreement-distance.is-long .agd-cab .agd-tok { stroke: var(--hot); }
+
+/* arcs: short hop vs long hop, cross-fade */
+.fg-agreement-distance .agd-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-agreement-distance .agd-arc-short { opacity: 1; }
+.fg-agreement-distance .agd-arc-long { opacity: 0; }
+.fg-agreement-distance.is-long .agd-arc-short { opacity: 0; }
+.fg-agreement-distance.is-long .agd-arc-long { opacity: 1; }
+
+.fg-agreement-distance .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-agreement-distance .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-agreement-distance .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-agreement-distance .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-agreement-distance .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-agreement-distance .agd-tok, .fg-agreement-distance .agd-mid,
+  .fg-agreement-distance .agd-arc, .fg-agreement-distance .agd-attractor { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: The keys to the cabinet are on the table, as token blocks. The plural subject keys and the verb are glow green. A button toggles the intervening phrase to the cabinet in and out. With no intervener, the agreement arc from are to keys is a short hop. With the intervener present, the singular noun cabinet sits between them flagged red as an attractor, and the arc must stretch over it — the verb's number still comes from keys, not from the nearer noun.">
+  <text class="agd-note" x="40" y="26">the verb's number is a fact about a token far to its left &#8212; with a decoy in between</text>
+
+  <!-- token row -->
+  <rect class="agd-tok" x="40" y="104" width="48" height="36" rx="6"/>
+  <text class="agd-word" x="64" y="127">The</text>
+  <g class="agd-keys">
+    <rect class="agd-tok" x="96" y="104" width="58" height="36" rx="6"/>
+    <text class="agd-word" x="125" y="127">keys</text>
+  </g>
+  <g class="agd-mid">
+    <rect class="agd-tok" x="162" y="104" width="36" height="36" rx="6"/>
+    <text class="agd-word" x="180" y="127">to</text>
+    <rect class="agd-tok" x="206" y="104" width="48" height="36" rx="6"/>
+    <text class="agd-word" x="230" y="127">the</text>
+    <g class="agd-cab">
+      <rect class="agd-tok" x="262" y="104" width="82" height="36" rx="6"/>
+      <text class="agd-word" x="303" y="127">cabinet</text>
+    </g>
+  </g>
+  <g class="agd-verb">
+    <rect class="agd-tok" x="352" y="104" width="48" height="36" rx="6"/>
+    <text class="agd-word" x="376" y="127">are</text>
+  </g>
+  <rect class="agd-tok" x="408" y="104" width="36" height="36" rx="6"/>
+  <text class="agd-word" x="426" y="127">on</text>
+  <rect class="agd-tok" x="452" y="104" width="48" height="36" rx="6"/>
+  <text class="agd-word" x="476" y="127">the</text>
+  <rect class="agd-tok" x="508" y="104" width="66" height="36" rx="6"/>
+  <text class="agd-word" x="541" y="127">table.</text>
+
+  <!-- number labels -->
+  <text class="agd-lab" x="125" y="158" fill="#34d399">PLURAL</text>
+  <g class="agd-attractor">
+    <text class="agd-lab" x="303" y="158" fill="#f87171">SINGULAR &#8212; attractor</text>
+  </g>
+  <text class="agd-lab" x="376" y="158" fill="#34d399">needs PLURAL</text>
+
+  <!-- agreement arcs -->
+  <path class="agd-arc agd-arc-short" d="M 368 104 C 330 66, 180 66, 132 98" marker-end="url(#agd-arrow)"/>
+  <path class="agd-arc agd-arc-long" d="M 368 104 C 320 44, 180 44, 132 98" marker-end="url(#agd-arrow)"/>
+
+  <text class="agd-note" x="40" y="204">Humans blunder here ("the keys to the cabinet IS...") &#8212; agreement attraction. The nearer noun is a decoy;</text>
+  <text class="agd-note" x="40" y="222">the import has to come from the structural subject, not the closest noun-shaped token.</text>
+
+  <defs>
+    <marker id="agd-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Add or remove the intervening distractor phrase">Add the distractor</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>No intervener</strong> &#8212; "The keys are on the table." Subject and verb are adjacent; the number check is a short hop. Nothing competes for it.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    short: '<strong>No intervener</strong> — "The keys are on the table." Subject and verb are adjacent; the number check is a short hop. Nothing competes for it.',
+    long: '<strong>Distractor added</strong> — "the cabinet" now sits between subject and verb: a singular noun, closer than the real subject. The agreement arc must stretch over the decoy — a type check across an intervening scope that happens to declare a similar-looking variable.'
+  };
+  btn.addEventListener('click', () => {
+    const long = root.classList.toggle('is-long');
+    caption.innerHTML = long ? CAP.long : CAP.short;
+    btn.textContent = long ? 'Remove the distractor' : 'Add the distractor';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

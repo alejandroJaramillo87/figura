@@ -250,5 +250,61 @@
     "title": "Coreference chain: four names, one entity",
     "post": "what-language-leaves-out-referential",
     "description": "Step timeline threading “Dr. Smith → she → the doctor → her” across a paragraph, ending in one entity node with four aliases."
+  },
+  {
+    "id": "pp-attachment",
+    "path": "diagrams/what-language-leaves-out/pp-attachment.html",
+    "title": "PP-attachment: where does \u201cwith the telescope\u201d hang?",
+    "post": "what-language-leaves-out-syntactic",
+    "description": "Toggle between verb and noun attachment for \u201cI saw the man with the telescope\u201d \u2014 brackets and information-need arc re-draw between the two structures."
+  },
+  {
+    "id": "coordination-scope",
+    "path": "diagrams/what-language-leaves-out/coordination-scope.html",
+    "title": "Coordination scope: are the women old?",
+    "post": "what-language-leaves-out-syntactic",
+    "description": "Toggle the grouping of \u201cold men and women\u201d \u2014 the adjective's scope bracket re-draws and membership cards show who inherits it."
+  },
+  {
+    "id": "garden-path",
+    "path": "diagrams/what-language-leaves-out/garden-path.html",
+    "title": "Garden path: the parse that has to be torn up",
+    "post": "what-language-leaves-out-syntactic",
+    "description": "Step timeline of the incremental parse of \u201cThe horse raced past the barn fell\u201d \u2014 commitment, contradiction at \u201cfell\u201d, and visible reanalysis to the reduced relative."
+  },
+  {
+    "id": "agreement-distance",
+    "path": "diagrams/what-language-leaves-out/agreement-distance.html",
+    "title": "Agreement at a distance: the verb must skip the distractor",
+    "post": "what-language-leaves-out-syntactic",
+    "description": "Toggle an intervening singular distractor into \u201cThe keys (to the cabinet) are on the table\u201d \u2014 the agreement arc stretches over the flagged attractor."
+  },
+  {
+    "id": "role-assignment",
+    "path": "diagrams/what-language-leaves-out/role-assignment.html",
+    "title": "Role assignment: who did what to whom",
+    "post": "what-language-leaves-out-syntactic",
+    "description": "Active \u21c4 passive toggle for \u201cThe dog bit the man\u201d \u2014 AGENT and PATIENT tags stay with the participants while surface order flips."
+  },
+  {
+    "id": "filler-gap",
+    "path": "diagrams/what-language-leaves-out/filler-gap.html",
+    "title": "Filler-gap: a phrase waiting for its position",
+    "post": "what-language-leaves-out-syntactic",
+    "description": "\u201cWhich book did you say Mary thought John read __?\u201d \u2014 the fronted phrase carries a pending badge until the gap site is revealed two clauses downstream."
+  },
+  {
+    "id": "gapping-ellipsis",
+    "path": "diagrams/what-language-leaves-out/gapping-ellipsis.html",
+    "title": "Ellipsis: the predicate that isn't there",
+    "post": "what-language-leaves-out-syntactic",
+    "description": "Reveal toggle materializing the elided material in VP-ellipsis (\u201cMary can __ too\u201d) and sluicing (\u201cI don't know who __\u201d) with copy-in arcs."
+  },
+  {
+    "id": "modifier-scope",
+    "path": "diagrams/what-language-leaves-out/modifier-scope.html",
+    "title": "Modifier scope: what does \u201conly\u201d attach to?",
+    "post": "what-language-leaves-out-syntactic",
+    "description": "Toggle slides the scope bracket of \u201conly\u201d in \u201cI only ate the cake\u201d between the verb and the object; glosses cross-fade."
   }
 ]

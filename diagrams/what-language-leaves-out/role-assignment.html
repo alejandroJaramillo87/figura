@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Role assignment: who did what to whom</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Argument structure / role assignment</h1>
+<p>"The dog bit the man" vs. "The man was bitten by the dog." Same content words; the who-did-what-to-whom is carried entirely by structure.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-role-assignment">
+<style>
+.fg-role-assignment {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-role-assignment svg { display: block; width: 100%; height: auto; }
+.fg-role-assignment text { font-family: inherit; }
+
+.fg-role-assignment .rla-note { fill: var(--muted); font-size: 11px; }
+.fg-role-assignment .rla-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+}
+.fg-role-assignment .rla-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+.fg-role-assignment .rla-lab { font-size: 10px; text-anchor: middle; letter-spacing: 0.06em; }
+
+/* two sentence rows cross-fade */
+.fg-role-assignment .rla-row { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-role-assignment .rla-row-active { opacity: 1; }
+.fg-role-assignment .rla-row-passive { opacity: 0.14; }
+.fg-role-assignment.is-passive .rla-row-active { opacity: 0.14; }
+.fg-role-assignment.is-passive .rla-row-passive { opacity: 1; }
+
+/* role coloring: agent green, patient violet — constant across both rows */
+.fg-role-assignment .rla-agent .rla-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-role-assignment .rla-agent .rla-lab { fill: var(--ok); }
+.fg-role-assignment .rla-patient .rla-tok { stroke: var(--violet); }
+.fg-role-assignment .rla-patient .rla-lab { fill: var(--violet); }
+
+.fg-role-assignment .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-role-assignment .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-role-assignment .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-role-assignment .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-role-assignment .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-role-assignment .rla-row { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Two sentences as token rows, cross-faded by a button. Active: The dog bit the man — dog is tagged AGENT in green, man is tagged PATIENT in violet. Passive: The man was bitten by the dog — man now comes first, but the tags do not move with position: dog is still the green AGENT and man the violet PATIENT. Word order changed; the roles are carried by the construction, not by which noun comes first.">
+  <text class="rla-note" x="40" y="26">the role tags stay with the participants, not the positions &#8212; structure carries them</text>
+
+  <!-- active row -->
+  <g class="rla-row rla-row-active">
+    <rect class="rla-tok" x="40" y="60" width="48" height="36" rx="6"/>
+    <text class="rla-word" x="64" y="83">The</text>
+    <g class="rla-agent">
+      <rect class="rla-tok" x="96" y="60" width="56" height="36" rx="6"/>
+      <text class="rla-word" x="124" y="83">dog</text>
+      <text class="rla-lab" x="124" y="112">AGENT</text>
+    </g>
+    <rect class="rla-tok" x="160" y="60" width="46" height="36" rx="6"/>
+    <text class="rla-word" x="183" y="83">bit</text>
+    <rect class="rla-tok" x="214" y="60" width="48" height="36" rx="6"/>
+    <text class="rla-word" x="238" y="83">the</text>
+    <g class="rla-patient">
+      <rect class="rla-tok" x="270" y="60" width="62" height="36" rx="6"/>
+      <text class="rla-word" x="301" y="83">man.</text>
+      <text class="rla-lab" x="301" y="112">PATIENT</text>
+    </g>
+    <text class="rla-note" x="360" y="83">active: agent first</text>
+  </g>
+
+  <!-- passive row -->
+  <g class="rla-row rla-row-passive">
+    <rect class="rla-tok" x="40" y="150" width="48" height="36" rx="6"/>
+    <text class="rla-word" x="64" y="173">The</text>
+    <g class="rla-patient">
+      <rect class="rla-tok" x="96" y="150" width="58" height="36" rx="6"/>
+      <text class="rla-word" x="125" y="173">man</text>
+      <text class="rla-lab" x="125" y="202">PATIENT</text>
+    </g>
+    <rect class="rla-tok" x="162" y="150" width="52" height="36" rx="6"/>
+    <text class="rla-word" x="188" y="173">was</text>
+    <rect class="rla-tok" x="222" y="150" width="66" height="36" rx="6"/>
+    <text class="rla-word" x="255" y="173">bitten</text>
+    <rect class="rla-tok" x="296" y="150" width="42" height="36" rx="6"/>
+    <text class="rla-word" x="317" y="173">by</text>
+    <rect class="rla-tok" x="346" y="150" width="48" height="36" rx="6"/>
+    <text class="rla-word" x="370" y="173">the</text>
+    <g class="rla-agent">
+      <rect class="rla-tok" x="402" y="150" width="58" height="36" rx="6"/>
+      <text class="rla-word" x="431" y="173">dog.</text>
+      <text class="rla-lab" x="431" y="202">AGENT</text>
+    </g>
+    <text class="rla-note" x="480" y="173">passive: mapping inverted</text>
+  </g>
+
+  <text class="rla-note" x="40" y="248">"The man bit the dog" would use the same three content words yet swap every role &#8212; word identity</text>
+  <text class="rla-note" x="40" y="266">fixes nothing. Each noun's role is a fact about the construction it sits in.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Switch between the active and passive sentence">Switch to passive</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Active</strong> &#8212; "The dog bit the man." First noun = agent, second = patient: the default mapping English readers apply without noticing there was a mapping at all.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    active: '<strong>Active</strong> — "The dog bit the man." First noun = agent, second = patient: the default mapping English readers apply without noticing there was a mapping at all.',
+    passive: '<strong>Passive</strong> — "The man was bitten by the dog." The surface order flips but the roles do not: "was ... by" inverts the mapping. Each noun\'s role depends on tokens elsewhere in the sentence — position alone is a decoy.'
+  };
+  btn.addEventListener('click', () => {
+    const passive = root.classList.toggle('is-passive');
+    caption.innerHTML = passive ? CAP.passive : CAP.active;
+    btn.textContent = passive ? 'Switch to active' : 'Switch to passive';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
