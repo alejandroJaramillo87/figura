@@ -52,7 +52,8 @@
   margin-top: 12px; padding: 10px 14px;
   background: var(--panel); border-left: 3px solid var(--accent);
   border-radius: 0 8px 8px 0;
-  color: var(--muted); font-size: 13px; min-height: 40px;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 4.6em;
   transition: color 0.3s;
 }
 .sa-block-dataflow .sa-caption.is-active { color: var(--text); }
