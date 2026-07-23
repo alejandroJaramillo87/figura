@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metaphor: suppressing the literal sense</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Metaphor and figurative language</h1>
+<p>"Drowning in paperwork." The literal water-sense must be actively suppressed — and only context says whether to suppress it.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-metaphor-suppress">
+<style>
+.fg-metaphor-suppress {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-metaphor-suppress svg { display: block; width: 100%; height: auto; }
+.fg-metaphor-suppress text { font-family: inherit; }
+
+.fg-metaphor-suppress .mtp-note { fill: var(--muted); font-size: 11px; }
+.fg-metaphor-suppress .mtp-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+}
+.fg-metaphor-suppress .mtp-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+.fg-metaphor-suppress .mtp-drown .mtp-tok { stroke: var(--accent); }
+
+/* the object slot swaps */
+.fg-metaphor-suppress .mtp-obj { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-metaphor-suppress .mtp-obj-pool { opacity: 1; }
+.fg-metaphor-suppress .mtp-obj-paper { opacity: 0; }
+.fg-metaphor-suppress.is-figurative .mtp-obj-pool { opacity: 0; }
+.fg-metaphor-suppress.is-figurative .mtp-obj-paper { opacity: 1; }
+
+/* sense cards */
+.fg-metaphor-suppress .mtp-sense rect { fill: var(--panel); stroke-width: 1.5; transition: stroke 0.7s, opacity 0.7s; }
+.fg-metaphor-suppress .mtp-sense text { font-size: 12px; }
+.fg-metaphor-suppress .mtp-sense .mtp-strike { stroke: var(--hot); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-metaphor-suppress .mtp-sense-lit rect { stroke: var(--ok); }
+.fg-metaphor-suppress .mtp-sense-lit text { fill: var(--text); }
+.fg-metaphor-suppress .mtp-sense-fig { opacity: 0.45; }
+.fg-metaphor-suppress .mtp-sense-fig rect { stroke: var(--border); }
+.fg-metaphor-suppress .mtp-sense-fig text { fill: var(--muted); }
+.fg-metaphor-suppress.is-figurative .mtp-sense-lit rect { stroke: var(--border); opacity: 0.6; }
+.fg-metaphor-suppress.is-figurative .mtp-sense-lit text { fill: var(--muted); }
+.fg-metaphor-suppress.is-figurative .mtp-sense-lit .mtp-strike { opacity: 1; }
+.fg-metaphor-suppress.is-figurative .mtp-sense-fig { opacity: 1; }
+.fg-metaphor-suppress.is-figurative .mtp-sense-fig rect { stroke: var(--ok); fill: #0e4429; }
+.fg-metaphor-suppress.is-figurative .mtp-sense-fig text { fill: var(--text); }
+
+/* arc from drowning to its object */
+.fg-metaphor-suppress .mtp-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
+
+.fg-metaphor-suppress .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-metaphor-suppress .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-metaphor-suppress .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-metaphor-suppress .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-metaphor-suppress .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-metaphor-suppress .mtp-obj, .fg-metaphor-suppress .mtp-sense rect,
+  .fg-metaphor-suppress .mtp-strike { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The phrase: I am drowning in, followed by an object a button swaps between the pool and paperwork. Two sense cards for drowning sit below: the literal water sense and the figurative overwhelmed-by-volume sense. With the pool, the literal card is lit. With paperwork, the literal card is struck through in red and the figurative card lights green: one noun forced the verb's whole meaning to be replaced.">
+  <text class="mtp-note" x="40" y="26">one word downstream decides whether the verb means what the dictionary says</text>
+
+  <!-- token row -->
+  <rect class="mtp-tok" x="60" y="56" width="42" height="36" rx="6"/>
+  <text class="mtp-word" x="81" y="79">I'm</text>
+  <g class="mtp-drown">
+    <rect class="mtp-tok" x="110" y="56" width="92" height="36" rx="6"/>
+    <text class="mtp-word" x="156" y="79">drowning</text>
+  </g>
+  <rect class="mtp-tok" x="210" y="56" width="32" height="36" rx="6"/>
+  <text class="mtp-word" x="226" y="79">in</text>
+  <g class="mtp-obj mtp-obj-pool">
+    <rect class="mtp-tok" x="250" y="56" width="98" height="36" rx="6"/>
+    <text class="mtp-word" x="299" y="79">the pool.</text>
+  </g>
+  <g class="mtp-obj mtp-obj-paper">
+    <rect class="mtp-tok" x="250" y="56" width="112" height="36" rx="6"/>
+    <text class="mtp-word" x="306" y="79">paperwork.</text>
+  </g>
+
+  <!-- arc: drowning -> object -->
+  <path class="mtp-arc" d="M 290 52 C 260 34, 200 34, 165 52" marker-end="url(#mtp-arrow)"/>
+
+  <!-- sense cards -->
+  <g class="mtp-sense mtp-sense-lit">
+    <rect x="80" y="130" width="250" height="52" rx="8"/>
+    <text x="96" y="150">LITERAL: submerged in liquid,</text>
+    <text x="96" y="168">unable to breathe</text>
+    <line class="mtp-strike" x1="88" y1="156" x2="322" y2="156"/>
+  </g>
+  <g class="mtp-sense mtp-sense-fig">
+    <rect x="370" y="130" width="270" height="52" rx="8"/>
+    <text x="386" y="150">FIGURATIVE: overwhelmed by</text>
+    <text x="386" y="168">a volume too large to handle</text>
+  </g>
+
+  <text class="mtp-note" x="40" y="216">The mapping is systematic, not decorative: quantity becomes depth, obligation becomes water,</text>
+  <text class="mtp-note" x="40" y="234">coping becomes staying afloat. But nothing marks the phrase as figurative &#8212; the object does all the work.</text>
+
+  <defs>
+    <marker id="mtp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Swap the object to flip the verb between literal and figurative">Swap the object</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Literal</strong> &#8212; "drowning in the pool" is an emergency, not an idiom. The water-sense applies exactly as the dictionary has it. Note that this is the same verb, in the same construction, as the figurative case.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    lit: '<strong>Literal</strong> — "drowning in the pool" is an emergency, not an idiom. The water-sense applies exactly as the dictionary has it. Note that this is the same verb, in the same construction, as the figurative case.',
+    fig: '<strong>Figurative</strong> — paperwork isn\'t a liquid, so the literal sense must be suppressed and a mapped one substituted: overwhelmed, behind, unable to keep up. The suppression is triggered entirely by one noun downstream.'
+  };
+  btn.addEventListener('click', () => {
+    const fig = root.classList.toggle('is-figurative');
+    caption.innerHTML = fig ? CAP.fig : CAP.lit;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

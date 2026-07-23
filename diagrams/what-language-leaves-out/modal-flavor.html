@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modal ambiguity: what kind of "must"?</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Modal ambiguity</h1>
+<p>"You must be tired." An inference from evidence, or an order? The modal's flavor comes from the conversational background, not the word.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-modal-flavor">
+<style>
+.fg-modal-flavor {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-modal-flavor svg { display: block; width: 100%; height: auto; }
+.fg-modal-flavor text { font-family: inherit; }
+
+.fg-modal-flavor .mdf-note { fill: var(--muted); font-size: 11px; }
+.fg-modal-flavor .mdf-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+}
+.fg-modal-flavor .mdf-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+.fg-modal-flavor .mdf-must .mdf-tok { stroke: var(--warn); }
+
+/* context sentence cross-fades */
+.fg-modal-flavor .mdf-ctx { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-modal-flavor .mdf-ctx text { fill: var(--text); font-size: 13px; }
+.fg-modal-flavor .mdf-ctx-inf { opacity: 1; }
+.fg-modal-flavor .mdf-ctx-obl { opacity: 0; }
+.fg-modal-flavor.is-deontic .mdf-ctx-inf { opacity: 0; }
+.fg-modal-flavor.is-deontic .mdf-ctx-obl { opacity: 1; }
+
+/* flavor tags */
+.fg-modal-flavor .mdf-tag { transition: opacity 0.7s; }
+.fg-modal-flavor .mdf-tag rect { stroke-width: 1.5; }
+.fg-modal-flavor .mdf-tag-inf { opacity: 1; }
+.fg-modal-flavor .mdf-tag-inf rect { fill: #0e4429; stroke: var(--ok); }
+.fg-modal-flavor .mdf-tag-inf text { fill: var(--ok); font-size: 11px; text-anchor: middle; }
+.fg-modal-flavor .mdf-tag-obl { opacity: 0; }
+.fg-modal-flavor .mdf-tag-obl rect { fill: #4a1d1d; stroke: var(--hot); }
+.fg-modal-flavor .mdf-tag-obl text { fill: var(--hot); font-size: 11px; text-anchor: middle; }
+.fg-modal-flavor.is-deontic .mdf-tag-inf { opacity: 0; }
+.fg-modal-flavor.is-deontic .mdf-tag-obl { opacity: 1; }
+
+/* info-need arc from must to the context */
+.fg-modal-flavor .mdf-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
+
+.fg-modal-flavor .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-modal-flavor .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-modal-flavor .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-modal-flavor .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-modal-flavor .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-modal-flavor .mdf-ctx, .fg-modal-flavor .mdf-tag { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: You must be tired, with must outlined in amber. Above it, a context line that a button swaps. With the context: You worked a double shift, the modal is tagged EPISTEMIC, an inference from evidence. With the context: Rules of the sleep study, it is tagged DEONTIC, an obligation imposed on you. A green arc runs from must up to the context line: the flavor is imported, not written in the word.">
+  <text class="mdf-note" x="40" y="26">the same modal, two flavors &#8212; the surrounding discourse supplies the background</text>
+
+  <!-- context line -->
+  <g class="mdf-ctx mdf-ctx-inf">
+    <text x="120" y="66">"You worked a double shift."</text>
+  </g>
+  <g class="mdf-ctx mdf-ctx-obl">
+    <text x="120" y="66">"Rules of the sleep study:"</text>
+  </g>
+
+  <!-- token row -->
+  <rect class="mdf-tok" x="120" y="116" width="48" height="36" rx="6"/>
+  <text class="mdf-word" x="144" y="139">You</text>
+  <g class="mdf-must">
+    <rect class="mdf-tok" x="176" y="116" width="58" height="36" rx="6"/>
+    <text class="mdf-word" x="205" y="139">must</text>
+  </g>
+  <rect class="mdf-tok" x="242" y="116" width="38" height="36" rx="6"/>
+  <text class="mdf-word" x="261" y="139">be</text>
+  <rect class="mdf-tok" x="288" y="116" width="58" height="36" rx="6"/>
+  <text class="mdf-word" x="317" y="139">tired.</text>
+
+  <!-- arc: must -> context -->
+  <path class="mdf-arc" d="M 205 116 C 190 96, 170 84, 150 74" marker-end="url(#mdf-arrow)"/>
+
+  <!-- flavor tags -->
+  <g class="mdf-tag mdf-tag-inf">
+    <rect x="380" y="118" width="150" height="32" rx="6"/>
+    <text x="455" y="138">EPISTEMIC: inference</text>
+  </g>
+  <g class="mdf-tag mdf-tag-obl">
+    <rect x="380" y="118" width="150" height="32" rx="6"/>
+    <text x="455" y="138">DEONTIC: obligation</text>
+  </g>
+
+  <text class="mdf-note" x="40" y="196">"can" splits the same way: "She can lift 200 pounds" (ability) vs "You can leave now" (permission).</text>
+  <text class="mdf-note" x="40" y="214">The word contributes a skeleton; the context supplies which set of rules or facts it quantifies over.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Swap the context to flip the modal between inference and obligation">Swap the context</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Epistemic</strong> &#8212; given the evidence (a double shift), tiredness follows. "Must" marks an inference the speaker is drawing, not a demand. Nothing is being required of you.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    epi: '<strong>Epistemic</strong> — given the evidence (a double shift), tiredness follows. "Must" marks an inference the speaker is drawing, not a demand. Nothing is being required of you.',
+    deo: '<strong>Deontic</strong> — under the study\'s rules, tiredness is required of you. Same four tokens; the modal now quantifies over regulations instead of evidence. The flavor was imported from one context line.'
+  };
+  btn.addEventListener('click', () => {
+    const deo = root.classList.toggle('is-deontic');
+    caption.innerHTML = deo ? CAP.deo : CAP.epi;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

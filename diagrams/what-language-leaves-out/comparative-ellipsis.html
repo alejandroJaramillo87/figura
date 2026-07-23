@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparative ellipsis: two ways to fill the gap</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Comparative ellipsis</h1>
+<p>"I like her more than John." More than John does? Or more than I like John? The elided clause has two reconstructions.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-comparative-ellipsis">
+<style>
+.fg-comparative-ellipsis {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-comparative-ellipsis svg { display: block; width: 100%; height: auto; }
+.fg-comparative-ellipsis text { font-family: inherit; }
+
+.fg-comparative-ellipsis .cpe-note { fill: var(--muted); font-size: 11px; }
+.fg-comparative-ellipsis .cpe-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+}
+.fg-comparative-ellipsis .cpe-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+.fg-comparative-ellipsis .cpe-john .cpe-tok { stroke: var(--warn); }
+
+/* the two reconstructions cross-fade */
+.fg-comparative-ellipsis .cpe-view { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-comparative-ellipsis .cpe-view-subj { opacity: 1; }
+.fg-comparative-ellipsis .cpe-view-obj { opacity: 0; }
+.fg-comparative-ellipsis.is-object .cpe-view-subj { opacity: 0; }
+.fg-comparative-ellipsis.is-object .cpe-view-obj { opacity: 1; }
+
+/* ghost tokens in the reconstructions */
+.fg-comparative-ellipsis .cpe-ghost rect { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-comparative-ellipsis .cpe-ghost text { fill: var(--ok); font-size: 12px; text-anchor: middle; }
+.fg-comparative-ellipsis .cpe-plain text { fill: var(--text); font-size: 12px; text-anchor: middle; }
+.fg-comparative-ellipsis .cpe-plain rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
+
+/* role tag for John per reading */
+.fg-comparative-ellipsis .cpe-role { font-size: 11px; text-anchor: middle; }
+.fg-comparative-ellipsis .cpe-role-subj { fill: var(--violet); }
+.fg-comparative-ellipsis .cpe-role-obj { fill: var(--violet); }
+
+.fg-comparative-ellipsis .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-comparative-ellipsis .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-comparative-ellipsis .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-comparative-ellipsis .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-comparative-ellipsis .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-comparative-ellipsis .cpe-view { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: I like her more than John, as token blocks with John outlined in amber. Below, a button flips between two reconstructions of the elided clause. Subject reading: than John likes her, with John as a rival admirer. Object reading: than I like John, with John as the one being compared against. Dashed green ghost tokens show the different material each reading copies back in. The surface tokens are identical; the elided clause is not.">
+  <text class="cpe-note" x="40" y="26">the than-clause was elided &#8212; and there are two different clauses it could have been</text>
+
+  <!-- token row -->
+  <rect class="cpe-tok" x="80" y="50" width="26" height="36" rx="6"/>
+  <text class="cpe-word" x="93" y="73">I</text>
+  <rect class="cpe-tok" x="114" y="50" width="48" height="36" rx="6"/>
+  <text class="cpe-word" x="138" y="73">like</text>
+  <rect class="cpe-tok" x="170" y="50" width="46" height="36" rx="6"/>
+  <text class="cpe-word" x="193" y="73">her</text>
+  <rect class="cpe-tok" x="224" y="50" width="58" height="36" rx="6"/>
+  <text class="cpe-word" x="253" y="73">more</text>
+  <rect class="cpe-tok" x="290" y="50" width="52" height="36" rx="6"/>
+  <text class="cpe-word" x="316" y="73">than</text>
+  <g class="cpe-john">
+    <rect class="cpe-tok" x="350" y="50" width="60" height="36" rx="6"/>
+    <text class="cpe-word" x="380" y="73">John.</text>
+  </g>
+
+  <!-- subject reading reconstruction -->
+  <g class="cpe-view cpe-view-subj">
+    <text class="cpe-role cpe-role-subj" x="380" y="106">John = rival admirer</text>
+    <g class="cpe-plain">
+      <rect x="120" y="130" width="52" height="34" rx="6"/><text x="146" y="152">than</text>
+      <rect x="180" y="130" width="56" height="34" rx="6"/><text x="208" y="152">John</text>
+    </g>
+    <g class="cpe-ghost">
+      <rect x="244" y="130" width="56" height="34" rx="6"/><text x="272" y="152">likes</text>
+      <rect x="308" y="130" width="48" height="34" rx="6"/><text x="332" y="152">her</text>
+    </g>
+    <text class="cpe-note" x="380" y="152">John is the subject of the missing clause</text>
+  </g>
+
+  <!-- object reading reconstruction -->
+  <g class="cpe-view cpe-view-obj">
+    <text class="cpe-role cpe-role-obj" x="380" y="106">John = the comparison target</text>
+    <g class="cpe-plain">
+      <rect x="120" y="130" width="52" height="34" rx="6"/><text x="146" y="152">than</text>
+    </g>
+    <g class="cpe-ghost">
+      <rect x="180" y="130" width="28" height="34" rx="6"/><text x="194" y="152">I</text>
+      <rect x="216" y="130" width="50" height="34" rx="6"/><text x="241" y="152">like</text>
+    </g>
+    <g class="cpe-plain">
+      <rect x="274" y="130" width="56" height="34" rx="6"/><text x="302" y="152">John</text>
+    </g>
+    <text class="cpe-note" x="380" y="152">John is the object of the missing clause</text>
+  </g>
+
+  <text class="cpe-note" x="40" y="200">Unlike post 4's VP-ellipsis, where the copied material was fixed, here the copy-in itself is</text>
+  <text class="cpe-note" x="40" y="218">ambiguous: two grammatical reconstructions, and only context (or "than John does") settles it.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Flip between the two reconstructions of the elided clause">Flip the reconstruction</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Subject reading</strong> &#8212; "&#8230; more than John [likes her]." John is a rival: we both like her, and I like her more. The elided clause borrowed "likes her" from the main clause and swapped in John as its subject.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    subj: '<strong>Subject reading</strong> — "… more than John [likes her]." John is a rival: we both like her, and I like her more. The elided clause borrowed "likes her" from the main clause and swapped in John as its subject.',
+    obj: '<strong>Object reading</strong> — "… more than [I like] John." John is the yardstick: I like both of them, her more. Same borrowed verb, but John now fills the object slot. One surface string, two reconstructed clauses.'
+  };
+  btn.addEventListener('click', () => {
+    const obj = root.classList.toggle('is-object');
+    caption.innerHTML = obj ? CAP.obj : CAP.subj;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
