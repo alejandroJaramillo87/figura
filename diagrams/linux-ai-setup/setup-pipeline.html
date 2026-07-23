@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The OS setup pipeline, in order</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>The OS setup pipeline, in order</h1>
+<p>Step through the eight-stage setup order: each stage lights up with the script that automates it. Reboot points are marked.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-setup-pipeline">
+<style>
+.fg-setup-pipeline {
+  --bg: #0f172a; --panel: #1e293b; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-setup-pipeline svg { display: block; width: 100%; height: auto; }
+.fg-setup-pipeline text { font-family: inherit; }
+
+.fg-setup-pipeline .sup-block {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.45s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.45s;
+}
+.fg-setup-pipeline .sup-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
+.fg-setup-pipeline .sup-script { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; opacity: 0.75; transition: fill 0.45s; }
+.fg-setup-pipeline .sup-sub { fill: var(--muted); font-size: 12px; }
+.fg-setup-pipeline .sup-reboot { fill: var(--warn); font-size: 10.5px; text-anchor: middle; opacity: 0; transition: opacity 0.45s; }
+
+.fg-setup-pipeline .sup-conn {
+  stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.5;
+  transition: stroke 0.45s, opacity 0.45s;
+}
+
+/* Steps 1-8: stage N becomes active (accent) and stays done (ok) afterwards. */
+.fg-setup-pipeline .sup-s1.is-done .sup-block, .fg-setup-pipeline .sup-s2.is-done .sup-block,
+.fg-setup-pipeline .sup-s3.is-done .sup-block, .fg-setup-pipeline .sup-s4.is-done .sup-block,
+.fg-setup-pipeline .sup-s5.is-done .sup-block, .fg-setup-pipeline .sup-s6.is-done .sup-block,
+.fg-setup-pipeline .sup-s7.is-done .sup-block, .fg-setup-pipeline .sup-s8.is-done .sup-block
+  { fill: #0e4429; stroke: var(--ok); }
+.fg-setup-pipeline .sup-stage.is-active .sup-block { fill: #0c3550; stroke: var(--accent); }
+.fg-setup-pipeline .sup-stage.is-done .sup-title,
+.fg-setup-pipeline .sup-stage.is-active .sup-title { fill: var(--text); }
+.fg-setup-pipeline .sup-stage.is-active .sup-script { fill: var(--accent); opacity: 1; }
+.fg-setup-pipeline .sup-stage.is-active .sup-reboot,
+.fg-setup-pipeline .sup-stage.is-done .sup-reboot { opacity: 1; }
+
+/* step caption box: fixed height so text swaps never reflow the page */
+.fg-setup-pipeline .fg-caption {
+  margin-top: 10px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  color: var(--muted); font-size: 13px; min-height: 4.2em;
+  transition: color 0.3s;
+}
+.fg-setup-pipeline .fg-caption.is-active { color: var(--text); }
+.fg-setup-pipeline .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-setup-pipeline .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+.fg-setup-pipeline .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-setup-pipeline .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-setup-pipeline .fg-controls button:hover { border-color: var(--accent); }
+.fg-setup-pipeline .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-setup-pipeline * { transition: none !important; }
+}
+</style>
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Eight-stage setup pipeline: install Ubuntu, configure user and terminal, harden security, provision the data SSD, install the NVIDIA driver with a reboot, install the CUDA toolkit with a reboot, install cuDNN, and install Docker with the NVIDIA Container Toolkit.">
+  <defs>
+    <marker id="sup-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- row 1: base system, left to right -->
+  <path class="sup-conn" d="M 178 78 L 196 78" marker-end="url(#sup-arrow)"/>
+  <path class="sup-conn" d="M 350 78 L 368 78" marker-end="url(#sup-arrow)"/>
+  <path class="sup-conn" d="M 522 78 L 540 78" marker-end="url(#sup-arrow)"/>
+  <!-- wrap to row 2 -->
+  <path class="sup-conn" d="M 626 118 C 626 150, 94 130, 94 176" marker-end="url(#sup-arrow)"/>
+  <!-- row 2: GPU + containers, left to right -->
+  <path class="sup-conn" d="M 178 222 L 196 222" marker-end="url(#sup-arrow)"/>
+  <path class="sup-conn" d="M 350 222 L 368 222" marker-end="url(#sup-arrow)"/>
+  <path class="sup-conn" d="M 522 222 L 540 222" marker-end="url(#sup-arrow)"/>
+
+  <g class="sup-stage sup-s1">
+    <rect class="sup-block" x="26" y="38" width="152" height="80" rx="8"/>
+    <text class="sup-title" x="102" y="68">Ubuntu 24.04</text>
+    <text class="sup-script" x="102" y="88">manual install</text>
+  </g>
+  <g class="sup-stage sup-s2">
+    <rect class="sup-block" x="198" y="38" width="152" height="80" rx="8"/>
+    <text class="sup-title" x="274" y="68">User &amp; terminal</text>
+    <text class="sup-script" x="274" y="88">setup_sudo_user.sh</text>
+    <text class="sup-script" x="274" y="102">setup_terminal.sh</text>
+  </g>
+  <g class="sup-stage sup-s3">
+    <rect class="sup-block" x="370" y="38" width="152" height="80" rx="8"/>
+    <text class="sup-title" x="446" y="68">Security</text>
+    <text class="sup-script" x="446" y="88">setup_security.sh</text>
+  </g>
+  <g class="sup-stage sup-s4">
+    <rect class="sup-block" x="542" y="38" width="152" height="80" rx="8"/>
+    <text class="sup-title" x="618" y="68">Data SSD</text>
+    <text class="sup-script" x="618" y="88">setup_data_ssd.sh</text>
+  </g>
+
+  <g class="sup-stage sup-s5">
+    <rect class="sup-block" x="26" y="182" width="152" height="80" rx="8"/>
+    <text class="sup-title" x="102" y="208">NVIDIA driver</text>
+    <text class="sup-script" x="102" y="228">setup_nvidia.sh</text>
+    <text class="sup-reboot" x="102" y="248">⟳ reboot</text>
+  </g>
+  <g class="sup-stage sup-s6">
+    <rect class="sup-block" x="198" y="182" width="152" height="80" rx="8"/>
+    <text class="sup-title" x="274" y="208">CUDA Toolkit</text>
+    <text class="sup-script" x="274" y="228">setup_cuda.sh</text>
+    <text class="sup-reboot" x="274" y="248">⟳ reboot</text>
+  </g>
+  <g class="sup-stage sup-s7">
+    <rect class="sup-block" x="370" y="182" width="152" height="80" rx="8"/>
+    <text class="sup-title" x="446" y="208">cuDNN</text>
+    <text class="sup-script" x="446" y="228">setup_cudnn.sh</text>
+  </g>
+  <g class="sup-stage sup-s8">
+    <rect class="sup-block" x="542" y="182" width="152" height="80" rx="8"/>
+    <text class="sup-title" x="618" y="208">Docker + toolkit</text>
+    <text class="sup-script" x="618" y="228">setup_docker.sh</text>
+  </g>
+
+  <text class="sup-sub" x="26" y="24">base system</text>
+  <text class="sup-sub" x="26" y="168">GPU stack &amp; containers</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Press play or step through the setup order.</div>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const TOTAL = 8, STEP_MS = 2600;
+  let step = 0, timer = null;
+
+  const CAPTIONS = [
+    'Press play or step through the setup order.',
+    ['Ubuntu 24.04', 'Clean LTS install on the OS SSD. BIOS/UEFI settings come first; everything after this stage is scripted.'],
+    ['User & terminal', 'Sudo and device groups (docker, video, render), then zsh, Tilix, and build tools. Also runs the first full apt upgrade.'],
+    ['Security', 'UFW firewall for the AI service ports, Fail2Ban, unattended upgrades, auditd, kernel hardening, and raised ulimits (memlock, file descriptors).'],
+    ['Data SSD', 'Formats and mounts the second NVMe at /mnt/ai-data with noatime, creates the models/datasets/cache tree, and symlinks framework caches. Supports --dry-run.'],
+    ['NVIDIA driver', 'Purges old drivers and installs the pinned driver, then enables persistence mode and sets the power limit. Requires a reboot to load the new kernel modules.'],
+    ['CUDA Toolkit', 'Installs the toolkit and wires PATH and LD_LIBRARY_PATH into the shell profile. Reboots to settle the environment.'],
+    ['cuDNN', 'Detects the installed CUDA major version from nvcc and installs the matching cudnn9 package. No reboot needed.'],
+    ['Docker + toolkit', 'Docker CE, Compose, and the NVIDIA Container Toolkit — containers now see the GPU via the host driver. Setup complete: verify with nvidia-smi and a CUDA container.'],
+  ];
+
+  function apply() {
+    root.querySelectorAll('.sup-stage').forEach((g, i) => {
+      const n = i + 1;
+      g.classList.toggle('is-active', n === step);
+      g.classList.toggle('is-done', n < step);
+    });
+    const c = CAPTIONS[step];
+    caption.innerHTML = '';
+    if (Array.isArray(c)) {
+      const strong = document.createElement('strong');
+      strong.textContent = step + '. ' + c[0];
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + c[1]));
+      caption.classList.add('is-active');
+    } else {
+      caption.textContent = c;
+      caption.classList.remove('is-active');
+    }
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
+    pause() { clearInterval(timer); timer = null; },
+  };
+
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  function sync() {
+    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  apply();
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
