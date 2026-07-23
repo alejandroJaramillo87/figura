@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Speech acts: what kind of response does this call for?</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Speech-act ambiguity</h1>
+<p>"Can you pass the salt?" is a request wearing a question's syntax. Answering the question is the wrong move.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-speech-act">
+<style>
+.fg-speech-act {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-speech-act svg { display: block; width: 100%; height: auto; }
+.fg-speech-act text { font-family: inherit; }
+
+.fg-speech-act .spa-note { fill: var(--muted); font-size: 11px; }
+.fg-speech-act .spa-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+}
+.fg-speech-act .spa-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+
+/* the two dispatch targets */
+.fg-speech-act .spa-card { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-speech-act .spa-card rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
+.fg-speech-act .spa-card .spa-head { font-size: 11px; text-anchor: middle; fill: var(--violet); }
+.fg-speech-act .spa-card .spa-body { font-size: 13px; text-anchor: middle; fill: var(--text); }
+.fg-speech-act .spa-arc { fill: none; stroke-width: 2; transition: opacity 0.7s; }
+
+/* question state: literal card active, request dimmed */
+.fg-speech-act .spa-card-lit { opacity: 1; }
+.fg-speech-act .spa-card-lit rect { stroke: var(--hot); fill: #4a1d1d; }
+.fg-speech-act .spa-arc-lit { stroke: var(--hot); opacity: 1; }
+.fg-speech-act .spa-card-req { opacity: 0.35; }
+.fg-speech-act .spa-arc-req { stroke: var(--ok); opacity: 0; }
+.fg-speech-act .spa-clash { transition: opacity 0.7s; opacity: 1; fill: var(--hot); font-size: 11px; }
+
+/* request state */
+.fg-speech-act.is-request .spa-card-lit { opacity: 0.35; }
+.fg-speech-act.is-request .spa-arc-lit { opacity: 0; }
+.fg-speech-act.is-request .spa-card-req { opacity: 1; }
+.fg-speech-act.is-request .spa-card-req rect { stroke: var(--ok); fill: #0e4429; }
+.fg-speech-act.is-request .spa-arc-req { opacity: 1; }
+.fg-speech-act.is-request .spa-clash { opacity: 0; }
+
+.fg-speech-act .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-speech-act .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-speech-act .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-speech-act .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-speech-act .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-speech-act .spa-card, .fg-speech-act .spa-arc, .fg-speech-act .spa-clash { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: Can you pass the salt, as token blocks. Below, two response cards a button dispatches between. The literal handler answers the question about ability: Yes, I can, marked in red with the note: technically responsive, socially broken. The request handler performs the action: the salt gets passed, marked in green. Same sentence, two different kinds of response.">
+  <text class="spa-note" x="40" y="26">the syntax says question &#8212; but the right response is an action, not an answer</text>
+
+  <!-- token row -->
+  <rect class="spa-tok" x="130" y="50" width="52" height="36" rx="6"/>
+  <text class="spa-word" x="156" y="73">"Can</text>
+  <rect class="spa-tok" x="190" y="50" width="48" height="36" rx="6"/>
+  <text class="spa-word" x="214" y="73">you</text>
+  <rect class="spa-tok" x="246" y="50" width="56" height="36" rx="6"/>
+  <text class="spa-word" x="274" y="73">pass</text>
+  <rect class="spa-tok" x="310" y="50" width="44" height="36" rx="6"/>
+  <text class="spa-word" x="332" y="73">the</text>
+  <rect class="spa-tok" x="362" y="50" width="60" height="36" rx="6"/>
+  <text class="spa-word" x="392" y="73">salt?"</text>
+
+  <!-- dispatch arcs -->
+  <path class="spa-arc spa-arc-lit" d="M 250 90 C 220 120, 190 130, 175 148" marker-end="url(#spa-arrow-hot)"/>
+  <path class="spa-arc spa-arc-req" d="M 330 90 C 380 120, 430 130, 460 148" marker-end="url(#spa-arrow-ok)"/>
+
+  <!-- literal handler card -->
+  <g class="spa-card spa-card-lit">
+    <rect x="70" y="152" width="230" height="66" rx="8"/>
+    <text class="spa-head" x="185" y="172">QUESTION HANDLER (literal)</text>
+    <text class="spa-body" x="185" y="196">"Yes, I can."</text>
+  </g>
+  <text class="spa-clash" x="185" y="238" text-anchor="middle">technically responsive, socially broken</text>
+
+  <!-- request handler card -->
+  <g class="spa-card spa-card-req">
+    <rect x="380" y="152" width="230" height="66" rx="8"/>
+    <text class="spa-head" x="495" y="172">REQUEST HANDLER (intended)</text>
+    <text class="spa-body" x="495" y="196">[passes the salt]</text>
+  </g>
+
+  <text class="spa-note" x="40" y="268">"Do you know what time it is?" works the same way: "Yes." answers the words and misses the act.</text>
+
+  <defs>
+    <marker id="spa-arrow-hot" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171"/>
+    </marker>
+    <marker id="spa-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Dispatch the sentence to the other handler">Dispatch as request</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Literal dispatch</strong> &#8212; the surface form is a yes/no question about ability, so the question handler fires and answers it. Nothing in the tokens forbids this reading; it is just not what the speaker was doing.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    lit: '<strong>Literal dispatch</strong> — the surface form is a yes/no question about ability, so the question handler fires and answers it. Nothing in the tokens forbids this reading; it is just not what the speaker was doing.',
+    req: '<strong>Request dispatch</strong> — the same payload routed to the request handler: the salt gets passed. For a chat model this is the first decision on every message — what kind of response is being called for — and it is made before any content is generated.'
+  };
+  btn.addEventListener('click', () => {
+    const req = root.classList.toggle('is-request');
+    caption.innerHTML = req ? CAP.req : CAP.lit;
+    btn.textContent = req ? 'Dispatch as question' : 'Dispatch as request';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

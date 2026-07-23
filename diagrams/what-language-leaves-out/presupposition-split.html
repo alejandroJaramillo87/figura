@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presupposition: what negation cannot touch</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Presupposition and accommodation</h1>
+<p>"John stopped smoking" asserts the stopping and presupposes the smoking — negate it and only one of them flips.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-presupposition-split">
+<style>
+.fg-presupposition-split {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-presupposition-split svg { display: block; width: 100%; height: auto; }
+.fg-presupposition-split text { font-family: inherit; }
+
+.fg-presupposition-split .psp-note { fill: var(--muted); font-size: 11px; }
+
+/* sentence variants cross-fade */
+.fg-presupposition-split .psp-sent { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-presupposition-split .psp-sent text { fill: var(--text); font-size: 14px; }
+.fg-presupposition-split .psp-sent .psp-neg { fill: var(--hot); font-weight: 600; }
+.fg-presupposition-split .psp-sent-pos { opacity: 1; }
+.fg-presupposition-split .psp-sent-neg { opacity: 0; }
+.fg-presupposition-split.is-negated .psp-sent-pos { opacity: 0; }
+.fg-presupposition-split.is-negated .psp-sent-neg { opacity: 1; }
+
+/* the two cards */
+.fg-presupposition-split .psp-card rect { stroke-width: 1.5; transition: fill 0.7s, stroke 0.7s; }
+.fg-presupposition-split .psp-card .psp-head { font-size: 11px; text-anchor: middle; fill: var(--violet); }
+.fg-presupposition-split .psp-card .psp-body { font-size: 13px; text-anchor: middle; fill: var(--text); transition: opacity 0.7s; }
+
+/* asserted card flips with negation */
+.fg-presupposition-split .psp-card-asrt rect { fill: #0e4429; stroke: var(--ok); }
+.fg-presupposition-split.is-negated .psp-card-asrt rect { fill: #4a1d1d; stroke: var(--hot); }
+.fg-presupposition-split .psp-asrt-pos { opacity: 1; }
+.fg-presupposition-split .psp-asrt-neg { opacity: 0; }
+.fg-presupposition-split.is-negated .psp-asrt-pos { opacity: 0; }
+.fg-presupposition-split.is-negated .psp-asrt-neg { opacity: 1; }
+
+/* presupposed card never flips */
+.fg-presupposition-split .psp-card-pre rect { fill: #0e4429; stroke: var(--ok); }
+.fg-presupposition-split .psp-survive { transition: opacity 0.7s; opacity: 0; fill: var(--ok); font-size: 11px; }
+.fg-presupposition-split.is-negated .psp-survive { opacity: 1; }
+
+.fg-presupposition-split .psp-arc { fill: none; stroke: var(--line); stroke-width: 1.5; }
+
+.fg-presupposition-split .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-presupposition-split .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-presupposition-split .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-presupposition-split .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-presupposition-split .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-presupposition-split .psp-sent, .fg-presupposition-split .psp-card rect,
+  .fg-presupposition-split .psp-card .psp-body, .fg-presupposition-split .psp-survive { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A sentence a button flips between: John stopped smoking, and: John didn't stop smoking. Below it the sentence splits into two cards. The ASSERTED card reads: he doesn't smoke now, and flips to red — he still smokes — when the sentence is negated. The PRESUPPOSED card reads: he used to smoke, stays green in both states, and gains the label: survives negation. Negation only reaches the asserted half.">
+  <text class="psp-note" x="40" y="26">one sentence, two commitments &#8212; and only one of them is on the table</text>
+
+  <!-- sentence variants -->
+  <g class="psp-sent psp-sent-pos">
+    <text x="180" y="64">"John stopped smoking."</text>
+  </g>
+  <g class="psp-sent psp-sent-neg">
+    <text x="180" y="64">"John <tspan class="psp-neg">didn't</tspan> stop smoking."</text>
+  </g>
+
+  <!-- split arcs -->
+  <path class="psp-arc" d="M 280 74 C 250 96, 220 108, 200 118"/>
+  <path class="psp-arc" d="M 320 74 C 380 96, 440 108, 480 118"/>
+
+  <!-- asserted card -->
+  <g class="psp-card psp-card-asrt">
+    <rect x="80" y="122" width="250" height="66" rx="8"/>
+    <text class="psp-head" x="205" y="142">ASSERTED</text>
+    <text class="psp-body psp-asrt-pos" x="205" y="166">"he doesn't smoke now"</text>
+    <text class="psp-body psp-asrt-neg" x="205" y="166">"he still smokes"</text>
+  </g>
+
+  <!-- presupposed card -->
+  <g class="psp-card psp-card-pre">
+    <rect x="370" y="122" width="250" height="66" rx="8"/>
+    <text class="psp-head" x="495" y="142">PRESUPPOSED</text>
+    <text class="psp-body" x="495" y="166">"he used to smoke"</text>
+  </g>
+  <text class="psp-survive" x="495" y="206" text-anchor="middle">survives negation untouched</text>
+
+  <text class="psp-note" x="40" y="240">A hearer who never knew John smoked quietly adds it to the record rather than objecting &#8212;</text>
+  <text class="psp-note" x="40" y="256">accommodation. The right continuation depends on which half a reply is targeting.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Negate the sentence and see which card flips">Negate the sentence</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Affirmative</strong> &#8212; "John stopped smoking." asserts that he doesn't smoke now, and smuggles in, as settled background, that he used to. Only the first half is being offered for agreement or challenge.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    pos: '<strong>Affirmative</strong> — "John stopped smoking." asserts that he doesn\'t smoke now, and smuggles in, as settled background, that he used to. Only the first half is being offered for agreement or challenge.',
+    neg: '<strong>Negated</strong> — "John didn\'t stop smoking." flips the asserted card: he still smokes. But the presupposed card is untouched — he used to smoke either way. Negation, questioning, and "if" all pass over presuppositions; that projection behavior is what marks them.'
+  };
+  btn.addEventListener('click', () => {
+    const neg = root.classList.toggle('is-negated');
+    caption.innerHTML = neg ? CAP.neg : CAP.pos;
+    btn.textContent = neg ? 'Back to the affirmative' : 'Negate the sentence';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

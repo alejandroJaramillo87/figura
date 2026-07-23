@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Discourse relations: the connective with no token</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Discourse relations</h1>
+<p>"He fell. He was pushed." (cause) vs "He fell. He got up." (sequence) — the relation between sentences is inferred, not written.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-discourse-relation">
+<style>
+.fg-discourse-relation {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-discourse-relation svg { display: block; width: 100%; height: auto; }
+.fg-discourse-relation text { font-family: inherit; }
+
+.fg-discourse-relation .dsr-note { fill: var(--muted); font-size: 11px; }
+.fg-discourse-relation .dsr-block rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
+.fg-discourse-relation .dsr-block text { fill: var(--text); font-size: 14px; text-anchor: middle; }
+
+/* second sentence variants cross-fade */
+.fg-discourse-relation .dsr-s2 { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-discourse-relation .dsr-s2-cause { opacity: 1; }
+.fg-discourse-relation .dsr-s2-seq { opacity: 0; }
+.fg-discourse-relation.is-sequence .dsr-s2-cause { opacity: 0; }
+.fg-discourse-relation.is-sequence .dsr-s2-seq { opacity: 1; }
+
+/* ghost edge between the blocks */
+.fg-discourse-relation .dsr-edge { transition: opacity 0.7s; }
+.fg-discourse-relation .dsr-edge path { fill: none; stroke-width: 2; stroke-dasharray: 6 4; }
+.fg-discourse-relation .dsr-edge rect { fill: var(--bg); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-discourse-relation .dsr-edge text { font-size: 12px; text-anchor: middle; font-weight: 600; }
+.fg-discourse-relation .dsr-edge-cause { opacity: 1; }
+.fg-discourse-relation .dsr-edge-cause path { stroke: var(--hot); }
+.fg-discourse-relation .dsr-edge-cause rect { stroke: var(--hot); }
+.fg-discourse-relation .dsr-edge-cause text { fill: var(--hot); }
+.fg-discourse-relation .dsr-edge-seq { opacity: 0; }
+.fg-discourse-relation .dsr-edge-seq path { stroke: var(--ok); }
+.fg-discourse-relation .dsr-edge-seq rect { stroke: var(--ok); }
+.fg-discourse-relation .dsr-edge-seq text { fill: var(--ok); }
+.fg-discourse-relation.is-sequence .dsr-edge-cause { opacity: 0; }
+.fg-discourse-relation.is-sequence .dsr-edge-seq { opacity: 1; }
+
+.fg-discourse-relation .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-discourse-relation .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-discourse-relation .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-discourse-relation .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-discourse-relation .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-discourse-relation .fg-caption code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-discourse-relation .dsr-s2, .fg-discourse-relation .dsr-edge { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Two sentence blocks. The first reads: He fell. The second flips between: He was pushed, and: He got up. Between the blocks a dashed labeled edge materializes — BECAUSE, in red, pointing backward when the second sentence is the cause; THEN, in green, pointing forward when it is the next event. The edge is dashed because no token in either sentence carries the relation.">
+  <text class="dsr-note" x="40" y="26">two sentences side by side &#8212; the reader supplies the edge between them</text>
+
+  <!-- sentence 1 -->
+  <g class="dsr-block">
+    <rect x="80" y="70" width="180" height="46" rx="8"/>
+    <text x="170" y="99">"He fell."</text>
+  </g>
+
+  <!-- sentence 2 variants -->
+  <g class="dsr-block dsr-s2 dsr-s2-cause">
+    <rect x="440" y="70" width="200" height="46" rx="8"/>
+    <text x="540" y="99">"He was pushed."</text>
+  </g>
+  <g class="dsr-block dsr-s2 dsr-s2-seq">
+    <rect x="440" y="70" width="200" height="46" rx="8"/>
+    <text x="540" y="99">"He got up."</text>
+  </g>
+
+  <!-- cause edge: second sentence explains the first, arrow points back -->
+  <g class="dsr-edge dsr-edge-cause">
+    <path d="M 436 93 L 272 93" marker-end="url(#dsr-arrow-hot)"/>
+    <rect x="302" y="78" width="96" height="30" rx="15"/>
+    <text x="350" y="98">BECAUSE</text>
+  </g>
+  <!-- sequence edge: second sentence follows the first, arrow points forward -->
+  <g class="dsr-edge dsr-edge-seq">
+    <path d="M 264 93 L 428 93" marker-end="url(#dsr-arrow-ok)"/>
+    <rect x="314" y="78" width="72" height="30" rx="15"/>
+    <text x="350" y="98">THEN</text>
+  </g>
+
+  <text class="dsr-note" x="40" y="164">The relation is dashed because it has no token: no "because", no "then". Writers delete</text>
+  <text class="dsr-note" x="40" y="180">connectives constantly; readers restore them from what the sentences mean.</text>
+  <text class="dsr-note" x="40" y="208">Other unmarked edges: elaboration ("The plan failed. Nobody had checked the dates."),</text>
+  <text class="dsr-note" x="40" y="224">contrast, example &#8212; each licenses a different continuation.</text>
+
+  <defs>
+    <marker id="dsr-arrow-hot" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171"/>
+    </marker>
+    <marker id="dsr-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Swap the second sentence and re-infer the relation">Swap the second sentence</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Cause</strong> &#8212; "He fell. He was pushed." The second sentence explains the first: fell <code>because</code> pushed. The edge points backward in time, and nothing in either sentence's tokens says so.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    cause: '<strong>Cause</strong> — "He fell. He was pushed." The second sentence explains the first: fell <code>because</code> pushed. The edge points backward in time, and nothing in either sentence\'s tokens says so.',
+    seq: '<strong>Sequence</strong> — "He fell. He got up." Now the second sentence is simply the next event: fell, <code>then</code> got up. Same first sentence, same juxtaposition; the inferred edge — and the timeline it implies — changed with the content.'
+  };
+  btn.addEventListener('click', () => {
+    const seq = root.classList.toggle('is-sequence');
+    caption.innerHTML = seq ? CAP.seq : CAP.cause;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
