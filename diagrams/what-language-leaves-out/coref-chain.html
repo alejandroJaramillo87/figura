@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coreference chain: four names, one entity</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Coreference chain</h1>
+<p>"Dr. Smith … she … the doctor … her" — one entity threaded through four mentions of three different types. Identity must survive the whole chain.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-coref-chain">
+<style>
+.fg-coref-chain {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-coref-chain svg { display: block; width: 100%; height: auto; }
+.fg-coref-chain text { font-family: inherit; }
+
+.fg-coref-chain .crc-note { fill: var(--muted); font-size: 11px; }
+.fg-coref-chain .crc-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-coref-chain .crc-word { fill: var(--text); font-size: 13px; text-anchor: middle; }
+.fg-coref-chain .crc-mtype { fill: var(--muted); font-size: 10px; text-anchor: middle;
+  transition: fill 0.7s; }
+
+/* mentions light cumulatively per step (mention k lights at step k) */
+.fg-coref-chain .crc-m .crc-tok { transition: stroke 0.7s, fill 0.7s; }
+.fg-coref-chain.is-step-1 .crc-m1 .crc-tok,
+.fg-coref-chain.is-step-2 .crc-m1 .crc-tok, .fg-coref-chain.is-step-2 .crc-m2 .crc-tok,
+.fg-coref-chain.is-step-3 .crc-m1 .crc-tok, .fg-coref-chain.is-step-3 .crc-m2 .crc-tok, .fg-coref-chain.is-step-3 .crc-m3 .crc-tok,
+.fg-coref-chain.is-step-4 .crc-m1 .crc-tok, .fg-coref-chain.is-step-4 .crc-m2 .crc-tok, .fg-coref-chain.is-step-4 .crc-m3 .crc-tok, .fg-coref-chain.is-step-4 .crc-m4 .crc-tok
+  { stroke: var(--ok); fill: #0e4429; }
+
+/* chain links appear per step */
+.fg-coref-chain .crc-link {
+  fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-coref-chain.is-step-2 .crc-l1,
+.fg-coref-chain.is-step-3 .crc-l1, .fg-coref-chain.is-step-3 .crc-l2,
+.fg-coref-chain.is-step-4 .crc-l1, .fg-coref-chain.is-step-4 .crc-l2, .fg-coref-chain.is-step-4 .crc-l3 { opacity: 1; }
+
+/* entity node: appears at final step */
+.fg-coref-chain .crc-entity { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-coref-chain.is-step-4 .crc-entity { opacity: 1; }
+.fg-coref-chain .crc-entity rect { fill: #0e4429; stroke: var(--ok); stroke-width: 1.5; }
+.fg-coref-chain .crc-spoke { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 4 4;
+  opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-coref-chain.is-step-4 .crc-spoke { opacity: 0.8; }
+
+/* footer captions */
+.fg-coref-chain .crc-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-coref-chain.is-step-0 .crc-cap-0, .fg-coref-chain.is-step-1 .crc-cap-1,
+.fg-coref-chain.is-step-2 .crc-cap-2, .fg-coref-chain.is-step-3 .crc-cap-3,
+.fg-coref-chain.is-step-4 .crc-cap-4 { opacity: 1; }
+
+.fg-coref-chain .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-coref-chain .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-coref-chain .fg-controls button:hover { border-color: var(--accent); }
+.fg-coref-chain .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-coref-chain * { transition: none !important; }
+}
+</style>
+
+<svg viewBox="0 0 720 330" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A short paragraph laid out as token blocks: Dr. Smith examined the scans. She frowned. The doctor ordered another test. Her patient waited. Step by step, each mention of the same person lights green — Dr. Smith, a name; she, a pronoun; the doctor, a definite description; her, a possessive — with green chain links connecting each mention back to the previous one. At the final step an entity node labeled one entity, four aliases appears below, with dashed spokes to all four mentions.">
+  <defs>
+    <marker id="crc-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <text class="crc-note" x="40" y="26">the mention TYPE keeps changing &#8212; name, pronoun, description, possessive &#8212; the entity must not</text>
+
+  <!-- line 1 -->
+  <g class="crc-m crc-m1">
+    <rect class="crc-tok" x="40" y="56" width="106" height="34" rx="6"/>
+    <text class="crc-word" x="93" y="78">Dr. Smith</text>
+    <text class="crc-mtype" x="93" y="106">name</text>
+  </g>
+  <rect class="crc-tok" x="154" y="56" width="200" height="34" rx="6"/>
+  <text class="crc-word" x="254" y="78">examined the scans.</text>
+  <g class="crc-m crc-m2">
+    <rect class="crc-tok" x="362" y="56" width="56" height="34" rx="6"/>
+    <text class="crc-word" x="390" y="78">She</text>
+    <text class="crc-mtype" x="390" y="106">pronoun</text>
+  </g>
+  <rect class="crc-tok" x="426" y="56" width="100" height="34" rx="6"/>
+  <text class="crc-word" x="476" y="78">frowned.</text>
+
+  <!-- line 2 -->
+  <g class="crc-m crc-m3">
+    <rect class="crc-tok" x="40" y="140" width="118" height="34" rx="6"/>
+    <text class="crc-word" x="99" y="162">The doctor</text>
+    <text class="crc-mtype" x="99" y="190">definite description</text>
+  </g>
+  <rect class="crc-tok" x="166" y="140" width="204" height="34" rx="6"/>
+  <text class="crc-word" x="268" y="162">ordered another test.</text>
+  <g class="crc-m crc-m4">
+    <rect class="crc-tok" x="378" y="140" width="56" height="34" rx="6"/>
+    <text class="crc-word" x="406" y="162">Her</text>
+    <text class="crc-mtype" x="406" y="190">possessive</text>
+  </g>
+  <rect class="crc-tok" x="442" y="140" width="150" height="34" rx="6"/>
+  <text class="crc-word" x="517" y="162">patient waited.</text>
+
+  <!-- chain links (each mention -> previous mention) -->
+  <path class="crc-link crc-l1" d="M 375 56 C 330 30, 180 30, 110 50" marker-end="url(#crc-arrow)"/>
+  <path class="crc-link crc-l2" d="M 90 140 C 120 122, 300 116, 380 94" marker-end="url(#crc-arrow)"/>
+  <path class="crc-link crc-l3" d="M 392 140 C 340 128, 220 128, 150 136" marker-end="url(#crc-arrow)"/>
+
+  <!-- entity node -->
+  <g class="crc-entity">
+    <rect x="230" y="230" width="260" height="44" rx="8"/>
+    <text class="crc-word" x="360" y="249" font-weight="600">one entity &#8212; four aliases</text>
+    <text class="crc-mtype" x="360" y="266" fill="#34d399">like four variables aliasing one heap object</text>
+  </g>
+  <path class="crc-spoke" d="M 93 96 C 120 180, 200 220, 260 230"/>
+  <path class="crc-spoke" d="M 390 96 C 390 150, 380 200, 370 230"/>
+  <path class="crc-spoke" d="M 99 178 C 140 210, 200 224, 250 236"/>
+  <path class="crc-spoke" d="M 406 178 C 410 196, 410 212, 405 230"/>
+
+  <!-- footer captions (fixed slot, no reflow) -->
+  <text class="crc-note crc-cap crc-cap-0" x="40" y="315">Step 0 &#8212; a paragraph mentions one person four times. The tokens share almost nothing on the surface.</text>
+  <text class="crc-note crc-cap crc-cap-1" x="40" y="315">Step 1 &#8212; "Dr. Smith" introduces the entity by name. The easy mention: names are nearly self-identifying.</text>
+  <text class="crc-note crc-cap crc-cap-2" x="40" y="315">Step 2 &#8212; "She" links back to the name. First chain link: a pronoun with no content of its own.</text>
+  <text class="crc-note crc-cap crc-cap-3" x="40" y="315">Step 3 &#8212; "The doctor" re-describes the same person. A definite description must be recognized as an alias, not a new entity.</text>
+  <text class="crc-note crc-cap crc-cap-4" x="40" y="315">Step 4 &#8212; "Her" closes the chain. Four mentions, three types, one identity &#8212; maintained across the whole span.</text>
+</svg>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button data-fg="play" aria-label="Play or pause">&#9654;</button>
+  <button data-fg="next" aria-label="Next step">&#8250;</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const TOTAL = 4, STEP_MS = 1900;
+  let step = 0, timer = null;
+
+  function apply() {
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
+    pause() { clearInterval(timer); timer = null; },
+  };
+
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  function sync() {
+    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  apply();
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

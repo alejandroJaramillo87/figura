@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bridging reference: the referent was never mentioned</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Bridging</h1>
+<p>"I entered the room. The ceiling was high." No ceiling was ever mentioned — the definite reference is licensed by part–whole knowledge about rooms.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-bridging-implicit">
+<style>
+.fg-bridging-implicit {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-bridging-implicit svg { display: block; width: 100%; height: auto; }
+.fg-bridging-implicit text { font-family: inherit; }
+
+.fg-bridging-implicit .brg-note { fill: var(--muted); font-size: 11px; }
+.fg-bridging-implicit .brg-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-bridging-implicit .brg-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+
+/* anchor "room" and bridging noun always highlighted */
+.fg-bridging-implicit .brg-room .brg-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-bridging-implicit .brg-bnoun .brg-tok { stroke: var(--accent); }
+.fg-bridging-implicit .brg-bnoun .brg-word { fill: var(--accent); font-weight: 600; }
+
+/* bridging-noun variants cross-fade */
+.fg-bridging-implicit .brg-v { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-bridging-implicit.is-ceiling .brg-v-ceiling,
+.fg-bridging-implicit.is-windows .brg-v-windows,
+.fg-bridging-implicit.is-door .brg-v-door { opacity: 1; }
+
+/* ghost inference node */
+.fg-bridging-implicit .brg-ghost rect {
+  fill: none; stroke: var(--violet); stroke-width: 1.5; stroke-dasharray: 6 4;
+}
+.fg-bridging-implicit .brg-ghost text { fill: var(--violet); }
+
+/* arcs */
+.fg-bridging-implicit .brg-arc { fill: none; stroke: var(--ok); stroke-width: 2.5; }
+.fg-bridging-implicit .brg-arc-ghost { stroke: var(--violet); stroke-dasharray: 5 4; stroke-width: 2; }
+
+.fg-bridging-implicit .brg-chip { cursor: pointer; }
+.fg-bridging-implicit .brg-chip rect {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.3s, fill 0.3s;
+}
+.fg-bridging-implicit .brg-chip:hover rect, .fg-bridging-implicit .brg-chip:focus rect { stroke: var(--accent); fill: var(--panel-hover); }
+.fg-bridging-implicit .brg-chip.is-active rect { stroke: var(--accent); }
+.fg-bridging-implicit .brg-chip text { fill: var(--text); font-size: 12px; text-anchor: middle; pointer-events: none; }
+.fg-bridging-implicit .brg-chip:focus { outline: none; }
+
+.fg-bridging-implicit .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longest variant text: no page reflow */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-bridging-implicit .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-bridging-implicit .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-bridging-implicit .brg-tok, .fg-bridging-implicit .brg-v { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Two sentences: I entered the room, then The ceiling was high. The word room is highlighted as the anchor. The bridging noun — ceiling, and selectable variants windows or door — was never mentioned; a dashed ghost node between them reads rooms have ceilings, part-of knowledge, and a dashed arc routes the reference from the bridging noun through the ghost node back to room. Buttons switch the bridging noun among ceiling, windows, and door.">
+  <defs>
+    <marker id="brg-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="brg-arrow-v" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#a78bfa"/>
+    </marker>
+  </defs>
+
+  <text class="brg-note" x="40" y="26">the referent is not in the text &#8212; it is inferred from what rooms have</text>
+
+  <!-- sentence 1 -->
+  <rect class="brg-tok" x="40" y="48" width="110" height="34" rx="6"/>
+  <text class="brg-word" x="95" y="70">I entered</text>
+  <g class="brg-room">
+    <rect class="brg-tok" x="158" y="48" width="110" height="34" rx="6"/>
+    <text class="brg-word" x="213" y="70">the room.</text>
+  </g>
+
+  <!-- sentence 2 with variable bridging noun -->
+  <g class="brg-bnoun">
+    <g class="brg-v brg-v-ceiling">
+      <rect class="brg-tok" x="40" y="140" width="128" height="34" rx="6"/>
+      <text class="brg-word" x="104" y="162">The ceiling</text>
+    </g>
+    <g class="brg-v brg-v-windows">
+      <rect class="brg-tok" x="40" y="140" width="128" height="34" rx="6"/>
+      <text class="brg-word" x="104" y="162">The windows</text>
+    </g>
+    <g class="brg-v brg-v-door">
+      <rect class="brg-tok" x="40" y="140" width="128" height="34" rx="6"/>
+      <text class="brg-word" x="104" y="162">The door</text>
+    </g>
+  </g>
+  <g class="brg-v brg-v-ceiling">
+    <rect class="brg-tok" x="176" y="140" width="110" height="34" rx="6"/>
+    <text class="brg-word" x="231" y="162">was high.</text>
+  </g>
+  <g class="brg-v brg-v-windows">
+    <rect class="brg-tok" x="176" y="140" width="130" height="34" rx="6"/>
+    <text class="brg-word" x="241" y="162">were dirty.</text>
+  </g>
+  <g class="brg-v brg-v-door">
+    <rect class="brg-tok" x="176" y="140" width="130" height="34" rx="6"/>
+    <text class="brg-word" x="241" y="162">was locked.</text>
+  </g>
+
+  <!-- ghost inference node -->
+  <g class="brg-ghost">
+    <rect x="380" y="86" width="240" height="52" rx="8"/>
+    <text x="500" y="108" text-anchor="middle" font-size="12" font-weight="600">part-of knowledge</text>
+    <text x="500" y="126" text-anchor="middle" font-size="11">rooms have ceilings, windows, doors</text>
+  </g>
+
+  <!-- arcs: bridging noun -> ghost -> room -->
+  <path class="brg-arc brg-arc-ghost" d="M 170 148 C 250 120, 310 112, 374 110" marker-end="url(#brg-arrow-v)"/>
+  <path class="brg-arc brg-arc-ghost" d="M 380 96 C 330 76, 300 70, 274 66" marker-end="url(#brg-arrow-v)"/>
+  <text class="brg-note" x="300" y="180" fill="#a78bfa">the arc routes through knowledge, not text</text>
+
+  <!-- chips -->
+  <g class="brg-chip is-active" data-fg="chip" data-variant="ceiling" tabindex="0" role="button" aria-label="Use the ceiling as the bridging noun">
+    <rect x="40" y="230" width="100" height="30" rx="15"/>
+    <text x="90" y="249">the ceiling</text>
+  </g>
+  <g class="brg-chip" data-fg="chip" data-variant="windows" tabindex="0" role="button" aria-label="Use the windows as the bridging noun">
+    <rect x="152" y="230" width="110" height="30" rx="15"/>
+    <text x="207" y="249">the windows</text>
+  </g>
+  <g class="brg-chip" data-fg="chip" data-variant="door" tabindex="0" role="button" aria-label="Use the door as the bridging noun">
+    <rect x="274" y="230" width="90" height="30" rx="15"/>
+    <text x="319" y="249">the door</text>
+  </g>
+
+  <text class="brg-note" x="40" y="300">Same move: "I bought a book. The author is French." &#8212; books have authors.</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption"><strong>The ceiling</strong> &#8212; definite on first mention, yet perfectly natural. Interpreting it means importing <code>room</code> from the previous sentence AND the unstated fact that rooms have ceilings.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const CAP = {
+    ceiling: '<strong>The ceiling</strong> — definite on first mention, yet perfectly natural. Interpreting it means importing <code>room</code> from the previous sentence AND the unstated fact that rooms have ceilings.',
+    windows: '<strong>The windows</strong> — the same bridge holds for any part of a room. The definite article is licensed by inference, not by a prior mention anywhere in the text.',
+    door: '<strong>The door</strong> — one anchor, many implicit referents. The information the interpretation needs is partly outside the document entirely: it lives in world knowledge.'
+  };
+  const chips = root.querySelectorAll('[data-fg="chip"]');
+  function select(variant) {
+    ['ceiling', 'windows', 'door'].forEach((v) => root.classList.toggle('is-' + v, v === variant));
+    chips.forEach((c) => c.classList.toggle('is-active', c.dataset.variant === variant));
+    caption.innerHTML = CAP[variant];
+  }
+  chips.forEach((c) => {
+    c.addEventListener('click', () => select(c.dataset.variant));
+    c.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(c.dataset.variant); }
+    });
+  });
+  select('ceiling');
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

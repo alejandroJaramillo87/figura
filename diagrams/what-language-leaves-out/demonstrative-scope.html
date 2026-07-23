@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demonstrative scope: how much does "that" point at?</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Demonstrative scope</h1>
+<p>"That was a mistake." — "that" can point at one act inside the previous sentence, or at the whole decision. The referent's size is ambiguous, not just its identity.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-demonstrative-scope">
+<style>
+.fg-demonstrative-scope {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-demonstrative-scope svg { display: block; width: 100%; height: auto; }
+.fg-demonstrative-scope text { font-family: inherit; }
+
+.fg-demonstrative-scope .dms-note { fill: var(--muted); font-size: 11px; }
+.fg-demonstrative-scope .dms-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-demonstrative-scope .dms-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+
+/* "That" always highlighted */
+.fg-demonstrative-scope .dms-that .dms-tok { stroke: var(--accent); }
+.fg-demonstrative-scope .dms-that .dms-word { fill: var(--accent); font-weight: 600; }
+
+/* the growing referent bracket: narrow (default) vs wide (is-wide) */
+.fg-demonstrative-scope .dms-bracket {
+  fill: none; stroke: var(--ok); stroke-width: 2.5;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-demonstrative-scope .dms-bracket-narrow { opacity: 1; }
+.fg-demonstrative-scope .dms-bracket-wide { opacity: 0; }
+.fg-demonstrative-scope.is-wide .dms-bracket-narrow { opacity: 0; }
+.fg-demonstrative-scope.is-wide .dms-bracket-wide { opacity: 1; }
+
+/* highlighted span tokens */
+.fg-demonstrative-scope:not(.is-wide) .dms-span-narrow .dms-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-demonstrative-scope.is-wide .dms-span-narrow .dms-tok,
+.fg-demonstrative-scope.is-wide .dms-span-rest .dms-tok { stroke: var(--ok); fill: #0e4429; }
+
+/* bracket labels */
+.fg-demonstrative-scope .dms-blabel { font-size: 12px; font-weight: 600; fill: var(--ok);
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-demonstrative-scope .dms-blabel-narrow { opacity: 1; }
+.fg-demonstrative-scope .dms-blabel-wide { opacity: 0; }
+.fg-demonstrative-scope.is-wide .dms-blabel-narrow { opacity: 0; }
+.fg-demonstrative-scope.is-wide .dms-blabel-wide { opacity: 1; }
+
+/* arc from That up to the bracket */
+.fg-demonstrative-scope .dms-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-demonstrative-scope .dms-arc-narrow { opacity: 1; }
+.fg-demonstrative-scope .dms-arc-wide { opacity: 0; }
+.fg-demonstrative-scope.is-wide .dms-arc-narrow { opacity: 0; }
+.fg-demonstrative-scope.is-wide .dms-arc-wide { opacity: 1; }
+
+.fg-demonstrative-scope .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-demonstrative-scope .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-demonstrative-scope .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-demonstrative-scope .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-demonstrative-scope .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-demonstrative-scope .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-demonstrative-scope .dms-tok, .fg-demonstrative-scope .dms-bracket,
+  .fg-demonstrative-scope .dms-blabel, .fg-demonstrative-scope .dms-arc { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="First sentence: We shipped on Friday without running the tests. Second sentence: That was a mistake. A green bracket above the first sentence marks the referent of That. In the narrow reading the bracket spans only without running the tests — skipping the tests was the mistake. Toggling to the wide reading grows the bracket to span the whole first sentence — the entire decision was the mistake. The demonstrative's referent has ambiguous size, not just ambiguous identity.">
+  <defs>
+    <marker id="dms-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <text class="dms-note" x="40" y="26">the ambiguity is the referent's SIZE: one act, or the whole decision?</text>
+
+  <!-- brackets over sentence 1 -->
+  <path class="dms-bracket dms-bracket-narrow" d="M 302 66 L 302 58 L 620 58 L 620 66"/>
+  <path class="dms-bracket dms-bracket-wide"   d="M 40 66 L 40 58 L 620 58 L 620 66"/>
+  <text class="dms-blabel dms-blabel-narrow" x="461" y="48" text-anchor="middle">referent: skipping the tests</text>
+  <text class="dms-blabel dms-blabel-wide" x="330" y="48" text-anchor="middle">referent: the entire decision</text>
+
+  <!-- sentence 1 -->
+  <g class="dms-span-rest">
+    <rect class="dms-tok" x="40" y="78" width="130" height="34" rx="6"/>
+    <text class="dms-word" x="105" y="100">We shipped</text>
+    <rect class="dms-tok" x="178" y="78" width="116" height="34" rx="6"/>
+    <text class="dms-word" x="236" y="100">on Friday</text>
+  </g>
+  <g class="dms-span-narrow">
+    <rect class="dms-tok" x="302" y="78" width="90" height="34" rx="6"/>
+    <text class="dms-word" x="347" y="100">without</text>
+    <rect class="dms-tok" x="400" y="78" width="90" height="34" rx="6"/>
+    <text class="dms-word" x="445" y="100">running</text>
+    <rect class="dms-tok" x="498" y="78" width="122" height="34" rx="6"/>
+    <text class="dms-word" x="559" y="100">the tests.</text>
+  </g>
+
+  <!-- sentence 2 -->
+  <g class="dms-that">
+    <rect class="dms-tok" x="40" y="170" width="66" height="34" rx="6"/>
+    <text class="dms-word" x="73" y="192">That</text>
+  </g>
+  <rect class="dms-tok" x="114" y="170" width="160" height="34" rx="6"/>
+  <text class="dms-word" x="194" y="192">was a mistake.</text>
+
+  <!-- arcs from That to each bracket -->
+  <path class="dms-arc dms-arc-narrow" d="M 90 170 C 180 140, 340 130, 440 118" marker-end="url(#dms-arrow)"/>
+  <path class="dms-arc dms-arc-wide" d="M 73 170 C 80 150, 100 132, 130 118" marker-end="url(#dms-arrow)"/>
+
+  <text class="dms-note" x="40" y="244">"this", "that", "those" can point at entities, propositions, or whole stretches of discourse.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Switch between the narrow and wide readings of the demonstrative">Grow the referent</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Narrow</strong> &#8212; <code>That</code> points at one act inside the sentence: skipping the tests. Shipping on Friday might have been fine; the mistake is the missing test run.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    narrow: '<strong>Narrow</strong> — <code>That</code> points at one act inside the sentence: skipping the tests. Shipping on Friday might have been fine; the mistake is the missing test run.',
+    wide: '<strong>Wide</strong> — the same token now points at the entire previous sentence: the whole decision was a mistake. Nothing in "That" marks the boundary; the reader sizes the referent from plausibility.'
+  };
+  btn.addEventListener('click', () => {
+    const on = root.classList.toggle('is-wide');
+    caption.innerHTML = on ? CAP.wide : CAP.narrow;
+    btn.textContent = on ? 'Shrink the referent' : 'Grow the referent';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

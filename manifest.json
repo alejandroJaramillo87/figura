@@ -201,5 +201,54 @@
     "title": "Domain tint: the document decides what \"positive\" means",
     "post": "what-language-leaves-out-lexical",
     "description": "The same sentence inside an oncology note and a product review; diffuse arcs show the register of the whole document pinning the sense."
+  },
+  {
+    "id": "cataphora-order",
+    "path": "diagrams/what-language-leaves-out/cataphora-order.html",
+    "title": "Cataphora: the pointer arrives before its target",
+    "post": "what-language-leaves-out-referential",
+    "description": "Step timeline of a causal model reading “Before she left, Mary locked the door.” — the mask slides right, “she” stays unresolved until “Mary” arrives and the arc draws backward."
+  },
+  {
+    "id": "definite-pick",
+    "path": "diagrams/what-language-leaves-out/definite-pick.html",
+    "title": "Definite descriptions: which one is “the animal”?",
+    "post": "what-language-leaves-out-referential",
+    "description": "“The animal” must pick between a mentioned dog and cat; toggling the sentence's ending re-points the description via world knowledge."
+  },
+  {
+    "id": "bridging-implicit",
+    "path": "diagrams/what-language-leaves-out/bridging-implicit.html",
+    "title": "Bridging reference: the referent was never mentioned",
+    "post": "what-language-leaves-out-referential",
+    "description": "“I entered the room. The ceiling was high.” — the reference routes through a dashed part-of knowledge node back to “room”; chips switch among ceiling, windows, door."
+  },
+  {
+    "id": "one-anaphora",
+    "path": "diagrams/what-language-leaves-out/one-anaphora.html",
+    "title": "One-anaphora: “the red one” copies in a missing noun",
+    "post": "what-language-leaves-out-referential",
+    "description": "Toggle reveals the elided noun as a ghost token after “one”, with a copy-in arc from “shirt” in the previous utterance."
+  },
+  {
+    "id": "demonstrative-scope",
+    "path": "diagrams/what-language-leaves-out/demonstrative-scope.html",
+    "title": "Demonstrative scope: how much does “that” point at?",
+    "post": "what-language-leaves-out-referential",
+    "description": "“That was a mistake.” — a bracket over the previous sentence grows from one act to the whole decision; the referent's size is the ambiguity."
+  },
+  {
+    "id": "zero-anaphora",
+    "path": "diagrams/what-language-leaves-out/zero-anaphora.html",
+    "title": "Zero anaphora: the referring expression that is not there",
+    "post": "what-language-leaves-out-referential",
+    "description": "Spanish pro-drop: “¿Y María? — Llegó tarde.” — a dashed empty-slot token carries the arc back to María; the referent has no surface token at all."
+  },
+  {
+    "id": "coref-chain",
+    "path": "diagrams/what-language-leaves-out/coref-chain.html",
+    "title": "Coreference chain: four names, one entity",
+    "post": "what-language-leaves-out-referential",
+    "description": "Step timeline threading “Dr. Smith → she → the doctor → her” across a paragraph, ending in one entity node with four aliases."
   }
 ]
