@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filler-gap: a phrase waiting for its position</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Filler-gap dependencies</h1>
+<p>"Which book did you say Mary thought John read __?" The fronted phrase must be linked to a gap two clauses downstream.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-filler-gap">
+<style>
+.fg-filler-gap {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-filler-gap svg { display: block; width: 100%; height: auto; }
+.fg-filler-gap text { font-family: inherit; }
+
+.fg-filler-gap .flg-note { fill: var(--muted); font-size: 11px; }
+.fg-filler-gap .flg-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-filler-gap .flg-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+
+/* the filler: warn while pending, ok when resolved */
+.fg-filler-gap .flg-filler .flg-tok { stroke: var(--warn); }
+.fg-filler-gap.is-resolved .flg-filler .flg-tok { stroke: var(--ok); fill: #0e4429; }
+
+/* pending badge swaps to resolved */
+.fg-filler-gap .flg-badge { transition: opacity 0.7s; }
+.fg-filler-gap .flg-badge-open { opacity: 1; }
+.fg-filler-gap .flg-badge-done { opacity: 0; }
+.fg-filler-gap.is-resolved .flg-badge-open { opacity: 0; }
+.fg-filler-gap.is-resolved .flg-badge-done { opacity: 1; }
+
+/* the gap site: dashed ghost, revealed when resolved */
+.fg-filler-gap .flg-gap { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-filler-gap.is-resolved .flg-gap { opacity: 1; }
+.fg-filler-gap .flg-gap rect { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-filler-gap .flg-gap text { fill: var(--ok); }
+
+/* intervening clauses dim when resolved (the interference zone) */
+.fg-filler-gap .flg-mid { transition: opacity 0.7s; }
+.fg-filler-gap.is-resolved .flg-mid { opacity: 0.45; }
+.fg-filler-gap .flg-zone { opacity: 0; transition: opacity 0.7s; }
+.fg-filler-gap.is-resolved .flg-zone { opacity: 1; }
+
+/* the long arc */
+.fg-filler-gap .flg-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-filler-gap.is-resolved .flg-arc { opacity: 1; }
+
+.fg-filler-gap .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-filler-gap .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-filler-gap .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-filler-gap .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-filler-gap .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-filler-gap .fg-caption code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-filler-gap .flg-tok, .fg-filler-gap .flg-gap, .fg-filler-gap .flg-arc,
+  .fg-filler-gap .flg-badge, .fg-filler-gap .flg-mid, .fg-filler-gap .flg-zone { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: Which book did you say Mary thought John read, as token blocks. The fronted phrase which book is outlined in amber with a pending badge — it has been picked up but not yet placed. A button resolves the dependency: a dashed gap slot appears after read, the two embedded clauses in between dim as an interference zone, and a long green arc runs from the gap back to which book. The fronted phrase was the object of read all along, two clauses away.">
+  <text class="flg-note" x="40" y="26">the fronted phrase is picked up at the start and carried, unplaced, across two clauses</text>
+
+  <!-- token row -->
+  <g class="flg-filler">
+    <rect class="flg-tok" x="40" y="96" width="64" height="36" rx="6"/>
+    <text class="flg-word" x="72" y="119">Which</text>
+    <rect class="flg-tok" x="112" y="96" width="56" height="36" rx="6"/>
+    <text class="flg-word" x="140" y="119">book</text>
+  </g>
+  <rect class="flg-tok" x="176" y="96" width="44" height="36" rx="6"/>
+  <text class="flg-word" x="198" y="119">did</text>
+  <g class="flg-mid">
+    <rect class="flg-tok" x="228" y="96" width="46" height="36" rx="6"/>
+    <text class="flg-word" x="251" y="119">you</text>
+    <rect class="flg-tok" x="282" y="96" width="48" height="36" rx="6"/>
+    <text class="flg-word" x="306" y="119">say</text>
+    <rect class="flg-tok" x="338" y="96" width="58" height="36" rx="6"/>
+    <text class="flg-word" x="367" y="119">Mary</text>
+    <rect class="flg-tok" x="404" y="96" width="76" height="36" rx="6"/>
+    <text class="flg-word" x="442" y="119">thought</text>
+    <rect class="flg-tok" x="488" y="96" width="54" height="36" rx="6"/>
+    <text class="flg-word" x="515" y="119">John</text>
+  </g>
+  <rect class="flg-tok" x="550" y="96" width="56" height="36" rx="6"/>
+  <text class="flg-word" x="578" y="119">read</text>
+  <g class="flg-gap">
+    <rect x="614" y="96" width="48" height="36" rx="6"/>
+    <text x="638" y="119" text-anchor="middle" font-size="13">__?</text>
+  </g>
+
+  <!-- badges under the filler -->
+  <g class="flg-badge flg-badge-open">
+    <text class="flg-note" x="104" y="152" text-anchor="middle" fill="#fbbf24">picked up &#8212; not yet placed</text>
+  </g>
+  <g class="flg-badge flg-badge-done">
+    <text class="flg-note" x="104" y="152" text-anchor="middle" fill="#34d399">placed: object of "read"</text>
+  </g>
+
+  <!-- interference-zone bracket -->
+  <g class="flg-zone">
+    <path d="M 230 152 L 230 160 L 540 160 L 540 152" fill="none" stroke="#64748b" stroke-width="1.5"/>
+    <text class="flg-note" x="385" y="176" text-anchor="middle">two embedded clauses of interference</text>
+  </g>
+
+  <!-- the long arc: gap -> filler -->
+  <path class="flg-arc" d="M 630 96 C 560 30, 190 30, 110 90" marker-end="url(#flg-arrow)"/>
+
+  <text class="flg-note" x="40" y="222">Every verb in between has its own arguments to claim &#8212; "say" and "thought" each take a clause.</text>
+  <text class="flg-note" x="40" y="240">The filler must skip them all and bind to the one verb still missing an object.</text>
+
+  <defs>
+    <marker id="flg-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Resolve or unresolve the filler-gap dependency">Find the gap</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Pending</strong> &#8212; "Which book" opens the sentence with no verb to belong to yet. The reader carries it forward, an obligation waiting for a position &#8212; and every verb that arrives could be, but is not, the place it lands.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    off: '<strong>Pending</strong> — "Which book" opens the sentence with no verb to belong to yet. The reader carries it forward, an obligation waiting for a position — and every verb that arrives could be, but is not, the place it lands.',
+    on: '<strong>Resolved</strong> — the gap sits after "read", two clauses away: <code>read(John, which book)</code>. The dependency is a closure over a distant binding: the variable was captured at the top and only used at the bottom, with two other scopes in between.'
+  };
+  btn.addEventListener('click', () => {
+    const on = root.classList.toggle('is-resolved');
+    caption.innerHTML = on ? CAP.on : CAP.off;
+    btn.textContent = on ? 'Hide the gap' : 'Find the gap';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

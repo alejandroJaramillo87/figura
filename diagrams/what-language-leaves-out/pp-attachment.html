@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PP-attachment: where does "with the telescope" hang?</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>PP-attachment</h1>
+<p>"I saw the man with the telescope." The prepositional phrase can attach to the verb (I used the telescope) or the noun (the man had it). Same tokens, two structures.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-pp-attachment">
+<style>
+.fg-pp-attachment {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-pp-attachment svg { display: block; width: 100%; height: auto; }
+.fg-pp-attachment text { font-family: inherit; }
+
+.fg-pp-attachment .ppa-note { fill: var(--muted); font-size: 11px; }
+.fg-pp-attachment .ppa-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-pp-attachment .ppa-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+
+/* the PP itself is always highlighted */
+.fg-pp-attachment .ppa-pp .ppa-tok { stroke: var(--violet); }
+
+/* attachment sites light per state (default: verb attachment) */
+.fg-pp-attachment .ppa-saw .ppa-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-pp-attachment.is-man .ppa-saw .ppa-tok { stroke: var(--border); fill: var(--panel); }
+.fg-pp-attachment.is-man .ppa-man .ppa-tok { stroke: var(--ok); fill: #0e4429; }
+
+/* two arcs cross-fade */
+.fg-pp-attachment .ppa-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-pp-attachment .ppa-arc-saw { opacity: 1; }
+.fg-pp-attachment .ppa-arc-man { opacity: 0; }
+.fg-pp-attachment.is-man .ppa-arc-saw { opacity: 0; }
+.fg-pp-attachment.is-man .ppa-arc-man { opacity: 1; }
+
+/* reading glosses cross-fade */
+.fg-pp-attachment .ppa-gloss { transition: opacity 0.7s; font-size: 12px; }
+.fg-pp-attachment .ppa-gloss-saw { fill: var(--ok); opacity: 1; }
+.fg-pp-attachment .ppa-gloss-man { fill: var(--ok); opacity: 0; }
+.fg-pp-attachment.is-man .ppa-gloss-saw { opacity: 0; }
+.fg-pp-attachment.is-man .ppa-gloss-man { opacity: 1; }
+
+.fg-pp-attachment .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-pp-attachment .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-pp-attachment .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-pp-attachment .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-pp-attachment .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-pp-attachment .ppa-tok, .fg-pp-attachment .ppa-arc, .fg-pp-attachment .ppa-gloss { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: I saw the man with the telescope, as token blocks. The phrase with the telescope is outlined in violet. A button flips between two attachments. In the instrument reading, a green arc runs from the phrase back to the verb saw — I used the telescope. In the possession reading, the arc runs to the noun man instead — the man had the telescope. Same tokens, two structures; nothing inside the sentence decides.">
+  <text class="ppa-note" x="40" y="26">the arc shows what the phrase's interpretation needs &#8212; not what any attention head does</text>
+
+  <!-- token row -->
+  <rect class="ppa-tok" x="40" y="110" width="30" height="36" rx="6"/>
+  <text class="ppa-word" x="55" y="133">I</text>
+  <g class="ppa-saw">
+    <rect class="ppa-tok" x="78" y="110" width="56" height="36" rx="6"/>
+    <text class="ppa-word" x="106" y="133">saw</text>
+  </g>
+  <rect class="ppa-tok" x="142" y="110" width="48" height="36" rx="6"/>
+  <text class="ppa-word" x="166" y="133">the</text>
+  <g class="ppa-man">
+    <rect class="ppa-tok" x="198" y="110" width="58" height="36" rx="6"/>
+    <text class="ppa-word" x="227" y="133">man</text>
+  </g>
+  <g class="ppa-pp">
+    <rect class="ppa-tok" x="272" y="110" width="58" height="36" rx="6"/>
+    <text class="ppa-word" x="301" y="133">with</text>
+    <rect class="ppa-tok" x="338" y="110" width="48" height="36" rx="6"/>
+    <text class="ppa-word" x="362" y="133">the</text>
+    <rect class="ppa-tok" x="394" y="110" width="102" height="36" rx="6"/>
+    <text class="ppa-word" x="445" y="133">telescope.</text>
+  </g>
+
+  <!-- arcs: PP -> saw / PP -> man -->
+  <path class="ppa-arc ppa-arc-saw" d="M 300 110 C 260 56, 160 56, 112 104" marker-end="url(#ppa-arrow)"/>
+  <path class="ppa-arc ppa-arc-man" d="M 300 110 C 280 74, 258 74, 233 104" marker-end="url(#ppa-arrow)"/>
+
+  <!-- glosses -->
+  <text class="ppa-gloss ppa-gloss-saw" x="40" y="192">instrument: the seeing was done WITH the telescope</text>
+  <text class="ppa-gloss ppa-gloss-man" x="40" y="192">possession: the man WITH the telescope is the one I saw</text>
+  <text class="ppa-note" x="40" y="216">companion case, same shape: "the servant of the actress who was on the balcony" &#8212; who was on the balcony?</text>
+
+  <defs>
+    <marker id="ppa-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Flip the attachment site of the prepositional phrase">Flip the attachment</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Verb attachment</strong> &#8212; "with the telescope" modifies "saw": I used the telescope to see him. The phrase hangs off the verb, like an argument passed to the function call.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    saw: '<strong>Verb attachment</strong> — "with the telescope" modifies "saw": I used the telescope to see him. The phrase hangs off the verb, like an argument passed to the function call.',
+    man: '<strong>Noun attachment</strong> — "with the telescope" modifies "man": he was carrying it. Same tokens, different tree — the precedence was never written down, the way parentheses would have settled it in code.'
+  };
+  btn.addEventListener('click', () => {
+    const man = root.classList.toggle('is-man');
+    caption.innerHTML = man ? CAP.man : CAP.saw;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

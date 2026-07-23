@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ellipsis: the predicate that isn't there</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Ellipsis, gapping, sluicing</h1>
+<p>"John can play guitar, and Mary can __ too." A whole verb phrase is missing and must be reconstructed from earlier material.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-gapping-ellipsis">
+<style>
+.fg-gapping-ellipsis {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-gapping-ellipsis svg { display: block; width: 100%; height: auto; }
+.fg-gapping-ellipsis text { font-family: inherit; }
+
+.fg-gapping-ellipsis .gel-note { fill: var(--muted); font-size: 11px; }
+.fg-gapping-ellipsis .gel-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-gapping-ellipsis .gel-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+
+/* source VP lights green when revealed */
+.fg-gapping-ellipsis.is-shown .gel-src .gel-tok { stroke: var(--ok); fill: #0e4429; }
+
+/* ghost tokens: dashed, appear on reveal */
+.fg-gapping-ellipsis .gel-ghost { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-gapping-ellipsis.is-shown .gel-ghost { opacity: 1; }
+.fg-gapping-ellipsis .gel-ghost rect { fill: none; stroke: var(--warn); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-gapping-ellipsis .gel-ghost text { fill: var(--warn); }
+
+/* copy-in arcs */
+.fg-gapping-ellipsis .gel-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-gapping-ellipsis.is-shown .gel-arc { opacity: 1; }
+
+.fg-gapping-ellipsis .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-gapping-ellipsis .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-gapping-ellipsis .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-gapping-ellipsis .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-gapping-ellipsis .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-gapping-ellipsis .gel-tok, .fg-gapping-ellipsis .gel-ghost, .fg-gapping-ellipsis .gel-arc { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Two example rows. First: John can play guitar, and Mary can too — a button reveals a dashed ghost phrase play guitar after the second can, with a green copy-in arc from the original play guitar. Second row, sluicing: Someone left, but I don't know who — a dashed ghost left appears after who, copied from the first clause's verb. The elided material has no tokens; it is reconstructed wholesale from earlier structure.">
+  <text class="gel-note" x="40" y="26">nothing marks the gap but a stranded auxiliary &#8212; the predicate is copied in from the left</text>
+
+  <!-- row 1: VP-ellipsis -->
+  <rect class="gel-tok" x="40" y="56" width="54" height="34" rx="6"/>
+  <text class="gel-word" x="67" y="78">John</text>
+  <rect class="gel-tok" x="102" y="56" width="46" height="34" rx="6"/>
+  <text class="gel-word" x="125" y="78">can</text>
+  <g class="gel-src">
+    <rect class="gel-tok" x="156" y="56" width="52" height="34" rx="6"/>
+    <text class="gel-word" x="182" y="78">play</text>
+    <rect class="gel-tok" x="216" y="56" width="62" height="34" rx="6"/>
+    <text class="gel-word" x="247" y="78">guitar,</text>
+  </g>
+  <rect class="gel-tok" x="286" y="56" width="48" height="34" rx="6"/>
+  <text class="gel-word" x="310" y="78">and</text>
+  <rect class="gel-tok" x="342" y="56" width="58" height="34" rx="6"/>
+  <text class="gel-word" x="371" y="78">Mary</text>
+  <rect class="gel-tok" x="408" y="56" width="46" height="34" rx="6"/>
+  <text class="gel-word" x="431" y="78">can</text>
+  <g class="gel-ghost">
+    <rect x="462" y="56" width="96" height="34" rx="6"/>
+    <text x="510" y="78" text-anchor="middle" font-size="13">play guitar</text>
+  </g>
+  <rect class="gel-tok" x="566" y="56" width="52" height="34" rx="6"/>
+  <text class="gel-word" x="592" y="78">too.</text>
+
+  <!-- copy-in arc row 1 -->
+  <path class="gel-arc" d="M 500 56 C 440 22, 270 22, 215 50" marker-end="url(#gel-arrow)"/>
+
+  <text class="gel-note" x="40" y="126">VP-ellipsis: "can" strands, and the entire predicate is recovered from the first conjunct.</text>
+
+  <!-- row 2: sluicing -->
+  <rect class="gel-tok" x="40" y="156" width="86" height="34" rx="6"/>
+  <text class="gel-word" x="83" y="178">Someone</text>
+  <g class="gel-src">
+    <rect class="gel-tok" x="134" y="156" width="50" height="34" rx="6"/>
+    <text class="gel-word" x="159" y="178">left,</text>
+  </g>
+  <rect class="gel-tok" x="192" y="156" width="46" height="34" rx="6"/>
+  <text class="gel-word" x="215" y="178">but</text>
+  <rect class="gel-tok" x="246" y="156" width="26" height="34" rx="6"/>
+  <text class="gel-word" x="259" y="178">I</text>
+  <rect class="gel-tok" x="280" y="156" width="56" height="34" rx="6"/>
+  <text class="gel-word" x="308" y="178">don't</text>
+  <rect class="gel-tok" x="344" y="156" width="58" height="34" rx="6"/>
+  <text class="gel-word" x="373" y="178">know</text>
+  <rect class="gel-tok" x="410" y="156" width="54" height="34" rx="6"/>
+  <text class="gel-word" x="437" y="178">who</text>
+  <g class="gel-ghost">
+    <rect x="472" y="156" width="52" height="34" rx="6"/>
+    <text x="498" y="178" text-anchor="middle" font-size="13">left.</text>
+  </g>
+
+  <!-- copy-in arc row 2 -->
+  <path class="gel-arc" d="M 490 156 C 430 122, 220 122, 165 150" marker-end="url(#gel-arrow)"/>
+
+  <text class="gel-note" x="40" y="226">Sluicing: everything after "who" is gone; the question "who left?" survives as a single word.</text>
+  <text class="gel-note" x="40" y="246">Gapping does it mid-sentence: "Mary ordered pasta, and John __ pizza." &#8212; the verb vanishes, the</text>
+  <text class="gel-note" x="40" y="264">arguments stay, and the reader re-imports "ordered" without noticing the theft.</text>
+
+  <defs>
+    <marker id="gel-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Reveal or hide the elided material">Reveal the missing material</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Surface form</strong> &#8212; "Mary can too." and "I don't know who." end abruptly: an auxiliary with no verb phrase, a question word with no question. The sentences are grammatical only because the reader fills the holes.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    off: '<strong>Surface form</strong> — "Mary can too." and "I don\'t know who." end abruptly: an auxiliary with no verb phrase, a question word with no question. The sentences are grammatical only because the reader fills the holes.',
+    on: '<strong>Restored</strong> — the elided predicates copied back in from the left. Language deduplicates aggressively: say a structure once, then refer to it by position. The interpretation of the gap is entirely a fact about tokens that came before.'
+  };
+  btn.addEventListener('click', () => {
+    const on = root.classList.toggle('is-shown');
+    caption.innerHTML = on ? CAP.on : CAP.off;
+    btn.textContent = on ? 'Hide the missing material' : 'Reveal the missing material';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
