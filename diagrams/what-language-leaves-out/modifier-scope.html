@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modifier scope: what does "only" attach to?</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Scope of modifiers</h1>
+<p>"I only ate the cake." Only ate it (didn't bake it)? Or ate only the cake (nothing else)? The modifier's attachment site is not written down.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-modifier-scope">
+<style>
+.fg-modifier-scope {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-modifier-scope svg { display: block; width: 100%; height: auto; }
+.fg-modifier-scope text { font-family: inherit; }
+
+.fg-modifier-scope .mds-note { fill: var(--muted); font-size: 11px; }
+.fg-modifier-scope .mds-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-modifier-scope .mds-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+.fg-modifier-scope .mds-only .mds-tok { stroke: var(--warn); }
+
+/* targets light per state (default: verb) */
+.fg-modifier-scope .mds-ate .mds-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-modifier-scope.is-object .mds-ate .mds-tok { stroke: var(--border); fill: var(--panel); }
+.fg-modifier-scope.is-object .mds-cake .mds-tok { stroke: var(--ok); fill: #0e4429; }
+
+/* brackets cross-fade */
+.fg-modifier-scope .mds-br { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-modifier-scope .mds-br path { fill: none; stroke: var(--ok); stroke-width: 2; }
+.fg-modifier-scope .mds-br-verb { opacity: 1; }
+.fg-modifier-scope .mds-br-obj { opacity: 0; }
+.fg-modifier-scope.is-object .mds-br-verb { opacity: 0; }
+.fg-modifier-scope.is-object .mds-br-obj { opacity: 1; }
+
+/* glosses cross-fade */
+.fg-modifier-scope .mds-gloss { transition: opacity 0.7s; font-size: 12px; fill: var(--ok); }
+.fg-modifier-scope .mds-gloss-verb { opacity: 1; }
+.fg-modifier-scope .mds-gloss-obj { opacity: 0; }
+.fg-modifier-scope.is-object .mds-gloss-verb { opacity: 0; }
+.fg-modifier-scope.is-object .mds-gloss-obj { opacity: 1; }
+
+.fg-modifier-scope .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-modifier-scope .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-modifier-scope .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-modifier-scope .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-modifier-scope .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-modifier-scope .mds-tok, .fg-modifier-scope .mds-br, .fg-modifier-scope .mds-gloss { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: I only ate the cake, as token blocks with only outlined in amber. A button slides a green bracket between two attachment sites. Bracketing the verb ate gives the reading: eating is all I did to it — I didn't bake it or buy it. Bracketing the cake gives: the cake is all I ate — nothing else. The modifier's target is a choice the sentence never records.">
+  <text class="mds-note" x="40" y="26">"only" excludes alternatives &#8212; but alternatives to WHAT is decided by attachment</text>
+
+  <!-- token row -->
+  <rect class="mds-tok" x="120" y="96" width="30" height="36" rx="6"/>
+  <text class="mds-word" x="135" y="119">I</text>
+  <g class="mds-only">
+    <rect class="mds-tok" x="158" y="96" width="58" height="36" rx="6"/>
+    <text class="mds-word" x="187" y="119">only</text>
+  </g>
+  <g class="mds-ate">
+    <rect class="mds-tok" x="224" y="96" width="50" height="36" rx="6"/>
+    <text class="mds-word" x="249" y="119">ate</text>
+  </g>
+  <rect class="mds-tok" x="282" y="96" width="48" height="36" rx="6"/>
+  <text class="mds-word" x="306" y="119">the</text>
+  <g class="mds-cake">
+    <rect class="mds-tok" x="338" y="96" width="62" height="36" rx="6"/>
+    <text class="mds-word" x="369" y="119">cake.</text>
+  </g>
+
+  <!-- verb bracket -->
+  <g class="mds-br mds-br-verb">
+    <path d="M 226 88 L 226 78 L 272 78 L 272 88"/>
+    <text class="mds-note" x="249" y="68" text-anchor="middle">only [ate]</text>
+  </g>
+  <!-- object bracket -->
+  <g class="mds-br mds-br-obj">
+    <path d="M 284 88 L 284 78 L 400 78 L 400 88"/>
+    <text class="mds-note" x="342" y="68" text-anchor="middle">only [the cake]</text>
+  </g>
+
+  <!-- glosses -->
+  <text class="mds-gloss mds-gloss-verb" x="40" y="176">eating is all I did to it &#8212; I didn't bake it, buy it, or drop it</text>
+  <text class="mds-gloss mds-gloss-obj" x="40" y="176">the cake is all I ate &#8212; no cookies, no pie</text>
+  <text class="mds-note" x="40" y="206">Quantifiers do it too: "nearly every student" is not "every nearly-student" &#8212; the modifier's</text>
+  <text class="mds-note" x="40" y="224">landing site changes what set the sentence is even about.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Slide the modifier's attachment between the verb and the object">Slide the attachment</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Verb attachment</strong> &#8212; only [ate]: the exclusion targets the action. Among all the things I might have done with that cake, eating was the only one. Spoken aloud, stress would disambiguate &#8212; text carries no stress.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    verb: '<strong>Verb attachment</strong> — only [ate]: the exclusion targets the action. Among all the things I might have done with that cake, eating was the only one. Spoken aloud, stress would disambiguate — text carries no stress.',
+    obj: '<strong>Object attachment</strong> — only [the cake]: the exclusion targets the thing. Among everything on the table, the cake was all I touched. Same five tokens; the modifier bound to a different constituent.'
+  };
+  btn.addEventListener('click', () => {
+    const obj = root.classList.toggle('is-object');
+    caption.innerHTML = obj ? CAP.obj : CAP.verb;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
