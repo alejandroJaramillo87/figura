@@ -79,6 +79,10 @@ is inlined into the blog. Everything the diagram needs must live inside it.
   timelines to the final state (manual controls stay usable).
 - **Accessibility.** `role="img"` + meaningful `aria-label` on the SVG;
   `aria-label` on control buttons.
+- **No layout shift.** Elements whose content changes at runtime (hover
+  captions, step counters) must reserve their maximum height up front —
+  size `min-height` for the longest text at column width — so interacting
+  with a diagram never reflows the surrounding post.
 - **Responsive.** SVG uses `viewBox` and `width: 100%; height: auto`. Design
   for a ~720px column; keep text ≥ 11px at natural size.
 
