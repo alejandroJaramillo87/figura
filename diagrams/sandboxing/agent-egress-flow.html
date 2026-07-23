@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent sandbox egress flow</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Agent sandbox egress flow</h1>
+<p>Step through how an agent's outbound requests are contained: an internal network with no internet route, a deny-by-default Squid proxy, and an allowlist verdict per request.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-agent-egress-flow">
+<style>
+.fg-agent-egress-flow {
+  --bg: #0f172a; --panel: #1e293b; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-agent-egress-flow svg { display: block; width: 100%; height: auto; }
+.fg-agent-egress-flow text { font-family: inherit; }
+
+.fg-agent-egress-flow .aef-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.45s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.45s;
+}
+.fg-agent-egress-flow .aef-zone {
+  fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
+  transition: stroke 0.45s;
+}
+.fg-agent-egress-flow .aef-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
+.fg-agent-egress-flow .aef-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; opacity: 0.8; transition: fill 0.45s; }
+.fg-agent-egress-flow .aef-label { fill: var(--muted); font-size: 12px; }
+.fg-agent-egress-flow .aef-verdict { font-size: 11.5px; font-weight: 600; text-anchor: middle; opacity: 0; transition: opacity 0.45s; }
+.fg-agent-egress-flow .aef-allow { fill: var(--ok); }
+.fg-agent-egress-flow .aef-deny { fill: var(--hot); }
+
+.fg-agent-egress-flow .aef-path {
+  stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.35;
+  transition: stroke 0.45s, opacity 0.45s;
+}
+.fg-agent-egress-flow .aef-nowall {
+  stroke: var(--hot); stroke-width: 2.5; opacity: 0.35;
+  transition: opacity 0.45s;
+}
+
+/* step states */
+.fg-agent-egress-flow.is-step-1 .aef-s1 .aef-box { fill: #0c3550; stroke: var(--accent); }
+.fg-agent-egress-flow.is-step-1 .aef-s1 .aef-title { fill: var(--text); }
+.fg-agent-egress-flow.is-step-2 .aef-zone-int { stroke: var(--hot); }
+.fg-agent-egress-flow.is-step-2 .aef-nowall { opacity: 1; }
+.fg-agent-egress-flow.is-step-2 .aef-blocked { opacity: 1; }
+.fg-agent-egress-flow.is-step-3 .aef-s3 .aef-box { fill: #0c3550; stroke: var(--accent); }
+.fg-agent-egress-flow.is-step-3 .aef-s3 .aef-title { fill: var(--text); }
+.fg-agent-egress-flow.is-step-3 .aef-p1 { stroke: var(--accent); opacity: 1; stroke-dasharray: 5 4; animation: fg-aef-flow 1.2s linear infinite; }
+.fg-agent-egress-flow.is-step-4 .aef-s3 .aef-box { fill: #0e4429; stroke: var(--ok); }
+.fg-agent-egress-flow.is-step-4 .aef-s4a .aef-box { fill: #0e4429; stroke: var(--ok); }
+.fg-agent-egress-flow.is-step-4 .aef-s4a .aef-title { fill: var(--text); }
+.fg-agent-egress-flow.is-step-4 .aef-p2 { stroke: var(--ok); opacity: 1; stroke-dasharray: 5 4; animation: fg-aef-flow 1.2s linear infinite; }
+.fg-agent-egress-flow.is-step-4 .aef-v-allow { opacity: 1; }
+.fg-agent-egress-flow.is-step-5 .aef-s4b .aef-box { fill: #3f1d1d; stroke: var(--hot); }
+.fg-agent-egress-flow.is-step-5 .aef-s4b .aef-title { fill: var(--text); }
+.fg-agent-egress-flow.is-step-5 .aef-p3 { stroke: var(--hot); opacity: 1; }
+.fg-agent-egress-flow.is-step-5 .aef-v-deny { opacity: 1; }
+@keyframes fg-aef-flow { to { stroke-dashoffset: -18; } }
+.fg-agent-egress-flow .aef-blocked { opacity: 0; transition: opacity 0.45s; }
+
+.fg-agent-egress-flow .fg-caption {
+  margin-top: 10px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  color: var(--muted); font-size: 13px; min-height: 4.8em;
+  transition: color 0.3s;
+}
+.fg-agent-egress-flow .fg-caption.is-active { color: var(--text); }
+.fg-agent-egress-flow .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-agent-egress-flow .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+.fg-agent-egress-flow .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-agent-egress-flow .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-agent-egress-flow .fg-controls button:hover { border-color: var(--accent); }
+.fg-agent-egress-flow .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-agent-egress-flow * { transition: none !important; animation: none !important; }
+}
+</style>
+
+<svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Agent egress flow: the agent container sits on an internal Docker network with no route to the internet. Its only outbound path is a Squid forward proxy bridging to the egress network. Requests to allowlisted domains such as the Anthropic API and GitHub are forwarded; every other destination is denied by default.">
+  <defs>
+    <marker id="aef-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- internal network zone -->
+  <rect class="aef-zone aef-zone-int" x="20" y="40" width="300" height="240" rx="10"/>
+  <text class="aef-label" x="34" y="64">agent-internal · internal: true</text>
+
+  <g class="aef-stage aef-s1">
+    <rect class="aef-box" x="48" y="84" width="244" height="120" rx="8"/>
+    <text class="aef-title" x="170" y="112">agent container</text>
+    <text class="aef-sub" x="170" y="132">Claude Code / OpenCode</text>
+    <text class="aef-sub" x="170" y="148">worktree rw · tmpfs home</text>
+    <text class="aef-sub" x="170" y="164">read_only rootfs · non-root</text>
+    <text class="aef-sub" x="170" y="180">one scoped secret</text>
+  </g>
+
+  <!-- blocked direct route -->
+  <g class="aef-blocked">
+    <line class="aef-path aef-nowall" x1="170" y1="204" x2="170" y2="250"/>
+    <line class="aef-path aef-nowall" x1="150" y1="230" x2="190" y2="230" transform="rotate(45 170 230)"/>
+    <text class="aef-verdict aef-deny aef-v-block" x="170" y="270" style="opacity:inherit">no direct route to the internet</text>
+  </g>
+
+  <!-- proxy -->
+  <g class="aef-stage aef-s3">
+    <rect class="aef-box" x="380" y="104" width="200" height="80" rx="8"/>
+    <text class="aef-title" x="480" y="132">agent-proxy (Squid)</text>
+    <text class="aef-sub" x="480" y="150">deny by default</text>
+    <text class="aef-sub" x="480" y="166">CONNECT by host · no TLS interception</text>
+  </g>
+  <path class="aef-path aef-p1" d="M 292 144 L 376 144" marker-end="url(#aef-arrow)"/>
+
+  <!-- egress zone -->
+  <rect class="aef-zone" x="360" y="40" width="340" height="240" rx="10"/>
+  <text class="aef-label" x="374" y="64">agent-egress · real internet</text>
+
+  <!-- allowed destinations -->
+  <g class="aef-stage aef-s4a">
+    <rect class="aef-box" x="400" y="204" width="280" height="56" rx="8"/>
+    <text class="aef-title" x="540" y="226">allowlisted domains</text>
+    <text class="aef-sub" x="540" y="244">Anthropic API · GitHub · npm · PyPI</text>
+  </g>
+  <path class="aef-path aef-p2" d="M 480 188 L 520 200" marker-end="url(#aef-arrow)"/>
+  <text class="aef-verdict aef-allow aef-v-allow" x="452" y="204">200 forwarded</text>
+
+  <!-- denied destination -->
+  <g class="aef-stage aef-s4b">
+    <rect class="aef-box" x="400" y="300" width="280" height="56" rx="8"/>
+    <text class="aef-title" x="540" y="322">everything else</text>
+    <text class="aef-sub" x="540" y="340">exfil hosts · unknown domains · raw IPs</text>
+  </g>
+  <path class="aef-path aef-p3" d="M 480 188 C 470 250, 470 290, 500 300" marker-end="url(#aef-arrow)"/>
+  <text class="aef-verdict aef-deny aef-v-deny" x="440" y="290">403 denied</text>
+
+  <text class="aef-label" x="20" y="330">HTTP_PROXY env is a hint for</text>
+  <text class="aef-label" x="20" y="346">well-behaved clients; the network</text>
+  <text class="aef-label" x="20" y="362">flag is the enforcement</text>
+
+  <text class="aef-label" x="20" y="404">never mounted: ~/.ssh · ~/.aws · ~/.claude/ · opencode auth.json</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Press play or step through the egress path.</div>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const TOTAL = 5, STEP_MS = 2800;
+  let step = 0, timer = null;
+
+  const CAPTIONS = [
+    'Press play or step through the egress path.',
+    ['The agent', 'One-shot session in a hardened container: read-only rootfs, non-root, a writable git worktree as the only durable surface, a tmpfs home that forgets on exit, and exactly one scoped secret in the environment.'],
+    ['No direct route', 'The agent sits on agent-internal, declared internal: true — Docker gives it no route to the internet at all. This flag is the enforcement; proxy environment variables only tell well-behaved clients where to go.'],
+    ['The only door', 'A Squid forward proxy bridges agent-internal and agent-egress. HTTPS is allowlisted by CONNECT host without TLS interception, so no private CA is installed and traffic stays end-to-end encrypted.'],
+    ['Allowlisted: forwarded', 'The API the agent authenticates to, the code host, and the package registries are the short list of domains an agent legitimately needs. The list grows only with a recorded reason.'],
+    ['Everything else: denied', 'An injected prompt telling the agent to POST the repo to attacker.example hits a 403 at the proxy. Exfiltration is cut at the network layer, not by trusting the agent to refuse.'],
+  ];
+
+  function apply() {
+    for (let i = 1; i <= TOTAL; i++) root.classList.toggle('is-step-' + i, step === i);
+    const c = CAPTIONS[step];
+    caption.innerHTML = '';
+    if (Array.isArray(c)) {
+      const strong = document.createElement('strong');
+      strong.textContent = step + '. ' + c[0];
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + c[1]));
+      caption.classList.add('is-active');
+    } else {
+      caption.textContent = c;
+      caption.classList.remove('is-active');
+    }
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
+    pause() { clearInterval(timer); timer = null; },
+  };
+
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  function sync() {
+    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  apply();
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
