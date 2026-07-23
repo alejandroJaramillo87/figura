@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The ambiguity ladder: six levels of contextual underdetermination</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>The ambiguity ladder</h1>
+<p>Hover a level: the linguistic hierarchy from word senses to speaker intent, plus the LLM-specific structural dependencies alongside it.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-ambiguity-ladder">
+<style>
+.fg-ambiguity-ladder {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-ambiguity-ladder svg { display: block; width: 100%; height: auto; }
+.fg-ambiguity-ladder text { font-family: inherit; }
+
+.fg-ambiguity-ladder .abl-rung {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-ambiguity-ladder .abl-level:hover .abl-rung { fill: var(--panel-hover); }
+.fg-ambiguity-ladder .abl-l1:hover .abl-rung { stroke: var(--ok); }
+.fg-ambiguity-ladder .abl-l2:hover .abl-rung { stroke: var(--accent); }
+.fg-ambiguity-ladder .abl-l3:hover .abl-rung { stroke: var(--warn); }
+.fg-ambiguity-ladder .abl-l4:hover .abl-rung { stroke: var(--violet); }
+.fg-ambiguity-ladder .abl-l5:hover .abl-rung { stroke: var(--hot); }
+.fg-ambiguity-ladder .abl-l6 .abl-rung { stroke-dasharray: 6 4; }
+.fg-ambiguity-ladder .abl-l6:hover .abl-rung { stroke: var(--accent); }
+
+.fg-ambiguity-ladder .abl-name { fill: var(--text); font-size: 14px; font-weight: 600; pointer-events: none; }
+.fg-ambiguity-ladder .abl-q { fill: var(--muted); font-size: 11px; font-style: italic; pointer-events: none; }
+.fg-ambiguity-ladder .abl-ex { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); pointer-events: none; }
+.fg-ambiguity-ladder .abl-axis { fill: var(--muted); font-size: 11px; }
+.fg-ambiguity-ladder .abl-axis-line { stroke: var(--line); stroke-width: 1.5; fill: none; }
+
+.fg-ambiguity-ladder .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.4em;
+  transition: color 0.3s;
+}
+.fg-ambiguity-ladder .fg-caption.is-active { color: var(--text); }
+.fg-ambiguity-ladder .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-ambiguity-ladder .fg-caption em { color: var(--text); font-style: italic; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-ambiguity-ladder .abl-rung { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 430" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The ambiguity ladder: five stacked linguistic levels from lexical at the bottom to pragmatic at the top, each asking a harder interpretive question, with a sixth column of LLM-specific structural dependencies alongside. An axis on the left shows resolving context growing more distant and diffuse as the levels climb.">
+  <defs>
+    <marker id="abl-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- left axis: resolving context grows more distant/diffuse upward -->
+  <path class="abl-axis-line" d="M 46 356 L 46 44" marker-end="url(#abl-arrow)"/>
+  <text class="abl-axis" transform="rotate(-90 36 200)" x="36" y="200" text-anchor="middle">resolving context: nearer &#8594; farther, sharper &#8594; more diffuse</text>
+
+  <g class="abl-level abl-l5" data-title="5 &#183; Pragmatic and discourse" data-info="What is the speaker doing? Speech acts, implicature, irony, deixis, presupposition, discourse relations, register. &#8220;Can you pass the salt?&#8221; is a request, not a question about ability. The resolving context is the whole discourse &#8212; who is speaking, to whom, in what genre &#8212; and often nothing in the sentence marks it.">
+    <rect class="abl-rung" x="70" y="44" width="420" height="52" rx="8"/>
+    <text class="abl-name" x="86" y="66">5 &#183; Pragmatic</text>
+    <text class="abl-q" x="86" y="84">what is the speaker doing?</text>
+    <text class="abl-ex" x="300" y="76">"Can you pass the salt?"</text>
+  </g>
+
+  <g class="abl-level abl-l4" data-title="4 &#183; Semantic" data-info="What does the sentence assert? Quantifier and negation scope, modality, metonymy, metaphor, gradable adjectives. &#8220;Every student read a book&#8221; &#8212; one shared book, or one each? The tokens admit both propositions; broader context must choose between them.">
+    <rect class="abl-rung" x="70" y="109" width="420" height="52" rx="8"/>
+    <text class="abl-name" x="86" y="131">4 &#183; Semantic</text>
+    <text class="abl-q" x="86" y="149">what does the sentence assert?</text>
+    <text class="abl-ex" x="300" y="141">"Every student read a book"</text>
+  </g>
+
+  <g class="abl-level abl-l3" data-title="3 &#183; Syntactic" data-info="How does the sentence fit together? Attachment, coordination scope, garden paths, agreement across distance, filler&#8211;gap dependencies, ellipsis. &#8220;I saw the man with the telescope&#8221; &#8212; who has the telescope? Same tokens, two structures, and the structure decides who did what to whom.">
+    <rect class="abl-rung" x="70" y="174" width="420" height="52" rx="8"/>
+    <text class="abl-name" x="86" y="196">3 &#183; Syntactic</text>
+    <text class="abl-q" x="86" y="214">how does the sentence fit together?</text>
+    <text class="abl-ex" x="300" y="206">"...the man with the telescope"</text>
+  </g>
+
+  <g class="abl-level abl-l2" data-title="2 &#183; Referential" data-info="What does this expression point to? Pronouns, definite descriptions, bridging, demonstratives, coreference chains, dropped arguments. &#8220;It&#8221; carries no meaning of its own &#8212; its entire content is imported from an antecedent that may sit sentences away.">
+    <rect class="abl-rung" x="70" y="239" width="420" height="52" rx="8"/>
+    <text class="abl-name" x="86" y="261">2 &#183; Referential</text>
+    <text class="abl-q" x="86" y="279">what does this expression point to?</text>
+    <text class="abl-ex" x="300" y="271">"it" / "she" / "the aforementioned"</text>
+  </g>
+
+  <g class="abl-level abl-l1" data-title="1 &#183; Lexical" data-info="What does this word mean? Polysemy, homonymy, part-of-speech ambiguity, idioms, domain-dependent senses &#8212; and, beneath all of them, subword tokens: fragments like &#8220;&#9601;un&#8221; or &#8220;ing&#8221; that mean nothing at all until bound to their neighbors. The most local level, and for an LLM the most pervasive.">
+    <rect class="abl-rung" x="70" y="304" width="420" height="52" rx="8"/>
+    <text class="abl-name" x="86" y="326">1 &#183; Lexical</text>
+    <text class="abl-q" x="86" y="344">what does this word mean?</text>
+    <text class="abl-ex" x="300" y="336">"bank" / "&#9601;un" + "believ" + "able"</text>
+  </g>
+
+  <g class="abl-level abl-l6" data-title="&#8951; Structural (LLM-specific)" data-info="Not classical linguistics, but the same shape of problem: a closing bracket needs its distant opener, a variable use needs its definition, a table row needs the header, an instruction governs text thousands of tokens later, and induction &#8212; [A][B]&#8230;[A] &#8594; [B] &#8212; needs the last occurrence. Context-dependencies that run alongside every level.">
+    <rect class="abl-rung" x="510" y="44" width="194" height="312" rx="8"/>
+    <text class="abl-name" x="530" y="70">&#8951; Structural</text>
+    <text class="abl-q" x="530" y="88">LLM-specific</text>
+    <text class="abl-ex" x="530" y="122">brackets &#8596; openers</text>
+    <text class="abl-ex" x="530" y="146">vars &#8596; definitions</text>
+    <text class="abl-ex" x="530" y="170">rows &#8596; headers</text>
+    <text class="abl-ex" x="530" y="194">text &#8596; instruction</text>
+    <text class="abl-ex" x="530" y="218">[A][B]...[A] &#8594; [B]</text>
+    <text class="abl-q" x="530" y="252">the same shape of</text>
+    <text class="abl-q" x="530" y="268">problem, at every</text>
+    <text class="abl-q" x="530" y="284">level of the ladder</text>
+  </g>
+
+  <text class="abl-axis" x="280" y="392" text-anchor="middle">every level: the token underdetermines its interpretation</text>
+  <text class="abl-axis" x="280" y="410" text-anchor="middle">&#8212; the missing information must be imported from context</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover a level to see its question, its phenomena, and where its resolving context lives.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover a level to see its question, its phenomena, and where its resolving context lives.';
+  root.querySelectorAll('.abl-level[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = g.getAttribute('data-title');
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
