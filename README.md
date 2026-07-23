@@ -28,8 +28,12 @@ CLAUDE.md        generation contract (conventions, palette, patterns)
 index.html       gallery — every diagram inlined, first one twice (collision check)
 manifest.json    diagram index {id, path, title, post, description}
 shared/
-  tokens.css     reference palette/tokens (copied into diagrams, never linked)
-  snippets.js    reference JS patterns (timeline, controls, autoplay, hover)
+  tokens.css     reference palettes/tokens: classic dark, pastel-on-dark,
+                 pastel-light (copied into diagrams, never linked)
+  effects.css    effects catalog: glow, sweep, comet, draw-in, ripple,
+                 shimmer, flash (copy-source patterns)
+  snippets.js    reference JS patterns (timeline, controls, autoplay, hover,
+                 effect restart, comet launch)
   preview.css    page chrome for standalone/gallery viewing only
 diagrams/<post-slug>/<kebab-name>.html
 ```

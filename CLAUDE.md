@@ -88,6 +88,54 @@ is inlined into the blog. Everything the diagram needs must live inside it.
 
 ## Visual language
 
+### Palettes
+
+Three palettes live in `shared/tokens.css` (copy values, never link). Pick
+per diagram:
+
+- **Classic dark** (`--sa-*`, table below) — the default for dense
+  technical diagrams (grids, matrices, pipelines).
+- **Pastel-on-dark** (`--sa-pd-*`) — dark slate panel, soft pastel accents
+  (mint `#a7f3d0`, lavender `#c4b5fd`, peach `#fed7aa`, rose `#fda4af`,
+  baby-blue `#bae6fd`). Use for effect-heavy diagrams — glows and comets
+  pop hardest on dark. Accents are contrast-safe as text and strokes.
+- **Pastel-light** (`--sa-pl-*`) — cream panel (`#fdfbf7`/`#f6f1e7`) with
+  pastel fill / saturated stroke / dark text TRIPLETS per accent. Gentler
+  look for conceptual posts. Two hard rules: the panel MUST carry
+  `border: 1px solid var(--sa-pl-border)` +
+  `box-shadow: 0 2px 12px rgba(120,100,60,.10)` so it reads as a panel on
+  the white blog page, and text on a pastel fill always uses that
+  triplet's dark text color, never the muted ink.
+
+The live reference for both pastel palettes (all swatches + every effect)
+is `diagrams/effects-sampler/effects-sampler.html`.
+
+### Effects catalog
+
+`shared/effects.css` is the copy-source catalog of animation patterns:
+**glow, highlight sweep, comet, draw-in, pulse/ripple, shimmer, flash** —
+each with markup, technique, and reduced-motion fallback. Rename the
+`sa-XX-*` keyframe placeholders to the diagram's abbreviation when
+copying. Additional hard rules that come with the effects:
+
+- **Never animate SVG filter primitives.** Filters re-render per frame
+  and jank. Blur a duplicate node once, statically; animate only its
+  opacity (this is the glow pattern).
+- **SMIL ignores `prefers-reduced-motion`.** Every `<animateMotion>`
+  comet group must be gated off with CSS `display: none` under the
+  reduced-motion media query — the CSS gate is mandatory, not optional.
+- **Taste:** one hero effect per step, at most ~3 animated elements
+  concurrently. Effects must explain (a comet shows direction, a glow
+  shows activation, a ripple shows an in-place update) — decoration for
+  its own sake reads as noise on a technical blog.
+
+Step-triggered one-shots use `restartAnimation()` and `launchComets()`
+from `shared/snippets.js` (comets authored with `begin="indefinite"`,
+kicked from the `sa:step` handler; trails chain off the head via
+syncbase timing, e.g. `begin="xx-head.begin+0.1s"`).
+
+### Classic dark tokens
+
 Dark slate panel on the blog's light page (matches its mermaid diagrams):
 
 | token | value | use |

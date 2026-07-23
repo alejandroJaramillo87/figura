@@ -91,6 +91,29 @@ function autoplayWhenVisible(root, tl) {
 }
 
 /* ------------------------------------------------------------------ */
+/* 3b. One-shot effect restart (flash, single ripple burst): re-adding  */
+/*     a class only restarts its animation after a forced reflow.       */
+/* ------------------------------------------------------------------ */
+function restartAnimation(el, cls) {
+  el.classList.remove(cls);
+  void el.offsetWidth; // force reflow so the next add restarts the animation
+  el.classList.add(cls);
+}
+
+/* ------------------------------------------------------------------ */
+/* 3c. Step-triggered comets (SMIL): author <animateMotion> with        */
+/*     begin="indefinite", then kick them from the step handler.        */
+/*     Comet groups must ALSO be CSS-hidden outside their step and      */
+/*     under prefers-reduced-motion (SMIL ignores reduced motion).      */
+/* ------------------------------------------------------------------ */
+function launchComets(root, selector) {
+  root.querySelectorAll(selector + ' animateMotion').forEach((m) => m.beginElement());
+}
+/* usage: root.addEventListener('sa:step', (e) => {
+ *   if (e.detail.step === 1) launchComets(root, '.trl-comet-fwd');
+ * }); */
+
+/* ------------------------------------------------------------------ */
 /* 4. Hover-to-inspect caption: blocks carry data-info; a caption box  */
 /*    shows details for the hovered block.                             */
 /*      <g class="sa-block" data-info="...">…</g>                      */

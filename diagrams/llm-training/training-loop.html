@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The training loop: forward, loss, backward, update</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>The training loop</h1>
+<p>One optimization step: activations flow forward, the loss lights up, gradients comet backward, and every layer pulses as its weights update.</p>
+
+<!-- sa:embed-start -->
+<div class="sa-diagram sa-training-loop">
+<style>
+.sa-training-loop {
+  --bg: #0f172a; --panel: #1e293b; --border: #3b4a63;
+  --text: #f8fafc; --muted: #a5b4cd; --line: #7c8db0;
+  --mint: #a7f3d0; --lavender: #c4b5fd; --peach: #fed7aa;
+  --rose: #fda4af; --blue: #bae6fd;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.sa-training-loop svg { display: block; width: 100%; height: auto; }
+.sa-training-loop text { font-family: inherit; }
+
+.sa-training-loop .trl-node { fill: var(--panel); stroke: var(--border); stroke-width: 2; transition: stroke 0.4s, fill 0.4s; }
+.sa-training-loop .trl-title { fill: var(--text); font-size: 14px; font-weight: 600; text-anchor: middle; }
+.sa-training-loop .trl-sub   { fill: var(--muted); font-size: 11px; text-anchor: middle; }
+.sa-training-loop .trl-lab   { fill: var(--muted); font-size: 12px; }
+
+/* forward edges: draw-in on step 1, stay lit through step 2 */
+.sa-training-loop .trl-fwd {
+  stroke: var(--blue); stroke-width: 2; fill: none; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.35;
+  transition: stroke-dashoffset 0.7s var(--ease), opacity 0.4s;
+}
+.sa-training-loop.is-step-1 .trl-fwd,
+.sa-training-loop.is-step-2 .trl-fwd { stroke-dashoffset: 0; opacity: 0.9; }
+.sa-training-loop.is-step-1 .trl-fwd-1 { transition-delay: 0s; }
+.sa-training-loop.is-step-1 .trl-fwd-2 { transition-delay: 0.18s; }
+.sa-training-loop.is-step-1 .trl-fwd-3 { transition-delay: 0.36s; }
+.sa-training-loop.is-step-1 .trl-fwd-4 { transition-delay: 0.54s; }
+.sa-training-loop.is-step-3 .trl-fwd,
+.sa-training-loop.is-step-4 .trl-fwd { stroke-dashoffset: 0; opacity: 0.18; }
+
+/* backward edge (single long path under the chain) */
+.sa-training-loop .trl-bwd {
+  stroke: var(--rose); stroke-width: 2; fill: none; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.35;
+  transition: stroke-dashoffset 1.1s var(--ease), opacity 0.4s;
+}
+.sa-training-loop.is-step-3 .trl-bwd,
+.sa-training-loop.is-step-4 .trl-bwd { stroke-dashoffset: 0; opacity: 0.9; }
+.sa-training-loop.is-step-4 .trl-bwd { opacity: 0.25; }
+
+/* comets: hidden except in their step; SMIL is kicked by JS */
+.sa-training-loop .trl-comet-fwd, .sa-training-loop .trl-comet-bwd { opacity: 0; transition: opacity 0.3s; }
+.sa-training-loop.is-step-1 .trl-comet-fwd { opacity: 1; }
+.sa-training-loop.is-step-3 .trl-comet-bwd { opacity: 1; }
+
+/* loss glow: pre-blurred halo, opacity pulse only during step 2 */
+.sa-training-loop .trl-loss-halo { filter: blur(7px); opacity: 0; transition: opacity 0.4s; }
+.sa-training-loop.is-step-2 .trl-loss-halo { animation: sa-trl-glow 1.4s var(--ease) infinite alternate; }
+@keyframes sa-trl-glow { from { opacity: 0.3; } to { opacity: 0.85; } }
+.sa-training-loop.is-step-2 .trl-loss-node { stroke: var(--peach); }
+.sa-training-loop.is-step-2 .trl-loss-edge { opacity: 0.9; }
+.sa-training-loop .trl-loss-edge {
+  stroke: var(--peach); stroke-width: 2; fill: none; stroke-dasharray: 4 4; opacity: 0.25; transition: opacity 0.4s;
+}
+
+/* logits flash on step 2 */
+.sa-training-loop .trl-flashable.is-flashing { animation: sa-trl-flash 0.6s var(--ease) 1; }
+@keyframes sa-trl-flash { 30% { fill: #14352a; stroke: var(--mint); } }
+
+/* weight-update ripples, staggered per layer, only in step 4 */
+.sa-training-loop .trl-ripple {
+  fill: none; stroke: var(--mint); stroke-width: 2; opacity: 0;
+  transform-box: fill-box; transform-origin: center;
+}
+.sa-training-loop.is-step-4 .trl-ripple { animation: sa-trl-ripple 1.5s var(--ease) infinite; }
+.sa-training-loop.is-step-4 .trl-ripple-l1 { animation-delay: 0s; }
+.sa-training-loop.is-step-4 .trl-ripple-l2 { animation-delay: 0.25s; }
+.sa-training-loop.is-step-4 .trl-ripple-l3 { animation-delay: 0.5s; }
+.sa-training-loop.is-step-4 .trl-ripple-emb { animation-delay: 0.75s; }
+@keyframes sa-trl-ripple {
+  0%   { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+.sa-training-loop.is-step-4 .trl-layer { stroke: var(--mint); }
+
+/* idle shimmer across the layer chain (step 0 only) */
+.sa-training-loop .trl-shimmer { opacity: 0; }
+.sa-training-loop.is-step-0 .trl-shimmer { opacity: 1; animation: sa-trl-shimmer 3.4s linear infinite; }
+@keyframes sa-trl-shimmer {
+  from { transform: translateX(0) skewX(-20deg); }
+  to   { transform: translateX(620px) skewX(-20deg); }
+}
+
+/* phase captions */
+.sa-training-loop .trl-phase { opacity: 0; transition: opacity 0.45s; }
+.sa-training-loop.is-step-0 .trl-phase-0, .sa-training-loop.is-step-1 .trl-phase-1,
+.sa-training-loop.is-step-2 .trl-phase-2, .sa-training-loop.is-step-3 .trl-phase-3,
+.sa-training-loop.is-step-4 .trl-phase-4 { opacity: 1; }
+
+/* controls */
+.sa-training-loop .sa-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.sa-training-loop .sa-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.sa-training-loop .sa-controls button:hover { border-color: var(--blue); }
+.sa-training-loop .sa-controls [data-sa="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sa-training-loop * { transition: none !important; animation: none !important; }
+  .sa-training-loop .trl-comet-fwd, .sa-training-loop .trl-comet-bwd, .sa-training-loop .trl-shimmer { display: none; }
+  .sa-training-loop.is-step-2 .trl-loss-halo { opacity: 0.5; }
+  .sa-training-loop.is-step-4 .trl-ripple { opacity: 0.25; transform: scale(1.4); }
+}
+</style>
+
+<svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="One training step: activations flow forward from embeddings through three layers to logits, the loss node lights up against the target, gradients flow backward, and each layer pulses as its weights update.">
+  <!-- forward chain -->
+  <g>
+    <rect class="trl-node trl-node-emb" x="24"  y="150" width="112" height="64" rx="10"/>
+    <text class="trl-title" x="80"  y="178">Embed</text><text class="trl-sub" x="80" y="196">tokens → vectors</text>
+    <rect class="trl-node trl-layer trl-node-l1" x="180" y="150" width="112" height="64" rx="10"/>
+    <text class="trl-title" x="236" y="178">Layer 1</text><text class="trl-sub" x="236" y="196">attn + mlp</text>
+    <rect class="trl-node trl-layer trl-node-l2" x="336" y="150" width="112" height="64" rx="10"/>
+    <text class="trl-title" x="392" y="178">Layer 2</text><text class="trl-sub" x="392" y="196">attn + mlp</text>
+    <rect class="trl-node trl-layer trl-node-l3" x="492" y="150" width="112" height="64" rx="10"/>
+    <text class="trl-title" x="548" y="178">Layer 3</text><text class="trl-sub" x="548" y="196">attn + mlp</text>
+    <rect class="trl-node trl-flashable trl-node-logits" x="648" y="150" width="92" height="64" rx="10"/>
+    <text class="trl-title" x="694" y="178">Logits</text><text class="trl-sub" x="694" y="196">|V| scores</text>
+  </g>
+
+  <!-- idle shimmer stripe clipped to the chain band -->
+  <clipPath id="trl-chain-clip"><rect x="24" y="150" width="716" height="64" rx="10"/></clipPath>
+  <g clip-path="url(#trl-chain-clip)">
+    <rect class="trl-shimmer" x="-40" y="140" width="34" height="84" fill="#ffffff" opacity="0.08"/>
+  </g>
+
+  <!-- forward edges (top lane) -->
+  <path id="trl-f1" class="trl-fwd trl-fwd-1" pathLength="1" d="M 136 172 L 180 172"/>
+  <path id="trl-f2" class="trl-fwd trl-fwd-2" pathLength="1" d="M 292 172 L 336 172"/>
+  <path id="trl-f3" class="trl-fwd trl-fwd-3" pathLength="1" d="M 448 172 L 492 172"/>
+  <path id="trl-f4" class="trl-fwd trl-fwd-4" pathLength="1" d="M 604 172 L 648 172"/>
+  <text class="trl-lab" x="24" y="136">forward →</text>
+
+  <!-- loss node upper right -->
+  <rect class="trl-loss-halo" x="612" y="34" width="128" height="58" rx="10" fill="var(--peach)"/>
+  <rect class="trl-node trl-loss-node" x="612" y="34" width="128" height="58" rx="10"/>
+  <text class="trl-title" x="676" y="59">Loss</text>
+  <text class="trl-sub" x="676" y="77">cross-entropy vs ŷ</text>
+  <path class="trl-loss-edge" d="M 694 150 L 682 92"/>
+
+  <!-- backward edge (bottom lane, right to left) -->
+  <path id="trl-broute" class="trl-bwd" pathLength="1"
+        d="M 694 214 C 694 258, 620 258, 548 258 L 236 258 C 160 258, 80 258, 80 214"/>
+  <text class="trl-lab" x="24" y="292">← backward (∂L/∂W)</text>
+
+  <!-- forward comets (step 1): full-chain route -->
+  <path id="trl-froute" d="M 80 172 L 694 172" fill="none" stroke="none"/>
+  <g class="trl-comet-fwd">
+    <circle r="6" fill="var(--blue)">
+      <animateMotion id="trl-cf-head" dur="1.8s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#trl-froute"/></animateMotion>
+    </circle>
+    <circle r="4" fill="var(--blue)" opacity="0.45">
+      <animateMotion dur="1.8s" begin="trl-cf-head.begin+0.10s" repeatCount="1" fill="freeze"><mpath href="#trl-froute"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="var(--blue)" opacity="0.22">
+      <animateMotion dur="1.8s" begin="trl-cf-head.begin+0.19s" repeatCount="1" fill="freeze"><mpath href="#trl-froute"/></animateMotion>
+    </circle>
+  </g>
+
+  <!-- backward comets (step 3): along the backward route -->
+  <g class="trl-comet-bwd">
+    <circle r="6" fill="var(--rose)">
+      <animateMotion id="trl-cb-head" dur="2.2s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#trl-broute"/></animateMotion>
+    </circle>
+    <circle r="4" fill="var(--rose)" opacity="0.45">
+      <animateMotion dur="2.2s" begin="trl-cb-head.begin+0.10s" repeatCount="1" fill="freeze"><mpath href="#trl-broute"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="var(--rose)" opacity="0.22">
+      <animateMotion dur="2.2s" begin="trl-cb-head.begin+0.19s" repeatCount="1" fill="freeze"><mpath href="#trl-broute"/></animateMotion>
+    </circle>
+  </g>
+
+  <!-- weight-update ripples -->
+  <circle class="trl-ripple trl-ripple-l1"  cx="236" cy="182" r="20"/>
+  <circle class="trl-ripple trl-ripple-l2"  cx="392" cy="182" r="20"/>
+  <circle class="trl-ripple trl-ripple-l3"  cx="548" cy="182" r="20"/>
+  <circle class="trl-ripple trl-ripple-emb" cx="80"  cy="182" r="20"/>
+
+  <!-- phase captions -->
+  <text class="trl-sub trl-phase trl-phase-0" x="24" y="376" style="text-anchor: start">A batch is loaded. Nothing has moved yet — the network is a frozen function.</text>
+  <text class="trl-sub trl-phase trl-phase-1" x="24" y="376" style="text-anchor: start">Forward: activations flow left to right; every layer's output is stashed for backprop.</text>
+  <text class="trl-sub trl-phase trl-phase-2" x="24" y="376" style="text-anchor: start">Loss: logits meet the target — one scalar summarizes how wrong the whole batch was.</text>
+  <text class="trl-sub trl-phase trl-phase-3" x="24" y="376" style="text-anchor: start">Backward: the chain rule sends gradients right to left through the stashed activations.</text>
+  <text class="trl-sub trl-phase trl-phase-4" x="24" y="376" style="text-anchor: start">Update: the optimizer nudges every weight matrix — the network is now a different function.</text>
+</svg>
+
+<div class="sa-controls">
+  <button data-sa="prev" aria-label="Previous step">‹</button>
+  <button data-sa="play" aria-label="Play or pause">▶</button>
+  <button data-sa="next" aria-label="Next step">›</button>
+  <span data-sa="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.sa-diagram');
+  const TOTAL = 4, STEP_MS = 2400;
+  let step = 0, timer = null;
+
+  function apply() {
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
+    root.dispatchEvent(new CustomEvent('sa:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
+    pause() { clearInterval(timer); timer = null; },
+  };
+
+  const btn = (name) => root.querySelector('[data-sa="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  function sync() {
+    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('sa:step', sync);
+  root.querySelectorAll('.sa-controls button').forEach((b) => b.addEventListener('click', sync));
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // step-triggered comets: kick the SMIL head animations (trails chain off it)
+  function launchComets(selector) {
+    if (reduced) return;
+    root.querySelectorAll(selector).forEach((m) => m.beginElement());
+  }
+  root.addEventListener('sa:step', (e) => {
+    if (e.detail.step === 1) launchComets('#trl-cf-head');
+    if (e.detail.step === 3) launchComets('#trl-cb-head');
+  });
+  apply();
+
+  if (reduced) {
+    tl.go(TOTAL);
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+})();</script>
+</div>
+<!-- sa:embed-end -->
+</body>
+</html>

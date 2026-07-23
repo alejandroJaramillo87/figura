@@ -1,0 +1,182 @@
+/*
+ * effects.css — the effects catalog: copy-source animation patterns for
+ * slide-animator diagrams.
+ *
+ * NEVER linked at runtime. Copy the rules you need into the diagram's
+ * scoped <style>, prefix every selector with the diagram's root class,
+ * and rename every `sa-XX-*` keyframe to the diagram's abbreviation
+ * (e.g. `sa-trl-comet-fade`). The canonical live demonstration of every
+ * effect is diagrams/effects-sampler/effects-sampler.html.
+ *
+ * Two hard rules that apply to every effect here (also in CLAUDE.md):
+ *
+ *  1. NEVER animate SVG filter primitives (feGaussianBlur stdDeviation,
+ *     animated `filter:` values, …) — filters re-render per frame and
+ *     jank. Blur once, statically; animate only opacity/transform.
+ *
+ *  2. SMIL (<animateMotion>, <animate>) DOES NOT honor
+ *     prefers-reduced-motion. Every SMIL-driven element must be gated
+ *     off with CSS under the reduced-motion media query.
+ *
+ * Taste guidance: one hero effect per step, at most ~3 animated things
+ * concurrently. Effects explain — a comet shows direction, a glow shows
+ * activation, a ripple shows an in-place update. Decoration for its own
+ * sake reads as noise on a technical blog.
+ */
+
+/* =====================================================================
+ * GLOW — a node lights up (activation, loss, hot spot)
+ * =====================================================================
+ * Markup: duplicate the shape BEHIND the original; the duplicate is the
+ * halo, statically blurred once. Animate only its opacity.
+ *
+ *   <rect class="XX-glow-halo" x=... (same geometry, accent fill)/>
+ *   <rect class="XX-node" x=.../>
+ */
+.sa-scope .XX-glow-halo {
+  filter: blur(6px);                 /* static blur — applied once */
+  opacity: 0.25;
+  animation: sa-XX-glow 2s var(--ease, ease-in-out) infinite alternate;
+}
+@keyframes sa-XX-glow { to { opacity: 0.8; } }
+@media (prefers-reduced-motion: reduce) {
+  .sa-scope .XX-glow-halo { animation: none; opacity: 0.5; } /* frozen halo */
+}
+
+/* =====================================================================
+ * HIGHLIGHT SWEEP — a sheen passes across a region (emphasis, scan)
+ * =====================================================================
+ * Markup: a narrow bright rect clipped to the region, driven by
+ * translateX (compositable — never animate gradient attributes).
+ *
+ *   <clipPath id="XX-sweep-clip"><rect x=REGION.../></clipPath>
+ *   <g clip-path="url(#XX-sweep-clip)">
+ *     <rect class="XX-sweep" x="REGION_X" y=... width="40" height=FULL
+ *           fill="url(#XX-sweep-grad)"/>   <!-- soft-edged vertical grad -->
+ *   </g>
+ */
+.sa-scope .XX-sweep {
+  animation: sa-XX-sweep 2.6s var(--ease, ease-in-out) infinite;
+}
+@keyframes sa-XX-sweep {
+  0%   { transform: translateX(-60px); opacity: 0; }
+  15%  { opacity: 0.7; }
+  60%  { transform: translateX(var(--region-w, 300px)); opacity: 0.7; }
+  75%, 100% { transform: translateX(var(--region-w, 300px)); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sa-scope .XX-sweep { display: none; }
+}
+
+/* =====================================================================
+ * COMET — a particle with a fading tail travels along a path (dataflow)
+ * =====================================================================
+ * Technique: SMIL <animateMotion> with <mpath> — geometry stays in SVG,
+ * and trail staggering is free via negative begin offsets:
+ *
+ *   <path id="XX-route" d="M ..." class="XX-edge"/>
+ *   <g class="XX-comet">
+ *     <circle r="5" fill="ACCENT">
+ *       <animateMotion dur="2s" repeatCount="indefinite"><mpath href="#XX-route"/></animateMotion>
+ *     </circle>
+ *     <!-- trail: same motion, lagging behind the head. With an
+ *          indefinitely repeating loop, a lag of L is begin="-(dur - L)"
+ *          (already running, L behind the head): -->
+ *     <circle r="3.5" fill="ACCENT" opacity="0.5">
+ *       <animateMotion dur="2s" begin="-1.92s" repeatCount="indefinite"><mpath href="#XX-route"/></animateMotion>
+ *     </circle>
+ *     <circle r="2.5" fill="ACCENT" opacity="0.3">
+ *       <animateMotion dur="2s" begin="-1.84s" repeatCount="indefinite"><mpath href="#XX-route"/></animateMotion>
+ *     </circle>
+ *   </g>
+ *
+ * Step-triggered comets: author with begin="indefinite" and call
+ * .beginElement() on the <animateMotion> from the sa:step handler
+ * (see snippets.js). Hide comet groups outside their step with CSS.
+ *
+ * Reduced motion: SMIL keeps running regardless — the CSS gate below is
+ * MANDATORY for every comet group.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .sa-scope .XX-comet { display: none; }
+}
+
+/* =====================================================================
+ * DRAW-IN — an edge/path draws itself into existence
+ * =====================================================================
+ * Markup: give the path pathLength="1" so dash math needs no measuring:
+ *   <path class="XX-draw" pathLength="1" d="M ..."/>
+ * Trigger by step class on the root (transition) or ambient (keyframes).
+ */
+.sa-scope .XX-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.9s var(--ease, ease-in-out);
+}
+.sa-scope.is-step-1 .XX-draw { stroke-dashoffset: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .sa-scope .XX-draw { stroke-dashoffset: 0; transition: none; }
+}
+
+/* =====================================================================
+ * PULSE / RIPPLE — expanding fading rings (in-place update, emission)
+ * =====================================================================
+ * Markup: 2–3 concentric circles on the node center:
+ *   <circle class="XX-ripple" cx=... cy=... r="14" fill="none" stroke="ACCENT"/>
+ *   <circle class="XX-ripple XX-ripple-2" .../>
+ * transform-box makes scale() originate from the circle itself.
+ */
+.sa-scope .XX-ripple {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sa-XX-ripple 1.6s var(--ease, ease-out) infinite;
+}
+.sa-scope .XX-ripple-2 { animation-delay: 0.5s; }
+@keyframes sa-XX-ripple {
+  0%   { transform: scale(0.4); opacity: 0.9; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sa-scope .XX-ripple { animation: none; transform: scale(1.4); opacity: 0.25; }
+  .sa-scope .XX-ripple-2 { opacity: 0; }
+}
+
+/* =====================================================================
+ * SHIMMER — subtle moving sheen on a panel/cell (alive, loading)
+ * =====================================================================
+ * Markup: diagonal translucent stripe overlaying the panel, clipped to it.
+ * Keep it QUIET: opacity ≤ 0.12 on dark panels, ≤ 0.35 on light ones.
+ *
+ *   <clipPath id="XX-shimmer-clip"><rect PANEL_GEOM/></clipPath>
+ *   <g clip-path="url(#XX-shimmer-clip)">
+ *     <rect class="XX-shimmer" x=... width="60" height=TALL
+ *           fill="#fff" opacity="0.1" transform="skewX(-20)"/>
+ *   </g>
+ */
+.sa-scope .XX-shimmer {
+  animation: sa-XX-shimmer 3.2s linear infinite;
+}
+@keyframes sa-XX-shimmer {
+  from { transform: translateX(-80px) skewX(-20deg); }
+  to   { transform: translateX(var(--panel-w, 320px)) skewX(-20deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sa-scope .XX-shimmer { display: none; }
+}
+
+/* =====================================================================
+ * FLASH — one-shot color blink (accept/reject, weight applied)
+ * =====================================================================
+ * Trigger by adding .is-flashing to the element (restart via
+ * restartAnimation() in snippets.js). End state = base color; for a
+ * persistent state change, also swap a state class.
+ */
+.sa-scope .XX-flashable.is-flashing {
+  animation: sa-XX-flash 0.6s var(--ease, ease-out) 1;
+}
+@keyframes sa-XX-flash {
+  30% { fill: var(--flash-color, #a7f3d0); stroke: var(--flash-color, #a7f3d0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sa-scope .XX-flashable.is-flashing { animation: none; } /* state class alone shows the change */
+}
