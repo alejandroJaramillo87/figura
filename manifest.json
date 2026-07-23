@@ -145,5 +145,61 @@
     "title": "Winograd toggle: one verb re-points a pronoun",
     "post": "what-language-leaves-out-intro",
     "description": "Switch a single verb and watch the pronoun's information-need arc move between two antecedents."
+  },
+  {
+    "id": "sense-pinning",
+    "path": "diagrams/what-language-leaves-out/sense-pinning.html",
+    "title": "Sense pinning: context chooses what \"bank\" means",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Toggle the preceding sentence and watch one distant word pin the sense of \"bank\", with an information-need arc to the disambiguating cue."
+  },
+  {
+    "id": "pos-flip",
+    "path": "diagrams/what-language-leaves-out/pos-flip.html",
+    "title": "POS flip: fruit flies like a banana",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Switch between the two grammars of the same five tokens: flies as noun or verb, like as verb or preposition, brackets re-drawing per reading."
+  },
+  {
+    "id": "subword-fusion",
+    "path": "diagrams/what-language-leaves-out/subword-fusion.html",
+    "title": "Subword fusion: the model never sees the word",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Step timeline: unbelievable splits into three meaningless fragments, binds to its neighbors, and re-assembles as one concept across three positions."
+  },
+  {
+    "id": "polysemy-web",
+    "path": "diagrams/what-language-leaves-out/polysemy-web.html",
+    "title": "Polysemy web: the related senses of \"paper\"",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Hover the sense hub: material, newspaper, article, exam radiating from a shared conceptual core — relatives, not homonymy's colliding strangers."
+  },
+  {
+    "id": "homograph-voicing",
+    "path": "diagrams/what-language-leaves-out/homograph-voicing.html",
+    "title": "Homograph voicing: the audio cue text never carries",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Toggle \"lead\" between /lɛd/ metal and /liːd/ news-lead contexts; the listener lane hears the sense, the model lane sees four letters."
+  },
+  {
+    "id": "idiom-binding",
+    "path": "diagrams/what-language-leaves-out/idiom-binding.html",
+    "title": "Idiom binding: when the unit of meaning is bigger than the token",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Toggle \"kicked the bucket\" between the compositional decoy and the idiomatic reading, where three tokens fuse into one unit meaning died."
+  },
+  {
+    "id": "entity-flip",
+    "path": "diagrams/what-language-leaves-out/entity-flip.html",
+    "title": "Entity flip: Turkey the country, turkey the dinner",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Sentence-initial \"Turkey was dry.\" with a context toggle flipping entity-hood — capitalization is forced at sentence start, so it carries no signal."
+  },
+  {
+    "id": "domain-tint",
+    "path": "diagrams/what-language-leaves-out/domain-tint.html",
+    "title": "Domain tint: the document decides what \"positive\" means",
+    "post": "what-language-leaves-out-lexical",
+    "description": "The same sentence inside an oncology note and a product review; diffuse arcs show the register of the whole document pinning the sense."
   }
 ]

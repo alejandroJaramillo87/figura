@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Idiom binding: when the unit of meaning is bigger than the token</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Idiom binding</h1>
+<p>"Kicked the bucket" read compositionally is foot-strikes-pail; read as an idiom, three tokens fuse into a single unit meaning "died". The compositional reading is a decoy built from the same parts.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-idiom-binding">
+<style>
+.fg-idiom-binding {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-idiom-binding svg { display: block; width: 100%; height: auto; }
+.fg-idiom-binding text { font-family: inherit; }
+
+.fg-idiom-binding .idb-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-idiom-binding .idb-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+.fg-idiom-binding .idb-note { fill: var(--muted); font-size: 11px; }
+.fg-idiom-binding .idb-gloss { fill: var(--muted); font-size: 11px; text-anchor: middle;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* literal state (default): per-token compositional glosses */
+.fg-idiom-binding .idb-lit { opacity: 1; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-idiom-binding .idb-idio { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-idiom-binding.is-idiom .idb-lit { opacity: 0; }
+.fg-idiom-binding.is-idiom .idb-idio { opacity: 1; }
+
+/* idiom tokens fuse: green fill + fused bracket in idiom state */
+.fg-idiom-binding.is-idiom .idb-part .idb-tok { fill: #0e4429; stroke: var(--ok); }
+
+/* mutual binding arcs between the idiom's parts */
+.fg-idiom-binding .idb-bind {
+  fill: none; stroke: var(--ok); stroke-width: 2;
+}
+
+.fg-idiom-binding .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-idiom-binding .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-idiom-binding .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-idiom-binding .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-idiom-binding .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-idiom-binding .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-idiom-binding .idb-tok, .fg-idiom-binding .idb-lit, .fg-idiom-binding .idb-idio,
+  .fg-idiom-binding .idb-gloss { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: The old farmer kicked the bucket. In the literal reading each token carries its own compositional gloss: foot strikes, a pail. In the idiomatic reading the three tokens kicked, the, and bucket fuse into one bracketed green unit glossed died, with binding arcs between the parts. A toggle switches between the readings.">
+  <defs>
+    <marker id="idb-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <text class="idb-note" x="40" y="26">the idiom's parts vouch for each other &#8212; the unit of meaning is bigger than any one token</text>
+
+  <!-- tokens -->
+  <rect class="idb-tok" x="40" y="96" width="100" height="38" rx="6"/>
+  <text class="idb-word" x="90" y="120">The old</text>
+  <rect class="idb-tok" x="152" y="96" width="86" height="38" rx="6"/>
+  <text class="idb-word" x="195" y="120">farmer</text>
+  <g class="idb-part">
+    <rect class="idb-tok" x="250" y="96" width="86" height="38" rx="6"/>
+    <text class="idb-word" x="293" y="120">kicked</text>
+  </g>
+  <g class="idb-part">
+    <rect class="idb-tok" x="348" y="96" width="52" height="38" rx="6"/>
+    <text class="idb-word" x="374" y="120">the</text>
+  </g>
+  <g class="idb-part">
+    <rect class="idb-tok" x="412" y="96" width="94" height="38" rx="6"/>
+    <text class="idb-word" x="459" y="120">bucket.</text>
+  </g>
+
+  <!-- literal glosses -->
+  <g class="idb-lit">
+    <text class="idb-gloss" x="293" y="160">struck with a foot</text>
+    <text class="idb-gloss" x="459" y="160">a pail</text>
+    <text class="idb-gloss" x="374" y="182">reading assembled token by token: a farmer, a foot, a pail &#8212; grammatical, vivid, wrong</text>
+  </g>
+
+  <!-- idiomatic state: fused bracket + binding arcs -->
+  <g class="idb-idio">
+    <path class="idb-bind" d="M 250 88 L 250 74 L 506 74 L 506 88" />
+    <text class="idb-gloss" x="378" y="64" style="fill:#34d399">one unit: "died"</text>
+    <path class="idb-bind" d="M 300 134 C 320 156, 350 156, 368 140" marker-end="url(#idb-arrow)"/>
+    <path class="idb-bind" d="M 452 134 C 430 162, 330 162, 300 142" marker-end="url(#idb-arrow)"/>
+    <text class="idb-gloss" x="374" y="196">each part is evidence for the others: "kicked" beside "the bucket" is not about kicking at all</text>
+  </g>
+
+  <text class="idb-note" x="40" y="248">Multiword expressions everywhere: "by and large", "of course", "give up" &#8212; frequency-welded units the tokens alone don't reveal.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Switch between the literal and idiomatic readings">Switch reading</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Literal</strong> &#8212; assemble the meaning token by token: a farmer, a foot, a pail. Perfectly grammatical, and almost never what the sentence means.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const CAP = {
+    lit: '<strong>Literal</strong> — assemble the meaning token by token: a farmer, a foot, a pail. Perfectly grammatical, and almost never what the sentence means.',
+    idiom: '<strong>Idiomatic</strong> — <code>kicked the bucket</code> fuses into one unit meaning <strong>died</strong>. No kicking, no bucket. The compositional reading is a decoy built from the very same parts; the tokens must bind to each other to mean anything at all.'
+  };
+  root.querySelector('[data-fg="toggle"]').addEventListener('click', () => {
+    const on = root.classList.toggle('is-idiom');
+    caption.innerHTML = on ? CAP.idiom : CAP.lit;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entity flip: Turkey the country, turkey the dinner</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Entity flip</h1>
+<p>"Turkey was dry." At sentence start, capitalization is forced — so nothing in the token says whether it names a country or a roast. The preceding context decides.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-entity-flip">
+<style>
+.fg-entity-flip {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-entity-flip svg { display: block; width: 100%; height: auto; }
+.fg-entity-flip text { font-family: inherit; }
+
+.fg-entity-flip .etf-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-entity-flip .etf-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+.fg-entity-flip .etf-note { fill: var(--muted); font-size: 11px; }
+
+/* the ambiguous token */
+.fg-entity-flip .etf-turkey .etf-tok { stroke: var(--accent); }
+.fg-entity-flip .etf-turkey .etf-word { fill: var(--accent); font-weight: 600; }
+
+/* context states: dinner (default) / summit */
+.fg-entity-flip .etf-c-dinner { opacity: 1; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-entity-flip .etf-c-summit { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-entity-flip.is-summit .etf-c-dinner { opacity: 0; }
+.fg-entity-flip.is-summit .etf-c-summit { opacity: 1; }
+
+/* cue words light per state */
+.fg-entity-flip:not(.is-summit) .etf-cue-dinner .etf-tok,
+.fg-entity-flip.is-summit .etf-cue-summit .etf-tok { stroke: var(--ok); fill: var(--panel-hover); }
+
+/* label cards under the token */
+.fg-entity-flip .etf-card rect {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.7s, stroke 0.7s, opacity 0.7s;
+}
+.fg-entity-flip .etf-card { transition: opacity 0.7s; }
+.fg-entity-flip:not(.is-summit) .etf-card-dinner rect,
+.fg-entity-flip.is-summit .etf-card-summit rect { stroke: var(--ok); fill: #0e4429; }
+.fg-entity-flip:not(.is-summit) .etf-card-summit,
+.fg-entity-flip.is-summit .etf-card-dinner { opacity: 0.25; }
+
+/* information-need arcs */
+.fg-entity-flip .etf-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-entity-flip:not(.is-summit) .etf-arc-dinner { opacity: 1; }
+.fg-entity-flip.is-summit .etf-arc-summit { opacity: 1; }
+
+.fg-entity-flip .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-entity-flip .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-entity-flip .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-entity-flip .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-entity-flip .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-entity-flip .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-entity-flip .etf-tok, .fg-entity-flip .etf-c-dinner, .fg-entity-flip .etf-c-summit,
+  .fg-entity-flip .etf-card, .fg-entity-flip .etf-card rect, .fg-entity-flip .etf-arc { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: Turkey was dry. — preceded by one of two toggled contexts: Thanksgiving went badly this year, or The summit communique was blunt. Below the capitalized word Turkey sit two cards, common noun the roast and named entity the country; the matching card lights per context, and an arc connects Turkey back to the cue word. A note marks that sentence-initial capitalization is forced and therefore uninformative.">
+  <defs>
+    <marker id="etf-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <text class="etf-note" x="40" y="26">sentence-initial position forces the capital &#8212; the usual entity cue is neutralized</text>
+
+  <!-- context line -->
+  <g class="etf-c-dinner">
+    <g class="etf-cue-dinner">
+      <rect class="etf-tok" x="40" y="48" width="140" height="34" rx="6"/>
+      <text class="etf-word" x="110" y="70">Thanksgiving</text>
+    </g>
+    <rect class="etf-tok" x="188" y="48" width="180" height="34" rx="6"/>
+    <text class="etf-word" x="278" y="70">went badly this year.</text>
+  </g>
+  <g class="etf-c-summit">
+    <rect class="etf-tok" x="40" y="48" width="52" height="34" rx="6"/>
+    <text class="etf-word" x="66" y="70">The</text>
+    <g class="etf-cue-summit">
+      <rect class="etf-tok" x="100" y="48" width="200" height="34" rx="6"/>
+      <text class="etf-word" x="200" y="70">summit communiqu&#233;</text>
+    </g>
+    <rect class="etf-tok" x="308" y="48" width="110" height="34" rx="6"/>
+    <text class="etf-word" x="363" y="70">was blunt.</text>
+  </g>
+
+  <!-- target sentence -->
+  <g class="etf-turkey">
+    <rect class="etf-tok" x="40" y="118" width="86" height="34" rx="6"/>
+    <text class="etf-word" x="83" y="140">Turkey</text>
+  </g>
+  <rect class="etf-tok" x="134" y="118" width="100" height="34" rx="6"/>
+  <text class="etf-word" x="184" y="140">was dry.</text>
+
+  <!-- arcs -->
+  <path class="etf-arc etf-arc-dinner" d="M 85 118 C 90 100, 98 92, 106 86" marker-end="url(#etf-arrow)"/>
+  <path class="etf-arc etf-arc-summit" d="M 100 118 C 120 102, 155 96, 185 86" marker-end="url(#etf-arrow)"/>
+
+  <!-- cards -->
+  <g class="etf-card etf-card-dinner">
+    <rect x="120" y="200" width="210" height="56" rx="8"/>
+    <text class="etf-word" x="225" y="224" font-weight="600">common noun</text>
+    <text class="etf-note" x="225" y="242" text-anchor="middle">the roast on the table</text>
+  </g>
+  <g class="etf-card etf-card-summit">
+    <rect x="390" y="200" width="210" height="56" rx="8"/>
+    <text class="etf-word" x="495" y="224" font-weight="600">named entity</text>
+    <text class="etf-note" x="495" y="242" text-anchor="middle">the country, in a diplomatic row</text>
+  </g>
+
+  <text class="etf-note" x="40" y="288">Same trap all over English: apple/Apple, bill/Bill, amazon/Amazon, mercury/Mercury.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Switch between the dinner and summit contexts">Switch context</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Common noun</strong> &#8212; after "Thanksgiving went badly", <code>Turkey</code> is the roast. The capital letter is just sentence-initial convention; the entity decision came from the previous sentence.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const CAP = {
+    dinner: '<strong>Common noun</strong> — after "Thanksgiving went badly", <code>Turkey</code> is the roast. The capital letter is just sentence-initial convention; the entity decision came from the previous sentence.',
+    summit: '<strong>Named entity</strong> — after "The summit communiqué was blunt", the same capitalized token names a country. Capitalization helps mid-sentence, but here it is forced — so it carries no information at all.'
+  };
+  root.querySelector('[data-fg="toggle"]').addEventListener('click', () => {
+    const on = root.classList.toggle('is-summit');
+    caption.innerHTML = on ? CAP.summit : CAP.dinner;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polysemy web: the related senses of "paper"</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Polysemy web</h1>
+<p>Unlike homonyms, polysemous senses are relatives — they radiate from a shared conceptual core. Hover a sense of "paper" to see it in action.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-polysemy-web">
+<style>
+.fg-polysemy-web {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-polysemy-web svg { display: block; width: 100%; height: auto; }
+.fg-polysemy-web text { font-family: inherit; }
+
+.fg-polysemy-web .plw-note { fill: var(--muted); font-size: 11px; }
+
+/* hub */
+.fg-polysemy-web .plw-hub circle {
+  fill: var(--panel); stroke: var(--accent); stroke-width: 2;
+}
+.fg-polysemy-web .plw-hub text { fill: var(--accent); font-size: 17px; font-weight: 600; text-anchor: middle; }
+.fg-polysemy-web .plw-core { fill: var(--muted); font-size: 10.5px; text-anchor: middle; }
+
+/* spokes */
+.fg-polysemy-web .plw-spoke {
+  stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 4 4;
+  transition: stroke 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* sense nodes */
+.fg-polysemy-web .plw-sense { cursor: pointer; }
+.fg-polysemy-web .plw-sense rect {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.45s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-polysemy-web .plw-sense text { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+.fg-polysemy-web .plw-sense .plw-gloss { fill: var(--muted); font-size: 10.5px; }
+.fg-polysemy-web .plw-sense:hover rect,
+.fg-polysemy-web .plw-sense:focus-visible rect,
+.fg-polysemy-web .plw-sense.is-active rect { fill: var(--panel-hover); stroke: var(--ok); }
+.fg-polysemy-web .plw-sense:focus { outline: none; }
+
+.fg-polysemy-web .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longest sense text: no page reflow on hover */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-polysemy-web .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-polysemy-web .fg-caption em { color: var(--warn); font-style: italic; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-polysemy-web .plw-sense rect, .fg-polysemy-web .plw-spoke { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A hub-and-spoke diagram: the word paper at the center, with four related senses radiating outward — the material, a newspaper, an academic article, and an exam. Dashed spokes mark the shared conceptual core: a flat writing surface and the things it carries. Hovering a sense shows an example sentence.">
+  <text class="plw-note" x="40" y="26">polysemy: the senses are relatives, radiating from a shared core &#8212; not homonymy's colliding strangers</text>
+
+  <!-- spokes -->
+  <path class="plw-spoke" d="M 300 150 L 138 92"/>
+  <path class="plw-spoke" d="M 420 150 L 582 92"/>
+  <path class="plw-spoke" d="M 300 170 L 138 228"/>
+  <path class="plw-spoke" d="M 420 170 L 582 228"/>
+
+  <!-- hub -->
+  <g class="plw-hub">
+    <circle cx="360" cy="160" r="52"/>
+    <text x="360" y="158">paper</text>
+    <text class="plw-core" x="360" y="176">a flat sheet, and</text>
+    <text class="plw-core" x="360" y="189">what it carries</text>
+  </g>
+
+  <!-- sense nodes -->
+  <g class="plw-sense" tabindex="0" role="button" aria-label="Sense: the material"
+     data-info='<strong>the material</strong> &#8212; &#8220;Wrap it in <em>paper</em>.&#8221; The physical sheet itself: the sense closest to the core, and historically the oldest.'>
+    <rect x="40" y="56" width="196" height="52" rx="8"/>
+    <text x="138" y="79">the material</text>
+    <text class="plw-gloss" x="138" y="97">"wrap it in paper"</text>
+  </g>
+  <g class="plw-sense" tabindex="0" role="button" aria-label="Sense: a newspaper"
+     data-info='<strong>a newspaper</strong> &#8212; &#8220;It made the front page of the <em>paper</em>.&#8221; The material stands in for the publication printed on it &#8212; a metonymic step away from the core.'>
+    <rect x="484" y="56" width="196" height="52" rx="8"/>
+    <text x="582" y="79">a newspaper</text>
+    <text class="plw-gloss" x="582" y="97">"the front page of the paper"</text>
+  </g>
+  <g class="plw-sense" tabindex="0" role="button" aria-label="Sense: an academic article"
+     data-info='<strong>an academic article</strong> &#8212; &#8220;She published a <em>paper</em> on attention.&#8221; The medium again stands for the work &#8212; senses drift outward but stay recognizably related.'>
+    <rect x="40" y="202" width="196" height="52" rx="8"/>
+    <text x="138" y="225">an academic article</text>
+    <text class="plw-gloss" x="138" y="243">"a paper on attention"</text>
+  </g>
+  <g class="plw-sense" tabindex="0" role="button" aria-label="Sense: an exam"
+     data-info='<strong>an exam</strong> &#8212; &#8220;The physics <em>paper</em> was brutal.&#8221; (British English.) Four senses in, the core is still visible: a sheet, and what is written on it.'>
+    <rect x="484" y="202" width="196" height="52" rx="8"/>
+    <text x="582" y="225">an exam</text>
+    <text class="plw-gloss" x="582" y="243">"the physics paper was brutal"</text>
+  </g>
+
+  <text class="plw-note" x="40" y="288">"run" is the extreme case: WordNet counts its senses in the dozens, all radiating the same way.</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover (or tab to) a sense. Each one is related to the others &#8212; which makes polysemy harder to inventory than homonymy: there is no clean boundary where one sense ends and the next begins.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = caption.innerHTML;
+  const senses = root.querySelectorAll('.plw-sense');
+  senses.forEach((s) => {
+    const show = () => {
+      senses.forEach((x) => x.classList.toggle('is-active', x === s));
+      caption.innerHTML = s.dataset.info;
+    };
+    const clear = () => { s.classList.remove('is-active'); caption.innerHTML = DEFAULT; };
+    s.addEventListener('mouseenter', show);
+    s.addEventListener('focus', show);
+    s.addEventListener('mouseleave', clear);
+    s.addEventListener('blur', clear);
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

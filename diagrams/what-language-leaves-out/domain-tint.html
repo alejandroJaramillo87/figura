@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Domain tint: the document decides what "positive" means</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Domain tint</h1>
+<p>The same sentence — "The test came back positive." — is bad news in an oncology note and good news in a product review. The resolving context is not a neighboring word; it is the register of the whole document.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-domain-tint">
+<style>
+.fg-domain-tint {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-domain-tint svg { display: block; width: 100%; height: auto; }
+.fg-domain-tint text { font-family: inherit; }
+
+.fg-domain-tint .dmt-note { fill: var(--muted); font-size: 11px; }
+.fg-domain-tint .dmt-doc {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-domain-tint .dmt-title { fill: var(--text); font-size: 12px; font-weight: 600; }
+.fg-domain-tint .dmt-line { fill: var(--muted); font-size: 11px; }
+.fg-domain-tint .dmt-cue { transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* the shared sentence */
+.fg-domain-tint .dmt-sent rect {
+  fill: var(--panel-hover); stroke: var(--accent); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-domain-tint .dmt-sent text { fill: var(--text); font-size: 13px; }
+.fg-domain-tint .dmt-positive { font-weight: 600; transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+
+/* states: is-review tints good; default (medical) tints bad */
+.fg-domain-tint .dmt-doc-med { stroke: var(--hot); }
+.fg-domain-tint .dmt-doc-rev { stroke: var(--border); }
+.fg-domain-tint.is-review .dmt-doc-med { stroke: var(--border); }
+.fg-domain-tint.is-review .dmt-doc-rev { stroke: var(--ok); }
+
+.fg-domain-tint .dmt-positive { fill: var(--hot); }
+.fg-domain-tint.is-review .dmt-positive { fill: var(--ok); }
+.fg-domain-tint:not(.is-review) .dmt-doc-med .dmt-cue { fill: var(--hot); }
+.fg-domain-tint.is-review .dmt-doc-rev .dmt-cue { fill: var(--ok); }
+
+/* verdict labels */
+.fg-domain-tint .dmt-verdict { font-size: 12px; font-weight: 600; text-anchor: middle;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-domain-tint .dmt-verdict-bad { fill: var(--hot); opacity: 1; }
+.fg-domain-tint .dmt-verdict-good { fill: var(--ok); opacity: 0; }
+.fg-domain-tint.is-review .dmt-verdict-bad { opacity: 0; }
+.fg-domain-tint.is-review .dmt-verdict-good { opacity: 1; }
+
+/* diffuse info-need arcs: from "positive" to cues scattered through the active doc */
+.fg-domain-tint .dmt-arc {
+  fill: none; stroke-width: 2; stroke-dasharray: 3 4;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-domain-tint .dmt-arc-med { stroke: var(--hot); opacity: 0.85; }
+.fg-domain-tint .dmt-arc-rev { stroke: var(--ok); opacity: 0; }
+.fg-domain-tint.is-review .dmt-arc-med { opacity: 0; }
+.fg-domain-tint.is-review .dmt-arc-rev { opacity: 0.85; }
+
+.fg-domain-tint .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-domain-tint .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-domain-tint .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-domain-tint .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-domain-tint .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-domain-tint .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-domain-tint .dmt-doc, .fg-domain-tint .dmt-cue, .fg-domain-tint .dmt-positive,
+  .fg-domain-tint .dmt-sent rect, .fg-domain-tint .dmt-verdict, .fg-domain-tint .dmt-arc { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 330" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence The test came back positive shown between two mini-documents: an oncology follow-up note and a product review. A toggle moves the sentence between the documents. Inside the medical note, positive reads as bad news and dashed arcs connect it to register cues like biopsy and oncology scattered across the note; inside the review, the same word reads as good news, with arcs to cues like battery life and five stars. The resolving context is the whole document's register, not any single neighboring word.">
+  <text class="dmt-note" x="40" y="26">the diffuse case: no single word pins the sense &#8212; the whole document's register does</text>
+
+  <!-- medical doc -->
+  <g class="dmt-doc-med">
+    <rect class="dmt-doc" x="40" y="44" width="300" height="130" rx="8"/>
+    <text class="dmt-title" x="56" y="68">ONCOLOGY FOLLOW-UP &#8212; visit 3</text>
+    <text class="dmt-line" x="56" y="92">Patient returned for <tspan class="dmt-cue">biopsy</tspan> results</text>
+    <text class="dmt-line" x="56" y="112">after last month's <tspan class="dmt-cue">imaging</tspan>.</text>
+    <text class="dmt-line" x="56" y="132">Discussed <tspan class="dmt-cue">treatment options</tspan> and</text>
+    <text class="dmt-line" x="56" y="152">scheduled a follow-up scan.</text>
+    <text class="dmt-verdict dmt-verdict-bad" x="190" y="196">"positive" = bad news</text>
+  </g>
+
+  <!-- review doc -->
+  <g class="dmt-doc-rev">
+    <rect class="dmt-doc" x="380" y="44" width="300" height="130" rx="8"/>
+    <text class="dmt-title" x="396" y="68">PRODUCT REVIEW &#8212; wireless earbuds</text>
+    <text class="dmt-line" x="396" y="92">Overall a <tspan class="dmt-cue">five-star</tspan> experience.</text>
+    <text class="dmt-line" x="396" y="112">The <tspan class="dmt-cue">battery life</tspan> impressed us,</text>
+    <text class="dmt-line" x="396" y="132">and the fit was <tspan class="dmt-cue">comfortable</tspan></text>
+    <text class="dmt-line" x="396" y="152">through long listening sessions.</text>
+    <text class="dmt-verdict dmt-verdict-good" x="530" y="196">"positive" = good news</text>
+  </g>
+
+  <!-- the shared sentence -->
+  <g class="dmt-sent">
+    <rect x="210" y="228" width="300" height="40" rx="8"/>
+    <text x="238" y="253">The test came back <tspan class="dmt-positive">positive</tspan>.</text>
+  </g>
+
+  <!-- diffuse arcs from "positive" into each doc's cues -->
+  <path class="dmt-arc dmt-arc-med" d="M 440 228 C 380 210, 240 180, 150 96"/>
+  <path class="dmt-arc dmt-arc-med" d="M 440 228 C 400 214, 300 190, 175 116"/>
+  <path class="dmt-arc dmt-arc-med" d="M 440 228 C 420 216, 330 200, 185 136"/>
+  <path class="dmt-arc dmt-arc-rev" d="M 460 228 C 490 212, 500 130, 480 96"/>
+  <path class="dmt-arc dmt-arc-rev" d="M 460 228 C 500 214, 520 160, 460 116"/>
+  <path class="dmt-arc dmt-arc-rev" d="M 460 228 C 510 218, 540 180, 510 136"/>
+
+  <text class="dmt-note" x="40" y="310">"cell" runs the same trick three ways: biology paper, prison memoir, telecom spec.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Move the sentence between the oncology note and the product review">Switch document</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Oncology note</strong> &#8212; here <code>positive</code> means the biopsy found something: bad news. No neighboring word says so; the sense is fixed by register cues smeared across the entire document.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const CAP = {
+    med: '<strong>Oncology note</strong> — here <code>positive</code> means the biopsy found something: bad news. No neighboring word says so; the sense is fixed by register cues smeared across the entire document.',
+    rev: '<strong>Product review</strong> — the identical sentence now reports a happy verdict. The import distance is the longest in the lexical family: the whole document, diffusely, is the disambiguating context.'
+  };
+  root.querySelector('[data-fg="toggle"]').addEventListener('click', () => {
+    const on = root.classList.toggle('is-review');
+    caption.innerHTML = on ? CAP.rev : CAP.med;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
