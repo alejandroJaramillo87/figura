@@ -1,0 +1,23 @@
+[
+  {
+    "id": "kv-cache-fill",
+    "path": "diagrams/inference-loop/kv-cache-fill.html",
+    "title": "KV cache fill during the decode loop",
+    "post": "05-from-main-to-tokens-inference-loop",
+    "description": "Prefill writes K/V for the whole prompt in one pass; each decode step appends one row and attends over everything cached. Step timeline with controls."
+  },
+  {
+    "id": "block-dataflow",
+    "path": "diagrams/transformer-architecture/block-dataflow.html",
+    "title": "Transformer block dataflow",
+    "post": "06-transformer-architecture-in-llama-cpp",
+    "description": "Pre-norm block: RMSNorm → attention → residual add → RMSNorm → SwiGLU MLP → residual add. Animated flow lines, hover-to-inspect caption."
+  },
+  {
+    "id": "attention-pattern",
+    "path": "diagrams/prefill-vs-decode/attention-pattern.html",
+    "title": "Attention pattern: prefill vs decode",
+    "post": "avx512-prefill-vs-decode",
+    "description": "Causal attention matrix: prefill fills prompt rows in one batched pass, decode adds one row per step. Step timeline with controls."
+  }
+]

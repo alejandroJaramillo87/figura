@@ -1,0 +1,40 @@
+/*
+ * tokens.css — reference design tokens for slide-animator diagrams.
+ *
+ * IMPORTANT: diagrams do NOT link this file. Each diagram copies the values
+ * it needs into its own scoped <style> block so the embed fragment stays
+ * fully self-contained (see CLAUDE.md). This file is the single source of
+ * truth for the palette; update here first, then use in new diagrams.
+ */
+
+:root {
+  /* Surfaces (dark slate panel — matches the blog's mermaid diagrams) */
+  --sa-bg: #0f172a;
+  --sa-panel: #1e293b;
+  --sa-panel-hover: #334155;
+  --sa-border: #334155;
+
+  /* Text */
+  --sa-text: #f8fafc;
+  --sa-muted: #94a3b8;
+
+  /* Accent + semantic colors */
+  --sa-accent: #38bdf8;   /* primary highlight, active flow lines */
+  --sa-ok: #34d399;       /* success / filled / cached */
+  --sa-warn: #fbbf24;     /* attention / in-progress / hot path */
+  --sa-hot: #f87171;      /* bottleneck / eviction / error */
+  --sa-violet: #a78bfa;   /* secondary series (e.g. K vs V, head 2) */
+
+  /* Lines */
+  --sa-line: #64748b;
+
+  /* Typography (system stack — no webfont fetches inside diagrams) */
+  --sa-font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --sa-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  /* Shape & motion */
+  --sa-radius: 12px;
+  --sa-radius-sm: 6px;
+  --sa-dur-step: 700ms;
+  --sa-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
