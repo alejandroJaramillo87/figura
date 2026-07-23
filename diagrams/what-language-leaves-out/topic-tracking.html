@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Topic tracking: pronouns prefer the topic</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Topic and focus tracking</h1>
+<p>What the paragraph is about decides where "it" lands — change the opening sentence and a later pronoun re-points.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-topic-tracking">
+<style>
+.fg-topic-tracking {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-topic-tracking svg { display: block; width: 100%; height: auto; }
+.fg-topic-tracking text { font-family: inherit; }
+
+.fg-topic-tracking .tpf-note { fill: var(--muted); font-size: 11px; }
+.fg-topic-tracking .tpf-line text { fill: var(--text); font-size: 13px; }
+.fg-topic-tracking .tpf-it { fill: var(--warn); font-weight: 600; }
+
+/* opening sentence variants cross-fade */
+.fg-topic-tracking .tpf-open { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-topic-tracking .tpf-open-bridge { opacity: 1; }
+.fg-topic-tracking .tpf-open-river { opacity: 0; }
+.fg-topic-tracking.is-river .tpf-open-bridge { opacity: 0; }
+.fg-topic-tracking.is-river .tpf-open-river { opacity: 1; }
+
+/* entity chips */
+.fg-topic-tracking .tpf-ent rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: stroke 0.7s, fill 0.7s; }
+.fg-topic-tracking .tpf-ent text { fill: var(--text); font-size: 12px; text-anchor: middle; }
+.fg-topic-tracking .tpf-topictag { font-size: 10px; fill: var(--violet); text-anchor: middle; transition: opacity 0.7s; }
+.fg-topic-tracking .tpf-ent-bridge rect { stroke: var(--ok); fill: #0e4429; }
+.fg-topic-tracking .tpf-tag-bridge { opacity: 1; }
+.fg-topic-tracking .tpf-tag-river { opacity: 0; }
+.fg-topic-tracking.is-river .tpf-ent-bridge rect { stroke: var(--border); fill: var(--panel); }
+.fg-topic-tracking.is-river .tpf-ent-river rect { stroke: var(--ok); fill: #0e4429; }
+.fg-topic-tracking.is-river .tpf-tag-bridge { opacity: 0; }
+.fg-topic-tracking.is-river .tpf-tag-river { opacity: 1; }
+
+/* the pronoun's arc re-points */
+.fg-topic-tracking .tpf-arc { fill: none; stroke: var(--ok); stroke-width: 2; transition: opacity 0.7s; }
+.fg-topic-tracking .tpf-arc-bridge { opacity: 1; }
+.fg-topic-tracking .tpf-arc-river { opacity: 0; }
+.fg-topic-tracking.is-river .tpf-arc-bridge { opacity: 0; }
+.fg-topic-tracking.is-river .tpf-arc-river { opacity: 1; }
+
+.fg-topic-tracking .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-topic-tracking .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-topic-tracking .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-topic-tracking .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-topic-tracking .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-topic-tracking .tpf-open, .fg-topic-tracking .tpf-ent rect,
+  .fg-topic-tracking .tpf-topictag, .fg-topic-tracking .tpf-arc { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A three-sentence paragraph. The opening sentence flips between: The bridge is the county's oldest, and: The river floods every spring. The middle sentence is fixed: The bridge crosses the river east of town. The final sentence is: It needs constant attention. Two entity chips, bridge and river, sit at the right; whichever one the opening sentence made the topic is highlighted green and tagged TOPIC, and the pronoun It sends its green arc to that chip. Both readings are grammatical; the topic decides.">
+  <text class="tpf-note" x="40" y="26">both antecedents are grammatical &#8212; "it" prefers whichever one the paragraph is about</text>
+
+  <!-- opening sentence variants -->
+  <g class="tpf-line tpf-open tpf-open-bridge">
+    <text x="60" y="66">"The bridge is the county's oldest."</text>
+  </g>
+  <g class="tpf-line tpf-open tpf-open-river">
+    <text x="60" y="66">"The river floods every spring."</text>
+  </g>
+
+  <!-- fixed middle sentence -->
+  <g class="tpf-line">
+    <text x="60" y="106">"The bridge crosses the river east of town."</text>
+  </g>
+
+  <!-- final sentence with the pronoun -->
+  <g class="tpf-line">
+    <text x="60" y="146">"<tspan class="tpf-it">It</tspan> needs constant attention."</text>
+  </g>
+
+  <!-- entity chips -->
+  <g class="tpf-ent tpf-ent-bridge">
+    <rect x="480" y="64" width="150" height="34" rx="17"/>
+    <text x="555" y="86">the bridge</text>
+  </g>
+  <text class="tpf-topictag tpf-tag-bridge" x="555" y="54">TOPIC</text>
+  <g class="tpf-ent tpf-ent-river">
+    <rect x="480" y="118" width="150" height="34" rx="17"/>
+    <text x="555" y="140">the river</text>
+  </g>
+  <text class="tpf-topictag tpf-tag-river" x="555" y="168">TOPIC</text>
+
+  <!-- arcs from "It" -->
+  <path class="tpf-arc tpf-arc-bridge" d="M 80 132 C 200 100, 360 86, 474 81" marker-end="url(#tpf-arrow)"/>
+  <path class="tpf-arc tpf-arc-river" d="M 80 152 C 200 150, 360 140, 474 136" marker-end="url(#tpf-arrow)"/>
+
+  <text class="tpf-note" x="40" y="212">The middle sentence mentions both entities, and "needs constant attention" fits either an</text>
+  <text class="tpf-note" x="40" y="228">old bridge or a flooding river. Only the opening sentence &#8212; two sentences upstream &#8212;</text>
+  <text class="tpf-note" x="40" y="244">breaks the tie, by establishing what the paragraph is about.</text>
+
+  <defs>
+    <marker id="tpf-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Change which entity the opening sentence makes the topic">Change the topic</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Bridge as topic</strong> &#8212; the paragraph opened on the bridge, so the discourse is about the bridge, and "It" resolves there: the old bridge needs constant attention. The river was mentioned just as recently; recency loses to topichood.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    bridge: '<strong>Bridge as topic</strong> — the paragraph opened on the bridge, so the discourse is about the bridge, and "It" resolves there: the old bridge needs constant attention. The river was mentioned just as recently; recency loses to topichood.',
+    river: '<strong>River as topic</strong> — open on the river instead and the identical middle and final sentences read differently: now "It" is the flooding river. The pronoun\'s sentence never changed; its antecedent moved because the paragraph\'s aboutness did.'
+  };
+  btn.addEventListener('click', () => {
+    const river = root.classList.toggle('is-river');
+    caption.innerHTML = river ? CAP.river : CAP.bridge;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

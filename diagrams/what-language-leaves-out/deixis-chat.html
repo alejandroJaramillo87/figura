@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deixis: "you" re-binds every turn</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Deixis in a chat transcript</h1>
+<p>"I", "you", "here", "now" are indexed to the speaker — and in a transcript the speaker changes every turn.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-deixis-chat">
+<style>
+.fg-deixis-chat {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-deixis-chat svg { display: block; width: 100%; height: auto; }
+.fg-deixis-chat text { font-family: inherit; }
+
+.fg-deixis-chat .dxs-note { fill: var(--muted); font-size: 11px; }
+.fg-deixis-chat .dxs-turn rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
+.fg-deixis-chat .dxs-turn text { fill: var(--text); font-size: 13px; }
+.fg-deixis-chat .dxs-speaker { font-size: 11px; }
+.fg-deixis-chat .dxs-spk-a { fill: var(--accent); }
+.fg-deixis-chat .dxs-spk-b { fill: var(--violet); }
+.fg-deixis-chat .dxs-i { fill: var(--ok); font-weight: 600; }
+.fg-deixis-chat .dxs-you { fill: var(--warn); font-weight: 600; }
+
+/* per-turn highlight + arcs, driven by is-turn-N on the root */
+.fg-deixis-chat .dxs-turn { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0.45; }
+.fg-deixis-chat .dxs-arcs { transition: opacity 0.7s; opacity: 0; }
+.fg-deixis-chat .dxs-arc-i { fill: none; stroke: var(--ok); stroke-width: 2; }
+.fg-deixis-chat .dxs-arc-you { fill: none; stroke: var(--warn); stroke-width: 2; }
+.fg-deixis-chat.is-turn-1 .dxs-turn-1, .fg-deixis-chat.is-turn-2 .dxs-turn-2,
+.fg-deixis-chat.is-turn-3 .dxs-turn-3 { opacity: 1; }
+.fg-deixis-chat.is-turn-1 .dxs-turn-1 rect, .fg-deixis-chat.is-turn-2 .dxs-turn-2 rect,
+.fg-deixis-chat.is-turn-3 .dxs-turn-3 rect { stroke: var(--accent); }
+.fg-deixis-chat.is-turn-1 .dxs-arcs-1, .fg-deixis-chat.is-turn-2 .dxs-arcs-2,
+.fg-deixis-chat.is-turn-3 .dxs-arcs-3 { opacity: 1; }
+
+.fg-deixis-chat .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-deixis-chat .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-deixis-chat .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-deixis-chat .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-deixis-chat .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-deixis-chat .dxs-turn, .fg-deixis-chat .dxs-arcs { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 310" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A three-turn chat transcript. Turn 1, speaker A: I sent you the draft. Turn 2, speaker B: I'll read it tonight — did you mean the long version? Turn 3, speaker A: Yes — tell me what you think. Two speaker labels, A and B, sit at the top. A button steps through the turns; in each highlighted turn, green arcs connect every I to that turn's speaker label and amber arcs connect every you to the other speaker. The same two words re-bind to opposite people on every turn.">
+  <text class="dxs-note" x="40" y="24">"I" and "you" are the same tokens in every turn &#8212; but they swap referents each time the speaker changes</text>
+
+  <!-- speaker anchors -->
+  <g class="dxs-turn" style="opacity:1">
+    <rect x="140" y="40" width="120" height="30" rx="15"/>
+    <text class="dxs-spk-a" x="200" y="60" text-anchor="middle">speaker A</text>
+    <rect x="440" y="40" width="120" height="30" rx="15"/>
+    <text class="dxs-spk-b" x="500" y="60" text-anchor="middle">speaker B</text>
+  </g>
+
+  <!-- turn 1 (A) -->
+  <g class="dxs-turn dxs-turn-1">
+    <rect x="60" y="96" width="380" height="36" rx="8"/>
+    <text x="76" y="119"><tspan class="dxs-spk-a">A:</tspan> "<tspan class="dxs-i">I</tspan> sent <tspan class="dxs-you">you</tspan> the draft."</text>
+  </g>
+  <g class="dxs-arcs dxs-arcs-1">
+    <path class="dxs-arc-i" d="M 110 94 C 120 84, 150 76, 175 72" marker-end="url(#dxs-arrow-ok)"/>
+    <path class="dxs-arc-you" d="M 165 94 C 240 82, 380 76, 445 70" marker-end="url(#dxs-arrow-warn)"/>
+  </g>
+
+  <!-- turn 2 (B) -->
+  <g class="dxs-turn dxs-turn-2">
+    <rect x="220" y="152" width="470" height="36" rx="8"/>
+    <text x="236" y="175"><tspan class="dxs-spk-b">B:</tspan> "<tspan class="dxs-i">I</tspan>'ll read it tonight &#8212; did <tspan class="dxs-you">you</tspan> mean the long version?"</text>
+  </g>
+  <g class="dxs-arcs dxs-arcs-2">
+    <path class="dxs-arc-i" d="M 270 150 C 330 120, 430 90, 490 74" marker-end="url(#dxs-arrow-ok)"/>
+    <path class="dxs-arc-you" d="M 420 150 C 360 120, 260 90, 215 72" marker-end="url(#dxs-arrow-warn)"/>
+  </g>
+
+  <!-- turn 3 (A) -->
+  <g class="dxs-turn dxs-turn-3">
+    <rect x="60" y="208" width="400" height="36" rx="8"/>
+    <text x="76" y="231"><tspan class="dxs-spk-a">A:</tspan> "Yes &#8212; tell <tspan class="dxs-i">me</tspan> what <tspan class="dxs-you">you</tspan> think."</text>
+  </g>
+  <g class="dxs-arcs dxs-arcs-3">
+    <path class="dxs-arc-i" d="M 190 206 C 195 160, 198 110, 199 74" marker-end="url(#dxs-arrow-ok)"/>
+    <path class="dxs-arc-you" d="M 280 206 C 340 160, 430 100, 465 72" marker-end="url(#dxs-arrow-warn)"/>
+  </g>
+
+  <text class="dxs-note" x="40" y="278"><tspan class="dxs-i">green</tspan> = the current speaker &#160;&#160;<tspan class="dxs-you">amber</tspan> = the addressee. Resolving either requires the turn</text>
+  <text class="dxs-note" x="40" y="294">structure &#8212; which is why chat templates wrap every message in explicit role tags.</text>
+
+  <defs>
+    <marker id="dxs-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="dxs-arrow-warn" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Step to the next turn and re-bind the pronouns">Next turn</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Turn 1 (A speaking)</strong> &#8212; "I" binds to A, "you" binds to B. The words carry no names; the bindings come from who holds the floor.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = [
+    '<strong>Turn 1 (A speaking)</strong> — "I" binds to A, "you" binds to B. The words carry no names; the bindings come from who holds the floor.',
+    '<strong>Turn 2 (B speaking)</strong> — one turn later the same two tokens have swapped owners: "I" is now B and "you" is now A. Nothing about the words changed; the environment did.',
+    '<strong>Turn 3 (A speaking)</strong> — the bindings flip back. A model reading a transcript re-resolves "I"/"you" on every message, which is exactly the work the role tags in a chat template exist to anchor.'
+  ];
+  let turn = 1;
+  root.classList.add('is-turn-1');
+  btn.addEventListener('click', () => {
+    root.classList.remove('is-turn-' + turn);
+    turn = turn % 3 + 1;
+    root.classList.add('is-turn-' + turn);
+    caption.innerHTML = CAP[turn - 1];
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Implicature: the answer that dodges is the answer</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Indirect answers and implicature</h1>
+<p>"Did you like the movie?" — "The popcorn was good." The literal content is not the message.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-implicature-gap">
+<style>
+.fg-implicature-gap {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-implicature-gap svg { display: block; width: 100%; height: auto; }
+.fg-implicature-gap text { font-family: inherit; }
+
+.fg-implicature-gap .imp-note { fill: var(--muted); font-size: 11px; }
+.fg-implicature-gap .imp-row rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
+.fg-implicature-gap .imp-row text { fill: var(--text); font-size: 13px; }
+.fg-implicature-gap .imp-tag { font-size: 11px; fill: var(--violet); }
+.fg-implicature-gap .imp-movie rect { stroke: var(--warn); }
+
+/* literal reading: popcorn statement highlighted, nothing more */
+.fg-implicature-gap .imp-lit { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); opacity: 1; }
+.fg-implicature-gap.is-implicated .imp-lit { opacity: 0; }
+
+/* implicated reading: ghost card + arc back to the question */
+.fg-implicature-gap .imp-ghost { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0; }
+.fg-implicature-gap .imp-ghost rect { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-implicature-gap .imp-ghost text { fill: var(--ok); font-size: 12px; text-anchor: middle; }
+.fg-implicature-gap .imp-arc { fill: none; stroke: var(--ok); stroke-width: 2; transition: opacity 0.7s; opacity: 0; }
+.fg-implicature-gap.is-implicated .imp-ghost { opacity: 1; }
+.fg-implicature-gap.is-implicated .imp-arc { opacity: 1; }
+
+.fg-implicature-gap .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-implicature-gap .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-implicature-gap .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-implicature-gap .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-implicature-gap .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-implicature-gap .imp-lit, .fg-implicature-gap .imp-ghost, .fg-implicature-gap .imp-arc { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Two speech bubbles: Q: Did you like the movie? and A: The popcorn was good. A button flips between the literal reading — a true statement about popcorn — and the implicated reading, where a dashed green ghost card materializes reading: the movie was not good, with an arc from the answer back to the question it pointedly failed to address.">
+  <text class="imp-note" x="40" y="26">the message lives in the gap between what was asked and what was answered</text>
+
+  <!-- question row -->
+  <g class="imp-row imp-movie">
+    <rect x="80" y="46" width="330" height="38" rx="8"/>
+    <text x="96" y="70"><tspan class="imp-tag">Q:</tspan>  "Did you like the movie?"</text>
+  </g>
+
+  <!-- answer row -->
+  <g class="imp-row">
+    <rect x="170" y="104" width="330" height="38" rx="8"/>
+    <text x="186" y="128"><tspan class="imp-tag">A:</tspan>  "The popcorn was good."</text>
+  </g>
+
+  <!-- literal reading marker -->
+  <g class="imp-lit">
+    <text class="imp-note" x="520" y="128">literal content: a true</text>
+    <text class="imp-note" x="520" y="144">claim about popcorn</text>
+  </g>
+
+  <!-- arc: answer -> the question it dodged -->
+  <path class="imp-arc" d="M 250 100 C 220 92, 200 90, 180 88" marker-end="url(#imp-arrow)"/>
+
+  <!-- implicated ghost card -->
+  <g class="imp-ghost">
+    <rect x="200" y="170" width="270" height="40" rx="8"/>
+    <text x="335" y="195">implicated: "the movie was not good"</text>
+  </g>
+
+  <text class="imp-note" x="40" y="244">A cooperative speaker answers the question asked. Praising the popcorn instead is not</text>
+  <text class="imp-note" x="40" y="260">noise &#8212; the evasion itself carries the verdict. No token states it.</text>
+
+  <defs>
+    <marker id="imp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Flip between the literal and implicated readings">Read the implicature</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Literal reading</strong> &#8212; taken at face value, the answer is an unrelated true statement about concessions. A system that only computes literal content stops here, with the actual question unanswered.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    lit: '<strong>Literal reading</strong> — taken at face value, the answer is an unrelated true statement about concessions. A system that only computes literal content stops here, with the actual question unanswered.',
+    imp: '<strong>Implicated reading</strong> — because the speaker conspicuously answered a different question, the verdict on the movie arrives anyway: not good. The meaning is computed from the mismatch between question and answer — information carried by no token in either sentence.'
+  };
+  btn.addEventListener('click', () => {
+    const imp = root.classList.toggle('is-implicated');
+    caption.innerHTML = imp ? CAP.imp : CAP.lit;
+    btn.textContent = imp ? 'Back to the literal' : 'Read the implicature';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
