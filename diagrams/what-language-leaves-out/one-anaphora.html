@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One-anaphora: "the red one" copies in a missing noun</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>One-anaphora</h1>
+<p>"I'll take the red one." The noun is elided; "one" is a placeholder whose content must be copied in from the previous utterance.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-one-anaphora">
+<style>
+.fg-one-anaphora {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-one-anaphora svg { display: block; width: 100%; height: auto; }
+.fg-one-anaphora text { font-family: inherit; }
+
+.fg-one-anaphora .ona-note { fill: var(--muted); font-size: 11px; }
+.fg-one-anaphora .ona-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-one-anaphora .ona-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+
+/* "one" and the source noun */
+.fg-one-anaphora .ona-one .ona-tok { stroke: var(--accent); }
+.fg-one-anaphora .ona-one .ona-word { fill: var(--accent); font-weight: 600; }
+.fg-one-anaphora .ona-shirt .ona-tok { stroke: var(--ok); }
+.fg-one-anaphora.is-revealed .ona-shirt .ona-tok { fill: #0e4429; }
+
+/* ghost token: the elided noun materializing */
+.fg-one-anaphora .ona-ghost { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-one-anaphora.is-revealed .ona-ghost { opacity: 1; }
+.fg-one-anaphora .ona-ghost rect {
+  fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4;
+}
+.fg-one-anaphora .ona-ghost text { fill: var(--ok); }
+
+/* copy-in arc */
+.fg-one-anaphora .ona-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-one-anaphora.is-revealed .ona-arc { opacity: 1; }
+.fg-one-anaphora .ona-arclabel { opacity: 0; transition: opacity 0.7s; }
+.fg-one-anaphora.is-revealed .ona-arclabel { opacity: 1; }
+
+.fg-one-anaphora .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-one-anaphora .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-one-anaphora .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-one-anaphora .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-one-anaphora .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-one-anaphora .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-one-anaphora .ona-tok, .fg-one-anaphora .ona-ghost, .fg-one-anaphora .ona-arc,
+  .fg-one-anaphora .ona-arclabel { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="First utterance: Do you want the blue shirt or the red one question mark. Reply: I will take the red one. The word one is highlighted. A button reveals the elided noun: a dashed ghost token reading shirt appears after one, with a green copy-in arc from the earlier word shirt, showing that one is a placeholder whose content is copied in from the previous utterance.">
+  <defs>
+    <marker id="ona-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <text class="ona-note" x="40" y="26">"one" is a placeholder token &#8212; its noun content lives one utterance back</text>
+
+  <!-- utterance 1 -->
+  <rect class="ona-tok" x="40" y="48" width="204" height="34" rx="6"/>
+  <text class="ona-word" x="142" y="70">"Do you want the blue</text>
+  <g class="ona-shirt">
+    <rect class="ona-tok" x="252" y="48" width="62" height="34" rx="6"/>
+    <text class="ona-word" x="283" y="70">shirt</text>
+  </g>
+  <rect class="ona-tok" x="322" y="48" width="130" height="34" rx="6"/>
+  <text class="ona-word" x="387" y="70">or the red one?"</text>
+
+  <!-- utterance 2 -->
+  <rect class="ona-tok" x="40" y="150" width="176" height="34" rx="6"/>
+  <text class="ona-word" x="128" y="172">"I'll take the red</text>
+  <g class="ona-one">
+    <rect class="ona-tok" x="224" y="150" width="66" height="34" rx="6"/>
+    <text class="ona-word" x="257" y="172">one."</text>
+  </g>
+
+  <!-- ghost token: the copied-in noun -->
+  <g class="ona-ghost">
+    <rect x="300" y="150" width="80" height="34" rx="6"/>
+    <text x="340" y="172" text-anchor="middle" font-size="13" font-style="italic">= shirt</text>
+  </g>
+
+  <!-- copy-in arc: shirt -> one -->
+  <path class="ona-arc" d="M 290 82 C 310 112, 300 128, 270 144" marker-end="url(#ona-arrow)"/>
+  <g class="ona-arclabel">
+    <text class="ona-note" x="330" y="118" fill="#34d399">noun content copied in</text>
+  </g>
+
+  <text class="ona-note" x="40" y="226">The elided noun can be arbitrarily rich: "the red one" may stand for "the red merino wool shirt".</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Reveal or hide the elided noun">Reveal the elided noun</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Surface form</strong> &#8212; the reply never says what is being taken. <code>one</code> occupies the noun's slot with none of its content; a bare placeholder is all the model receives.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    off: '<strong>Surface form</strong> — the reply never says what is being taken. <code>one</code> occupies the noun\'s slot with none of its content; a bare placeholder is all the model receives.',
+    on: '<strong>Resolved</strong> — the content of <code>one</code> is copied in from "shirt" in the previous utterance. Interpretation requires a cross-utterance import: the noun exists only there.'
+  };
+  btn.addEventListener('click', () => {
+    const on = root.classList.toggle('is-revealed');
+    caption.innerHTML = on ? CAP.on : CAP.off;
+    btn.textContent = on ? 'Hide the elided noun' : 'Reveal the elided noun';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

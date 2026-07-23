@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zero anaphora: the referring expression that is not there</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Zero anaphora</h1>
+<p>"¿Y María? — Llegó tarde." Spanish drops the subject entirely: the model must track a referent for which no surface token exists at all.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-zero-anaphora">
+<style>
+.fg-zero-anaphora {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-zero-anaphora svg { display: block; width: 100%; height: auto; }
+.fg-zero-anaphora text { font-family: inherit; }
+
+.fg-zero-anaphora .zra-note { fill: var(--muted); font-size: 11px; }
+.fg-zero-anaphora .zra-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-zero-anaphora .zra-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+
+.fg-zero-anaphora .zra-maria .zra-tok { stroke: var(--ok); }
+.fg-zero-anaphora.is-shown .zra-maria .zra-tok { fill: #0e4429; }
+.fg-zero-anaphora .zra-verb .zra-tok { stroke: var(--accent); }
+.fg-zero-anaphora .zra-verb .zra-word { fill: var(--accent); font-weight: 600; }
+
+/* ghost empty-slot token */
+.fg-zero-anaphora .zra-ghost { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-zero-anaphora.is-shown .zra-ghost { opacity: 1; }
+.fg-zero-anaphora .zra-ghost rect {
+  fill: none; stroke: var(--warn); stroke-width: 1.5; stroke-dasharray: 6 4;
+}
+.fg-zero-anaphora .zra-ghost text { fill: var(--warn); }
+
+/* arc from the empty slot back to Maria */
+.fg-zero-anaphora .zra-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-zero-anaphora.is-shown .zra-arc { opacity: 1; }
+.fg-zero-anaphora .zra-arclabel { opacity: 0; transition: opacity 0.7s; }
+.fg-zero-anaphora.is-shown .zra-arclabel { opacity: 1; }
+
+.fg-zero-anaphora .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-zero-anaphora .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-zero-anaphora .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-zero-anaphora .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-zero-anaphora .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-zero-anaphora .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-zero-anaphora .zra-tok, .fg-zero-anaphora .zra-ghost, .fg-zero-anaphora .zra-arc,
+  .fg-zero-anaphora .zra-arclabel { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A Spanish mini-dialogue: question, And Maria? Answer: Llegó tarde — arrived late, with no subject word. A button reveals a dashed ghost slot before Llegó marked with the empty-set symbol, and a green arc from that empty slot back to Maria in the question. An English gloss line reads: she arrived late — English must insert the pronoun Spanish omits. The model must track a referent that has no surface token at all.">
+  <defs>
+    <marker id="zra-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <text class="zra-note" x="40" y="26">pro-drop languages omit the referring expression entirely &#8212; there is nothing to attend FROM</text>
+
+  <!-- question -->
+  <rect class="zra-tok" x="40" y="48" width="52" height="34" rx="6"/>
+  <text class="zra-word" x="66" y="70">&#191;Y</text>
+  <g class="zra-maria">
+    <rect class="zra-tok" x="100" y="48" width="90" height="34" rx="6"/>
+    <text class="zra-word" x="145" y="70">Mar&#237;a?</text>
+  </g>
+  <text class="zra-note" x="210" y="70">&#8212; "And Mar&#237;a?"</text>
+
+  <!-- answer with ghost slot -->
+  <g class="zra-ghost">
+    <rect x="40" y="140" width="52" height="34" rx="6"/>
+    <text x="66" y="162" text-anchor="middle" font-size="14">&#8709;</text>
+  </g>
+  <g class="zra-verb">
+    <rect class="zra-tok" x="100" y="140" width="82" height="34" rx="6"/>
+    <text class="zra-word" x="141" y="162">Lleg&#243;</text>
+  </g>
+  <rect class="zra-tok" x="190" y="140" width="80" height="34" rx="6"/>
+  <text class="zra-word" x="230" y="162">tarde.</text>
+  <text class="zra-note" x="290" y="162">&#8212; gloss: "(she) arrived late."</text>
+
+  <!-- arc: empty slot -> Maria -->
+  <path class="zra-arc" d="M 70 140 C 85 118, 110 100, 135 88" marker-end="url(#zra-arrow)"/>
+  <g class="zra-arclabel">
+    <text class="zra-note" x="150" y="118" fill="#34d399">the missing subject still points at Mar&#237;a</text>
+  </g>
+
+  <text class="zra-note" x="40" y="222">The verb ending ("-&#243;", third person singular) narrows the field; the discourse picks the referent.</text>
+  <text class="zra-note" x="40" y="242">Japanese and Chinese drop objects and topics too &#8212; whole argument slots with no token.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Reveal or hide the silent subject slot">Reveal the silent subject</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Surface form</strong> &#8212; "Lleg&#243; tarde." has no subject token. English forces a pronoun; Spanish ships the sentence with the referring expression deleted and expects the listener to restore it.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    off: '<strong>Surface form</strong> — "Llegó tarde." has no subject token. English forces a pronoun; Spanish ships the sentence with the referring expression deleted and expects the listener to restore it.',
+    on: '<strong>Restored</strong> — the silent slot (<code>∅</code>) still refers, and it refers to María. The model must maintain the entity with no anchor token to attend from: the referential work attaches to the verb instead.'
+  };
+  btn.addEventListener('click', () => {
+    const on = root.classList.toggle('is-shown');
+    caption.innerHTML = on ? CAP.on : CAP.off;
+    btn.textContent = on ? 'Hide the silent subject' : 'Reveal the silent subject';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

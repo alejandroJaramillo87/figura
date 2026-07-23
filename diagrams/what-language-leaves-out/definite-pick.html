@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Definite descriptions: which one is "the animal"?</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Definite pick</h1>
+<p>"The animal fled." The definite article asserts you already know which animal — but the context introduced two. A later cue decides the pick.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-definite-pick">
+<style>
+.fg-definite-pick {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-definite-pick svg { display: block; width: 100%; height: auto; }
+.fg-definite-pick text { font-family: inherit; }
+
+.fg-definite-pick .dfp-note { fill: var(--muted); font-size: 11px; }
+.fg-definite-pick .dfp-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-definite-pick .dfp-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
+
+/* the definite description */
+.fg-definite-pick .dfp-target .dfp-tok { stroke: var(--accent); }
+.fg-definite-pick .dfp-target .dfp-word { fill: var(--accent); font-weight: 600; }
+
+/* toggled continuation of the target sentence */
+.fg-definite-pick .dfp-end-cat { opacity: 1; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-definite-pick .dfp-end-dog { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-definite-pick.is-dog .dfp-end-cat { opacity: 0; }
+.fg-definite-pick.is-dog .dfp-end-dog { opacity: 1; }
+
+/* candidate antecedents light per state */
+.fg-definite-pick:not(.is-dog) .dfp-cand-cat .dfp-tok,
+.fg-definite-pick.is-dog .dfp-cand-dog .dfp-tok { stroke: var(--ok); fill: #0e4429; }
+
+/* information-need arcs */
+.fg-definite-pick .dfp-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-definite-pick:not(.is-dog) .dfp-arc-cat { opacity: 1; }
+.fg-definite-pick.is-dog .dfp-arc-dog { opacity: 1; }
+
+.fg-definite-pick .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-definite-pick .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-definite-pick .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-definite-pick .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-definite-pick .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-definite-pick .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-definite-pick .dfp-tok, .fg-definite-pick .dfp-end-cat, .fg-definite-pick .dfp-end-dog,
+  .fg-definite-pick .dfp-arc { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Context sentence: A dog was barking at a cat. Target sentence: The animal, followed by a toggled ending — fled up a tree, or strained at its leash. The definite description the animal must pick one of the two mentioned candidates; the matching candidate token lights green and an arc connects the animal back to it. Which candidate wins depends on world knowledge carried by the ending: cats climb trees, dogs wear leashes.">
+  <defs>
+    <marker id="dfp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <text class="dfp-note" x="40" y="26">"the" asserts a known referent &#8212; but the context offered two candidates</text>
+
+  <!-- context sentence with two candidates -->
+  <rect class="dfp-tok" x="40" y="48" width="36" height="34" rx="6"/>
+  <text class="dfp-word" x="58" y="70">A</text>
+  <g class="dfp-cand-dog">
+    <rect class="dfp-tok" x="84" y="48" width="58" height="34" rx="6"/>
+    <text class="dfp-word" x="113" y="70">dog</text>
+  </g>
+  <rect class="dfp-tok" x="150" y="48" width="150" height="34" rx="6"/>
+  <text class="dfp-word" x="225" y="70">was barking at</text>
+  <rect class="dfp-tok" x="308" y="48" width="36" height="34" rx="6"/>
+  <text class="dfp-word" x="326" y="70">a</text>
+  <g class="dfp-cand-cat">
+    <rect class="dfp-tok" x="352" y="48" width="58" height="34" rx="6"/>
+    <text class="dfp-word" x="381" y="70">cat.</text>
+  </g>
+
+  <!-- target sentence -->
+  <g class="dfp-target">
+    <rect class="dfp-tok" x="40" y="140" width="128" height="34" rx="6"/>
+    <text class="dfp-word" x="104" y="162">The animal</text>
+  </g>
+  <g class="dfp-end-cat">
+    <rect class="dfp-tok" x="176" y="140" width="150" height="34" rx="6"/>
+    <text class="dfp-word" x="251" y="162">fled up a tree.</text>
+  </g>
+  <g class="dfp-end-dog">
+    <rect class="dfp-tok" x="176" y="140" width="190" height="34" rx="6"/>
+    <text class="dfp-word" x="271" y="162">strained at its leash.</text>
+  </g>
+
+  <!-- arcs from "the animal" back to the winning candidate -->
+  <path class="dfp-arc dfp-arc-cat" d="M 130 140 C 190 112, 310 104, 368 86" marker-end="url(#dfp-arrow)"/>
+  <path class="dfp-arc dfp-arc-dog" d="M 100 140 C 96 122, 100 104, 108 86" marker-end="url(#dfp-arrow)"/>
+
+  <text class="dfp-note" x="40" y="216">The pick is not grammatical: nothing in "the animal" prefers dog or cat.</text>
+  <text class="dfp-note" x="40" y="234">World knowledge in the CONTINUATION decides &#8212; cats climb trees, dogs wear leashes.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Switch the ending of the target sentence">Switch ending</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Cat</strong> &#8212; "fled up a tree" makes <code>the animal</code> pick the cat: tree-climbing is cat behavior. The definite article demanded a lookup; world knowledge supplied the key.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const CAP = {
+    cat: '<strong>Cat</strong> — "fled up a tree" makes <code>the animal</code> pick the cat: tree-climbing is cat behavior. The definite article demanded a lookup; world knowledge supplied the key.',
+    dog: '<strong>Dog</strong> — "strained at its leash" re-points the same description to the dog. Two identical noun phrases, two referents; the resolving information sits after the description and outside the grammar.'
+  };
+  root.querySelector('[data-fg="toggle"]').addEventListener('click', () => {
+    const on = root.classList.toggle('is-dog');
+    caption.innerHTML = on ? CAP.dog : CAP.cat;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cataphora: the pointer arrives before its target</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Cataphora</h1>
+<p>"Before she left, Mary locked the door." The pronoun comes first. A causal model cannot look forward — so resolution happens later, at "Mary", which attends back to "she".</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-cataphora-order">
+<style>
+.fg-cataphora-order {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-cataphora-order svg { display: block; width: 100%; height: auto; }
+.fg-cataphora-order text { font-family: inherit; }
+
+.fg-cataphora-order .ctp-note { fill: var(--muted); font-size: 11px; }
+.fg-cataphora-order .ctp-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-cataphora-order .ctp-word { fill: var(--text); font-size: 14px; text-anchor: middle; }
+
+/* the pronoun */
+.fg-cataphora-order .ctp-she .ctp-tok { stroke: var(--warn); }
+.fg-cataphora-order.is-step-2 .ctp-she .ctp-tok,
+.fg-cataphora-order.is-step-3 .ctp-she .ctp-tok { stroke: var(--ok); fill: #0e4429; }
+
+/* Mary lights when read */
+.fg-cataphora-order.is-step-2 .ctp-mary .ctp-tok,
+.fg-cataphora-order.is-step-3 .ctp-mary .ctp-tok { stroke: var(--ok); fill: #0e4429; }
+
+/* causal mask: shading over not-yet-read tokens, slides right per step */
+.fg-cataphora-order .ctp-mask {
+  fill: var(--bg); opacity: 0.78;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.7s;
+}
+.fg-cataphora-order.is-step-1 .ctp-mask { transform: translateX(72px); }
+.fg-cataphora-order.is-step-2 .ctp-mask { transform: translateX(216px); }
+.fg-cataphora-order.is-step-3 .ctp-mask { transform: translateX(420px); opacity: 0; }
+.fg-cataphora-order .ctp-maskline {
+  stroke: var(--hot); stroke-width: 2; stroke-dasharray: 4 4;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.7s;
+}
+.fg-cataphora-order.is-step-1 .ctp-maskline { transform: translateX(72px); }
+.fg-cataphora-order.is-step-2 .ctp-maskline { transform: translateX(216px); }
+.fg-cataphora-order.is-step-3 .ctp-maskline { transform: translateX(420px); opacity: 0; }
+
+/* unresolved badge on "she": swaps to resolved */
+.fg-cataphora-order .ctp-badge { transition: opacity 0.7s; }
+.fg-cataphora-order .ctp-badge-open { opacity: 1; }
+.fg-cataphora-order .ctp-badge-done { opacity: 0; }
+.fg-cataphora-order.is-step-2 .ctp-badge-open, .fg-cataphora-order.is-step-3 .ctp-badge-open { opacity: 0; }
+.fg-cataphora-order.is-step-2 .ctp-badge-done, .fg-cataphora-order.is-step-3 .ctp-badge-done { opacity: 1; }
+
+/* the backward arc: Mary -> she, appears at step 2 */
+.fg-cataphora-order .ctp-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-cataphora-order.is-step-2 .ctp-arc, .fg-cataphora-order.is-step-3 .ctp-arc { opacity: 1; }
+.fg-cataphora-order .ctp-arclabel { opacity: 0; transition: opacity 0.7s; }
+.fg-cataphora-order.is-step-2 .ctp-arclabel, .fg-cataphora-order.is-step-3 .ctp-arclabel { opacity: 1; }
+
+/* no-forward-arc marker at steps 0-1 */
+.fg-cataphora-order .ctp-noarc { opacity: 1; transition: opacity 0.7s; }
+.fg-cataphora-order.is-step-2 .ctp-noarc, .fg-cataphora-order.is-step-3 .ctp-noarc { opacity: 0; }
+
+/* footer captions */
+.fg-cataphora-order .ctp-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-cataphora-order.is-step-0 .ctp-cap-0, .fg-cataphora-order.is-step-1 .ctp-cap-1,
+.fg-cataphora-order.is-step-2 .ctp-cap-2, .fg-cataphora-order.is-step-3 .ctp-cap-3 { opacity: 1; }
+
+.fg-cataphora-order .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-cataphora-order .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-cataphora-order .fg-controls button:hover { border-color: var(--accent); }
+.fg-cataphora-order .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-cataphora-order * { transition: none !important; }
+}
+</style>
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Step animation of a causal model reading: Before she left, Mary locked the door. A shaded causal mask hides not-yet-read tokens and slides right as reading proceeds. While only Before and she are read, she carries an unresolved badge and a crossed-out forward arrow shows the model cannot look ahead. When Mary is read, a green arc draws backward from Mary to she and the badge flips to resolved: she equals Mary. The pointer arrived before its target, so the later token does the resolving.">
+  <text class="ctp-note" x="40" y="26">a causal model reads left to right &#8212; the mask hides what has not arrived yet</text>
+
+  <!-- token row -->
+  <g class="ctp-row">
+    <rect class="ctp-tok" x="40" y="96" width="76" height="36" rx="6"/>
+    <text class="ctp-word" x="78" y="119">Before</text>
+    <g class="ctp-she">
+      <rect class="ctp-tok" x="124" y="96" width="52" height="36" rx="6"/>
+      <text class="ctp-word" x="150" y="119">she</text>
+    </g>
+    <rect class="ctp-tok" x="184" y="96" width="60" height="36" rx="6"/>
+    <text class="ctp-word" x="214" y="119">left,</text>
+    <g class="ctp-mary">
+      <rect class="ctp-tok" x="252" y="96" width="64" height="36" rx="6"/>
+      <text class="ctp-word" x="284" y="119">Mary</text>
+    </g>
+    <rect class="ctp-tok" x="324" y="96" width="72" height="36" rx="6"/>
+    <text class="ctp-word" x="360" y="119">locked</text>
+    <rect class="ctp-tok" x="404" y="96" width="48" height="36" rx="6"/>
+    <text class="ctp-word" x="428" y="119">the</text>
+    <rect class="ctp-tok" x="460" y="96" width="62" height="36" rx="6"/>
+    <text class="ctp-word" x="491" y="119">door.</text>
+  </g>
+
+  <!-- backward resolving arc: Mary -> she -->
+  <path class="ctp-arc" d="M 272 96 C 250 62, 190 62, 158 90"
+        marker-end="url(#ctp-arrow)"/>
+  <g class="ctp-arclabel">
+    <text class="ctp-note" x="196" y="52" fill="#34d399">"Mary" attends back to "she"</text>
+  </g>
+
+  <!-- unresolved / resolved badge under "she" -->
+  <g class="ctp-badge ctp-badge-open">
+    <text class="ctp-note" x="150" y="156" text-anchor="middle" fill="#fbbf24">she = ? (unresolved)</text>
+  </g>
+  <g class="ctp-badge ctp-badge-done">
+    <text class="ctp-note" x="150" y="156" text-anchor="middle" fill="#34d399">she = Mary</text>
+  </g>
+
+  <!-- cannot-look-forward marker -->
+  <g class="ctp-noarc">
+    <path d="M 168 180 C 200 196, 240 196, 268 184" fill="none" stroke="#f87171"
+          stroke-width="2" stroke-dasharray="5 4"/>
+    <path d="M 208 176 L 226 200 M 226 176 L 208 200" stroke="#f87171" stroke-width="2"/>
+    <text class="ctp-note" x="290" y="196" fill="#f87171">no forward arc: the mask forbids it</text>
+  </g>
+
+  <!-- causal mask (over the token row, slides right) -->
+  <rect class="ctp-mask" x="180" y="88" width="440" height="80" rx="4"/>
+  <line class="ctp-maskline" x1="180" y1="84" x2="180" y2="172"/>
+
+  <defs>
+    <marker id="ctp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <!-- footer captions (fixed slot, no reflow) -->
+  <text class="ctp-note ctp-cap ctp-cap-0" x="40" y="252">Step 0 &#8212; the model has read "Before she". The pronoun points forward, at text that does not exist yet.</text>
+  <text class="ctp-note ctp-cap ctp-cap-1" x="40" y="252">Step 1 &#8212; "left," arrives. Still no referent. A human waits comfortably; the model simply carries an open slot.</text>
+  <text class="ctp-note ctp-cap ctp-cap-2" x="40" y="252">Step 2 &#8212; "Mary" arrives and the arc runs BACKWARD: the later token attends to the earlier pronoun and reconciles.</text>
+  <text class="ctp-note ctp-cap ctp-cap-3" x="40" y="252">Step 3 &#8212; resolved. In a causal model every referential arc points backward &#8212; even when the language pointed forward.</text>
+</svg>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button data-fg="play" aria-label="Play or pause">&#9654;</button>
+  <button data-fg="next" aria-label="Next step">&#8250;</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const TOTAL = 3, STEP_MS = 2000;
+  let step = 0, timer = null;
+
+  function apply() {
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
+    pause() { clearInterval(timer); timer = null; },
+  };
+
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  function sync() {
+    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  apply();
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
