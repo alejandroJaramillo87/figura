@@ -306,5 +306,61 @@
     "title": "Modifier scope: what does \u201conly\u201d attach to?",
     "post": "what-language-leaves-out-syntactic",
     "description": "Toggle slides the scope bracket of \u201conly\u201d in \u201cI only ate the cake\u201d between the verb and the object; glosses cross-fade."
+  },
+  {
+    "id": "quantifier-scope",
+    "path": "diagrams/what-language-leaves-out/quantifier-scope.html",
+    "title": "Quantifier scope: one book, or one each?",
+    "post": "what-language-leaves-out-semantic",
+    "description": "Toggle over \u201cEvery student read a book\u201d re-draws the student\u2192book mapping between one shared book and one book each; loop-order glosses."
+  },
+  {
+    "id": "negation-scope",
+    "path": "diagrams/what-language-leaves-out/negation-scope.html",
+    "title": "Negation scope: what does \u201cnot\u201d negate?",
+    "post": "what-language-leaves-out-semantic",
+    "description": "Toggle slides the NOT bracket in \u201cI didn't leave because I was angry\u201d between narrow and wide scope; outcome cards (I stayed / I left) light per reading."
+  },
+  {
+    "id": "modal-flavor",
+    "path": "diagrams/what-language-leaves-out/modal-flavor.html",
+    "title": "Modal ambiguity: what kind of \u201cmust\u201d?",
+    "post": "what-language-leaves-out-semantic",
+    "description": "Context-swap toggle flips \u201cYou must be tired\u201d between epistemic inference and deontic obligation; the flavor is imported from one context line."
+  },
+  {
+    "id": "metonymy-standin",
+    "path": "diagrams/what-language-leaves-out/metonymy-standin.html",
+    "title": "Metonymy: the expression that stands in",
+    "post": "what-language-leaves-out-semantic",
+    "description": "Dereference toggle: \u201cThe White House announced\u2026\u201d hands off from the literal building to a dashed ghost node for the people inside; Shakespeare and ham-sandwich companions."
+  },
+  {
+    "id": "metaphor-suppress",
+    "path": "diagrams/what-language-leaves-out/metaphor-suppress.html",
+    "title": "Metaphor: suppressing the literal sense",
+    "post": "what-language-leaves-out-semantic",
+    "description": "Object-swap toggle: \u201cdrowning in the pool\u201d vs \u201cdrowning in paperwork\u201d \u2014 the literal water-sense is struck through and the figurative mapping lights."
+  },
+  {
+    "id": "gradable-scale",
+    "path": "diagrams/what-language-leaves-out/gradable-scale.html",
+    "title": "Gradable adjectives: the noun sets the scale",
+    "post": "what-language-leaves-out-semantic",
+    "description": "Noun-swap toggle re-anchors the scale bar under \u201ctall\u201d from toddler (~1 m) to building (~150 m) while the adjective token stays fixed."
+  },
+  {
+    "id": "comparative-ellipsis",
+    "path": "diagrams/what-language-leaves-out/comparative-ellipsis.html",
+    "title": "Comparative ellipsis: two ways to fill the gap",
+    "post": "what-language-leaves-out-semantic",
+    "description": "Toggle between the two reconstructions of \u201cI like her more than John\u201d \u2014 than John [likes her] vs than [I like] John \u2014 with different ghost completions."
+  },
+  {
+    "id": "tense-aspect",
+    "path": "diagrams/what-language-leaves-out/tense-aspect.html",
+    "title": "Tense and aspect: does the state persist?",
+    "post": "what-language-leaves-out-semantic",
+    "description": "Toggle flips \u201cI've lived here\u201d / \u201cI lived here\u201d on a timeline bar; a Mandarin row shows a dashed empty tense slot filled by a context adverb."
   }
 ]
