@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gradable adjectives: the noun sets the scale</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Vagueness and gradable adjectives</h1>
+<p>"A tall toddler" and "a tall building" share one adjective and no heights. The noun supplies the scale.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-gradable-scale">
+<style>
+.fg-gradable-scale {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-gradable-scale svg { display: block; width: 100%; height: auto; }
+.fg-gradable-scale text { font-family: inherit; }
+
+.fg-gradable-scale .grd-note { fill: var(--muted); font-size: 11px; }
+.fg-gradable-scale .grd-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+}
+.fg-gradable-scale .grd-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+.fg-gradable-scale .grd-tall .grd-tok { stroke: var(--warn); }
+
+/* head noun swaps */
+.fg-gradable-scale .grd-noun { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-gradable-scale .grd-noun .grd-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-gradable-scale .grd-noun-tod { opacity: 1; }
+.fg-gradable-scale .grd-noun-bld { opacity: 0; }
+.fg-gradable-scale.is-building .grd-noun-tod { opacity: 0; }
+.fg-gradable-scale.is-building .grd-noun-bld { opacity: 1; }
+
+/* scale bar */
+.fg-gradable-scale .grd-bar { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
+.fg-gradable-scale .grd-thresh { stroke: var(--warn); stroke-width: 2.5; }
+.fg-gradable-scale .grd-range { fill: #0e4429; stroke: var(--ok); stroke-width: 1; }
+.fg-gradable-scale .grd-lab { transition: opacity 0.7s; }
+.fg-gradable-scale .grd-lab text { fill: var(--muted); font-size: 11px; text-anchor: middle; }
+.fg-gradable-scale .grd-lab .grd-thlab { fill: var(--warn); }
+.fg-gradable-scale .grd-lab-tod { opacity: 1; }
+.fg-gradable-scale .grd-lab-bld { opacity: 0; }
+.fg-gradable-scale.is-building .grd-lab-tod { opacity: 0; }
+.fg-gradable-scale.is-building .grd-lab-bld { opacity: 1; }
+
+/* arc from tall to head noun */
+.fg-gradable-scale .grd-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
+
+.fg-gradable-scale .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-gradable-scale .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-gradable-scale .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-gradable-scale .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-gradable-scale .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-gradable-scale .fg-caption code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-gradable-scale .grd-noun, .fg-gradable-scale .grd-lab { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The phrase: a tall, followed by a head noun a button swaps between toddler and building. The token tall stays fixed, with a green arc pointing to the noun. Below, a horizontal scale bar with an amber threshold marker. With toddler, the scale runs to about 1.2 meters and the threshold sits near 1 meter. With building, the same bar re-labels to 300 meters with the threshold near 150. Same adjective; the noun re-anchored the entire scale.">
+  <text class="grd-note" x="40" y="26">"tall" compares against a threshold &#8212; and the threshold comes from the noun, not the adjective</text>
+
+  <!-- token row -->
+  <rect class="grd-tok" x="120" y="50" width="28" height="36" rx="6"/>
+  <text class="grd-word" x="134" y="73">a</text>
+  <g class="grd-tall">
+    <rect class="grd-tok" x="156" y="50" width="48" height="36" rx="6"/>
+    <text class="grd-word" x="180" y="73">tall</text>
+  </g>
+  <g class="grd-noun grd-noun-tod">
+    <rect class="grd-tok" x="212" y="50" width="76" height="36" rx="6"/>
+    <text class="grd-word" x="250" y="73">toddler</text>
+  </g>
+  <g class="grd-noun grd-noun-bld">
+    <rect class="grd-tok" x="212" y="50" width="82" height="36" rx="6"/>
+    <text class="grd-word" x="253" y="73">building</text>
+  </g>
+
+  <!-- arc: tall -> noun -->
+  <path class="grd-arc" d="M 180 46 C 200 30, 230 30, 248 46" marker-end="url(#grd-arrow)"/>
+  <text class="grd-note" x="320" y="72">the noun sets the scale</text>
+
+  <!-- scale bar -->
+  <rect class="grd-bar" x="100" y="130" width="480" height="18" rx="4"/>
+  <rect class="grd-range" x="340" y="130" width="240" height="18" rx="4"/>
+  <line class="grd-thresh" x1="340" y1="120" x2="340" y2="158"/>
+
+  <!-- labels: toddler scale -->
+  <g class="grd-lab grd-lab-tod">
+    <text x="100" y="176">0 m</text>
+    <text class="grd-thlab" x="340" y="176">~1 m: "tall" starts here</text>
+    <text x="580" y="176">1.2 m</text>
+  </g>
+  <!-- labels: building scale -->
+  <g class="grd-lab grd-lab-bld">
+    <text x="100" y="176">0 m</text>
+    <text class="grd-thlab" x="340" y="176">~150 m: "tall" starts here</text>
+    <text x="580" y="176">300 m</text>
+  </g>
+
+  <text class="grd-note" x="40" y="212">A tall toddler is two orders of magnitude shorter than a short building. "Expensive", "fast",</text>
+  <text class="grd-note" x="40" y="230">and "warm" work the same way: no fixed threshold anywhere in the word.</text>
+
+  <defs>
+    <marker id="grd-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Swap the head noun to re-anchor the scale">Swap the noun</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Toddler scale</strong> &#8212; "tall" means <code>height &gt; threshold(toddlers)</code>, roughly a meter. The adjective ships the comparison; the comparison class &#8212; and with it the threshold &#8212; is read off the head noun.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    tod: '<strong>Toddler scale</strong> — "tall" means <code>height &gt; threshold(toddlers)</code>, roughly a meter. The adjective ships the comparison; the comparison class — and with it the threshold — is read off the head noun.',
+    bld: '<strong>Building scale</strong> — same token, new environment: <code>height &gt; threshold(buildings)</code>, on the order of 150 meters. The word "tall" did not change; the noun re-bound the free variable it compares against.'
+  };
+  btn.addEventListener('click', () => {
+    const bld = root.classList.toggle('is-building');
+    caption.innerHTML = bld ? CAP.bld : CAP.tod;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

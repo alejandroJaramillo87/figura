@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quantifier scope: one book, or one each?</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Quantifier scope</h1>
+<p>"Every student read a book." One shared book, or one per student? Same tokens, same parse — two different worlds.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-quantifier-scope">
+<style>
+.fg-quantifier-scope {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-quantifier-scope svg { display: block; width: 100%; height: auto; }
+.fg-quantifier-scope text { font-family: inherit; }
+
+.fg-quantifier-scope .qts-note { fill: var(--muted); font-size: 11px; }
+.fg-quantifier-scope .qts-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+}
+.fg-quantifier-scope .qts-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+.fg-quantifier-scope .qts-every .qts-tok { stroke: var(--violet); }
+.fg-quantifier-scope .qts-abook .qts-tok { stroke: var(--warn); }
+
+/* entity nodes */
+.fg-quantifier-scope .qts-stud circle { fill: var(--panel); stroke: var(--violet); stroke-width: 1.5; }
+.fg-quantifier-scope .qts-stud text { fill: var(--text); font-size: 11px; text-anchor: middle; }
+.fg-quantifier-scope .qts-book rect { fill: var(--panel); stroke: var(--warn); stroke-width: 1.5; }
+.fg-quantifier-scope .qts-book text { fill: var(--text); font-size: 11px; text-anchor: middle; }
+
+/* reading states cross-fade */
+.fg-quantifier-scope .qts-view { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-quantifier-scope .qts-view-shared { opacity: 1; }
+.fg-quantifier-scope .qts-view-each { opacity: 0; }
+.fg-quantifier-scope.is-each .qts-view-shared { opacity: 0; }
+.fg-quantifier-scope.is-each .qts-view-each { opacity: 1; }
+
+.fg-quantifier-scope .qts-map { fill: none; stroke: var(--ok); stroke-width: 2; }
+
+/* glosses cross-fade */
+.fg-quantifier-scope .qts-gloss { transition: opacity 0.7s; font-size: 12px; fill: var(--ok); }
+.fg-quantifier-scope .qts-gloss-shared { opacity: 1; }
+.fg-quantifier-scope .qts-gloss-each { opacity: 0; }
+.fg-quantifier-scope.is-each .qts-gloss-shared { opacity: 0; }
+.fg-quantifier-scope.is-each .qts-gloss-each { opacity: 1; }
+
+.fg-quantifier-scope .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-quantifier-scope .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-quantifier-scope .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-quantifier-scope .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-quantifier-scope .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-quantifier-scope .fg-caption code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-quantifier-scope .qts-view, .fg-quantifier-scope .qts-gloss { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: Every student read a book, as token blocks, with every outlined in violet and a book outlined in amber. Below, three student circles and book icons. A button flips between the two readings. Shared reading: all three students' arrows converge on a single book. One-each reading: each student pairs with their own book. The tokens and the parse are identical in both; the number of books in the world is not.">
+  <text class="qts-note" x="40" y="26">same tokens, same tree &#8212; the readings differ in which quantifier takes the outer loop</text>
+
+  <!-- token row -->
+  <g class="qts-every">
+    <rect class="qts-tok" x="120" y="46" width="60" height="34" rx="6"/>
+    <text class="qts-word" x="150" y="68">Every</text>
+  </g>
+  <rect class="qts-tok" x="188" y="46" width="78" height="34" rx="6"/>
+  <text class="qts-word" x="227" y="68">student</text>
+  <rect class="qts-tok" x="274" y="46" width="54" height="34" rx="6"/>
+  <text class="qts-word" x="301" y="68">read</text>
+  <g class="qts-abook">
+    <rect class="qts-tok" x="336" y="46" width="28" height="34" rx="6"/>
+    <text class="qts-word" x="350" y="68">a</text>
+    <rect class="qts-tok" x="372" y="46" width="62" height="34" rx="6"/>
+    <text class="qts-word" x="403" y="68">book.</text>
+  </g>
+
+  <!-- students (shared by both views) -->
+  <g class="qts-stud">
+    <circle cx="150" cy="140" r="16"/><text x="150" y="145">S1</text>
+    <circle cx="150" cy="185" r="16"/><text x="150" y="190">S2</text>
+    <circle cx="150" cy="230" r="16"/><text x="150" y="235">S3</text>
+  </g>
+
+  <!-- shared-book view -->
+  <g class="qts-view qts-view-shared">
+    <g class="qts-book">
+      <rect x="420" y="169" width="54" height="32" rx="6"/><text x="447" y="189">book</text>
+    </g>
+    <path class="qts-map" d="M 170 140 C 280 140, 340 170, 416 180"/>
+    <path class="qts-map" d="M 170 185 L 416 185"/>
+    <path class="qts-map" d="M 170 230 C 280 230, 340 200, 416 190"/>
+  </g>
+
+  <!-- one-each view -->
+  <g class="qts-view qts-view-each">
+    <g class="qts-book">
+      <rect x="420" y="124" width="54" height="32" rx="6"/><text x="447" y="144">book&#8321;</text>
+      <rect x="420" y="169" width="54" height="32" rx="6"/><text x="447" y="189">book&#8322;</text>
+      <rect x="420" y="214" width="54" height="32" rx="6"/><text x="447" y="234">book&#8323;</text>
+    </g>
+    <path class="qts-map" d="M 170 140 L 416 140"/>
+    <path class="qts-map" d="M 170 185 L 416 185"/>
+    <path class="qts-map" d="M 170 230 L 416 230"/>
+  </g>
+
+  <!-- glosses -->
+  <text class="qts-gloss qts-gloss-shared" x="510" y="180">one book, three readers</text>
+  <text class="qts-gloss qts-gloss-each" x="510" y="180">three books, one reader each</text>
+
+  <text class="qts-note" x="40" y="284">Nothing in the sentence decides. Broader context does: "&#8230; it was assigned in class" vs "&#8230; they compared notes on their choices."</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Flip between the shared-book and one-book-each readings">Flip the readings</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Shared book</strong> &#8212; "a book" takes wide scope: <code>book = pick(); for s in students: read(s, book)</code>. One object exists; the inner loop reuses it. Often the classroom reading.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    shared: '<strong>Shared book</strong> — "a book" takes wide scope: <code>book = pick(); for s in students: read(s, book)</code>. One object exists; the inner loop reuses it. Often the classroom reading.',
+    each: '<strong>One each</strong> — "every student" takes wide scope: <code>for s in students: read(s, pick())</code>. The picking moved inside the loop, so three books exist. Same tokens; different loop order; different world.'
+  };
+  btn.addEventListener('click', () => {
+    const each = root.classList.toggle('is-each');
+    caption.innerHTML = each ? CAP.each : CAP.shared;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

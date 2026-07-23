@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Negation scope: what does "not" negate?</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Scope of negation</h1>
+<p>"I didn't leave because I was angry." Did I stay? Or did I leave — for another reason? The scope of "not" is not written down.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-negation-scope">
+<style>
+.fg-negation-scope {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-negation-scope svg { display: block; width: 100%; height: auto; }
+.fg-negation-scope text { font-family: inherit; }
+
+.fg-negation-scope .ngs-note { fill: var(--muted); font-size: 11px; }
+.fg-negation-scope .ngs-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-negation-scope .ngs-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+.fg-negation-scope .ngs-not .ngs-tok { stroke: var(--hot); }
+
+/* negated constituent lights hot per state (default: verb) */
+.fg-negation-scope .ngs-leave .ngs-tok { stroke: var(--hot); fill: #4a1d1d; }
+.fg-negation-scope.is-wide .ngs-leave .ngs-tok { stroke: var(--border); fill: var(--panel); }
+.fg-negation-scope.is-wide .ngs-because .ngs-tok { stroke: var(--hot); fill: #4a1d1d; }
+
+/* brackets cross-fade */
+.fg-negation-scope .ngs-br { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-negation-scope .ngs-br path { fill: none; stroke: var(--hot); stroke-width: 2; }
+.fg-negation-scope .ngs-br text { fill: var(--hot); }
+.fg-negation-scope .ngs-br-verb { opacity: 1; }
+.fg-negation-scope .ngs-br-wide { opacity: 0; }
+.fg-negation-scope.is-wide .ngs-br-verb { opacity: 0; }
+.fg-negation-scope.is-wide .ngs-br-wide { opacity: 1; }
+
+/* outcome cards */
+.fg-negation-scope .ngs-card rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: stroke 0.7s, opacity 0.7s; }
+.fg-negation-scope .ngs-card text { fill: var(--text); font-size: 12px; }
+.fg-negation-scope .ngs-card { transition: opacity 0.7s; }
+.fg-negation-scope .ngs-card-stay { opacity: 1; }
+.fg-negation-scope .ngs-card-stay rect { stroke: var(--ok); }
+.fg-negation-scope .ngs-card-left { opacity: 0.45; }
+.fg-negation-scope.is-wide .ngs-card-stay { opacity: 0.45; }
+.fg-negation-scope.is-wide .ngs-card-stay rect { stroke: var(--border); }
+.fg-negation-scope.is-wide .ngs-card-left { opacity: 1; }
+.fg-negation-scope.is-wide .ngs-card-left rect { stroke: var(--ok); }
+
+.fg-negation-scope .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-negation-scope .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-negation-scope .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-negation-scope .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-negation-scope .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-negation-scope .fg-caption code {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-negation-scope .ngs-tok, .fg-negation-scope .ngs-br,
+  .fg-negation-scope .ngs-card, .fg-negation-scope .ngs-card rect { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: I didn't leave because I was angry, as token blocks with didn't outlined in red. A button slides a red NOT bracket between two scopes. Narrow scope over leave means the leaving is denied: I stayed, and anger was why. Wide scope over the whole because-clause means only the causal link is denied: I did leave, but not because of anger. Two outcome cards, I stayed and I left, light up according to the reading.">
+  <text class="ngs-note" x="40" y="26">"not" needs a constituent to negate &#8212; and the sentence never says which one</text>
+
+  <!-- token row -->
+  <rect class="ngs-tok" x="60" y="96" width="26" height="36" rx="6"/>
+  <text class="ngs-word" x="73" y="119">I</text>
+  <g class="ngs-not">
+    <rect class="ngs-tok" x="94" y="96" width="62" height="36" rx="6"/>
+    <text class="ngs-word" x="125" y="119">didn't</text>
+  </g>
+  <g class="ngs-leave">
+    <rect class="ngs-tok" x="164" y="96" width="58" height="36" rx="6"/>
+    <text class="ngs-word" x="193" y="119">leave</text>
+  </g>
+  <g class="ngs-because">
+    <rect class="ngs-tok" x="230" y="96" width="76" height="36" rx="6"/>
+    <text class="ngs-word" x="268" y="119">because</text>
+    <rect class="ngs-tok" x="314" y="96" width="26" height="36" rx="6"/>
+    <text class="ngs-word" x="327" y="119">I</text>
+    <rect class="ngs-tok" x="348" y="96" width="48" height="36" rx="6"/>
+    <text class="ngs-word" x="372" y="119">was</text>
+    <rect class="ngs-tok" x="404" y="96" width="64" height="36" rx="6"/>
+    <text class="ngs-word" x="436" y="119">angry.</text>
+  </g>
+
+  <!-- narrow bracket -->
+  <g class="ngs-br ngs-br-verb">
+    <path d="M 166 88 L 166 78 L 220 78 L 220 88"/>
+    <text class="ngs-note" x="193" y="68" text-anchor="middle">not [leave]</text>
+  </g>
+  <!-- wide bracket: over leave-because-clause as a unit -->
+  <g class="ngs-br ngs-br-wide">
+    <path d="M 166 88 L 166 78 L 468 78 L 468 88"/>
+    <text class="ngs-note" x="317" y="68" text-anchor="middle">not [leave because &#8230; angry]</text>
+  </g>
+
+  <!-- outcome cards -->
+  <g class="ngs-card ngs-card-stay">
+    <rect x="80" y="168" width="250" height="48" rx="8"/>
+    <text x="94" y="188">I stayed.</text>
+    <text class="ngs-note" x="94" y="206">The anger is why I didn't go.</text>
+  </g>
+  <g class="ngs-card ngs-card-left">
+    <rect x="370" y="168" width="270" height="48" rx="8"/>
+    <text x="384" y="188">I left &#8212; but for another reason.</text>
+    <text class="ngs-note" x="384" y="206">Only the causal link is denied.</text>
+  </g>
+
+  <text class="ngs-note" x="40" y="256">Spoken aloud, intonation splits these. Text throws the intonation away and keeps both.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Slide the negation between narrow and wide scope">Slide the negation</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Narrow scope</strong> &#8212; not [leave]: the leaving itself is denied, and the because-clause explains the not-leaving. <code>!leave, cause: anger</code>. I stayed, and anger is the reason.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    narrow: '<strong>Narrow scope</strong> — not [leave]: the leaving itself is denied, and the because-clause explains the not-leaving. <code>!leave, cause: anger</code>. I stayed, and anger is the reason.',
+    wide: '<strong>Wide scope</strong> — not [leave because angry]: the whole causal claim is denied. <code>!(leave because anger)</code>. I did leave — just not for that reason. The parenthesis moved; the fact of leaving flipped.'
+  };
+  btn.addEventListener('click', () => {
+    const wide = root.classList.toggle('is-wide');
+    caption.innerHTML = wide ? CAP.wide : CAP.narrow;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

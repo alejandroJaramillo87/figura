@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metonymy: the expression that stands in</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Metonymy</h1>
+<p>"The White House announced a policy." Buildings don't announce. The reader silently dereferences to the people inside.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-metonymy-standin">
+<style>
+.fg-metonymy-standin {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-metonymy-standin svg { display: block; width: 100%; height: auto; }
+.fg-metonymy-standin text { font-family: inherit; }
+
+.fg-metonymy-standin .mtn-note { fill: var(--muted); font-size: 11px; }
+.fg-metonymy-standin .mtn-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+}
+.fg-metonymy-standin .mtn-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+.fg-metonymy-standin .mtn-wh .mtn-tok { stroke: var(--warn); }
+
+/* literal node: fine by default, flagged hot when dereferenced view shows the clash */
+.fg-metonymy-standin .mtn-building rect { fill: var(--panel); stroke: var(--warn); stroke-width: 1.5; transition: opacity 0.7s; }
+.fg-metonymy-standin .mtn-building text { fill: var(--text); font-size: 12px; text-anchor: middle; }
+.fg-metonymy-standin .mtn-clash { opacity: 0; transition: opacity 0.7s; }
+.fg-metonymy-standin .mtn-clash text { fill: var(--hot); font-size: 11px; text-anchor: middle; }
+.fg-metonymy-standin.is-deref .mtn-clash { opacity: 1; }
+.fg-metonymy-standin.is-deref .mtn-building rect { opacity: 0.45; }
+
+/* ghost referent node, revealed on dereference */
+.fg-metonymy-standin .mtn-ghost { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-metonymy-standin.is-deref .mtn-ghost { opacity: 1; }
+.fg-metonymy-standin .mtn-ghost rect { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-metonymy-standin .mtn-ghost text { fill: var(--ok); font-size: 12px; text-anchor: middle; }
+
+/* hand-off arc */
+.fg-metonymy-standin .mtn-arc { fill: none; stroke: var(--ok); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-metonymy-standin.is-deref .mtn-arc { opacity: 1; }
+
+.fg-metonymy-standin .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-metonymy-standin .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-metonymy-standin .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-metonymy-standin .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-metonymy-standin .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-metonymy-standin .mtn-ghost, .fg-metonymy-standin .mtn-arc,
+  .fg-metonymy-standin .mtn-clash, .fg-metonymy-standin .mtn-building rect { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: The White House announced a policy, with The White House outlined in amber. Below, a node for the literal referent, a building. A button dereferences the expression: the building node dims with a note that buildings cannot announce, and a dashed green ghost node, the administration, appears with an arrow from the building — the related entity that can actually perform the predicate. Companions listed: reading Shakespeare, the ham sandwich wants the check.">
+  <text class="mtn-note" x="40" y="26">the predicate can't apply to the literal referent &#8212; so the reader swaps in a neighbor</text>
+
+  <!-- token row -->
+  <rect class="mtn-tok" x="60" y="56" width="46" height="36" rx="6"/>
+  <text class="mtn-word" x="83" y="79">The</text>
+  <g class="mtn-wh">
+    <rect class="mtn-tok" x="114" y="56" width="64" height="36" rx="6"/>
+    <text class="mtn-word" x="146" y="79">White</text>
+    <rect class="mtn-tok" x="186" y="56" width="66" height="36" rx="6"/>
+    <text class="mtn-word" x="219" y="79">House</text>
+  </g>
+  <rect class="mtn-tok" x="260" y="56" width="102" height="36" rx="6"/>
+  <text class="mtn-word" x="311" y="79">announced</text>
+  <rect class="mtn-tok" x="370" y="56" width="28" height="36" rx="6"/>
+  <text class="mtn-word" x="384" y="79">a</text>
+  <rect class="mtn-tok" x="406" y="56" width="66" height="36" rx="6"/>
+  <text class="mtn-word" x="439" y="79">policy.</text>
+
+  <!-- literal node -->
+  <g class="mtn-building">
+    <rect x="110" y="136" width="140" height="40" rx="8"/>
+    <text x="180" y="154">the building at</text>
+    <text x="180" y="169">1600 Pennsylvania Ave</text>
+  </g>
+  <g class="mtn-clash">
+    <text x="180" y="196">buildings can't announce</text>
+  </g>
+
+  <!-- ghost referent -->
+  <g class="mtn-ghost">
+    <rect x="340" y="136" width="170" height="40" rx="8"/>
+    <text x="425" y="154">the administration</text>
+    <text x="425" y="169">(the people in it)</text>
+  </g>
+  <path class="mtn-arc" d="M 254 156 L 336 156" marker-end="url(#mtn-arrow)"/>
+
+  <text class="mtn-note" x="40" y="230">The pattern is everywhere: "I'm reading Shakespeare" (author &#8594; works), "The ham sandwich</text>
+  <text class="mtn-note" x="40" y="248">wants the check" (order &#8594; customer). The stand-in is chosen fresh, per sentence, by the predicate.</text>
+
+  <defs>
+    <marker id="mtn-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Dereference the expression to its intended referent">Dereference</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Literal</strong> &#8212; "The White House" names a building. As a noun phrase it is perfectly well-formed, and in "The White House was repainted" the building is exactly what's meant. Nothing in the phrase warns you it might not be.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    off: '<strong>Literal</strong> — "The White House" names a building. As a noun phrase it is perfectly well-formed, and in "The White House was repainted" the building is exactly what\'s meant. Nothing in the phrase warns you it might not be.',
+    on: '<strong>Dereferenced</strong> — "announced" needs an announcer, and buildings can\'t announce. The reader follows the handle to a related entity that can: the people inside. The referent shipped was a pointer to a neighbor of the thing meant.'
+  };
+  btn.addEventListener('click', () => {
+    const on = root.classList.toggle('is-deref');
+    caption.innerHTML = on ? CAP.on : CAP.off;
+    btn.textContent = on ? 'Back to the literal' : 'Dereference';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
