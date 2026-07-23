@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three engines, one workstation</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Three engines, one workstation</h1>
+<p>Hover any cell: what each inference container runs on, what it optimizes for, how its image is built, and how it serves.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-engine-comparison">
+<style>
+.fg-engine-comparison {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-engine-comparison svg { display: block; width: 100%; height: auto; }
+.fg-engine-comparison text { font-family: inherit; }
+
+.fg-engine-comparison .iec-cell {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-engine-comparison .iec-group:hover .iec-cell { fill: var(--panel-hover); }
+.fg-engine-comparison .iec-group.iec-cpu:hover .iec-cell { stroke: var(--ok); }
+.fg-engine-comparison .iec-group.iec-gpu:hover .iec-cell { stroke: var(--accent); }
+.fg-engine-comparison .iec-group.iec-vllm:hover .iec-cell { stroke: var(--violet); }
+
+.fg-engine-comparison .iec-head { fill: var(--panel); stroke-width: 2; }
+.fg-engine-comparison .iec-head-cpu { stroke: var(--ok); }
+.fg-engine-comparison .iec-head-gpu { stroke: var(--accent); }
+.fg-engine-comparison .iec-head-vllm { stroke: var(--violet); }
+
+.fg-engine-comparison .iec-htitle { fill: var(--text); font-size: 15px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-engine-comparison .iec-hsub   { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-engine-comparison .iec-val    { fill: var(--text); font-size: 12.5px; text-anchor: middle; pointer-events: none; }
+.fg-engine-comparison .iec-vsub   { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-engine-comparison .iec-row    { fill: var(--muted); font-size: 12px; font-weight: 600; }
+
+.fg-engine-comparison .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.4em;
+  transition: color 0.3s;
+}
+.fg-engine-comparison .fg-caption.is-active { color: var(--text); }
+.fg-engine-comparison .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-engine-comparison .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-engine-comparison .iec-cell { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Comparison of the three inference containers. llama-cpu runs llama.cpp on 16 Zen 5 cores, optimized for always-available low-latency inference, built from source in a multi-stage image. llama-gpu runs llama.cpp with CUDA on the RTX 5090, optimized for single-stream speed, built from source against sm_120. vllm-gpu runs vLLM on the same GPU, optimized for batch throughput, installed from the official cu130 wheel with no compilation.">
+
+  <!-- column headers -->
+  <g class="iec-group iec-cpu" data-title="llama-cpu" data-info="llama.cpp compiled for the Ryzen 9950X. The port that is always available: it does not compete with GPU jobs, so it serves while training or benchmarks own the card. Port 8001.">
+    <rect class="iec-head iec-head-cpu" x="180" y="16" width="168" height="56" rx="8"/>
+    <text class="iec-htitle" x="264" y="40">llama-cpu</text>
+    <text class="iec-hsub" x="264" y="58">llama.cpp · :8001</text>
+  </g>
+  <g class="iec-group iec-gpu" data-title="llama-gpu" data-info="llama.cpp with CUDA on the RTX 5090. The single-stream speed champion for GGUF models: one request at a time, as fast as the card can decode. Port 8002.">
+    <rect class="iec-head iec-head-gpu" x="360" y="16" width="168" height="56" rx="8"/>
+    <text class="iec-htitle" x="444" y="40">llama-gpu</text>
+    <text class="iec-hsub" x="444" y="58">llama.cpp CUDA · :8002</text>
+  </g>
+  <g class="iec-group iec-vllm" data-title="vllm-gpu" data-info="vLLM on the same RTX 5090 (never at the same time as heavy llama-gpu use). Built for many concurrent requests: continuous batching, paged KV cache, prefix caching. Port 8003.">
+    <rect class="iec-head iec-head-vllm" x="540" y="16" width="168" height="56" rx="8"/>
+    <text class="iec-htitle" x="624" y="40">vllm-gpu</text>
+    <text class="iec-hsub" x="624" y="58">vLLM · :8003</text>
+  </g>
+
+  <!-- row: hardware -->
+  <text class="iec-row" x="16" y="114">Hardware</text>
+  <g class="iec-group iec-cpu" data-title="llama-cpu: hardware" data-info="16 Zen 5 cores (pinned 0-15) and up to 96GB of DDR5. The AVX-512 units are the compute engine; the build enables VNNI, VBMI, and BF16 paths explicitly.">
+    <rect class="iec-cell" x="180" y="84" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="264" y="110">Ryzen 9950X</text>
+    <text class="iec-vsub" x="264" y="128">16 cores · AVX-512</text>
+  </g>
+  <g class="iec-group iec-gpu" data-title="llama-gpu: hardware" data-info="RTX 5090: Blackwell sm_120, 32GB GDDR7, 896 GB/s. The build targets compute capability 12.0 explicitly — no PTX fallback, no generic kernels.">
+    <rect class="iec-cell" x="360" y="84" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="444" y="110">RTX 5090</text>
+    <text class="iec-vsub" x="444" y="128">sm_120 · 32GB GDDR7</text>
+  </g>
+  <g class="iec-group iec-vllm" data-title="vllm-gpu: hardware" data-info="The same RTX 5090. vLLM reserves 85% of the 32GB VRAM up front (--gpu-memory-utilization 0.85) and manages it as a paged KV cache pool.">
+    <rect class="iec-cell" x="540" y="84" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="624" y="110">RTX 5090</text>
+    <text class="iec-vsub" x="624" y="128">85% VRAM reserved</text>
+  </g>
+
+  <!-- row: optimized for -->
+  <text class="iec-row" x="16" y="186">Optimized for</text>
+  <g class="iec-group iec-cpu" data-title="llama-cpu: optimized for" data-info="Availability and latency without the GPU. Handles smaller quantized models for interactive use, freeing the card — and it is the fallback when the GPU is busy with training or a benchmark.">
+    <rect class="iec-cell" x="180" y="156" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="264" y="182">low latency, no GPU</text>
+    <text class="iec-vsub" x="264" y="200">always available</text>
+  </g>
+  <g class="iec-group iec-gpu" data-title="llama-gpu: optimized for" data-info="Single-stream decode speed on GGUF quantizations. All layers on the GPU (-ngl 999), flash attention on, CUDA graphs cutting kernel-launch overhead. --parallel 1 by default: one fast lane.">
+    <rect class="iec-cell" x="360" y="156" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="444" y="182">single-stream speed</text>
+    <text class="iec-vsub" x="444" y="200">GGUF · flash attn</text>
+  </g>
+  <g class="iec-group iec-vllm" data-title="vllm-gpu: optimized for" data-info="Throughput across many concurrent requests: up to 256 sequences, 32K tokens per batch. Continuous batching and prefix caching are default-on in the V1 engine — the flags moved into the engine.">
+    <rect class="iec-cell" x="540" y="156" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="624" y="182">batch throughput</text>
+    <text class="iec-vsub" x="624" y="200">256 seqs · paged KV</text>
+  </g>
+
+  <!-- row: image build -->
+  <text class="iec-row" x="16" y="258">Image build</text>
+  <g class="iec-group iec-cpu" data-title="llama-cpu: image build" data-info="Compiled from source in a multi-stage build on debian:trixie-slim: gcc-14 with -march=znver5, AVX-512 enabled via cmake flags, llama.cpp pinned by commit SHA. Compile because no published binary targets this CPU this precisely.">
+    <rect class="iec-cell" x="180" y="228" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="264" y="254">source, multi-stage</text>
+    <text class="iec-vsub" x="264" y="272">gcc-14 · znver5</text>
+  </g>
+  <g class="iec-group iec-gpu" data-title="llama-gpu: image build" data-info="Compiled from source in a multi-stage build: CUDA devel base for nvcc, runtime base for the final image. cmake targets sm_120 with cuBLAS forced and CUDA graphs on. Compile because upstream GGUF binaries do not ship Blackwell-tuned builds.">
+    <rect class="iec-cell" x="360" y="228" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="444" y="254">source, multi-stage</text>
+    <text class="iec-vsub" x="444" y="272">nvcc · sm_120</text>
+  </g>
+  <g class="iec-group iec-vllm" data-title="vllm-gpu: image build" data-info="Not compiled at all: a single-stage image installing the official vllm==0.25.0 cu130 wheel, which already ships sm_120 kernels. The from-source build was retired the release upstream started shipping Blackwell binaries.">
+    <rect class="iec-cell" x="540" y="228" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="624" y="254">official wheel</text>
+    <text class="iec-vsub" x="624" y="272">no compilation</text>
+  </g>
+
+  <!-- row: entrypoint -->
+  <text class="iec-row" x="16" y="330">Entrypoint</text>
+  <g class="iec-group iec-cpu" data-title="llama-cpu: entrypoint" data-info="A bash script that builds a CMD_ARGS array: four required variables fail fast if missing, feature flags append conditionally (MLOCK, CACHE_REUSE, NO_REPACK), then exec replaces the shell with the server.">
+    <rect class="iec-cell" x="180" y="300" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="264" y="326">env → CMD_ARGS</text>
+    <text class="iec-vsub" x="264" y="344">fail-fast · exec</text>
+  </g>
+  <g class="iec-group iec-gpu" data-title="llama-gpu: entrypoint" data-info="Same pattern with GPU knobs: layer offload, split mode, KV offload, and an NSYS_PROFILE toggle that wraps the whole server in Nsight Systems for deep CUDA profiling.">
+    <rect class="iec-cell" x="360" y="300" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="444" y="326">env → CMD_ARGS</text>
+    <text class="iec-vsub" x="444" y="344">+ nsys profiling</text>
+  </g>
+  <g class="iec-group iec-vllm" data-title="vllm-gpu: entrypoint" data-info="Same pattern driving vllm serve: memory utilization, batching limits, dtype and quantization selections. MODEL_PATH is the single required variable; everything else has a tuned default.">
+    <rect class="iec-cell" x="540" y="300" width="168" height="60" rx="6"/>
+    <text class="iec-val" x="624" y="326">env → vllm serve</text>
+    <text class="iec-vsub" x="624" y="344">tuned defaults</text>
+  </g>
+
+  <text class="iec-row" x="180" y="398">shared conventions: pinned versions · parameterized entrypoints · non-root appuser</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over any cell to see the reasoning behind it.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over any cell to see the reasoning behind it.';
+  root.querySelectorAll('.iec-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = g.getAttribute('data-title');
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

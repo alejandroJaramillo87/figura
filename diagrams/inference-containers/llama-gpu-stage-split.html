@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>llama-gpu: devel to runtime, and the stub trick</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>llama-gpu: devel to runtime, and the stub trick</h1>
+<p>Hover any block: the CUDA devel/runtime stage split, the sm_120 build configuration, and the stub libcuda that lets the image compile on a machine with no GPU.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-llama-gpu-stages">
+<style>
+.fg-llama-gpu-stages {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-llama-gpu-stages svg { display: block; width: 100%; height: auto; }
+.fg-llama-gpu-stages text { font-family: inherit; }
+
+.fg-llama-gpu-stages .lgs-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-llama-gpu-stages .lgs-group:hover .lgs-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-llama-gpu-stages .lgs-stub .lgs-box { stroke: var(--warn); }
+.fg-llama-gpu-stages .lgs-zone {
+  fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
+  transition: stroke 0.3s; cursor: pointer;
+}
+.fg-llama-gpu-stages .lgs-group:hover .lgs-zone { stroke: var(--accent); }
+.fg-llama-gpu-stages .lgs-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-llama-gpu-stages .lgs-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-llama-gpu-stages .lgs-label { fill: var(--muted); font-size: 12px; }
+
+.fg-llama-gpu-stages .lgs-flow {
+  stroke: var(--line); stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; animation: fg-lgs-flow 1.4s linear infinite;
+}
+@keyframes fg-lgs-flow { to { stroke-dashoffset: -18; } }
+.fg-llama-gpu-stages .lgs-flow-ok { stroke: var(--ok); }
+
+.fg-llama-gpu-stages .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.4em;
+  transition: color 0.3s;
+}
+.fg-llama-gpu-stages .fg-caption.is-active { color: var(--text); }
+.fg-llama-gpu-stages .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-llama-gpu-stages .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-llama-gpu-stages .lgs-flow { animation: none; }
+  .fg-llama-gpu-stages .lgs-box, .fg-llama-gpu-stages .lgs-zone { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 440" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The llama-gpu multi-stage build: a CUDA devel builder stage with nvcc, sm_120 flags, and a stub libcuda for GPU-less compilation, and a CUDA runtime final stage receiving only the compiled server. At run time the NVIDIA container runtime mounts the real host driver, replacing the stub.">
+  <defs>
+    <marker id="lgs-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="lgs-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <!-- builder zone -->
+  <g class="lgs-group" data-title="Stage 1: builder (devel base)" data-info="nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04 — the full development image: nvcc, CUDA headers, cuDNN. Roughly an order of magnitude larger than the runtime base, and none of it ships: this stage exists only to compile.">
+    <rect class="lgs-zone" x="16" y="16" width="420" height="290" rx="10"/>
+  </g>
+  <text class="lgs-label" x="30" y="40">stage 1: builder — cuda:13.0.2-cudnn-devel</text>
+
+  <g class="lgs-group" data-title="sm_120 environment" data-info="CUDA_ARCHITECTURES=120 and CUDAFLAGS='-O3 --use_fast_math -arch=sm_120' target the RTX 5090's Blackwell compute capability 12.0 exactly. No fat binary, no PTX fallback for other cards — this image runs on this card.">
+    <rect class="lgs-box" x="36" y="56" width="380" height="52" rx="8"/>
+    <text class="lgs-title" x="226" y="78">Blackwell targeting</text>
+    <text class="lgs-sub" x="226" y="96">CUDA_ARCHITECTURES=120 · -arch=sm_120 · fast math</text>
+  </g>
+
+  <g class="lgs-group lgs-stub" data-title="The stub libcuda trick" data-info="The builder has no GPU and no driver, but linking llama-server needs a libcuda.so. CUDA ships stub libraries for exactly this: the link path adds /usr/local/cuda/lib64/stubs, and a symlink provides libcuda.so.1. The stub satisfies the linker and is never executed.">
+    <rect class="lgs-box" x="36" y="120" width="380" height="52" rx="8"/>
+    <text class="lgs-title" x="226" y="142">stub libcuda.so</text>
+    <text class="lgs-sub" x="226" y="160">-L…/lib64/stubs · ln -s libcuda.so → libcuda.so.1</text>
+  </g>
+
+  <g class="lgs-group" data-title="cmake: the CUDA flag set" data-info="GGML_CUDA=ON with FORCE_CUBLAS (always use cuBLAS GEMM), CUDA_GRAPHS=ON (capture decode loops to cut kernel-launch overhead), FA_ALL_QUANTS=ON (flash attention across every quantization format), NO_VMM=OFF (virtual memory management for large models), plus LTO and ccache.">
+    <rect class="lgs-box" x="36" y="184" width="380" height="52" rx="8"/>
+    <text class="lgs-title" x="226" y="206">cmake CUDA flags</text>
+    <text class="lgs-sub" x="226" y="224">FORCE_CUBLAS · CUDA_GRAPHS · FA_ALL_QUANTS</text>
+  </g>
+
+  <g class="lgs-group" data-title="Compile llama-server" data-info="cmake --build targets llama-server only. The compile happens entirely against headers and stubs — the first time this binary touches real silicon is at container run time on the workstation.">
+    <rect class="lgs-box" x="36" y="248" width="380" height="42" rx="8"/>
+    <text class="lgs-title" x="226" y="274">build llama-server (-j nproc)</text>
+  </g>
+
+  <!-- runtime zone -->
+  <g class="lgs-group" data-title="Stage 2: runtime base" data-info="nvidia/cuda:13.0.2-cudnn-runtime-ubuntu24.04 — same CUDA version, no compiler, no headers. Adds only libcublas, CUPTI, NVTX, and Nsight Systems (for the optional profiling mode). Non-root appuser, port 8002.">
+    <rect class="lgs-zone" x="456" y="16" width="248" height="290" rx="10"/>
+  </g>
+  <text class="lgs-label" x="470" y="40">stage 2: runtime</text>
+  <text class="lgs-label" x="470" y="56">cuda:13.0.2-cudnn-runtime</text>
+
+  <g class="lgs-group" data-title="Final image contents" data-info="The compiled server and its shared libraries, the entrypoint script, and the runtime CUDA libraries. CUDA_MODULE_LOADING=LAZY and a persistent kernel cache at /tmp/cuda_cache trim startup; GGML_CUDA_GRAPHS=1 keeps graph capture on at run time.">
+    <rect class="lgs-box" x="476" y="100" width="208" height="96" rx="8"/>
+    <text class="lgs-title" x="580" y="128">final image</text>
+    <text class="lgs-sub" x="580" y="146">/app/server + libs</text>
+    <text class="lgs-sub" x="580" y="162">libcublas · cupti · nvtx</text>
+    <text class="lgs-sub" x="580" y="178">nsight-systems (opt-in)</text>
+  </g>
+
+  <path class="lgs-flow lgs-flow-ok" d="M 416 269 C 448 269, 448 148, 472 148" marker-end="url(#lgs-arrow-ok)"/>
+  <text class="lgs-sub" x="446" y="296">COPY --from=builder</text>
+
+  <!-- runtime reality -->
+  <g class="lgs-group" data-title="Run time: the real driver arrives" data-info="On the workstation, the NVIDIA container runtime mounts the host's real libcuda.so into the container. The stub that satisfied the linker at build time is out of the picture — the loader resolves the mounted driver, and sm_120 kernels run on the actual RTX 5090.">
+    <rect class="lgs-box" x="160" y="350" width="400" height="60" rx="8"/>
+    <text class="lgs-title" x="360" y="374">run time: host driver mounted by NVIDIA runtime</text>
+    <text class="lgs-sub" x="360" y="392">real libcuda.so replaces the stub · RTX 5090 visible</text>
+  </g>
+  <path class="lgs-flow" d="M 580 306 L 480 346" marker-end="url(#lgs-arrow)"/>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over a stage or block to see what it contributes.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over a stage or block to see what it contributes.';
+  root.querySelectorAll('.lgs-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = g.getAttribute('data-title');
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
