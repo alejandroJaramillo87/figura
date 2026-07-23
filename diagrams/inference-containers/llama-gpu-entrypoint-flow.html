@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>llama-gpu entrypoint: env vars to server flags</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>llama-gpu entrypoint: env vars to server flags</h1>
+<p>Hover a group: the same env-to-flags pattern as the CPU container, with GPU offload knobs and an optional Nsight Systems profiling wrapper around the whole server.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-llama-gpu-entry">
+<style>
+.fg-llama-gpu-entry {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-llama-gpu-entry svg { display: block; width: 100%; height: auto; }
+.fg-llama-gpu-entry text { font-family: inherit; }
+
+.fg-llama-gpu-entry .lge-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-llama-gpu-entry .lge-group:hover .lge-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-llama-gpu-entry .lge-base .lge-box { stroke: var(--line); }
+.fg-llama-gpu-entry .lge-gpu .lge-box { stroke: var(--warn); }
+.fg-llama-gpu-entry .lge-adv .lge-box { stroke: var(--violet); }
+.fg-llama-gpu-entry .lge-nsys .lge-box { stroke: var(--hot); }
+.fg-llama-gpu-entry .lge-cmd .lge-box { stroke: var(--accent); stroke-width: 2; }
+.fg-llama-gpu-entry .lge-exec .lge-box { stroke: var(--ok); stroke-width: 2; }
+
+.fg-llama-gpu-entry .lge-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-llama-gpu-entry .lge-sub { fill: var(--muted); font-size: 10px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-llama-gpu-entry .lge-label { fill: var(--muted); font-size: 12px; }
+
+.fg-llama-gpu-entry .lge-flow {
+  stroke: var(--line); stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; animation: fg-lge-flow 1.4s linear infinite;
+}
+@keyframes fg-lge-flow { to { stroke-dashoffset: -18; } }
+
+.fg-llama-gpu-entry .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.4em;
+  transition: color 0.3s;
+}
+.fg-llama-gpu-entry .fg-caption.is-active { color: var(--text); }
+.fg-llama-gpu-entry .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-llama-gpu-entry .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-llama-gpu-entry .lge-flow { animation: none; }
+  .fg-llama-gpu-entry .lge-box { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Flow of the llama-gpu entrypoint: base server variables, GPU offload knobs, and advanced flags feed the command line; an optional NSYS_PROFILE toggle wraps the server in Nsight Systems; exec hands off to the server as PID 1.">
+  <defs>
+    <marker id="lge-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <text class="lge-label" x="16" y="26">environment (docker-compose.yaml)</text>
+
+  <g class="lge-group lge-base" data-title="Base server config" data-info="MODEL_PATH plus defaults tuned for single-stream GPU inference: CTX_SIZE 65536 (double the CPU container — VRAM affords it), BATCH 2048/512, THREADS 1 (the CPU stays out of the way), THREADS_HTTP 4, PARALLEL 1.">
+    <rect class="lge-box" x="16" y="40" width="330" height="64" rx="8"/>
+    <text class="lge-title" x="181" y="62">base config</text>
+    <text class="lge-sub" x="181" y="80">MODEL_PATH · CTX_SIZE 65536</text>
+    <text class="lge-sub" x="181" y="94">THREADS 1 · PARALLEL 1</text>
+  </g>
+
+  <g class="lge-group lge-gpu" data-title="GPU offload knobs" data-info="N_GPU_LAYERS 999 puts every layer in VRAM; MAIN_GPU 0 pins the card; SPLIT_MODE / TENSOR_SPLIT are pass-throughs for a future multi-GPU box; NO_KV_OFFLOAD can keep the KV cache on the CPU side when VRAM is tight. Always-on flags: --no-mmap (direct VRAM allocation) and --no-warmup (serve immediately).">
+    <rect class="lge-box" x="374" y="40" width="330" height="64" rx="8"/>
+    <text class="lge-title" x="539" y="62">GPU offload</text>
+    <text class="lge-sub" x="539" y="80">N_GPU_LAYERS 999 · --no-mmap</text>
+    <text class="lge-sub" x="539" y="94">SPLIT_MODE · NO_KV_OFFLOAD</text>
+  </g>
+
+  <g class="lge-group lge-adv" data-title="Feature and advanced flags" data-info="FLASH_ATTN on (explicit, as on CPU), CONT_BATCHING opt-in, CACHE_REUSE, JINJA_ENABLED, REASONING_FORMAT, KV_UNIFIED — each appended only when its condition holds, so unset means upstream default.">
+    <rect class="lge-box" x="16" y="124" width="330" height="64" rx="8"/>
+    <text class="lge-title" x="181" y="146">feature flags</text>
+    <text class="lge-sub" x="181" y="164">FLASH_ATTN on · CACHE_REUSE</text>
+    <text class="lge-sub" x="181" y="178">JINJA · REASONING_FORMAT</text>
+  </g>
+
+  <g class="lge-group lge-nsys" data-title="NSYS_PROFILE — the profiling wrapper" data-info="Set NSYS_PROFILE=true and the entrypoint wraps the entire command in nsys profile --trace=cuda,nvtx,osrt with CUDA memory tracking. Same image, same flags, one env var — a production container becomes a profiling session without a rebuild.">
+    <rect class="lge-box" x="374" y="124" width="330" height="64" rx="8"/>
+    <text class="lge-title" x="539" y="146">NSYS_PROFILE toggle</text>
+    <text class="lge-sub" x="539" y="164">false → plain server</text>
+    <text class="lge-sub" x="539" y="178">true → nsys profile -- ./server …</text>
+  </g>
+
+  <path class="lge-flow" d="M 181 188 L 240 232" marker-end="url(#lge-arrow)"/>
+  <path class="lge-flow" d="M 539 188 L 480 232" marker-end="url(#lge-arrow)"/>
+
+  <g class="lge-group lge-cmd" data-title="Command construction" data-info="Base command with always-on flags: --metrics, --no-warmup, --no-mmap, --flash-attn, --main-gpu, --parallel. Conditionals append; the nsys wrapper prepends when profiling. GPU memory status is reported via nvidia-smi before the model load.">
+    <rect class="lge-box" x="160" y="236" width="400" height="60" rx="8"/>
+    <text class="lge-title" x="360" y="260">./server --model … -ngl 999 --metrics</text>
+    <text class="lge-sub" x="360" y="278">base flags + conditional appends (+ nsys wrap)</text>
+  </g>
+
+  <path class="lge-flow" d="M 360 296 L 360 320" marker-end="url(#lge-arrow)"/>
+
+  <g class="lge-group lge-exec" data-title="exec — PID 1 handoff" data-info="The server (or nsys wrapping it) replaces the shell and becomes PID 1: signals arrive directly, docker stop is clean, and the healthcheck polls the API on 8002 while VRAM fills during the 180-300s start period.">
+    <rect class="lge-box" x="160" y="324" width="400" height="52" rx="8"/>
+    <text class="lge-title" x="360" y="346">exec server (or nsys → server)</text>
+    <text class="lge-sub" x="360" y="362">PID 1 · healthcheck on :8002</text>
+  </g>
+
+  <text class="lge-label" x="16" y="410">same pattern as llama-cpu — different knobs, same discipline</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over a group to see how it reaches the command line.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over a group to see how it reaches the command line.';
+  root.querySelectorAll('.lge-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = g.getAttribute('data-title');
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
