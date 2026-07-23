@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>llama-cpu: the multi-stage build pipeline</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>llama-cpu: the multi-stage build pipeline</h1>
+<p>Step through the build: shared base, Zen 5 toolchain, pinned llama.cpp source, AVX-512 cmake configuration, and the minimal runtime stage that receives only the binaries.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-llama-cpu-build">
+<style>
+.fg-llama-cpu-build {
+  --bg: #0f172a; --panel: #1e293b; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-llama-cpu-build svg { display: block; width: 100%; height: auto; }
+.fg-llama-cpu-build text { font-family: inherit; }
+
+.fg-llama-cpu-build .lcb-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.45s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.45s;
+}
+.fg-llama-cpu-build .lcb-zone {
+  fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
+  transition: stroke 0.45s;
+}
+.fg-llama-cpu-build .lcb-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
+.fg-llama-cpu-build .lcb-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; opacity: 0.8; transition: fill 0.45s; }
+.fg-llama-cpu-build .lcb-label { fill: var(--muted); font-size: 12px; }
+.fg-llama-cpu-build .lcb-conn {
+  stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.4;
+  transition: stroke 0.45s, opacity 0.45s;
+}
+.fg-llama-cpu-build .lcb-copy {
+  stroke: var(--line); stroke-width: 2.5; fill: none; opacity: 0.3;
+  transition: stroke 0.45s, opacity 0.45s;
+}
+
+.fg-llama-cpu-build.is-step-1 .lcb-s1 .lcb-box,
+.fg-llama-cpu-build.is-step-2 .lcb-s2 .lcb-box,
+.fg-llama-cpu-build.is-step-3 .lcb-s3 .lcb-box,
+.fg-llama-cpu-build.is-step-4 .lcb-s4 .lcb-box { fill: #0c3550; stroke: var(--accent); }
+.fg-llama-cpu-build.is-step-5 .lcb-s5 .lcb-box { fill: #0e4429; stroke: var(--ok); }
+.fg-llama-cpu-build.is-step-1 .lcb-s1 .lcb-title,
+.fg-llama-cpu-build.is-step-2 .lcb-s2 .lcb-title,
+.fg-llama-cpu-build.is-step-3 .lcb-s3 .lcb-title,
+.fg-llama-cpu-build.is-step-4 .lcb-s4 .lcb-title,
+.fg-llama-cpu-build.is-step-5 .lcb-s5 .lcb-title { fill: var(--text); }
+
+/* stage-N done state: keep visited boxes lit */
+.fg-llama-cpu-build .lcb-stage.is-done .lcb-box { fill: #12283f; stroke: var(--line); }
+.fg-llama-cpu-build .lcb-stage.is-done .lcb-title { fill: var(--text); }
+
+/* copy arrows light at step 5 */
+.fg-llama-cpu-build.is-step-5 .lcb-copy { stroke: var(--ok); opacity: 1; stroke-dasharray: 5 4; animation: fg-lcb-flow 1.2s linear infinite; }
+@keyframes fg-lcb-flow { to { stroke-dashoffset: -18; } }
+
+.fg-llama-cpu-build .fg-caption {
+  margin-top: 10px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  color: var(--muted); font-size: 13px; min-height: 4.8em;
+  transition: color 0.3s;
+}
+.fg-llama-cpu-build .fg-caption.is-active { color: var(--text); }
+.fg-llama-cpu-build .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-llama-cpu-build .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+.fg-llama-cpu-build .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-llama-cpu-build .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-llama-cpu-build .fg-controls button:hover { border-color: var(--accent); }
+.fg-llama-cpu-build .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-llama-cpu-build * { transition: none !important; animation: none !important; }
+}
+</style>
+
+<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Multi-stage build of the llama-cpu image: both stages start from the same pinned debian:trixie-slim base. The builder stage installs gcc-14 with Zen 5 flags, clones llama.cpp at a pinned commit, and compiles llama-server with AVX-512 cmake flags. The runtime stage receives only the server binary and its shared libraries.">
+  <defs>
+    <marker id="lcb-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="lcb-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <!-- shared base -->
+  <g class="lcb-stage lcb-s1">
+    <rect class="lcb-box" x="210" y="16" width="300" height="52" rx="8"/>
+    <text class="lcb-title" x="360" y="38">debian:trixie-slim (pinned digest)</text>
+    <text class="lcb-sub" x="360" y="56">ARG BASE_IMAGE — shared by both stages</text>
+  </g>
+  <path class="lcb-conn" d="M 280 68 L 200 100" marker-end="url(#lcb-arrow)"/>
+  <path class="lcb-conn" d="M 440 68 L 540 288" marker-end="url(#lcb-arrow)"/>
+
+  <!-- builder zone -->
+  <rect class="lcb-zone" x="16" y="96" width="420" height="240" rx="10"/>
+  <text class="lcb-label" x="30" y="118">stage 1: builder</text>
+
+  <g class="lcb-stage lcb-s2">
+    <rect class="lcb-box" x="36" y="132" width="380" height="56" rx="8"/>
+    <text class="lcb-title" x="226" y="154">Zen 5 toolchain</text>
+    <text class="lcb-sub" x="226" y="172">gcc-14 · CFLAGS=-march=znver5 -mtune=znver5 -O3</text>
+  </g>
+  <g class="lcb-stage lcb-s3">
+    <rect class="lcb-box" x="36" y="200" width="380" height="56" rx="8"/>
+    <text class="lcb-title" x="226" y="222">clone llama.cpp, pinned</text>
+    <text class="lcb-sub" x="226" y="240">git checkout e3546c79… (tag b9976)</text>
+  </g>
+  <g class="lcb-stage lcb-s4">
+    <rect class="lcb-box" x="36" y="268" width="380" height="56" rx="8"/>
+    <text class="lcb-title" x="226" y="290">cmake: AVX-512 build</text>
+    <text class="lcb-sub" x="226" y="308">AVX512 VNNI VBMI BF16 · LTO · target llama-server</text>
+  </g>
+
+  <!-- runtime zone -->
+  <rect class="lcb-zone" x="456" y="96" width="248" height="240" rx="10"/>
+  <text class="lcb-label" x="470" y="118">stage 2: runtime</text>
+
+  <g class="lcb-stage lcb-s5">
+    <rect class="lcb-box" x="476" y="200" width="208" height="88" rx="8"/>
+    <text class="lcb-title" x="580" y="228">final image</text>
+    <text class="lcb-sub" x="580" y="246">/app/server + *.so only</text>
+    <text class="lcb-sub" x="580" y="262">libgomp1 · libssl3t64 · curl</text>
+    <text class="lcb-sub" x="580" y="278">non-root appuser</text>
+  </g>
+
+  <path class="lcb-copy" d="M 416 296 C 448 296, 448 244, 472 244" marker-end="url(#lcb-arrow-ok)"/>
+  <text class="lcb-sub" x="446" y="330">COPY --from=builder</text>
+
+  <text class="lcb-label" x="16" y="366">the toolchain, source tree, and headers never reach the runtime image</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Press play or step through the build.</div>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const TOTAL = 5, STEP_MS = 2800;
+  let step = 0, timer = null;
+
+  const CAPTIONS = [
+    'Press play or step through the build.',
+    ['Shared base', 'Both stages derive from the same pinned debian:trixie-slim, so glibc and libgomp are identical between the compile environment and the runtime — no symbol mismatches at startup.'],
+    ['Zen 5 toolchain', 'gcc-14 ships znver5 support in trixie stable. CFLAGS target the 9950X specifically: -march=znver5 -mtune=znver5 -O3, with linker -O3 and --as-needed.'],
+    ['Pinned source', 'llama.cpp is cloned in full and checked out at an exact commit SHA (tag b9976). Rebuilding next month produces the same binary — the pin is bumped deliberately, never on rebuild.'],
+    ['AVX-512 cmake', 'The vector extensions are enabled as cmake flags, not CFLAGS: AVX512 + VNNI (INT8) + VBMI + BF16, plus LTO. Only the llama-server target is built.'],
+    ['Runtime stage', 'The final image receives just the server binary and the shared libraries it links against, on top of three runtime packages. The compiler, git, headers, and source tree stay behind in the builder.'],
+  ];
+
+  function apply() {
+    const stages = root.querySelectorAll('.lcb-stage');
+    stages.forEach((g, i) => {
+      const n = i + 1;
+      g.classList.toggle('is-done', n < step);
+    });
+    for (let i = 1; i <= TOTAL; i++) root.classList.toggle('is-step-' + i, step === i);
+    const c = CAPTIONS[step];
+    caption.innerHTML = '';
+    if (Array.isArray(c)) {
+      const strong = document.createElement('strong');
+      strong.textContent = step + '. ' + c[0];
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + c[1]));
+      caption.classList.add('is-active');
+    } else {
+      caption.textContent = c;
+      caption.classList.remove('is-active');
+    }
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
+    pause() { clearInterval(timer); timer = null; },
+  };
+
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  function sync() {
+    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  apply();
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

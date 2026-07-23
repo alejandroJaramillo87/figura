@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>vllm-gpu: the build that retired</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>vllm-gpu: the build that retired</h1>
+<p>Hover either path: the old from-source Blackwell build versus the current single-stage wheel install, and the upstream change that made compilation unnecessary.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-vllm-build-wheel">
+<style>
+.fg-vllm-build-wheel {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-vllm-build-wheel svg { display: block; width: 100%; height: auto; }
+.fg-vllm-build-wheel text { font-family: inherit; }
+
+.fg-vllm-build-wheel .vbw-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-vllm-build-wheel .vbw-group:hover .vbw-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-vllm-build-wheel .vbw-old .vbw-box { stroke: var(--hot); opacity: 0.75; }
+.fg-vllm-build-wheel .vbw-new .vbw-box { stroke: var(--ok); }
+.fg-vllm-build-wheel .vbw-pivot .vbw-box { stroke: var(--warn); }
+.fg-vllm-build-wheel .vbw-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-vllm-build-wheel .vbw-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-vllm-build-wheel .vbw-label { fill: var(--muted); font-size: 12px; }
+.fg-vllm-build-wheel .vbw-retired { fill: var(--hot); font-size: 11.5px; font-weight: 600; }
+
+.fg-vllm-build-wheel .vbw-strike {
+  stroke: var(--hot); stroke-width: 2.5; opacity: 0.7;
+}
+.fg-vllm-build-wheel .vbw-flow {
+  stroke: var(--line); stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; animation: fg-vbw-flow 1.4s linear infinite;
+}
+@keyframes fg-vbw-flow { to { stroke-dashoffset: -18; } }
+.fg-vllm-build-wheel .vbw-flow-ok { stroke: var(--ok); }
+
+.fg-vllm-build-wheel .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.4em;
+  transition: color 0.3s;
+}
+.fg-vllm-build-wheel .fg-caption.is-active { color: var(--text); }
+.fg-vllm-build-wheel .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-vllm-build-wheel .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-vllm-build-wheel .vbw-flow { animation: none; }
+  .fg-vllm-build-wheel .vbw-box { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 440" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Two paths to Blackwell kernels for vLLM. The retired path: clone the source, install the CUDA devel toolchain, and compile sm_120 kernels locally over multiple hours. The current path: since vLLM 0.20.0, official cu130 wheels ship sm_120 binaries, so a single-stage image installs vllm 0.25.0 with a pinned uv binary plus FlashInfer kernels, with no compiler in the image.">
+  <defs>
+    <marker id="vbw-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="vbw-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <g class="vbw-group vbw-pivot" data-title="The goal" data-info="vLLM serving on the RTX 5090 requires kernels compiled for Blackwell compute capability 12.0 (sm_120). The question a Dockerfile must answer: who compiles them — you, or upstream?">
+    <rect class="vbw-box" x="210" y="16" width="300" height="52" rx="8"/>
+    <text class="vbw-title" x="360" y="38">need: sm_120 kernels for vLLM</text>
+    <text class="vbw-sub" x="360" y="56">who compiles them?</text>
+  </g>
+
+  <path class="vbw-flow" d="M 280 68 L 190 104" marker-end="url(#vbw-arrow)"/>
+  <path class="vbw-flow vbw-flow-ok" d="M 440 68 L 530 104" marker-end="url(#vbw-arrow-ok)"/>
+
+  <!-- old path -->
+  <text class="vbw-retired" x="60" y="100">retired path: compile locally</text>
+  <g class="vbw-group vbw-old" data-title="Old: clone and toolchain" data-info="Before upstream shipped Blackwell wheels: clone the vLLM source, install the full CUDA devel toolchain, gcc, ninja, and ccache into a builder stage — gigabytes of toolchain for one binary artifact.">
+    <rect class="vbw-box" x="40" y="112" width="280" height="52" rx="8"/>
+    <text class="vbw-title" x="180" y="134">clone source + CUDA devel toolchain</text>
+    <text class="vbw-sub" x="180" y="152">git · nvcc · ninja · ccache</text>
+  </g>
+  <g class="vbw-group vbw-old" data-title="Old: hours of compilation" data-info="setup.py builds the CUDA extensions for sm_120 locally — a multi-hour compile, sensitive to CUDA/PyTorch version skew, repeated on every version bump. It worked, but every rebuild was an afternoon.">
+    <rect class="vbw-box" x="40" y="176" width="280" height="52" rx="8"/>
+    <text class="vbw-title" x="180" y="198">compile sm_120 extensions</text>
+    <text class="vbw-sub" x="180" y="216">hours per build · version-skew fragile</text>
+  </g>
+  <line class="vbw-strike" x1="52" y1="238" x2="308" y2="106"/>
+
+  <g class="vbw-group vbw-pivot" data-title="What changed upstream" data-info="Since vLLM v0.20.0, the official wheels default to CUDA 13.0 and include Blackwell (compute capability 12.0) kernel binaries. The reason to compile — upstream not shipping your architecture — disappeared, so the build was retired the release that made it redundant.">
+    <rect class="vbw-box" x="40" y="252" width="280" height="64" rx="8"/>
+    <text class="vbw-title" x="180" y="276">upstream change (v0.20.0)</text>
+    <text class="vbw-sub" x="180" y="294">official wheels ship cu130 +</text>
+    <text class="vbw-sub" x="180" y="308">sm_120 binaries</text>
+  </g>
+  <path class="vbw-flow vbw-flow-ok" d="M 320 284 C 380 284, 380 220, 416 200" marker-end="url(#vbw-arrow-ok)"/>
+
+  <!-- new path -->
+  <text class="vbw-label" x="420" y="100">current path: install the wheel</text>
+  <g class="vbw-group vbw-new" data-title="Pinned uv binary" data-info="uv 0.11.28 is copied from its official image (ghcr.io/astral-sh/uv) via a named stage — replacing an unpinned curl-pipe-sh installer. The installer version is a build arg like every other pin.">
+    <rect class="vbw-box" x="420" y="112" width="280" height="52" rx="8"/>
+    <text class="vbw-title" x="560" y="134">COPY uv from pinned image</text>
+    <text class="vbw-sub" x="560" y="152">ghcr.io/astral-sh/uv:0.11.28</text>
+  </g>
+  <g class="vbw-group vbw-new" data-title="Install the official wheel" data-info="uv pip install vllm==0.25.0 --torch-backend=cu130 on the CUDA runtime base. The wheel carries the sm_120 kernels and pulls PyTorch 2.11 cu130 as a dependency. Single stage: there is nothing to compile, so there is no builder.">
+    <rect class="vbw-box" x="420" y="176" width="280" height="52" rx="8"/>
+    <text class="vbw-title" x="560" y="198">uv pip install vllm==0.25.0</text>
+    <text class="vbw-sub" x="560" y="216">--torch-backend=cu130 · single stage</text>
+  </g>
+  <g class="vbw-group vbw-new" data-title="FlashInfer kernels" data-info="flashinfer-cubin and flashinfer-jit-cache at 0.6.13: pre-built attention kernels plus a pre-warmed JIT cache — the default attention backend on Blackwell, also installed as wheels. nvcc stays in the image only for torch.compile JIT at run time.">
+    <rect class="vbw-box" x="420" y="240" width="280" height="52" rx="8"/>
+    <text class="vbw-title" x="560" y="262">FlashInfer 0.6.13 wheels</text>
+    <text class="vbw-sub" x="560" y="280">cubin + jit-cache · cu130 index</text>
+  </g>
+
+  <path class="vbw-flow vbw-flow-ok" d="M 560 164 L 560 172" marker-end="url(#vbw-arrow-ok)"/>
+  <path class="vbw-flow vbw-flow-ok" d="M 560 228 L 560 236" marker-end="url(#vbw-arrow-ok)"/>
+  <path class="vbw-flow vbw-flow-ok" d="M 560 292 L 560 336" marker-end="url(#vbw-arrow-ok)"/>
+
+  <g class="vbw-group vbw-new" data-title="The resulting image" data-info="A single-stage image on the CUDA runtime base: venv at /opt/venv, minutes to build instead of hours, reproducible from five pinned build args (CUDA, vLLM, Python, uv, FlashInfer). The lesson: compile only while upstream leaves you no choice.">
+    <rect class="vbw-box" x="420" y="340" width="280" height="64" rx="8"/>
+    <text class="vbw-title" x="560" y="364">single-stage image</text>
+    <text class="vbw-sub" x="560" y="382">5 pinned build args · minutes not hours</text>
+    <text class="vbw-sub" x="560" y="396">no compiler toolchain shipped</text>
+  </g>
+
+  <text class="vbw-label" x="40" y="404">compile only while upstream</text>
+  <text class="vbw-label" x="40" y="420">leaves you no choice</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over either path to see why one retired and one won.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over either path to see why one retired and one won.';
+  root.querySelectorAll('.vbw-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = g.getAttribute('data-title');
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

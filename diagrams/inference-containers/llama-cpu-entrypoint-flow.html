@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>llama-cpu entrypoint: env vars to server flags</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>llama-cpu entrypoint: env vars to server flags</h1>
+<p>Hover a group: how the entrypoint turns environment variables into the llama-server command line — fail-fast requirements, defaults, conditional feature flags, and the final exec.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-llama-cpu-entry">
+<style>
+.fg-llama-cpu-entry {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-llama-cpu-entry svg { display: block; width: 100%; height: auto; }
+.fg-llama-cpu-entry text { font-family: inherit; }
+
+.fg-llama-cpu-entry .lce-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-llama-cpu-entry .lce-group:hover .lce-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-llama-cpu-entry .lce-req .lce-box { stroke: var(--hot); }
+.fg-llama-cpu-entry .lce-def .lce-box { stroke: var(--line); }
+.fg-llama-cpu-entry .lce-feat .lce-box { stroke: var(--warn); }
+.fg-llama-cpu-entry .lce-adv .lce-box { stroke: var(--violet); }
+.fg-llama-cpu-entry .lce-cmd .lce-box { stroke: var(--accent); stroke-width: 2; }
+.fg-llama-cpu-entry .lce-exec .lce-box { stroke: var(--ok); stroke-width: 2; }
+
+.fg-llama-cpu-entry .lce-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-llama-cpu-entry .lce-sub { fill: var(--muted); font-size: 10px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-llama-cpu-entry .lce-label { fill: var(--muted); font-size: 12px; }
+
+.fg-llama-cpu-entry .lce-flow {
+  stroke: var(--line); stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; animation: fg-lce-flow 1.4s linear infinite;
+}
+@keyframes fg-lce-flow { to { stroke-dashoffset: -18; } }
+
+.fg-llama-cpu-entry .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.4em;
+  transition: color 0.3s;
+}
+.fg-llama-cpu-entry .fg-caption.is-active { color: var(--text); }
+.fg-llama-cpu-entry .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-llama-cpu-entry .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-llama-cpu-entry .lce-flow { animation: none; }
+  .fg-llama-cpu-entry .lce-box { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Flow of the llama-cpu entrypoint: four groups of environment variables — required, defaulted, feature flags, and advanced knobs — feed into a CMD_ARGS bash array, which exec replaces the shell with as the running llama-server process.">
+  <defs>
+    <marker id="lce-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <text class="lce-label" x="16" y="26">environment (docker-compose.yaml)</text>
+
+  <g class="lce-group lce-req" data-title="Required — fail fast" data-info="MODEL_PATH, SERVER_PORT, THREADS, THREADS_BATCH. The script exits with an error if any is missing, before the server ever starts — a misconfigured container dies loudly at launch, not silently at first request.">
+    <rect class="lce-box" x="16" y="40" width="330" height="64" rx="8"/>
+    <text class="lce-title" x="181" y="62">required (4)</text>
+    <text class="lce-sub" x="181" y="80">MODEL_PATH · SERVER_PORT</text>
+    <text class="lce-sub" x="181" y="94">THREADS · THREADS_BATCH</text>
+  </g>
+
+  <g class="lce-group lce-def" data-title="Defaulted — always mapped" data-info="Six variables with tuned defaults that always become a flag: CTX_SIZE 32768, BATCH_SIZE 2048, UBATCH_SIZE 512, THREADS_HTTP 2, SERVER_HOST, N_GPU_LAYERS 0. Override any of them per deployment without touching the image.">
+    <rect class="lce-box" x="374" y="40" width="330" height="64" rx="8"/>
+    <text class="lce-title" x="539" y="62">defaulted (6)</text>
+    <text class="lce-sub" x="539" y="80">CTX_SIZE 32768 · BATCH 2048/512</text>
+    <text class="lce-sub" x="539" y="94">THREADS_HTTP 2 · N_GPU_LAYERS 0</text>
+  </g>
+
+  <g class="lce-group lce-feat" data-title="Feature flags — conditional" data-info="Appended only when their condition holds: MLOCK=true adds --mlock, CACHE_REUSE>0 adds --cache-reuse, CONT_BATCHING adds --cont-batching, NO_REPACK=true adds --no-repack (the documented startup-vs-throughput tradeoff). FLASH_ATTN=on is passed explicitly so an upstream default change cannot silently disable it.">
+    <rect class="lce-box" x="16" y="124" width="330" height="64" rx="8"/>
+    <text class="lce-title" x="181" y="146">feature flags (5)</text>
+    <text class="lce-sub" x="181" y="164">FLASH_ATTN on · MLOCK · CACHE_REUSE</text>
+    <text class="lce-sub" x="181" y="178">CONT_BATCHING · NO_REPACK</text>
+  </g>
+
+  <g class="lce-group lce-adv" data-title="Advanced knobs — only if set" data-info="CACHE_TYPE_K/V, KV_UNIFIED, CTX_CHECKPOINTS, JINJA_ENABLED. Appended only when explicitly set, so the server keeps its own upstream defaults otherwise — the entrypoint states no opinion it has not tested.">
+    <rect class="lce-box" x="374" y="124" width="330" height="64" rx="8"/>
+    <text class="lce-title" x="539" y="146">advanced (5)</text>
+    <text class="lce-sub" x="539" y="164">CACHE_TYPE_K/V · KV_UNIFIED</text>
+    <text class="lce-sub" x="539" y="178">CTX_CHECKPOINTS · JINJA</text>
+  </g>
+
+  <path class="lce-flow" d="M 181 188 L 240 232" marker-end="url(#lce-arrow)"/>
+  <path class="lce-flow" d="M 539 188 L 480 232" marker-end="url(#lce-arrow)"/>
+
+  <g class="lce-group lce-cmd" data-title="CMD_ARGS array" data-info="A bash array, not a string: each flag and value is one element, so paths with spaces survive and nothing is re-parsed by the shell. The base array carries the required flags plus the always-on --flash-attn and --metrics; conditionals append with CMD_ARGS+=(…).">
+    <rect class="lce-box" x="160" y="236" width="400" height="60" rx="8"/>
+    <text class="lce-title" x="360" y="260">CMD_ARGS=( ./server --model … --metrics )</text>
+    <text class="lce-sub" x="360" y="278">base flags + conditional appends</text>
+  </g>
+
+  <path class="lce-flow" d="M 360 296 L 360 320" marker-end="url(#lce-arrow)"/>
+
+  <g class="lce-group lce-exec" data-title="exec — PID 1 handoff" data-info="exec &quot;${CMD_ARGS[@]}&quot; replaces the shell with the server process. The server becomes PID 1, receives signals directly (clean docker stop), and no orphan shell lingers. Before this: model file validated, memory status reported, OMP_NUM_THREADS set to match THREADS.">
+    <rect class="lce-box" x="160" y="324" width="400" height="52" rx="8"/>
+    <text class="lce-title" x="360" y="346">exec "${CMD_ARGS[@]}"</text>
+    <text class="lce-sub" x="360" y="362">shell replaced · server is PID 1</text>
+  </g>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over a group to see how it reaches the command line.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over a group to see how it reaches the command line.';
+  root.querySelectorAll('.lce-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = g.getAttribute('data-title');
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
