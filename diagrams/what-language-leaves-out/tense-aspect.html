@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tense and aspect: does the state persist?</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Tense and aspect interpretation</h1>
+<p>"I've lived here for years" vs "I lived here for years" — and in Mandarin, tense has no tokens at all.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-tense-aspect">
+<style>
+.fg-tense-aspect {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-tense-aspect svg { display: block; width: 100%; height: auto; }
+.fg-tense-aspect text { font-family: inherit; }
+
+.fg-tense-aspect .tns-note { fill: var(--muted); font-size: 11px; }
+.fg-tense-aspect .tns-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+}
+.fg-tense-aspect .tns-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+
+/* sentence variants cross-fade */
+.fg-tense-aspect .tns-sent { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-tense-aspect .tns-sent text { fill: var(--text); font-size: 14px; }
+.fg-tense-aspect .tns-sent .tns-verb { fill: var(--warn); }
+.fg-tense-aspect .tns-sent-perf { opacity: 1; }
+.fg-tense-aspect .tns-sent-past { opacity: 0; }
+.fg-tense-aspect.is-past .tns-sent-perf { opacity: 0; }
+.fg-tense-aspect.is-past .tns-sent-past { opacity: 1; }
+
+/* timeline */
+.fg-tense-aspect .tns-axis { stroke: var(--line); stroke-width: 1.5; }
+.fg-tense-aspect .tns-now { stroke: var(--accent); stroke-width: 2; }
+.fg-tense-aspect .tns-state { transition: opacity 0.7s; }
+.fg-tense-aspect .tns-state rect { fill: #0e4429; stroke: var(--ok); stroke-width: 1.5; }
+.fg-tense-aspect .tns-state-perf { opacity: 1; }
+.fg-tense-aspect .tns-state-past { opacity: 0; }
+.fg-tense-aspect.is-past .tns-state-perf { opacity: 0; }
+.fg-tense-aspect.is-past .tns-state-past { opacity: 1; }
+.fg-tense-aspect .tns-gloss { transition: opacity 0.7s; font-size: 12px; fill: var(--ok); }
+.fg-tense-aspect .tns-gloss-perf { opacity: 1; }
+.fg-tense-aspect .tns-gloss-past { opacity: 0; }
+.fg-tense-aspect.is-past .tns-gloss-perf { opacity: 0; }
+.fg-tense-aspect.is-past .tns-gloss-past { opacity: 1; }
+
+/* mandarin row: ghost tense slot + supplier arc */
+.fg-tense-aspect .tns-ghost rect { fill: none; stroke: var(--warn); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-tense-aspect .tns-ghost text { fill: var(--warn); font-size: 12px; text-anchor: middle; }
+.fg-tense-aspect .tns-cue .tns-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-tense-aspect .tns-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
+
+.fg-tense-aspect .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-tense-aspect .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-tense-aspect .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-tense-aspect .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-tense-aspect .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-tense-aspect .tns-sent, .fg-tense-aspect .tns-state, .fg-tense-aspect .tns-gloss { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Top: a sentence a button flips between I've lived here for years and I lived here for years, above a timeline running from the past to a NOW marker. In the perfect version, a green state bar reaches all the way to NOW: the living continues. In the simple past, the bar stops short of NOW: it is over. Below, a second row shows Mandarin: wo zhu zai zheli, with a dashed empty tense slot on the verb and a green arc from a context word, mingtian, tomorrow, that supplies the time reference — tense inferred entirely from context tokens.">
+  <text class="tns-note" x="40" y="26">two English aspect markings, one Mandarin sentence with none &#8212; the timeline is imported either way</text>
+
+  <!-- sentence variants -->
+  <g class="tns-sent tns-sent-perf">
+    <text x="120" y="64">"I<tspan class="tns-verb">'ve lived</tspan> here for years."</text>
+  </g>
+  <g class="tns-sent tns-sent-past">
+    <text x="120" y="64">"I <tspan class="tns-verb">lived</tspan> here for years."</text>
+  </g>
+
+  <!-- timeline -->
+  <line class="tns-axis" x1="100" y1="120" x2="600" y2="120"/>
+  <line class="tns-now" x1="520" y1="102" x2="520" y2="138"/>
+  <text class="tns-note" x="520" y="94" text-anchor="middle" fill="#38bdf8">NOW</text>
+  <text class="tns-note" x="100" y="144">past</text>
+  <text class="tns-note" x="600" y="144" text-anchor="end">future</text>
+
+  <g class="tns-state tns-state-perf">
+    <rect x="240" y="110" width="280" height="20" rx="4"/>
+  </g>
+  <g class="tns-state tns-state-past">
+    <rect x="200" y="110" width="200" height="20" rx="4"/>
+  </g>
+  <text class="tns-gloss tns-gloss-perf" x="120" y="172">the state reaches NOW &#8212; I still live here</text>
+  <text class="tns-gloss tns-gloss-past" x="120" y="172">the state ended before NOW &#8212; I moved away</text>
+
+  <!-- mandarin row -->
+  <g class="tns-cue">
+    <rect class="tns-tok" x="80" y="216" width="92" height="36" rx="6"/>
+    <text class="tns-word" x="126" y="239">m&#237;ngti&#257;n</text>
+  </g>
+  <rect class="tns-tok" x="180" y="216" width="42" height="36" rx="6"/>
+  <text class="tns-word" x="201" y="239">w&#466;</text>
+  <rect class="tns-tok" x="230" y="216" width="48" height="36" rx="6"/>
+  <text class="tns-word" x="254" y="239">zh&#249;</text>
+  <g class="tns-ghost">
+    <rect x="286" y="216" width="70" height="36" rx="6"/>
+    <text x="321" y="239">[tense?]</text>
+  </g>
+  <rect class="tns-tok" x="364" y="216" width="46" height="36" rx="6"/>
+  <text class="tns-word" x="387" y="239">z&#224;i</text>
+  <rect class="tns-tok" x="418" y="216" width="58" height="36" rx="6"/>
+  <text class="tns-word" x="447" y="239">zh&#232;l&#464;</text>
+
+  <!-- arc: tense slot -> context cue -->
+  <path class="tns-arc" d="M 310 212 C 270 188, 190 190, 140 210" marker-end="url(#tns-arrow)"/>
+
+  <text class="tns-note" x="490" y="232">"tomorrow I live here"</text>
+  <text class="tns-note" x="490" y="248">&#8594; future, from one adverb</text>
+
+  <text class="tns-note" x="40" y="290">Mandarin has no tense morphology: the verb "zh&#249;" is bare in past, present, and future alike.</text>
+  <text class="tns-note" x="40" y="306">Swap "m&#237;ngti&#257;n" for "q&#249;ni&#225;n" (last year) and the whole event moves &#8212; no verb token changes.</text>
+
+  <defs>
+    <marker id="tns-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Flip between the present-perfect and simple-past versions">Flip the aspect</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Present perfect</strong> &#8212; "I've lived here for years": the state bar reaches NOW. In English this reading is carried by two extra tokens ('ve + participle); in many languages even that much is left to context.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    perf: '<strong>Present perfect</strong> — "I\'ve lived here for years": the state bar reaches NOW. In English this reading is carried by two extra tokens (\'ve + participle); in many languages even that much is left to context.',
+    past: '<strong>Simple past</strong> — "I lived here for years": the bar stops short of NOW. I moved away. One auxiliary token vanished and the present flipped from inhabited to vacated — and whether the implication holds at all can still shift with context.'
+  };
+  btn.addEventListener('click', () => {
+    const past = root.classList.toggle('is-past');
+    caption.innerHTML = past ? CAP.past : CAP.perf;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
