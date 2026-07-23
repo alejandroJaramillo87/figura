@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Garden path: the parse that has to be torn up</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Garden path</h1>
+<p>"The horse raced past the barn fell." The incremental parse commits to "raced" as the main verb — then "fell" arrives and forces a reanalysis.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-garden-path">
+<style>
+.fg-garden-path {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-garden-path svg { display: block; width: 100%; height: auto; }
+.fg-garden-path text { font-family: inherit; }
+
+.fg-garden-path .gdp-note { fill: var(--muted); font-size: 11px; }
+.fg-garden-path .gdp-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-garden-path .gdp-word { fill: var(--text); font-size: 14px; text-anchor: middle; }
+
+/* tokens stream in: hidden until their step */
+.fg-garden-path .gdp-t3, .fg-garden-path .gdp-t4 { opacity: 0.18; transition: opacity 0.7s; }
+.fg-garden-path.is-step-1 .gdp-t3, .fg-garden-path.is-step-2 .gdp-t3,
+.fg-garden-path.is-step-3 .gdp-t3, .fg-garden-path.is-step-4 .gdp-t3 { opacity: 1; }
+.fg-garden-path.is-step-2 .gdp-t4, .fg-garden-path.is-step-3 .gdp-t4,
+.fg-garden-path.is-step-4 .gdp-t4 { opacity: 1; }
+
+/* first-pass labels: SUBJECT / MAIN VERB */
+.fg-garden-path .gdp-lab { font-size: 10px; text-anchor: middle; letter-spacing: 0.06em; transition: opacity 0.7s, fill 0.7s; }
+.fg-garden-path .gdp-lab-subj { fill: var(--accent); }
+.fg-garden-path .gdp-lab-mv { fill: var(--accent); }
+.fg-garden-path.is-step-3 .gdp-lab-mv, .fg-garden-path.is-step-4 .gdp-lab-mv { opacity: 0; }
+/* reanalysis labels appear at step 3 */
+.fg-garden-path .gdp-lab-rr, .fg-garden-path .gdp-lab-mv2 { opacity: 0; }
+.fg-garden-path.is-step-3 .gdp-lab-rr, .fg-garden-path.is-step-4 .gdp-lab-rr { opacity: 1; }
+.fg-garden-path.is-step-3 .gdp-lab-mv2, .fg-garden-path.is-step-4 .gdp-lab-mv2 { opacity: 1; }
+
+/* "raced" token: accent while main verb, violet after demotion */
+.fg-garden-path .gdp-raced .gdp-tok { stroke: var(--accent); }
+.fg-garden-path.is-step-3 .gdp-raced .gdp-tok, .fg-garden-path.is-step-4 .gdp-raced .gdp-tok { stroke: var(--violet); }
+/* "fell": hot on arrival, ok once reanalysis lands */
+.fg-garden-path.is-step-2 .gdp-fell .gdp-tok { stroke: var(--hot); fill: #4a1d1d; }
+.fg-garden-path.is-step-3 .gdp-fell .gdp-tok, .fg-garden-path.is-step-4 .gdp-fell .gdp-tok { stroke: var(--ok); fill: #0e4429; }
+
+/* contradiction badge at step 2 only */
+.fg-garden-path .gdp-clash { opacity: 0; transition: opacity 0.7s; }
+.fg-garden-path.is-step-2 .gdp-clash { opacity: 1; }
+
+/* reduced-relative bracket over "raced past the barn", step 3+ */
+.fg-garden-path .gdp-rrbracket { opacity: 0; transition: opacity 0.7s; }
+.fg-garden-path.is-step-3 .gdp-rrbracket, .fg-garden-path.is-step-4 .gdp-rrbracket { opacity: 1; }
+.fg-garden-path .gdp-rrbracket path { fill: none; stroke: var(--violet); stroke-width: 2; }
+.fg-garden-path .gdp-rrbracket text { fill: var(--violet); }
+
+/* resolving arc fell -> horse, step 3+ */
+.fg-garden-path .gdp-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-garden-path.is-step-3 .gdp-arc, .fg-garden-path.is-step-4 .gdp-arc { opacity: 1; }
+.fg-garden-path .gdp-arclabel { opacity: 0; transition: opacity 0.7s; }
+.fg-garden-path.is-step-4 .gdp-arclabel { opacity: 1; }
+
+/* footer captions */
+.fg-garden-path .gdp-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-garden-path.is-step-0 .gdp-cap-0, .fg-garden-path.is-step-1 .gdp-cap-1,
+.fg-garden-path.is-step-2 .gdp-cap-2, .fg-garden-path.is-step-3 .gdp-cap-3,
+.fg-garden-path.is-step-4 .gdp-cap-4 { opacity: 1; }
+
+.fg-garden-path .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-garden-path .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-garden-path .fg-controls button:hover { border-color: var(--accent); }
+.fg-garden-path .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-garden-path * { transition: none !important; }
+}
+</style>
+
+<svg viewBox="0 0 720 330" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Step animation of an incremental parse of: The horse raced past the barn fell. Tokens stream in left to right. At first, horse is labeled subject and raced is labeled main verb — the comfortable parse. Then fell arrives, flagged red with a contradiction badge: a finite verb with no slot. Reanalysis follows: raced past the barn is re-bracketed as a reduced relative clause modifying horse, raced is demoted from main verb, fell becomes the main verb, and a green arc draws backward from fell to horse. A human reader backtracks; a causal model cannot revise earlier computations and must reinterpret at the later token instead.">
+  <text class="gdp-note" x="40" y="26">an incremental parser commits as it reads &#8212; and this sentence punishes the commitment</text>
+
+  <!-- token row -->
+  <rect class="gdp-tok" x="40" y="110" width="48" height="36" rx="6"/>
+  <text class="gdp-word" x="64" y="133">The</text>
+  <g class="gdp-horse">
+    <rect class="gdp-tok" x="96" y="110" width="66" height="36" rx="6"/>
+    <text class="gdp-word" x="129" y="133">horse</text>
+  </g>
+  <g class="gdp-raced">
+    <rect class="gdp-tok" x="170" y="110" width="66" height="36" rx="6"/>
+    <text class="gdp-word" x="203" y="133">raced</text>
+  </g>
+  <g class="gdp-t3">
+    <rect class="gdp-tok" x="244" y="110" width="56" height="36" rx="6"/>
+    <text class="gdp-word" x="272" y="133">past</text>
+    <rect class="gdp-tok" x="308" y="110" width="48" height="36" rx="6"/>
+    <text class="gdp-word" x="332" y="133">the</text>
+    <rect class="gdp-tok" x="364" y="110" width="60" height="36" rx="6"/>
+    <text class="gdp-word" x="394" y="133">barn</text>
+  </g>
+  <g class="gdp-t4 gdp-fell">
+    <rect class="gdp-tok" x="432" y="110" width="56" height="36" rx="6"/>
+    <text class="gdp-word" x="460" y="133">fell.</text>
+  </g>
+
+  <!-- first-pass labels -->
+  <text class="gdp-lab gdp-lab-subj" x="129" y="166">SUBJECT</text>
+  <text class="gdp-lab gdp-lab-mv" x="203" y="166">MAIN VERB</text>
+  <!-- reanalysis labels -->
+  <text class="gdp-lab gdp-lab-rr" x="203" y="166" dy="14" fill="#a78bfa">participle</text>
+  <text class="gdp-lab gdp-lab-mv2" x="460" y="166" fill="#34d399">MAIN VERB</text>
+
+  <!-- contradiction badge (step 2) -->
+  <g class="gdp-clash">
+    <text class="gdp-note" x="460" y="96" text-anchor="middle" fill="#f87171">a second finite verb &#8212; no slot for it</text>
+  </g>
+
+  <!-- reduced-relative bracket (step 3+) -->
+  <g class="gdp-rrbracket">
+    <path d="M 172 100 L 172 92 L 422 92 L 422 100"/>
+    <text class="gdp-note" x="297" y="82" text-anchor="middle">reduced relative: "(that was) raced past the barn"</text>
+  </g>
+
+  <!-- resolving arc: fell -> horse (step 3+) -->
+  <path class="gdp-arc" d="M 448 110 C 400 44, 200 44, 137 104" marker-end="url(#gdp-arrow)"/>
+  <g class="gdp-arclabel">
+    <text class="gdp-note" x="250" y="40" fill="#34d399">"fell" attends back to its real subject</text>
+  </g>
+
+  <defs>
+    <marker id="gdp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <!-- footer captions (fixed slot, no reflow) -->
+  <text class="gdp-note gdp-cap gdp-cap-0" x="40" y="230">Step 0 &#8212; "The horse raced": the parser happily takes "raced" as the main verb. Nothing is wrong yet.</text>
+  <text class="gdp-note gdp-cap gdp-cap-1" x="40" y="230">Step 1 &#8212; "past the barn" extends the comfortable reading: the horse raced somewhere. Still nothing wrong.</text>
+  <text class="gdp-note gdp-cap gdp-cap-2" x="40" y="230">Step 2 &#8212; "fell." arrives. A finite verb with no subject available &#8212; the committed parse has no place to put it.</text>
+  <text class="gdp-note gdp-cap gdp-cap-3" x="40" y="230">Step 3 &#8212; reanalysis: "raced past the barn" was a reduced relative all along. "raced" is demoted; "fell" is the main verb.</text>
+  <text class="gdp-note gdp-cap gdp-cap-4" x="40" y="230">Step 4 &#8212; a human backtracks and rereads. A causal model cannot revise earlier computations &#8212; the repair happens entirely at "fell", which must import the whole structure backward.</text>
+</svg>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button data-fg="play" aria-label="Play or pause">&#9654;</button>
+  <button data-fg="next" aria-label="Next step">&#8250;</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const TOTAL = 4, STEP_MS = 2200;
+  let step = 0, timer = null;
+
+  function apply() {
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
+    pause() { clearInterval(timer); timer = null; },
+  };
+
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  function sync() {
+    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  apply();
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
