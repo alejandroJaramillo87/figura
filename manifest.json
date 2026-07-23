@@ -166,5 +166,40 @@
     "title": "Subword fusion: the model never sees the word",
     "post": "what-language-leaves-out-lexical",
     "description": "Step timeline: unbelievable splits into three meaningless fragments, binds to its neighbors, and re-assembles as one concept across three positions."
+  },
+  {
+    "id": "polysemy-web",
+    "path": "diagrams/what-language-leaves-out/polysemy-web.html",
+    "title": "Polysemy web: the related senses of \"paper\"",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Hover the sense hub: material, newspaper, article, exam radiating from a shared conceptual core — relatives, not homonymy's colliding strangers."
+  },
+  {
+    "id": "homograph-voicing",
+    "path": "diagrams/what-language-leaves-out/homograph-voicing.html",
+    "title": "Homograph voicing: the audio cue text never carries",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Toggle \"lead\" between /lɛd/ metal and /liːd/ news-lead contexts; the listener lane hears the sense, the model lane sees four letters."
+  },
+  {
+    "id": "idiom-binding",
+    "path": "diagrams/what-language-leaves-out/idiom-binding.html",
+    "title": "Idiom binding: when the unit of meaning is bigger than the token",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Toggle \"kicked the bucket\" between the compositional decoy and the idiomatic reading, where three tokens fuse into one unit meaning died."
+  },
+  {
+    "id": "entity-flip",
+    "path": "diagrams/what-language-leaves-out/entity-flip.html",
+    "title": "Entity flip: Turkey the country, turkey the dinner",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Sentence-initial \"Turkey was dry.\" with a context toggle flipping entity-hood — capitalization is forced at sentence start, so it carries no signal."
+  },
+  {
+    "id": "domain-tint",
+    "path": "diagrams/what-language-leaves-out/domain-tint.html",
+    "title": "Domain tint: the document decides what \"positive\" means",
+    "post": "what-language-leaves-out-lexical",
+    "description": "The same sentence inside an oncology note and a product review; diffuse arcs show the register of the whole document pinning the sense."
   }
 ]
