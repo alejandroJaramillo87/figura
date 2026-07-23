@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sense pinning: context chooses what "bank" means</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Sense pinning</h1>
+<p>With no context, "bank" holds two senses at once. Add one preceding sentence and the sense pins — the arc shows which distant word did the pinning.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-sense-pinning is-none">
+<style>
+.fg-sense-pinning {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-sense-pinning svg { display: block; width: 100%; height: auto; }
+.fg-sense-pinning text { font-family: inherit; }
+
+.fg-sense-pinning .snp-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-sense-pinning .snp-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-sense-pinning .snp-note { fill: var(--muted); font-size: 11px; }
+
+/* the ambiguous token */
+.fg-sense-pinning .snp-bank .snp-tok { stroke: var(--accent); }
+.fg-sense-pinning .snp-bank .snp-word { fill: var(--accent); font-weight: 600; }
+
+/* context line: one of two sentences, or dimmed placeholder */
+.fg-sense-pinning .snp-ctx { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-sense-pinning .snp-ctx-none { opacity: 1; }
+.fg-sense-pinning.is-river .snp-ctx-river { opacity: 1; }
+.fg-sense-pinning.is-money .snp-ctx-money { opacity: 1; }
+.fg-sense-pinning.is-river .snp-ctx-none,
+.fg-sense-pinning.is-money .snp-ctx-none { opacity: 0; }
+
+/* the disambiguating word lights up */
+.fg-sense-pinning.is-river .snp-cue-river .snp-tok,
+.fg-sense-pinning.is-money .snp-cue-money .snp-tok { stroke: var(--ok); fill: var(--panel-hover); }
+
+/* sense cards: both half-lit when no context; one pins per state */
+.fg-sense-pinning .snp-sense rect {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.7s, stroke 0.7s, opacity 0.7s;
+}
+.fg-sense-pinning .snp-sense text { transition: opacity 0.7s; }
+.fg-sense-pinning.is-none .snp-sense { opacity: 0.65; }
+.fg-sense-pinning .snp-sense { transition: opacity 0.7s; }
+.fg-sense-pinning.is-river .snp-sense-river rect,
+.fg-sense-pinning.is-money .snp-sense-money rect { stroke: var(--ok); fill: #0e4429; }
+.fg-sense-pinning.is-river .snp-sense-money,
+.fg-sense-pinning.is-money .snp-sense-river { opacity: 0.25; }
+
+/* dashed lines bank -> both senses (ambiguity); solid to the pinned one */
+.fg-sense-pinning .snp-link {
+  fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 5 4;
+  transition: opacity 0.7s, stroke 0.7s;
+}
+.fg-sense-pinning.is-river .snp-link-river,
+.fg-sense-pinning.is-money .snp-link-money { stroke: var(--ok); stroke-dasharray: none; }
+.fg-sense-pinning.is-river .snp-link-money,
+.fg-sense-pinning.is-money .snp-link-river { opacity: 0.2; }
+
+/* information-need arc from bank back into context */
+.fg-sense-pinning .snp-arc {
+  fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fg-sense-pinning.is-river .snp-arc-river { opacity: 1; }
+.fg-sense-pinning.is-money .snp-arc-money { opacity: 1; }
+
+.fg-sense-pinning .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.fg-sense-pinning .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-sense-pinning .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-sense-pinning .fg-controls button[aria-pressed="true"] { border-color: var(--ok); color: var(--ok); }
+
+.fg-sense-pinning .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longest state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-sense-pinning .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-sense-pinning .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-sense-pinning .snp-tok, .fg-sense-pinning .snp-word, .fg-sense-pinning .snp-ctx,
+  .fg-sense-pinning .snp-sense, .fg-sense-pinning .snp-sense rect,
+  .fg-sense-pinning .snp-link, .fg-sense-pinning .snp-arc { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The sentence: We finally reached the bank. Below the word bank sit two sense cards, riverside and financial institution, both half-lit when no context is given. Buttons add one preceding sentence, either about paddling or about a loan, and the matching sense pins while an arc connects bank back to the word that pinned it.">
+  <defs>
+    <marker id="snp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <text class="snp-note" x="40" y="26">arc = information the sense of "bank" needs &#8212; a fact about the language, not about any attention head</text>
+
+  <!-- context line (one of three states) -->
+  <g class="snp-ctx snp-ctx-none">
+    <text class="snp-note" x="40" y="70" font-style="italic">(no preceding context)</text>
+  </g>
+  <g class="snp-ctx snp-ctx-river">
+    <rect class="snp-tok" x="40" y="48" width="130" height="34" rx="6"/>
+    <text class="snp-word" x="105" y="70">The current</text>
+    <rect class="snp-tok" x="178" y="48" width="150" height="34" rx="6"/>
+    <text class="snp-word" x="253" y="70">was too strong</text>
+    <g class="snp-cue-river">
+      <rect class="snp-tok" x="336" y="48" width="150" height="34" rx="6"/>
+      <text class="snp-word" x="411" y="70">to keep paddling.</text>
+    </g>
+  </g>
+  <g class="snp-ctx snp-ctx-money">
+    <rect class="snp-tok" x="40" y="48" width="150" height="34" rx="6"/>
+    <text class="snp-word" x="115" y="70">The loan officer</text>
+    <g class="snp-cue-money">
+      <rect class="snp-tok" x="198" y="48" width="120" height="34" rx="6"/>
+      <text class="snp-word" x="258" y="70">approved us</text>
+    </g>
+    <rect class="snp-tok" x="326" y="48" width="120" height="34" rx="6"/>
+    <text class="snp-word" x="386" y="70">at last.</text>
+  </g>
+
+  <!-- target sentence -->
+  <rect class="snp-tok" x="40" y="118" width="46" height="34" rx="6"/>
+  <text class="snp-word" x="63" y="140">We</text>
+  <rect class="snp-tok" x="94" y="118" width="70" height="34" rx="6"/>
+  <text class="snp-word" x="129" y="140">finally</text>
+  <rect class="snp-tok" x="172" y="118" width="86" height="34" rx="6"/>
+  <text class="snp-word" x="215" y="140">reached</text>
+  <rect class="snp-tok" x="266" y="118" width="46" height="34" rx="6"/>
+  <text class="snp-word" x="289" y="140">the</text>
+  <g class="snp-bank">
+    <rect class="snp-tok" x="320" y="118" width="66" height="34" rx="6"/>
+    <text class="snp-word" x="353" y="140">bank.</text>
+  </g>
+
+  <!-- information-need arcs: bank back to the disambiguating word -->
+  <path class="snp-arc snp-arc-river" d="M 360 118 C 380 96, 400 90, 411 86" marker-end="url(#snp-arrow)"/>
+  <path class="snp-arc snp-arc-money" d="M 348 118 C 330 98, 290 92, 262 86" marker-end="url(#snp-arrow)"/>
+
+  <!-- sense cards -->
+  <g class="snp-sense snp-sense-river">
+    <rect x="120" y="210" width="210" height="56" rx="8"/>
+    <text class="snp-word" x="225" y="234" font-weight="600">riverside</text>
+    <text class="snp-note" x="225" y="252" text-anchor="middle">sloping ground beside water</text>
+  </g>
+  <g class="snp-sense snp-sense-money">
+    <rect x="390" y="210" width="210" height="56" rx="8"/>
+    <text class="snp-word" x="495" y="234" font-weight="600">financial institution</text>
+    <text class="snp-note" x="495" y="252" text-anchor="middle">place that holds deposits</text>
+  </g>
+  <path class="snp-link snp-link-river" d="M 340 152 C 310 178, 270 192, 240 210"/>
+  <path class="snp-link snp-link-money" d="M 366 152 C 400 178, 445 192, 478 210"/>
+</svg>
+
+<div class="fg-controls" role="group" aria-label="Choose the preceding context">
+  <button type="button" data-fg="ctx" data-state="none" aria-pressed="true" aria-label="No preceding context">No context</button>
+  <button type="button" data-fg="ctx" data-state="river" aria-pressed="false" aria-label="Preceding sentence about paddling">&#8220;&#8230;too strong to keep paddling.&#8221;</button>
+  <button type="button" data-fg="ctx" data-state="money" aria-pressed="false" aria-label="Preceding sentence about a loan officer">&#8220;The loan officer approved us&#8230;&#8221;</button>
+</div>
+
+<div class="fg-caption" data-fg="caption">No context &#8212; the five letters of <code>bank</code> genuinely admit both senses. Nothing local resolves it; the token underdetermines its own meaning until context arrives.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const CAP = {
+    none: 'No context — the five letters of <code>bank</code> genuinely admit both senses. Nothing local resolves it; the token underdetermines its own meaning until context arrives.',
+    river: '<strong>riverside</strong> — one word about <strong>paddling</strong>, a full sentence away, pinned the sense. The information was never in "bank"; it was imported.',
+    money: '<strong>financial institution</strong> — swap the context and the same five letters mean something else. The disambiguating word (<strong>approved</strong>, a loan-office verb) sits in the previous sentence.'
+  };
+  const buttons = root.querySelectorAll('[data-fg="ctx"]');
+  buttons.forEach((b) => b.addEventListener('click', () => {
+    const state = b.dataset.state;
+    root.classList.remove('is-none', 'is-river', 'is-money');
+    root.classList.add('is-' + state);
+    buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    caption.innerHTML = CAP[state];
+  }));
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

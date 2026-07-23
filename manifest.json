@@ -145,5 +145,26 @@
     "title": "Winograd toggle: one verb re-points a pronoun",
     "post": "what-language-leaves-out-intro",
     "description": "Switch a single verb and watch the pronoun's information-need arc move between two antecedents."
+  },
+  {
+    "id": "sense-pinning",
+    "path": "diagrams/what-language-leaves-out/sense-pinning.html",
+    "title": "Sense pinning: context chooses what \"bank\" means",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Toggle the preceding sentence and watch one distant word pin the sense of \"bank\", with an information-need arc to the disambiguating cue."
+  },
+  {
+    "id": "pos-flip",
+    "path": "diagrams/what-language-leaves-out/pos-flip.html",
+    "title": "POS flip: fruit flies like a banana",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Switch between the two grammars of the same five tokens: flies as noun or verb, like as verb or preposition, brackets re-drawing per reading."
+  },
+  {
+    "id": "subword-fusion",
+    "path": "diagrams/what-language-leaves-out/subword-fusion.html",
+    "title": "Subword fusion: the model never sees the word",
+    "post": "what-language-leaves-out-lexical",
+    "description": "Step timeline: unbelievable splits into three meaningless fragments, binds to its neighbors, and re-assembles as one concept across three positions."
   }
 ]
