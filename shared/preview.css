@@ -1,0 +1,37 @@
+/*
+ * preview.css — page chrome for viewing diagrams standalone or in the
+ * gallery. NEVER inlined into the blog: everything the blog needs lives
+ * inside the diagram's own embed fragment.
+ */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background: #f5f5f5;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+body > h1 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+body > p {
+  max-width: 640px;
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Preview at roughly blog post column width */
+.fg-diagram { width: 100%; max-width: 720px; }
