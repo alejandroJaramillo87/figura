@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inference network topology and hardening</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Inference network topology and hardening</h1>
+<p>Hover a container or boundary to inspect its hardening. Only 127.0.0.1 port bindings cross into the host; the ai-network bridge carries inter-service traffic.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-inference-topology">
+<style>
+.fg-inference-topology {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-inference-topology svg { display: block; width: 100%; height: auto; }
+.fg-inference-topology text { font-family: inherit; }
+
+.fg-inference-topology .ift-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-inference-topology .ift-group:hover .ift-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-inference-topology .ift-zone {
+  fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
+  transition: stroke 0.3s; cursor: pointer;
+}
+.fg-inference-topology .ift-group:hover .ift-zone { stroke: var(--accent); }
+.fg-inference-topology .ift-wall {
+  stroke: var(--hot); stroke-width: 3; fill: none;
+}
+.fg-inference-topology .ift-title { fill: var(--text); font-size: 13.5px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-inference-topology .ift-sub   { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-inference-topology .ift-label { fill: var(--muted); font-size: 12px; }
+.fg-inference-topology .ift-port  { fill: var(--ok); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-inference-topology .ift-deny  { fill: var(--hot); font-size: 11px; font-weight: 600; text-anchor: middle; }
+
+.fg-inference-topology .ift-flow {
+  stroke: var(--line); stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; animation: fg-ift-flow 1.4s linear infinite;
+}
+@keyframes fg-ift-flow { to { stroke-dashoffset: -18; } }
+.fg-inference-topology .ift-flow-ok { stroke: var(--ok); }
+
+.fg-inference-topology .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.4em;
+  transition: color 0.3s;
+}
+.fg-inference-topology .fg-caption.is-active { color: var(--text); }
+.fg-inference-topology .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-inference-topology .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-inference-topology .ift-flow { animation: none; }
+  .fg-inference-topology .ift-box, .fg-inference-topology .ift-zone { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 480" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Inference network topology: the outside network is walled off; four services inside the host bind only to 127.0.0.1 — Open WebUI on port 3000, llama-cpu on 8001, llama-gpu on 8002, and vllm-gpu on 8003 — and talk to each other over the isolated ai-network Docker bridge. Models mount read-only from /mnt/ai-data.">
+  <defs>
+    <marker id="ift-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="ift-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <!-- the outside world, walled off -->
+  <text class="ift-label" x="20" y="30">rest of the network / internet</text>
+  <g class="ift-group" data-title="The wall: 127.0.0.1 binding" data-info="Every port mapping is prefixed 127.0.0.1: — Docker publishes the ports on the loopback interface only. A machine on the LAN scanning this host finds nothing listening. No firewall rule to forget; the binding itself is the boundary.">
+    <line class="ift-wall" x1="20" y1="44" x2="700" y2="44"/>
+    <text class="ift-deny" x="360" y="66">inbound blocked — every port binds to 127.0.0.1 only</text>
+  </g>
+
+  <!-- host zone -->
+  <g class="ift-group" data-title="Host (localhost)" data-info="Clients on the machine itself — a browser, curl, an IDE — reach the services through loopback. This is the only inbound path that exists.">
+    <rect class="ift-zone" x="20" y="80" width="680" height="76" rx="10"/>
+  </g>
+  <text class="ift-label" x="34" y="102">host · localhost clients (browser, curl)</text>
+  <g class="ift-group" data-title="Open WebUI" data-info="The web interface, reached at 127.0.0.1:3000. It talks to the inference servers by container name over the internal bridge (http://llama-gpu:8002/v1) — no API keys needed because the network itself is the boundary.">
+    <rect class="ift-box" x="280" y="108" width="160" height="40" rx="6"/>
+    <text class="ift-title" x="360" y="128">Open WebUI</text>
+    <text class="ift-sub" x="360" y="142">127.0.0.1:3000</text>
+  </g>
+
+  <!-- port bindings crossing into the bridge -->
+  <path class="ift-flow ift-flow-ok" d="M 150 156 L 150 196" marker-end="url(#ift-arrow-ok)"/>
+  <path class="ift-flow ift-flow-ok" d="M 360 156 L 360 196" marker-end="url(#ift-arrow-ok)"/>
+  <path class="ift-flow ift-flow-ok" d="M 570 156 L 570 196" marker-end="url(#ift-arrow-ok)"/>
+  <text class="ift-port" x="150" y="182">:8001</text>
+  <text class="ift-port" x="360" y="182">:8002</text>
+  <text class="ift-port" x="570" y="182">:8003</text>
+
+  <!-- ai-network bridge zone -->
+  <g class="ift-group" data-title="ai-network bridge" data-info="A custom Docker bridge with its own subnet (172.20.0.0/16). Containers resolve each other by name inside it; nothing outside the host can address it. internal: false keeps outbound open for image and model pulls — flip to internal: true to cut egress entirely.">
+    <rect class="ift-zone" x="20" y="196" width="680" height="176" rx="10"/>
+  </g>
+  <text class="ift-label" x="34" y="220">ai-network · bridge 172.20.0.0/16 · isolated from LAN</text>
+
+  <g class="ift-group" data-title="llama-cpu" data-info="CPU inference server. Hardening: cap_drop ALL, no-new-privileges, read-only rootfs, non-root appuser, pinned to cores 0-15 with a hard 96GB memory limit so a runaway model cannot starve the host.">
+    <rect class="ift-box" x="60" y="240" width="180" height="72" rx="8"/>
+    <text class="ift-title" x="150" y="266">llama-cpu</text>
+    <text class="ift-sub" x="150" y="284">cpuset 0-15 · 96GB limit</text>
+    <text class="ift-sub" x="150" y="300">read_only · non-root</text>
+  </g>
+  <g class="ift-group" data-title="llama-gpu" data-info="GPU llama.cpp server. Same hardening floor as llama-cpu, plus an explicit single-GPU reservation through the NVIDIA runtime (NVIDIA_VISIBLE_DEVICES=0) — only containers that declare the reservation see the card.">
+    <rect class="ift-box" x="270" y="240" width="180" height="72" rx="8"/>
+    <text class="ift-title" x="360" y="266">llama-gpu</text>
+    <text class="ift-sub" x="360" y="284">1 GPU reserved</text>
+    <text class="ift-sub" x="360" y="300">read_only · non-root</text>
+  </g>
+  <g class="ift-group" data-title="vllm-gpu" data-info="vLLM server for high-throughput serving. Adds tmpfs mounts (/tmp, 4GB cap) for the CUDA JIT caches that a read-only rootfs would otherwise block — writable space is granted by the mount, never by opening the rootfs.">
+    <rect class="ift-box" x="480" y="240" width="180" height="72" rx="8"/>
+    <text class="ift-title" x="570" y="266">vllm-gpu</text>
+    <text class="ift-sub" x="570" y="284">tmpfs /tmp 4GB</text>
+    <text class="ift-sub" x="570" y="300">read_only · non-root</text>
+  </g>
+
+  <!-- model mount -->
+  <path class="ift-flow" d="M 150 400 L 150 316" marker-end="url(#ift-arrow)"/>
+  <path class="ift-flow" d="M 360 400 L 360 316" marker-end="url(#ift-arrow)"/>
+  <path class="ift-flow" d="M 570 400 L 570 316" marker-end="url(#ift-arrow)"/>
+
+  <g class="ift-group" data-title="Model storage, read-only" data-info="/mnt/ai-data/models mounts into every container as :ro. The multi-gigabyte weights are the untrusted input here — a read-only mount means a compromised server can read them but never modify or replant them, and log directories are the only writable bind mounts.">
+    <rect class="ift-box" x="60" y="400" width="600" height="52" rx="8"/>
+    <text class="ift-title" x="360" y="422">/mnt/ai-data/models</text>
+    <text class="ift-sub" x="360" y="438">mounted :ro into every container · logs are the only writable mounts</text>
+  </g>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over a container, boundary, or mount to see the hardening it carries.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over a container, boundary, or mount to see the hardening it carries.';
+  root.querySelectorAll('.ift-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = g.getAttribute('data-title');
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

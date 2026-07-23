@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The per-job training sandbox lifecycle</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>The per-job training sandbox lifecycle</h1>
+<p>Step through one training job: compose run creates the container, mounts attach, the job runs against the GPU, checkpoints land on the data root, and the container is removed.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-training-job-lifecycle">
+<style>
+.fg-training-job-lifecycle {
+  --bg: #0f172a; --panel: #1e293b; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-training-job-lifecycle svg { display: block; width: 100%; height: auto; }
+.fg-training-job-lifecycle text { font-family: inherit; }
+
+.fg-training-job-lifecycle .tjl-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.45s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.45s, opacity 0.45s;
+}
+.fg-training-job-lifecycle .tjl-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
+.fg-training-job-lifecycle .tjl-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; opacity: 0.75; transition: fill 0.45s, opacity 0.45s; }
+.fg-training-job-lifecycle .tjl-label { fill: var(--muted); font-size: 12px; }
+.fg-training-job-lifecycle .tjl-mount {
+  stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.35;
+  transition: stroke 0.45s, opacity 0.45s;
+}
+.fg-training-job-lifecycle .tjl-mount-label { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); opacity: 0.5; transition: fill 0.45s, opacity 0.45s; }
+
+/* the container itself: appears at step 1, hardens at 2, active 3-4, gone at 5 */
+.fg-training-job-lifecycle .tjl-container { opacity: 0.25; transition: opacity 0.45s; }
+.fg-training-job-lifecycle.is-step-1 .tjl-container, .fg-training-job-lifecycle.is-step-2 .tjl-container,
+.fg-training-job-lifecycle.is-step-3 .tjl-container, .fg-training-job-lifecycle.is-step-4 .tjl-container
+  { opacity: 1; }
+.fg-training-job-lifecycle.is-step-5 .tjl-container { opacity: 0.12; }
+
+.fg-training-job-lifecycle.is-step-1 .tjl-s1 .tjl-box { fill: #0c3550; stroke: var(--accent); }
+.fg-training-job-lifecycle.is-step-2 .tjl-s2 .tjl-box { fill: #0c3550; stroke: var(--accent); }
+.fg-training-job-lifecycle.is-step-3 .tjl-s3 .tjl-box { fill: #0c3550; stroke: var(--accent); }
+.fg-training-job-lifecycle.is-step-4 .tjl-s4 .tjl-box { fill: #0e4429; stroke: var(--ok); }
+.fg-training-job-lifecycle.is-step-1 .tjl-s1 .tjl-title, .fg-training-job-lifecycle.is-step-2 .tjl-s2 .tjl-title,
+.fg-training-job-lifecycle.is-step-3 .tjl-s3 .tjl-title, .fg-training-job-lifecycle.is-step-4 .tjl-s4 .tjl-title
+  { fill: var(--text); }
+
+/* mounts light up at step 2+ */
+.fg-training-job-lifecycle.is-step-2 .tjl-mount, .fg-training-job-lifecycle.is-step-3 .tjl-mount,
+.fg-training-job-lifecycle.is-step-4 .tjl-mount { opacity: 1; stroke: var(--accent); }
+.fg-training-job-lifecycle.is-step-2 .tjl-mount-label, .fg-training-job-lifecycle.is-step-3 .tjl-mount-label,
+.fg-training-job-lifecycle.is-step-4 .tjl-mount-label { opacity: 1; fill: var(--text); }
+
+/* checkpoint write path lights at step 4 */
+.fg-training-job-lifecycle .tjl-ckpt { stroke: var(--line); stroke-width: 2.5; fill: none; opacity: 0.3; transition: stroke 0.45s, opacity 0.45s; }
+.fg-training-job-lifecycle.is-step-4 .tjl-ckpt { stroke: var(--ok); opacity: 1; stroke-dasharray: 5 4; animation: fg-tjl-flow 1.2s linear infinite; }
+@keyframes fg-tjl-flow { to { stroke-dashoffset: -18; } }
+
+.fg-training-job-lifecycle .fg-caption {
+  margin-top: 10px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  color: var(--muted); font-size: 13px; min-height: 4.8em;
+  transition: color 0.3s;
+}
+.fg-training-job-lifecycle .fg-caption.is-active { color: var(--text); }
+.fg-training-job-lifecycle .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-training-job-lifecycle .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+.fg-training-job-lifecycle .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-training-job-lifecycle .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-training-job-lifecycle .fg-controls button:hover { border-color: var(--accent); }
+.fg-training-job-lifecycle .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-training-job-lifecycle * { transition: none !important; animation: none !important; }
+}
+</style>
+
+<svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Lifecycle of one training job: docker compose run creates an ephemeral hardened container; read-only model and recipe mounts plus one writable training root attach; the job trains against the reserved GPU; checkpoints stream to the training root; the container is removed while the checkpoints persist.">
+  <defs>
+    <marker id="tjl-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="tjl-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <!-- invocation -->
+  <g class="tjl-stage tjl-s1">
+    <rect class="tjl-box" x="20" y="24" width="300" height="56" rx="8"/>
+    <text class="tjl-title" x="170" y="48">docker compose run --rm training</text>
+    <text class="tjl-sub" x="170" y="66">separate compose file · make train-*</text>
+  </g>
+  <path class="tjl-mount" d="M 170 80 L 170 116" marker-end="url(#tjl-arrow)"/>
+
+  <!-- the ephemeral container -->
+  <g class="tjl-container">
+    <g class="tjl-stage tjl-s2">
+      <rect class="tjl-box" x="20" y="120" width="440" height="140" rx="10"/>
+      <text class="tjl-title" x="240" y="146">training container (ephemeral)</text>
+      <text class="tjl-sub" x="240" y="164">cap_drop ALL · no-new-privileges · read_only · non-root</text>
+      <text class="tjl-sub" x="240" y="180">no port · no healthcheck · no restart policy</text>
+    </g>
+    <g class="tjl-stage tjl-s3">
+      <rect class="tjl-box" x="48" y="192" width="384" height="52" rx="8"/>
+      <text class="tjl-title" x="240" y="214">job: fine-tune / pretrain / interp recipe</text>
+      <text class="tjl-sub" x="240" y="232">tmpfs /tmp (exec) for CUDA JIT · shm 16g for dataloaders</text>
+    </g>
+  </g>
+
+  <!-- GPU -->
+  <g class="tjl-stage tjl-s3b">
+    <rect class="tjl-box" x="520" y="140" width="180" height="56" rx="8"/>
+    <text class="tjl-title" x="610" y="164">RTX 5090</text>
+    <text class="tjl-sub" x="610" y="182">1 GPU reserved · sole consumer</text>
+  </g>
+  <path class="tjl-mount" d="M 460 176 L 516 172" marker-end="url(#tjl-arrow)"/>
+
+  <!-- mounts -->
+  <g class="tjl-stage tjl-s2b">
+    <rect class="tjl-box" x="20" y="296" width="210" height="56" rx="8"/>
+    <text class="tjl-title" x="125" y="318">/mnt/ai-data/models</text>
+    <text class="tjl-sub" x="125" y="336">:ro — weights in</text>
+  </g>
+  <g class="tjl-stage tjl-s4">
+    <rect class="tjl-box" x="255" y="296" width="230" height="56" rx="8"/>
+    <text class="tjl-title" x="370" y="318">/mnt/ai-data/training</text>
+    <text class="tjl-sub" x="370" y="336">rw — checkpoints out</text>
+  </g>
+  <g class="tjl-stage tjl-s2c">
+    <rect class="tjl-box" x="510" y="296" width="190" height="56" rx="8"/>
+    <text class="tjl-title" x="605" y="318">./scripts (recipes)</text>
+    <text class="tjl-sub" x="605" y="336">:ro — config in</text>
+  </g>
+
+  <path class="tjl-mount" d="M 125 292 L 125 264"/>
+  <text class="tjl-mount-label" x="86" y="282">ro</text>
+  <path class="tjl-ckpt" d="M 300 260 L 340 292" marker-end="url(#tjl-arrow-ok)"/>
+  <text class="tjl-mount-label" x="332" y="278">rw</text>
+  <path class="tjl-mount" d="M 605 292 L 440 250"/>
+  <text class="tjl-mount-label" x="520" y="278">ro</text>
+
+  <text class="tjl-label" x="20" y="388">the container is disposable; only the training root persists</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Press play or step through one training job.</div>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const TOTAL = 5, STEP_MS = 2800;
+  let step = 0, timer = null;
+
+  const CAPTIONS = [
+    'Press play or step through one training job.',
+    ['Invoke', 'docker compose run --rm training <command> — a fresh container per job, from a separate compose file that make up never touches. There is no daemon to keep patched and no port to expose.'],
+    ['Attach mounts', 'The hardened container comes up read-only and non-root, with cap_drop ALL. Models and recipes mount read-only; exactly one path — the training root — mounts read-write.'],
+    ['Run the job', 'The recipe trains against the reserved GPU. tmpfs /tmp with the exec flag carries the CUDA and Triton JIT caches that a read-only rootfs would block; 16GB shm feeds the dataloader workers.'],
+    ['Write checkpoints', 'Checkpoints, shards, and run outputs stream to /mnt/ai-data/training — the single writable surface. Nothing else the job touches can persist.'],
+    ['Remove', 'The job exits and --rm deletes the container. The checkpoints on the data root are the only trace the job ever ran. The next job starts from the same clean image.'],
+  ];
+
+  function apply() {
+    for (let i = 1; i <= TOTAL; i++) root.classList.toggle('is-step-' + i, step === i);
+    const c = CAPTIONS[step];
+    caption.innerHTML = '';
+    if (Array.isArray(c)) {
+      const strong = document.createElement('strong');
+      strong.textContent = step + '. ' + c[0];
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + c[1]));
+      caption.classList.add('is-active');
+    } else {
+      caption.textContent = c;
+      caption.classList.remove('is-active');
+    }
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
+    pause() { clearInterval(timer); timer = null; },
+  };
+
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  function sync() {
+    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  apply();
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

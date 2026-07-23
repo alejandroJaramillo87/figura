@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three sandboxes, two questions</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Three sandboxes, two questions</h1>
+<p>Hover any cell to inspect how each workload answers "what must it write?" and "where must it talk?" — and what that answer forces the sandbox to look like.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-comparison-grid">
+<style>
+.fg-comparison-grid {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-comparison-grid svg { display: block; width: 100%; height: auto; }
+.fg-comparison-grid text { font-family: inherit; }
+
+.fg-comparison-grid .scg-cell {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-comparison-grid .scg-group:hover .scg-cell { fill: var(--panel-hover); }
+.fg-comparison-grid .scg-group.scg-inf:hover .scg-cell { stroke: var(--accent); }
+.fg-comparison-grid .scg-group.scg-trn:hover .scg-cell { stroke: var(--warn); }
+.fg-comparison-grid .scg-group.scg-agt:hover .scg-cell { stroke: var(--violet); }
+
+.fg-comparison-grid .scg-head {
+  fill: var(--panel); stroke-width: 2;
+}
+.fg-comparison-grid .scg-head-inf { stroke: var(--accent); }
+.fg-comparison-grid .scg-head-trn { stroke: var(--warn); }
+.fg-comparison-grid .scg-head-agt { stroke: var(--violet); }
+
+.fg-comparison-grid .scg-htitle { fill: var(--text); font-size: 15px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-comparison-grid .scg-hsub   { fill: var(--muted); font-size: 11px; text-anchor: middle; pointer-events: none; }
+.fg-comparison-grid .scg-val    { fill: var(--text); font-size: 12.5px; text-anchor: middle; pointer-events: none; }
+.fg-comparison-grid .scg-vsub   { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-comparison-grid .scg-row    { fill: var(--muted); font-size: 12px; font-weight: 600; }
+.fg-comparison-grid .scg-q      { fill: var(--accent); font-size: 11px; font-style: italic; }
+
+.fg-comparison-grid .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 5.4em;
+  transition: color 0.3s;
+}
+.fg-comparison-grid .fg-caption.is-active { color: var(--text); }
+.fg-comparison-grid .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-comparison-grid .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-comparison-grid .scg-cell { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 460" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Comparison grid of three sandboxes. Inference writes only logs, binds inbound to localhost with open outbound, uses the GPU, and runs as a daemon. Training writes checkpoints, needs no network at run time, uses the GPU, and runs per job. Agents write a git worktree, get outbound access only through an egress allowlist, use no GPU, and run per session with one scoped secret.">
+
+  <!-- column headers -->
+  <g class="scg-group scg-inf" data-fg="head" data-title="Inference" data-info="Three llama.cpp and vLLM servers: fixed-function appliances that load a model and serve an API. The most constrained workload — it needs to change almost nothing, so almost everything can be locked.">
+    <rect class="scg-head scg-head-inf" x="180" y="16" width="168" height="56" rx="8"/>
+    <text class="scg-htitle" x="264" y="40">Inference</text>
+    <text class="scg-hsub" x="264" y="58">llama.cpp · vLLM servers</text>
+  </g>
+  <g class="scg-group scg-trn" data-fg="head" data-title="Training" data-info="The fine-tuning and pretraining container — interp recipes ride the same image. A batch job runner, not a server: it exists to transform data into checkpoints and exit.">
+    <rect class="scg-head scg-head-trn" x="360" y="16" width="168" height="56" rx="8"/>
+    <text class="scg-htitle" x="444" y="40">Training</text>
+    <text class="scg-hsub" x="444" y="58">fine-tuning · interp jobs</text>
+  </g>
+  <g class="scg-group scg-agt" data-fg="head" data-title="Agents" data-info="Coding agents (Claude Code, OpenCode) running autonomously. The hardest case: the workload is a general-purpose mutator that must edit code and talk to APIs — so the sandbox constrains where, not whether.">
+    <rect class="scg-head scg-head-agt" x="540" y="16" width="168" height="56" rx="8"/>
+    <text class="scg-htitle" x="624" y="40">Agents</text>
+    <text class="scg-hsub" x="624" y="58">Claude Code · OpenCode</text>
+  </g>
+
+  <!-- row: writes -->
+  <text class="scg-row" x="16" y="106">What must</text>
+  <text class="scg-row" x="16" y="122">it write?</text>
+  <g class="scg-group scg-inf" data-title="Inference: writes" data-info="Read-only rootfs, read-only model mount. The only writable path is a bind-mounted log directory. A compromised server has nowhere to persist.">
+    <rect class="scg-cell" x="180" y="84" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="264" y="110">logs only</text>
+    <text class="scg-vsub" x="264" y="128">models mounted :ro</text>
+  </g>
+  <g class="scg-group scg-trn" data-title="Training: writes" data-info="Checkpoints, shards, and run outputs land under one writable training root. Models stay read-only; the rootfs stays read-only; a tmpfs /tmp carries the JIT caches.">
+    <rect class="scg-cell" x="360" y="84" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="444" y="110">checkpoints</text>
+    <text class="scg-vsub" x="444" y="128">one writable data root</text>
+  </g>
+  <g class="scg-group scg-agt" data-title="Agents: writes" data-info="A git worktree, mounted read-write — never the real repo root, never $HOME. The agent's whole purpose is to edit code, so damage is confined to something git can diff and discard.">
+    <rect class="scg-cell" x="540" y="84" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="624" y="110">git worktree</text>
+    <text class="scg-vsub" x="624" y="128">recoverable via git</text>
+  </g>
+
+  <!-- row: network -->
+  <text class="scg-row" x="16" y="178">Where must</text>
+  <text class="scg-row" x="16" y="194">it talk?</text>
+  <g class="scg-group scg-inf" data-title="Inference: network" data-info="Inbound is the risk: every port binds to 127.0.0.1 only, so nothing off the machine can reach the servers. Outbound stays open on the bridge network for image and model pulls.">
+    <rect class="scg-cell" x="180" y="156" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="264" y="182">inbound: localhost</text>
+    <text class="scg-vsub" x="264" y="200">127.0.0.1 binding</text>
+  </g>
+  <g class="scg-group scg-trn" data-title="Training: network" data-info="A running job needs no network at all — data and models are already on disk. The separate compose file means the training service is never started by make up.">
+    <rect class="scg-cell" x="360" y="156" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="444" y="182">none needed</text>
+    <text class="scg-vsub" x="444" y="200">data already local</text>
+  </g>
+  <g class="scg-group scg-agt" data-title="Agents: network" data-info="Outbound is the risk: exfiltration. The agent's network is internal: true — no route to the internet except through a Squid proxy that allows a short list of domains and denies everything else.">
+    <rect class="scg-cell" x="540" y="156" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="624" y="182">egress allowlist</text>
+    <text class="scg-vsub" x="624" y="200">deny-by-default proxy</text>
+  </g>
+
+  <!-- row: GPU -->
+  <text class="scg-row" x="16" y="258">GPU?</text>
+  <g class="scg-group scg-inf" data-title="Inference: GPU" data-info="Two of the three servers reserve the RTX 5090 through the NVIDIA container runtime; the CPU server gets pinned cores (0-15) and a hard 96GB memory limit instead.">
+    <rect class="scg-cell" x="180" y="228" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="264" y="254">yes</text>
+    <text class="scg-vsub" x="264" y="272">reserved via runtime</text>
+  </g>
+  <g class="scg-group scg-trn" data-title="Training: GPU" data-info="Yes — one GPU reservation, and the one-GPU-consumer rule applies: stop the inference stack before a training job, because two GPU workloads collide on VRAM.">
+    <rect class="scg-cell" x="360" y="228" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="444" y="254">yes</text>
+    <text class="scg-vsub" x="444" y="272">one consumer at a time</text>
+  </g>
+  <g class="scg-group scg-agt" data-title="Agents: GPU" data-info="No. The NVIDIA container runtime widens the escape surface, and an agent does not need silicon — a benchmark task drives the existing GPU services over the network instead.">
+    <rect class="scg-cell" x="540" y="228" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="624" y="254">no</text>
+    <text class="scg-vsub" x="624" y="272">smaller escape surface</text>
+  </g>
+
+  <!-- row: lifecycle -->
+  <text class="scg-row" x="16" y="330">Lifecycle</text>
+  <g class="scg-group scg-inf" data-title="Inference: lifecycle" data-info="A daemon: restart: unless-stopped, healthchecks every 30s, long start periods for model loading. The service is meant to be up whenever the machine is.">
+    <rect class="scg-cell" x="180" y="300" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="264" y="326">daemon</text>
+    <text class="scg-vsub" x="264" y="344">restart: unless-stopped</text>
+  </g>
+  <g class="scg-group scg-trn" data-title="Training: lifecycle" data-info="Per job: docker compose run --rm. No port, no healthcheck, no restart policy — the container exists for the duration of one job and is removed when it exits.">
+    <rect class="scg-cell" x="360" y="300" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="444" y="326">per job</text>
+    <text class="scg-vsub" x="444" y="344">compose run --rm</text>
+  </g>
+  <g class="scg-group scg-agt" data-title="Agents: lifecycle" data-info="Per session: one-shot run --rm with a tmpfs home that forgets everything at exit. Exactly one scoped secret is injected per tool — and each tool's secret is never visible to the other.">
+    <rect class="scg-cell" x="540" y="300" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="624" y="326">per session</text>
+    <text class="scg-vsub" x="624" y="344">one scoped secret</text>
+  </g>
+
+  <!-- shared baseline -->
+  <g class="scg-group" data-title="Shared baseline" data-info="Every sandbox starts from the same four lines before it diverges: cap_drop: ALL, no-new-privileges, read_only rootfs, and a non-root user. The differences above are deltas on this common floor.">
+    <rect class="scg-cell" x="180" y="380" width="528" height="48" rx="6"/>
+    <text class="scg-val" x="444" y="400">shared floor: cap_drop ALL · no-new-privileges · read-only rootfs · non-root user</text>
+    <text class="scg-vsub" x="444" y="418">every container, all three shapes</text>
+  </g>
+  <text class="scg-q" x="16" y="404">common to all</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover over any cell to see why each sandbox answers the question that way.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover over any cell to see why each sandbox answers the question that way.';
+  root.querySelectorAll('.scg-group[data-info]').forEach((g) => {
+    g.addEventListener('mouseenter', () => {
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = g.getAttribute('data-title');
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

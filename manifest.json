@@ -11,7 +11,7 @@
     "path": "diagrams/transformer-architecture/block-dataflow.html",
     "title": "Transformer block dataflow",
     "post": "06-transformer-architecture-in-llama-cpp",
-    "description": "Pre-norm block: RMSNorm → attention → residual add → RMSNorm → SwiGLU MLP → residual add. Animated flow lines, hover-to-inspect caption."
+    "description": "Pre-norm block: RMSNorm \u2192 attention \u2192 residual add \u2192 RMSNorm \u2192 SwiGLU MLP \u2192 residual add. Animated flow lines, hover-to-inspect caption."
   },
   {
     "id": "attention-pattern",
@@ -23,15 +23,15 @@
   {
     "id": "effects-sampler",
     "path": "diagrams/effects-sampler/effects-sampler.html",
-    "title": "Effects sampler — pastel palettes",
-    "post": "n/a — internal reference",
+    "title": "Effects sampler \u2014 pastel palettes",
+    "post": "n/a \u2014 internal reference",
     "description": "Living documentation: all seven catalog effects (glow, sweep, comet, draw-in, ripple, shimmer, flash) running in both the pastel-on-dark and pastel-light palettes, with swatch legends."
   },
   {
     "id": "training-loop",
     "path": "diagrams/llm-training/training-loop.html",
     "title": "The training loop: forward, loss, backward, update",
-    "post": "future — LLM training series",
+    "post": "future \u2014 LLM training series",
     "description": "One optimization step in pastel-on-dark: forward comets through the layer chain, loss glow, backward gradient comets, weight-update ripples. Step timeline with controls."
   },
   {
@@ -54,5 +54,33 @@
     "title": "The OS setup pipeline, in order",
     "post": "linux-ai-setup",
     "description": "Eight-stage setup order from Ubuntu install to Docker with the NVIDIA Container Toolkit, each stage tagged with its automation script and reboot points. Step timeline with controls."
+  },
+  {
+    "id": "comparison-grid",
+    "path": "diagrams/sandboxing/comparison-grid.html",
+    "title": "Three sandboxes, two questions",
+    "post": "sandboxing-overview",
+    "description": "Comparison grid of the inference, training, and agent sandboxes: what each workload must write, where it must talk, GPU access, and lifecycle \u2014 over a shared hardening floor. Hover-to-inspect."
+  },
+  {
+    "id": "inference-topology",
+    "path": "diagrams/sandboxing/inference-topology.html",
+    "title": "Inference network topology and hardening",
+    "post": "sandboxing-inference",
+    "description": "Localhost-only port bindings crossing into the ai-network bridge, three hardened inference containers, and the read-only model mount. Hover-to-inspect."
+  },
+  {
+    "id": "training-job-lifecycle",
+    "path": "diagrams/sandboxing/training-job-lifecycle.html",
+    "title": "The per-job training sandbox lifecycle",
+    "post": "sandboxing-training",
+    "description": "One training job end to end: compose run --rm creates the hardened container, mounts attach, the job runs on the reserved GPU, checkpoints land on the writable training root, the container is removed. Step timeline with controls."
+  },
+  {
+    "id": "agent-egress-flow",
+    "path": "diagrams/sandboxing/agent-egress-flow.html",
+    "title": "Agent sandbox egress flow",
+    "post": "sandboxing-agents",
+    "description": "The agent on an internal network with no internet route, the Squid proxy as the only door, and the allow/deny verdict per request. Step timeline with controls."
   }
 ]
