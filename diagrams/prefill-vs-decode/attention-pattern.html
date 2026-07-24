@@ -13,19 +13,43 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-attention-pattern">
 <style>
+/* fg:begin palette-classic v1 */
 .fg-attention-pattern {
-  --bg: #0f172a; --panel: #1e293b; --border: #334155;
-  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
-  --ok: #34d399; --warn: #fbbf24; --line: #64748b;
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-attention-pattern {
   background: var(--bg);
   border-radius: 12px;
-  padding: 16px 16px 12px;
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .fg-attention-pattern svg { display: block; width: 100%; height: auto; }
 .fg-attention-pattern text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-attention-pattern {
+  padding: 16px 16px 12px;
+}
+
 
 .fg-attention-pattern .apf-lab  { fill: var(--muted); font-size: 13px; text-anchor: middle; }
 .fg-attention-pattern .apf-head { fill: var(--text); font-size: 15px; font-weight: 600; }
@@ -77,19 +101,24 @@
 .fg-attention-pattern.is-step-3 .apf-phase-decode,
 .fg-attention-pattern.is-step-4 .apf-phase-decode { opacity: 1; }
 
+/* fg:begin controls-bar v1 */
 .fg-attention-pattern .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .fg-attention-pattern .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
   cursor: pointer; padding: 0; line-height: 1;
 }
-.fg-attention-pattern .fg-controls button:hover { border-color: var(--accent); }
+.fg-attention-pattern .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
 .fg-attention-pattern .fg-controls [data-fg="counter"] {
-  color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
 }
+/* fg:end controls-bar */
+/* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-attention-pattern * { transition: none !important; }
+  .fg-attention-pattern, .fg-attention-pattern * { transition: none !important; animation: none !important; }
 }
+/* fg:end reduced-motion */
 </style>
 
 <svg viewBox="0 0 620 560" xmlns="http://www.w3.org/2000/svg" role="img"
@@ -98,10 +127,77 @@
   <text x="300" y="26" class="apf-lab">keys (attended-to positions) →</text>
   <text x="30" y="300" class="apf-lab" transform="rotate(-90 30 300)">queries (rows) →</text>
 
-  <!-- grid cells injected by JS below (57 cells would be unwieldy by hand;
-       injection happens at parse time inside this fragment, so the embed
-       stays self-contained) -->
-  <g data-fg="grid"></g>
+  <!-- 7x7 causal grid, authored statically so the fragment stays portable -->
+  <g class="apf-r0">
+    <rect class="apf-cell" x="72" y="44" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="134" y="44" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="196" y="44" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="258" y="44" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="320" y="44" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="382" y="44" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="444" y="44" width="56" height="56" rx="6"/>
+    <text class="apf-sub" x="64" y="76" text-anchor="end">The</text>
+  </g>
+  <g class="apf-r1">
+    <rect class="apf-cell" x="72" y="106" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="134" y="106" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="196" y="106" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="258" y="106" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="320" y="106" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="382" y="106" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="444" y="106" width="56" height="56" rx="6"/>
+    <text class="apf-sub" x="64" y="138" text-anchor="end">cat</text>
+  </g>
+  <g class="apf-r2">
+    <rect class="apf-cell" x="72" y="168" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="134" y="168" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="196" y="168" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="258" y="168" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="320" y="168" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="382" y="168" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="444" y="168" width="56" height="56" rx="6"/>
+    <text class="apf-sub" x="64" y="200" text-anchor="end">sat</text>
+  </g>
+  <g class="apf-r3">
+    <rect class="apf-cell" x="72" y="230" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="134" y="230" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="196" y="230" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="258" y="230" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="320" y="230" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="382" y="230" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="444" y="230" width="56" height="56" rx="6"/>
+    <text class="apf-sub" x="64" y="262" text-anchor="end">on</text>
+  </g>
+  <g class="apf-r4">
+    <rect class="apf-cell" x="72" y="292" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="134" y="292" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="196" y="292" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="258" y="292" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="320" y="292" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="382" y="292" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="444" y="292" width="56" height="56" rx="6"/>
+    <text class="apf-sub" x="64" y="324" text-anchor="end">the</text>
+  </g>
+  <g class="apf-r5">
+    <rect class="apf-cell" x="72" y="354" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="134" y="354" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="196" y="354" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="258" y="354" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="320" y="354" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="382" y="354" width="56" height="56" rx="6"/>
+    <rect class="apf-cell apf-masked" x="444" y="354" width="56" height="56" rx="6"/>
+    <text class="apf-sub" x="64" y="386" text-anchor="end">mat</text>
+  </g>
+  <g class="apf-r6">
+    <rect class="apf-cell" x="72" y="416" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="134" y="416" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="196" y="416" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="258" y="416" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="320" y="416" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="382" y="416" width="56" height="56" rx="6"/>
+    <rect class="apf-cell" x="444" y="416" width="56" height="56" rx="6"/>
+    <text class="apf-sub" x="64" y="448" text-anchor="end">.</text>
+  </g>
 
   <!-- legend -->
   <g>
@@ -128,37 +224,9 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
-  const NS = 'http://www.w3.org/2000/svg';
-
-  // Build the 7x7 grid: cell size 56, gap 6, origin (72, 44)
-  const grid = root.querySelector('[data-fg="grid"]');
-  const N = 7, SIZE = 56, GAP = 6, OX = 72, OY = 44;
-  const tokens = ['The', 'cat', 'sat', 'on', 'the', 'mat', '.'];
-  for (let r = 0; r < N; r++) {
-    const row = document.createElementNS(NS, 'g');
-    row.setAttribute('class', 'apf-r' + r);
-    for (let c = 0; c < N; c++) {
-      const cell = document.createElementNS(NS, 'rect');
-      cell.setAttribute('class', 'apf-cell' + (c > r ? ' apf-masked' : ''));
-      cell.setAttribute('x', OX + c * (SIZE + GAP));
-      cell.setAttribute('y', OY + r * (SIZE + GAP));
-      cell.setAttribute('width', SIZE);
-      cell.setAttribute('height', SIZE);
-      cell.setAttribute('rx', 6);
-      row.appendChild(cell);
-    }
-    // row token label
-    const lab = document.createElementNS(NS, 'text');
-    lab.setAttribute('class', 'apf-sub');
-    lab.setAttribute('x', OX - 8);
-    lab.setAttribute('y', OY + r * (SIZE + GAP) + SIZE / 2 + 4);
-    lab.setAttribute('text-anchor', 'end');
-    lab.textContent = tokens[r];
-    row.appendChild(lab);
-    grid.appendChild(row);
-  }
-
   const TOTAL = 4, STEP_MS = 1400;
+
+  // fg:begin timeline-core v1
   let step = 0, timer = null;
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
@@ -171,23 +239,27 @@
     go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
     next() { tl.go(step + 1); },
     prev() { tl.go(step - 1); },
-    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
-    pause() { clearInterval(timer); timer = null; },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); root.classList.add('is-playing'); } },
+    pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
   btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
   btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
   btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  const counter = btn('counter');
   function sync() {
-    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
     btn('play').textContent = tl.playing ? '❚❚' : '▶';
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
-  apply();
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // fg:end timeline-core
 
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    tl.go(TOTAL);
+  // fg:begin timeline-start v1
+  apply();
+  if (reduced) {
+    tl.go(TOTAL); // show final state, manual stepping still available
   } else {
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
@@ -195,6 +267,7 @@
     );
     io.observe(root);
   }
+  // fg:end timeline-start
 })();</script>
 </div>
 <!-- fg:embed-end -->

@@ -11,7 +11,7 @@
     "path": "diagrams/transformer-architecture/block-dataflow.html",
     "title": "Transformer block dataflow",
     "post": "06-transformer-architecture-in-llama-cpp",
-    "description": "Pre-norm block: RMSNorm \u2192 attention \u2192 residual add \u2192 RMSNorm \u2192 SwiGLU MLP \u2192 residual add. Animated flow lines, hover-to-inspect caption."
+    "description": "Pre-norm block: RMSNorm → attention → residual add → RMSNorm → SwiGLU MLP → residual add. Animated flow lines, hover-to-inspect caption."
   },
   {
     "id": "attention-pattern",
@@ -23,15 +23,15 @@
   {
     "id": "effects-sampler",
     "path": "diagrams/effects-sampler/effects-sampler.html",
-    "title": "Effects sampler \u2014 pastel palettes",
-    "post": "n/a \u2014 internal reference",
+    "title": "Effects sampler — pastel palettes",
+    "post": "n/a — internal reference",
     "description": "Living documentation: all seven catalog effects (glow, sweep, comet, draw-in, ripple, shimmer, flash) running in both the pastel-on-dark and pastel-light palettes, with swatch legends."
   },
   {
     "id": "training-loop",
     "path": "diagrams/llm-training/training-loop.html",
     "title": "The training loop: forward, loss, backward, update",
-    "post": "future \u2014 LLM training series",
+    "post": "future — LLM training series",
     "description": "One optimization step in pastel-on-dark: forward comets through the layer chain, loss glow, backward gradient comets, weight-update ripples. Step timeline with controls."
   },
   {
@@ -60,7 +60,7 @@
     "path": "diagrams/sandboxing/comparison-grid.html",
     "title": "Three sandboxes, two questions",
     "post": "sandboxing-overview",
-    "description": "Comparison grid of the inference, training, and agent sandboxes: what each workload must write, where it must talk, GPU access, and lifecycle \u2014 over a shared hardening floor. Hover-to-inspect."
+    "description": "Comparison grid of the inference, training, and agent sandboxes: what each workload must write, where it must talk, GPU access, and lifecycle — over a shared hardening floor. Hover-to-inspect."
   },
   {
     "id": "inference-topology",
@@ -254,222 +254,222 @@
   {
     "id": "pp-attachment",
     "path": "diagrams/what-language-leaves-out/pp-attachment.html",
-    "title": "PP-attachment: where does \u201cwith the telescope\u201d hang?",
+    "title": "PP-attachment: where does “with the telescope” hang?",
     "post": "what-language-leaves-out-syntactic",
-    "description": "Toggle between verb and noun attachment for \u201cI saw the man with the telescope\u201d \u2014 brackets and information-need arc re-draw between the two structures."
+    "description": "Toggle between verb and noun attachment for “I saw the man with the telescope” — brackets and information-need arc re-draw between the two structures."
   },
   {
     "id": "coordination-scope",
     "path": "diagrams/what-language-leaves-out/coordination-scope.html",
     "title": "Coordination scope: are the women old?",
     "post": "what-language-leaves-out-syntactic",
-    "description": "Toggle the grouping of \u201cold men and women\u201d \u2014 the adjective's scope bracket re-draws and membership cards show who inherits it."
+    "description": "Toggle the grouping of “old men and women” — the adjective's scope bracket re-draws and membership cards show who inherits it."
   },
   {
     "id": "garden-path",
     "path": "diagrams/what-language-leaves-out/garden-path.html",
     "title": "Garden path: the parse that has to be torn up",
     "post": "what-language-leaves-out-syntactic",
-    "description": "Step timeline of the incremental parse of \u201cThe horse raced past the barn fell\u201d \u2014 commitment, contradiction at \u201cfell\u201d, and visible reanalysis to the reduced relative."
+    "description": "Step timeline of the incremental parse of “The horse raced past the barn fell” — commitment, contradiction at “fell”, and visible reanalysis to the reduced relative."
   },
   {
     "id": "agreement-distance",
     "path": "diagrams/what-language-leaves-out/agreement-distance.html",
     "title": "Agreement at a distance: the verb must skip the distractor",
     "post": "what-language-leaves-out-syntactic",
-    "description": "Toggle an intervening singular distractor into \u201cThe keys (to the cabinet) are on the table\u201d \u2014 the agreement arc stretches over the flagged attractor."
+    "description": "Toggle an intervening singular distractor into “The keys (to the cabinet) are on the table” — the agreement arc stretches over the flagged attractor."
   },
   {
     "id": "role-assignment",
     "path": "diagrams/what-language-leaves-out/role-assignment.html",
     "title": "Role assignment: who did what to whom",
     "post": "what-language-leaves-out-syntactic",
-    "description": "Active \u21c4 passive toggle for \u201cThe dog bit the man\u201d \u2014 AGENT and PATIENT tags stay with the participants while surface order flips."
+    "description": "Active ⇄ passive toggle for “The dog bit the man” — AGENT and PATIENT tags stay with the participants while surface order flips."
   },
   {
     "id": "filler-gap",
     "path": "diagrams/what-language-leaves-out/filler-gap.html",
     "title": "Filler-gap: a phrase waiting for its position",
     "post": "what-language-leaves-out-syntactic",
-    "description": "\u201cWhich book did you say Mary thought John read __?\u201d \u2014 the fronted phrase carries a pending badge until the gap site is revealed two clauses downstream."
+    "description": "“Which book did you say Mary thought John read __?” — the fronted phrase carries a pending badge until the gap site is revealed two clauses downstream."
   },
   {
     "id": "gapping-ellipsis",
     "path": "diagrams/what-language-leaves-out/gapping-ellipsis.html",
     "title": "Ellipsis: the predicate that isn't there",
     "post": "what-language-leaves-out-syntactic",
-    "description": "Reveal toggle materializing the elided material in VP-ellipsis (\u201cMary can __ too\u201d) and sluicing (\u201cI don't know who __\u201d) with copy-in arcs."
+    "description": "Reveal toggle materializing the elided material in VP-ellipsis (“Mary can __ too”) and sluicing (“I don't know who __”) with copy-in arcs."
   },
   {
     "id": "modifier-scope",
     "path": "diagrams/what-language-leaves-out/modifier-scope.html",
-    "title": "Modifier scope: what does \u201conly\u201d attach to?",
+    "title": "Modifier scope: what does “only” attach to?",
     "post": "what-language-leaves-out-syntactic",
-    "description": "Toggle slides the scope bracket of \u201conly\u201d in \u201cI only ate the cake\u201d between the verb and the object; glosses cross-fade."
+    "description": "Toggle slides the scope bracket of “only” in “I only ate the cake” between the verb and the object; glosses cross-fade."
   },
   {
     "id": "quantifier-scope",
     "path": "diagrams/what-language-leaves-out/quantifier-scope.html",
     "title": "Quantifier scope: one book, or one each?",
     "post": "what-language-leaves-out-semantic",
-    "description": "Toggle over \u201cEvery student read a book\u201d re-draws the student\u2192book mapping between one shared book and one book each; loop-order glosses."
+    "description": "Toggle over “Every student read a book” re-draws the student→book mapping between one shared book and one book each; loop-order glosses."
   },
   {
     "id": "negation-scope",
     "path": "diagrams/what-language-leaves-out/negation-scope.html",
-    "title": "Negation scope: what does \u201cnot\u201d negate?",
+    "title": "Negation scope: what does “not” negate?",
     "post": "what-language-leaves-out-semantic",
-    "description": "Toggle slides the NOT bracket in \u201cI didn't leave because I was angry\u201d between narrow and wide scope; outcome cards (I stayed / I left) light per reading."
+    "description": "Toggle slides the NOT bracket in “I didn't leave because I was angry” between narrow and wide scope; outcome cards (I stayed / I left) light per reading."
   },
   {
     "id": "modal-flavor",
     "path": "diagrams/what-language-leaves-out/modal-flavor.html",
-    "title": "Modal ambiguity: what kind of \u201cmust\u201d?",
+    "title": "Modal ambiguity: what kind of “must”?",
     "post": "what-language-leaves-out-semantic",
-    "description": "Context-swap toggle flips \u201cYou must be tired\u201d between epistemic inference and deontic obligation; the flavor is imported from one context line."
+    "description": "Context-swap toggle flips “You must be tired” between epistemic inference and deontic obligation; the flavor is imported from one context line."
   },
   {
     "id": "metonymy-standin",
     "path": "diagrams/what-language-leaves-out/metonymy-standin.html",
     "title": "Metonymy: the expression that stands in",
     "post": "what-language-leaves-out-semantic",
-    "description": "Dereference toggle: \u201cThe White House announced\u2026\u201d hands off from the literal building to a dashed ghost node for the people inside; Shakespeare and ham-sandwich companions."
+    "description": "Dereference toggle: “The White House announced…” hands off from the literal building to a dashed ghost node for the people inside; Shakespeare and ham-sandwich companions."
   },
   {
     "id": "metaphor-suppress",
     "path": "diagrams/what-language-leaves-out/metaphor-suppress.html",
     "title": "Metaphor: suppressing the literal sense",
     "post": "what-language-leaves-out-semantic",
-    "description": "Object-swap toggle: \u201cdrowning in the pool\u201d vs \u201cdrowning in paperwork\u201d \u2014 the literal water-sense is struck through and the figurative mapping lights."
+    "description": "Object-swap toggle: “drowning in the pool” vs “drowning in paperwork” — the literal water-sense is struck through and the figurative mapping lights."
   },
   {
     "id": "gradable-scale",
     "path": "diagrams/what-language-leaves-out/gradable-scale.html",
     "title": "Gradable adjectives: the noun sets the scale",
     "post": "what-language-leaves-out-semantic",
-    "description": "Noun-swap toggle re-anchors the scale bar under \u201ctall\u201d from toddler (~1 m) to building (~150 m) while the adjective token stays fixed."
+    "description": "Noun-swap toggle re-anchors the scale bar under “tall” from toddler (~1 m) to building (~150 m) while the adjective token stays fixed."
   },
   {
     "id": "comparative-ellipsis",
     "path": "diagrams/what-language-leaves-out/comparative-ellipsis.html",
     "title": "Comparative ellipsis: two ways to fill the gap",
     "post": "what-language-leaves-out-semantic",
-    "description": "Toggle between the two reconstructions of \u201cI like her more than John\u201d \u2014 than John [likes her] vs than [I like] John \u2014 with different ghost completions."
+    "description": "Toggle between the two reconstructions of “I like her more than John” — than John [likes her] vs than [I like] John — with different ghost completions."
   },
   {
     "id": "tense-aspect",
     "path": "diagrams/what-language-leaves-out/tense-aspect.html",
     "title": "Tense and aspect: does the state persist?",
     "post": "what-language-leaves-out-semantic",
-    "description": "Toggle flips \u201cI've lived here\u201d / \u201cI lived here\u201d on a timeline bar; a Mandarin row shows a dashed empty tense slot filled by a context adverb."
+    "description": "Toggle flips “I've lived here” / “I lived here” on a timeline bar; a Mandarin row shows a dashed empty tense slot filled by a context adverb."
   },
   {
-    "id": "wllo-speech-act",
+    "id": "speech-act",
     "path": "diagrams/what-language-leaves-out/speech-act.html",
     "title": "Speech-act ambiguity",
     "post": "what-language-leaves-out-pragmatic",
     "description": "\"Can you pass the salt?\" dispatched to a question handler vs a request handler; the literal answer is technically responsive, socially broken."
   },
   {
-    "id": "wllo-implicature-gap",
+    "id": "implicature-gap",
     "path": "diagrams/what-language-leaves-out/implicature-gap.html",
     "title": "Indirect answers and implicature",
     "post": "what-language-leaves-out-pragmatic",
-    "description": "\"Did you like the movie?\" / \"The popcorn was good.\" \u2014 toggle materializes the implicated verdict carried by the unaddressed question."
+    "description": "\"Did you like the movie?\" / \"The popcorn was good.\" — toggle materializes the implicated verdict carried by the unaddressed question."
   },
   {
-    "id": "wllo-sarcasm-flip",
+    "id": "sarcasm-flip",
     "path": "diagrams/what-language-leaves-out/sarcasm-flip.html",
     "title": "Irony and sarcasm",
     "post": "what-language-leaves-out-pragmatic",
-    "description": "\"Great, another meeting.\" \u2014 swapping the preceding discourse line flips the sentiment tag on \"Great\" without changing a token."
+    "description": "\"Great, another meeting.\" — swapping the preceding discourse line flips the sentiment tag on \"Great\" without changing a token."
   },
   {
-    "id": "wllo-deixis-chat",
+    "id": "deixis-chat",
     "path": "diagrams/what-language-leaves-out/deixis-chat.html",
     "title": "Deixis in a chat transcript",
     "post": "what-language-leaves-out-pragmatic",
     "description": "A three-turn transcript where \"I\" and \"you\" re-bind to opposite speakers on every turn; arcs to the speaker labels."
   },
   {
-    "id": "wllo-presupposition-split",
+    "id": "presupposition-split",
     "path": "diagrams/what-language-leaves-out/presupposition-split.html",
     "title": "Presupposition and accommodation",
     "post": "what-language-leaves-out-pragmatic",
     "description": "\"John stopped smoking\" split into asserted and presupposed cards; negation flips only the asserted card."
   },
   {
-    "id": "wllo-discourse-relation",
+    "id": "discourse-relation",
     "path": "diagrams/what-language-leaves-out/discourse-relation.html",
     "title": "Discourse relations",
     "post": "what-language-leaves-out-pragmatic",
-    "description": "\"He fell. He was pushed / He got up.\" \u2014 a dashed BECAUSE/THEN ghost edge between the sentences; the connective has no token."
+    "description": "\"He fell. He was pushed / He got up.\" — a dashed BECAUSE/THEN ghost edge between the sentences; the connective has no token."
   },
   {
-    "id": "wllo-topic-tracking",
+    "id": "topic-tracking",
     "path": "diagrams/what-language-leaves-out/topic-tracking.html",
     "title": "Topic and focus tracking",
     "post": "what-language-leaves-out-pragmatic",
     "description": "Changing which entity the opening sentence establishes as topic re-points a later \"it\" between bridge and river."
   },
   {
-    "id": "wllo-register-frame",
+    "id": "register-frame",
     "path": "diagrams/what-language-leaves-out/register-frame.html",
     "title": "Genre and register",
     "post": "what-language-leaves-out-pragmatic",
     "description": "The same sentence inside a statute and a physics paper; the document's register re-glosses \"state\" and \"notice\" wholesale."
   },
   {
-    "id": "wllo-delimiter-match",
+    "id": "delimiter-match",
     "path": "diagrams/what-language-leaves-out/delimiter-match.html",
     "title": "Delimiter matching",
     "post": "what-language-leaves-out-structural",
     "description": "Deleting one distant opening quote flips every later quote's role between OPEN and CLOSE and re-shades string vs code."
   },
   {
-    "id": "wllo-code-binding",
+    "id": "code-binding",
     "path": "diagrams/what-language-leaves-out/code-binding.html",
     "title": "Code dependencies",
     "post": "what-language-leaves-out-structural",
     "description": "A variable use re-binds from a module-level definition to an inserted shadowing one -- coreference over code tokens."
   },
   {
-    "id": "wllo-format-continuation",
+    "id": "format-continuation",
     "path": "diagrams/what-language-leaves-out/format-continuation.html",
     "title": "Format continuation",
     "post": "what-language-leaves-out-structural",
     "description": "The same content under a markdown-table vs numbered-list precedent; the ghost continuation's shape follows the pattern, not the grammar."
   },
   {
-    "id": "wllo-induction-copy",
+    "id": "induction-copy",
     "path": "diagrams/what-language-leaves-out/induction-copy.html",
     "title": "Induction and copying",
     "post": "what-language-leaves-out-structural",
     "description": "Step timeline of the induction-head loop: match the current token to its previous occurrence, hop one forward, copy the successor."
   },
   {
-    "id": "wllo-instruction-binding",
+    "id": "instruction-binding",
     "path": "diagrams/what-language-leaves-out/instruction-binding.html",
     "title": "Instruction binding",
     "post": "what-language-leaves-out-structural",
     "description": "Swapping a distant instruction header flips the same passage's role and continuation -- the series' longest-range dependency."
   },
   {
-    "id": "wllo-ladder-depth",
+    "id": "ladder-depth",
     "path": "diagrams/what-language-leaves-out/ladder-depth.html",
     "title": "The ladder against depth",
     "post": "what-language-leaves-out-capstone",
     "description": "The series' six levels beside a model-depth column, connected by deliberately soft bands -- tendencies, not an org chart."
   },
   {
-    "id": "wllo-soft-lookup",
+    "id": "soft-lookup",
     "path": "diagrams/what-language-leaves-out/soft-lookup.html",
     "title": "The soft lookup",
     "post": "what-language-leaves-out-capstone",
     "description": "Step timeline re-answering the Winograd pronoun with the mechanism: query, graded matches, weighted blend -- a mixture, never a pointer."
   },
   {
-    "id": "wllo-heads-tendency",
+    "id": "heads-tendency",
     "path": "diagrams/what-language-leaves-out/heads-tendency.html",
     "title": "Heads divide the labor loosely",
     "post": "what-language-leaves-out-capstone",

@@ -1,0 +1,9 @@
+{{SCOPE}} {
+  background: var(--bg);
+  border-radius: 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+{{SCOPE}} svg { display: block; width: 100%; height: auto; }
+{{SCOPE}} text { font-family: inherit; }

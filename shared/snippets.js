@@ -1,11 +1,11 @@
 /*
  * snippets.js — reference helper patterns for figura diagrams.
  *
- * This file is NEVER loaded at runtime. It is a copy source: when generating
- * a new diagram, copy the snippets you need into the diagram's inline IIFE
- * and adapt names. Keeping helpers copied (not linked) keeps every diagram
- * file a frozen, fully self-contained artifact that survives build-time
- * inlining into the blog.
+ * This file is NEVER loaded at runtime. It documents the patterns; the
+ * executable source of truth is shared/runtime/, whose blocks are stamped
+ * into each diagram by scripts/build.js (see CLAUDE.md "Managed blocks").
+ * Copy from here only for one-off variations that the managed blocks do
+ * not cover; fragments stay fully self-contained either way.
  *
  * Every snippet assumes it runs inside the diagram's IIFE:
  *

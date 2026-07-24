@@ -28,15 +28,26 @@ CLAUDE.md        generation contract (conventions, palette, patterns)
 index.html       gallery — every diagram inlined, first one twice (collision check)
 manifest.json    diagram index {id, path, title, post, description}
 shared/
-  tokens.css     reference palettes/tokens: classic dark, pastel-on-dark,
-                 pastel-light (copied into diagrams, never linked)
+  tokens.css     palette source of truth: classic dark, pastel-on-dark,
+                 pastel-light (build.js derives the per-diagram palette blocks)
+  runtime/       canonical managed-block sources (timeline, controls bar,
+                 caption box, panel base, reduced-motion) stamped into every
+                 fragment by scripts/build.js
   effects.css    effects catalog: glow, sweep, comet, draw-in, ripple,
                  shimmer, flash (copy-source patterns)
-  snippets.js    reference JS patterns (timeline, controls, autoplay, hover,
-                 effect restart, comet launch)
+  snippets.js    reference JS patterns (documentation; runtime/ is executable)
   preview.css    page chrome for standalone/gallery viewing only
+scripts/
+  new-diagram.js scaffold a diagram from templates/ with blocks pre-expanded
+  build.js       re-expand managed blocks (--check fails on drift)
+  validate.js    contract linter: scoping, id prefixes, reduced motion,
+                 a11y, self-containment, manifest sync
+templates/       step-timeline, hover-inspect, ambient scaffolds
 diagrams/<post-slug>/<kebab-name>.html
 ```
+
+Tooling is zero-dependency Node (>= 18): `npm run check` runs the drift
+check and the validator; CI runs the same on every push and pull request.
 
 ## Preview
 

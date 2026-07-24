@@ -13,19 +13,43 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-modal-flavor">
 <style>
+/* fg:begin palette-classic v1 */
 .fg-modal-flavor {
-  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
-  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
-  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-modal-flavor {
   background: var(--bg);
   border-radius: 12px;
-  padding: 16px;
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .fg-modal-flavor svg { display: block; width: 100%; height: auto; }
 .fg-modal-flavor text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-modal-flavor {
+  padding: 16px;
+}
+
 
 .fg-modal-flavor .mdf-note { fill: var(--muted); font-size: 11px; }
 .fg-modal-flavor .mdf-tok {
@@ -65,22 +89,31 @@
 }
 .fg-modal-flavor .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
 
+/* fg:begin caption-box v1 */
 .fg-modal-flavor .fg-caption {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  /* reserve height for the longer state text: no page reflow on toggle */
-  color: var(--text); font-size: 13px; min-height: 4.2em;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+/* fg:end caption-box */
 .fg-modal-flavor .fg-caption strong { color: var(--ok); font-weight: 600; }
 
+/* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-modal-flavor .mdf-ctx, .fg-modal-flavor .mdf-tag { transition: none; }
+  .fg-modal-flavor, .fg-modal-flavor * { transition: none !important; animation: none !important; }
 }
+/* fg:end reduced-motion */
 </style>
 
 <svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="The sentence: You must be tired, with must outlined in amber. Above it, a context line that a button swaps. With the context: You worked a double shift, the modal is tagged EPISTEMIC, an inference from evidence. With the context: Rules of the sleep study, it is tagged DEONTIC, an obligation imposed on you. A green arc runs from must up to the context line: the flavor is imported, not written in the word.">
+  <defs>
+    <marker id="mdf-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
   <text class="mdf-note" x="40" y="26">the same modal, two flavors &#8212; the surrounding discourse supplies the background</text>
 
   <!-- context line -->

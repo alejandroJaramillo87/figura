@@ -13,21 +13,38 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-training-loop">
 <style>
+/* fg:begin palette-pastel-dark v1 */
 .fg-training-loop {
-  --bg: #0f172a; --panel: #1e293b; --border: #3b4a63;
-  --text: #f8fafc; --muted: #a5b4cd; --line: #7c8db0;
-  --mint: #a7f3d0; --lavender: #c4b5fd; --peach: #fed7aa;
-  --rose: #fda4af; --blue: #bae6fd;
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #2b3a52;
+  --border: #3b4a63;
+  --text: #f8fafc;
+  --muted: #a5b4cd;
+  --line: #7c8db0;
+  --mint: #a7f3d0;
+  --lavender: #c4b5fd;
+  --peach: #fed7aa;
+  --rose: #fda4af;
+  --blue: #bae6fd;
+}
+/* fg:end palette-pastel-dark */
+/* fg:begin panel-base v1 */
+.fg-training-loop {
   background: var(--bg);
   border-radius: 12px;
-  padding: 16px 16px 12px;
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .fg-training-loop svg { display: block; width: 100%; height: auto; }
 .fg-training-loop text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-training-loop {
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 16px 16px 12px;
+}
+
 
 .fg-training-loop .trl-node { fill: var(--panel); stroke: var(--border); stroke-width: 2; transition: stroke 0.4s, fill 0.4s; }
 .fg-training-loop .trl-title { fill: var(--text); font-size: 14px; font-weight: 600; text-anchor: middle; }
@@ -109,19 +126,27 @@
 .fg-training-loop.is-step-4 .trl-phase-4 { opacity: 1; }
 
 /* controls */
+/* fg:begin controls-bar v1 */
 .fg-training-loop .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .fg-training-loop .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
   cursor: pointer; padding: 0; line-height: 1;
 }
-.fg-training-loop .fg-controls button:hover { border-color: var(--blue); }
+.fg-training-loop .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
 .fg-training-loop .fg-controls [data-fg="counter"] {
-  color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
 }
+/* fg:end controls-bar */
+.fg-training-loop { --fg-ctl-accent: var(--blue); }
 
+/* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-training-loop * { transition: none !important; animation: none !important; }
+  .fg-training-loop, .fg-training-loop * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
   .fg-training-loop .trl-comet-fwd, .fg-training-loop .trl-comet-bwd, .fg-training-loop .trl-shimmer { display: none; }
   .fg-training-loop.is-step-2 .trl-loss-halo { opacity: 0.5; }
   .fg-training-loop.is-step-4 .trl-ripple { opacity: 0.25; transform: scale(1.4); }
@@ -220,8 +245,8 @@
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
   const TOTAL = 4, STEP_MS = 2400;
+  // fg:begin timeline-core v1
   let step = 0, timer = null;
-
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
@@ -233,22 +258,23 @@
     go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
     next() { tl.go(step + 1); },
     prev() { tl.go(step - 1); },
-    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
-    pause() { clearInterval(timer); timer = null; },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); root.classList.add('is-playing'); } },
+    pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
-
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
   btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
   btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
   btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  const counter = btn('counter');
   function sync() {
-    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
     btn('play').textContent = tl.playing ? '❚❚' : '▶';
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
-
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // fg:end timeline-core
+
 
   // step-triggered comets: kick the SMIL head animations (trails chain off it)
   function launchComets(selector) {
@@ -259,10 +285,10 @@
     if (e.detail.step === 1) launchComets('#trl-cf-head');
     if (e.detail.step === 3) launchComets('#trl-cb-head');
   });
+  // fg:begin timeline-start v1
   apply();
-
   if (reduced) {
-    tl.go(TOTAL);
+    tl.go(TOTAL); // show final state, manual stepping still available
   } else {
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
@@ -270,6 +296,7 @@
     );
     io.observe(root);
   }
+  // fg:end timeline-start
 })();</script>
 </div>
 <!-- fg:embed-end -->

@@ -13,19 +13,43 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-block-dataflow">
 <style>
+/* fg:begin palette-classic v1 */
 .fg-block-dataflow {
-  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
-  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
-  --violet: #a78bfa; --ok: #34d399; --line: #64748b;
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-block-dataflow {
   background: var(--bg);
   border-radius: 12px;
-  padding: 16px;
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .fg-block-dataflow svg { display: block; width: 100%; height: auto; }
 .fg-block-dataflow text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-block-dataflow {
+  padding: 16px;
+}
+
 
 .fg-block-dataflow .tbd-block {
   fill: var(--panel); stroke: var(--border); stroke-width: 2;
@@ -59,9 +83,11 @@
 .fg-block-dataflow .fg-caption.is-active { color: var(--text); }
 .fg-block-dataflow .fg-caption strong { color: var(--accent); font-weight: 600; }
 
+/* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-block-dataflow .tbd-flow, .fg-block-dataflow .tbd-residual { animation: none; }
+  .fg-block-dataflow, .fg-block-dataflow * { transition: none !important; animation: none !important; }
 }
+/* fg:end reduced-motion */
 </style>
 
 <svg viewBox="0 0 560 640" xmlns="http://www.w3.org/2000/svg" role="img"
