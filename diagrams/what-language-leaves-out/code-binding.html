@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code dependencies: coreference for identifiers</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Code dependencies</h1>
+<p>A variable use must bind to its definition — add a shadowing redefinition and the same use-site re-points, exactly like a pronoun finding a nearer antecedent.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-code-binding">
+<style>
+.fg-code-binding {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-code-binding svg { display: block; width: 100%; height: auto; }
+.fg-code-binding text { font-family: inherit; }
+
+.fg-code-binding .cdb-note { fill: var(--muted); font-size: 11px; }
+.fg-code-binding .cdb-code text { font-family: var(--mono); font-size: 13px; fill: var(--text); }
+.fg-code-binding .cdb-kw { fill: var(--violet); }
+.fg-code-binding .cdb-id { fill: var(--warn); font-weight: 600; }
+.fg-code-binding .cdb-dim { fill: var(--muted); }
+
+/* the shadowing line: ghost until toggled in */
+.fg-code-binding .cdb-shadow { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-code-binding.is-shadowed .cdb-shadow { opacity: 1; }
+.fg-code-binding .cdb-shadow rect { fill: #0e4429; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
+
+/* definition highlight rings */
+.fg-code-binding .cdb-defring { fill: none; stroke-width: 1.5; rx: 4; transition: opacity 0.7s; }
+.fg-code-binding .cdb-defring-outer { stroke: var(--ok); opacity: 1; }
+.fg-code-binding.is-shadowed .cdb-defring-outer { opacity: 0.25; }
+
+/* binding arcs from the use-site */
+.fg-code-binding .cdb-arc { fill: none; stroke: var(--ok); stroke-width: 2; transition: opacity 0.7s; }
+.fg-code-binding .cdb-arc-outer { opacity: 1; }
+.fg-code-binding .cdb-arc-inner { opacity: 0; }
+.fg-code-binding.is-shadowed .cdb-arc-outer { opacity: 0; }
+.fg-code-binding.is-shadowed .cdb-arc-inner { opacity: 1; }
+
+/* scope bracket for the function body */
+.fg-code-binding .cdb-scope { stroke: var(--accent); stroke-width: 1.5; fill: none; opacity: 0.5; }
+.fg-code-binding .cdb-scopelabel { fill: var(--accent); font-size: 10px; opacity: 0.7; }
+
+/* value badges */
+.fg-code-binding .cdb-val { font-size: 11px; text-anchor: middle; transition: opacity 0.7s; }
+.fg-code-binding .cdb-val-outer { fill: var(--ok); opacity: 1; }
+.fg-code-binding .cdb-val-inner { fill: var(--ok); opacity: 0; }
+.fg-code-binding.is-shadowed .cdb-val-outer { opacity: 0; }
+.fg-code-binding.is-shadowed .cdb-val-inner { opacity: 1; }
+
+.fg-code-binding .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-code-binding .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-code-binding .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-code-binding .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-code-binding .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-code-binding .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-code-binding .cdb-shadow, .fg-code-binding .cdb-arc,
+  .fg-code-binding .cdb-defring, .fg-code-binding .cdb-val { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A short Python snippet. Line one defines timeout equals 30 at module level. A function fetch follows, its body marked with a scope bracket. A button inserts a dashed green shadowing line inside the function: timeout equals 5. The final line, return get with url and timeout, carries a green arc from its timeout use-site: without the shadowing line the arc runs all the way up to the module-level definition; with it, the arc re-points to the nearer, inner definition, and the value badge on the use flips from 30 to 5. Same use-site token, different binding — resolved by scope structure in the context.">
+  <text class="cdb-note" x="40" y="24">an identifier is a pronoun with perfect spelling &#8212; the use must still find its definition</text>
+
+  <!-- code lines -->
+  <g class="cdb-code">
+    <text x="72" y="62"><tspan class="cdb-id">timeout</tspan> = 30</text>
+    <text x="72" y="102"><tspan class="cdb-kw">def</tspan> fetch(url):</text>
+    <text x="104" y="182"><tspan class="cdb-dim">data = prepare(url)</tspan></text>
+    <text x="104" y="222"><tspan class="cdb-kw">return</tspan> get(url, <tspan class="cdb-id">timeout</tspan>)</text>
+  </g>
+
+  <!-- shadowing line (ghost, toggled) -->
+  <g class="cdb-shadow">
+    <rect x="96" y="122" width="176" height="30" rx="6"/>
+    <g class="cdb-code"><text x="104" y="142"><tspan class="cdb-id">timeout</tspan> = 5</text></g>
+  </g>
+
+  <!-- outer definition ring -->
+  <rect class="cdb-defring cdb-defring-outer" x="66" y="44" width="110" height="26" rx="4"/>
+
+  <!-- scope bracket for function body -->
+  <path class="cdb-scope" d="M 86 116 L 80 116 L 80 232 L 86 232"/>
+  <text class="cdb-scopelabel" x="46" y="178">scope</text>
+
+  <!-- binding arcs from the use-site "timeout" (at ~x 232, y 222) -->
+  <path class="cdb-arc cdb-arc-outer" d="M 290 214 C 380 160, 320 70, 186 56" marker-end="url(#cdb-arrow)"/>
+  <path class="cdb-arc cdb-arc-inner" d="M 290 214 C 340 190, 330 150, 282 138" marker-end="url(#cdb-arrow)"/>
+
+  <!-- value badges near the use -->
+  <text class="cdb-val cdb-val-outer" x="360" y="226">binds to line 1 &#8594; 30</text>
+  <text class="cdb-val cdb-val-inner" x="360" y="226">binds to the inner def &#8594; 5</text>
+
+  <text class="cdb-note" x="40" y="266">Indentation is the scope's only surface signal; a <tspan style="font-family: ui-monospace, Menlo, monospace;">return</tspan> binds to its <tspan style="font-family: ui-monospace, Menlo, monospace;">def</tspan> the same way.</text>
+  <text class="cdb-note" x="40" y="282">Inside a context window this is not LIKE coreference &#8212; it is coreference, over code tokens.</text>
+
+  <defs>
+    <marker id="cdb-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Insert or remove a shadowing inner definition">Insert a shadowing definition</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>One definition</strong> &#8212; the <code>timeout</code> in the last line binds to the module-level <code>timeout = 30</code>, three lines and one scope boundary away. The spelling matches many places; the binding is decided by structure, not by the token.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    outer: '<strong>One definition</strong> — the <code>timeout</code> in the last line binds to the module-level <code>timeout = 30</code>, three lines and one scope boundary away. The spelling matches many places; the binding is decided by structure, not by the token.',
+    inner: '<strong>Shadowed</strong> — insert <code>timeout = 5</code> inside the function and the identical use-site re-points to the nearer definition: the value flips from 30 to 5. Post 3\'s pronoun problem, replayed over code — the nearest compatible antecedent wins, and "compatible" is defined by scope.'
+  };
+  btn.addEventListener('click', () => {
+    const shadowed = root.classList.toggle('is-shadowed');
+    caption.innerHTML = shadowed ? CAP.inner : CAP.outer;
+    btn.textContent = shadowed ? 'Remove the shadowing definition' : 'Insert a shadowing definition';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
