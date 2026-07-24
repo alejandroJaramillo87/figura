@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-tense-aspect {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -58,7 +64,7 @@
 .fg-tense-aspect .tns-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
 
 /* sentence variants cross-fade */
-.fg-tense-aspect .tns-sent { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-tense-aspect .tns-sent { transition: opacity 0.7s var(--ease); }
 .fg-tense-aspect .tns-sent text { fill: var(--text); font-size: 14px; }
 .fg-tense-aspect .tns-sent .tns-verb { fill: var(--warn); }
 .fg-tense-aspect .tns-sent-perf { opacity: 1; }
@@ -70,7 +76,7 @@
 .fg-tense-aspect .tns-axis { stroke: var(--line); stroke-width: 1.5; }
 .fg-tense-aspect .tns-now { stroke: var(--accent); stroke-width: 2; }
 .fg-tense-aspect .tns-state { transition: opacity 0.7s; }
-.fg-tense-aspect .tns-state rect { fill: #0e4429; stroke: var(--ok); stroke-width: 1.5; }
+.fg-tense-aspect .tns-state rect { fill: var(--ok-dim); stroke: var(--ok); stroke-width: 1.5; }
 .fg-tense-aspect .tns-state-perf { opacity: 1; }
 .fg-tense-aspect .tns-state-past { opacity: 0; }
 .fg-tense-aspect.is-past .tns-state-perf { opacity: 0; }
@@ -84,7 +90,7 @@
 /* mandarin row: ghost tense slot + supplier arc */
 .fg-tense-aspect .tns-ghost rect { fill: none; stroke: var(--warn); stroke-width: 1.5; stroke-dasharray: 6 4; }
 .fg-tense-aspect .tns-ghost text { fill: var(--warn); font-size: 12px; text-anchor: middle; }
-.fg-tense-aspect .tns-cue .tns-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-tense-aspect .tns-cue .tns-tok { stroke: var(--ok); fill: var(--ok-dim); }
 .fg-tense-aspect .tns-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
 
 .fg-tense-aspect .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }

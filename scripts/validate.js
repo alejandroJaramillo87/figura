@@ -125,6 +125,22 @@ function checkFile(file) {
     if (!/^fg-[a-z0-9]+-/.test(kf)) report(file, 'keyframes', `keyframe name not fg-<abbr>-* prefixed: "${kf}"`);
   }
 
+  /* motion tokens: easing curves and dim state fills come from the palette
+     block, never hand-written — a tokens.css change must reach every state */
+  {
+    let unmanaged = frag;
+    for (const b of F.findBlocks(frag).slice().reverse()) {
+      unmanaged = unmanaged.slice(0, b.start) + unmanaged.slice(b.end);
+    }
+    if (/cubic-bezier\(/.test(unmanaged)) {
+      report(file, 'motion-token', 'literal cubic-bezier() outside managed blocks (use var(--ease))');
+    }
+    const dimHexes = unmanaged.match(/#(?:0c3550|12283f|0e4429|14352a|123c2e|4a3608|4a1d1d|3f1d1d|2a2350)\b/gi) || [];
+    for (const h of dimHexes) {
+      report(file, 'dim-token', `hand-mixed dim state fill ${h} (use var(--accent-dim)/--ok-dim/--warn-dim/--hot-dim/--violet-dim)`);
+    }
+  }
+
   /* reduced motion */
   if (!frag.includes('prefers-reduced-motion')) {
     report(file, 'reduced-motion', 'no prefers-reduced-motion handling in fragment');

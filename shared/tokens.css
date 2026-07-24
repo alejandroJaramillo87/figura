@@ -25,6 +25,15 @@
   --fg-hot: #f87171;      /* bottleneck / eviction / error */
   --fg-violet: #a78bfa;   /* secondary series (e.g. K vs V, head 2) */
 
+  /* Dim state fills — accent/semantic hues at ~15% over the panel bg.
+     Use for is-step-N active box fills so a tokens.css accent change
+     propagates to step states (never hand-mix these hexes in diagrams). */
+  --fg-accent-dim: #0c3550;
+  --fg-ok-dim: #0e4429;
+  --fg-warn-dim: #4a3608;
+  --fg-hot-dim: #4a1d1d;
+  --fg-violet-dim: #2a2350;
+
   /* Lines */
   --fg-line: #64748b;
 
@@ -36,6 +45,7 @@
   --fg-radius: 12px;
   --fg-radius-sm: 6px;
   --fg-dur-step: 700ms;
+  --fg-dur-fast: 0.45s;
   --fg-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 

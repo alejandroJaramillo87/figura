@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-soft-lookup {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -52,7 +58,7 @@
 
 
 .fg-soft-lookup .sfl-note { fill: var(--muted); font-size: 11px; }
-.fg-soft-lookup .sfl-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-soft-lookup .sfl-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s var(--ease), stroke 0.7s var(--ease); }
 .fg-soft-lookup .sfl-tok text { fill: var(--text); font-size: 13px; text-anchor: middle; }
 
 /* the pronoun */
@@ -75,7 +81,7 @@
 /* step 3: weighted arcs converge on the pronoun; widths encode weight */
 .fg-soft-lookup .sfl-arc { fill: none; stroke: var(--ok); opacity: 0; transition: opacity 0.7s; }
 .fg-soft-lookup.is-step-3 .sfl-arc { opacity: 1; }
-.fg-soft-lookup.is-step-3 .sfl-they rect { fill: #0e4429; stroke: var(--ok); }
+.fg-soft-lookup.is-step-3 .sfl-they rect { fill: var(--ok-dim); stroke: var(--ok); }
 
 /* fixed footer caption slot */
 .fg-soft-lookup .sfl-cap { opacity: 0; transition: opacity 0.45s; }

@@ -1,8 +1,8 @@
 {{SCOPE}} {
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 2px 12px rgba(120, 100, 60, 0.10);
 }

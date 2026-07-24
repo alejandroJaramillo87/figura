@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-cataphora-order {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -54,30 +60,30 @@
 .fg-cataphora-order .ctp-note { fill: var(--muted); font-size: 11px; }
 .fg-cataphora-order .ctp-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease);
 }
 .fg-cataphora-order .ctp-word { fill: var(--text); font-size: 14px; text-anchor: middle; }
 
 /* the pronoun */
 .fg-cataphora-order .ctp-she .ctp-tok { stroke: var(--warn); }
 .fg-cataphora-order.is-step-2 .ctp-she .ctp-tok,
-.fg-cataphora-order.is-step-3 .ctp-she .ctp-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-cataphora-order.is-step-3 .ctp-she .ctp-tok { stroke: var(--ok); fill: var(--ok-dim); }
 
 /* Mary lights when read */
 .fg-cataphora-order.is-step-2 .ctp-mary .ctp-tok,
-.fg-cataphora-order.is-step-3 .ctp-mary .ctp-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-cataphora-order.is-step-3 .ctp-mary .ctp-tok { stroke: var(--ok); fill: var(--ok-dim); }
 
 /* causal mask: shading over not-yet-read tokens, slides right per step */
 .fg-cataphora-order .ctp-mask {
   fill: var(--bg); opacity: 0.78;
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.7s;
+  transition: transform 0.7s var(--ease), opacity 0.7s;
 }
 .fg-cataphora-order.is-step-1 .ctp-mask { transform: translateX(72px); }
 .fg-cataphora-order.is-step-2 .ctp-mask { transform: translateX(216px); }
 .fg-cataphora-order.is-step-3 .ctp-mask { transform: translateX(420px); opacity: 0; }
 .fg-cataphora-order .ctp-maskline {
   stroke: var(--hot); stroke-width: 2; stroke-dasharray: 4 4;
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.7s;
+  transition: transform 0.7s var(--ease), opacity 0.7s;
 }
 .fg-cataphora-order.is-step-1 .ctp-maskline { transform: translateX(72px); }
 .fg-cataphora-order.is-step-2 .ctp-maskline { transform: translateX(216px); }
@@ -93,7 +99,7 @@
 /* the backward arc: Mary -> she, appears at step 2 */
 .fg-cataphora-order .ctp-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.7s var(--ease);
 }
 .fg-cataphora-order.is-step-2 .ctp-arc, .fg-cataphora-order.is-step-3 .ctp-arc { opacity: 1; }
 .fg-cataphora-order .ctp-arclabel { opacity: 0; transition: opacity 0.7s; }
