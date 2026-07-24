@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Format continuation: what comes next is set by precedent</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Format continuation</h1>
+<p>The same content under two structural precedents — a markdown table or a numbered list — and the correct next token changes with the precedent, not the grammar.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-format-continuation">
+<style>
+.fg-format-continuation {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-format-continuation svg { display: block; width: 100%; height: auto; }
+.fg-format-continuation text { font-family: inherit; }
+
+.fg-format-continuation .fmc-note { fill: var(--muted); font-size: 11px; }
+.fg-format-continuation .fmc-row text { font-family: var(--mono); font-size: 13px; fill: var(--text); }
+.fg-format-continuation .fmc-mark { fill: var(--violet); }
+
+/* precedent variants cross-fade */
+.fg-format-continuation .fmc-form { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-format-continuation .fmc-form-table { opacity: 1; }
+.fg-format-continuation .fmc-form-list { opacity: 0; }
+.fg-format-continuation.is-list .fmc-form-table { opacity: 0; }
+.fg-format-continuation.is-list .fmc-form-list { opacity: 1; }
+
+/* ghost continuation row */
+.fg-format-continuation .fmc-ghost rect { fill: #0e4429; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-format-continuation .fmc-ghost text { font-family: var(--mono); font-size: 13px; fill: var(--ok); }
+
+/* precedent arcs from the ghost back to the pattern rows */
+.fg-format-continuation .fmc-arc { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 3 5; }
+
+.fg-format-continuation .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-format-continuation .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-format-continuation .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-format-continuation .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-format-continuation .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-format-continuation .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-format-continuation .fmc-form { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The same two content items shown under two structural precedents that a button toggles. As a markdown table: a header row, then pipe-delimited rows for llama.cpp low latency and vLLM high throughput; the ghost continuation row is another pipe-delimited row starting with a pipe character. As a numbered list: 1. llama.cpp — low latency, 2. vLLM — high throughput; the ghost continuation is 3. followed by the next item. Dashed arcs run from the ghost row back to the precedent rows. The content did not change; the correct next token — a pipe or the numeral 3 — is defined entirely by structural precedent far back in context.">
+  <text class="fmc-note" x="40" y="24">the next token's shape is defined by the pattern the context established &#8212; not by any grammar</text>
+
+  <!-- table precedent -->
+  <g class="fmc-form fmc-form-table">
+    <g class="fmc-row"><text x="60" y="66"><tspan class="fmc-mark">|</tspan> engine    <tspan class="fmc-mark">|</tspan> strength        <tspan class="fmc-mark">|</tspan></text></g>
+    <g class="fmc-row"><text x="60" y="94"><tspan class="fmc-mark">|</tspan>-----------<tspan class="fmc-mark">|</tspan>-----------------<tspan class="fmc-mark">|</tspan></text></g>
+    <g class="fmc-row"><text x="60" y="122"><tspan class="fmc-mark">|</tspan> llama.cpp <tspan class="fmc-mark">|</tspan> low latency     <tspan class="fmc-mark">|</tspan></text></g>
+    <g class="fmc-row"><text x="60" y="150"><tspan class="fmc-mark">|</tspan> vLLM      <tspan class="fmc-mark">|</tspan> high throughput <tspan class="fmc-mark">|</tspan></text></g>
+    <g class="fmc-ghost">
+      <rect x="52" y="164" width="420" height="30" rx="6"/>
+      <text x="60" y="184">| TensorRT  | fast prefill    |</text>
+    </g>
+    <path class="fmc-arc" d="M 90 164 C 76 152, 70 142, 66 132"/>
+    <path class="fmc-arc" d="M 200 164 C 190 130, 180 90, 170 76"/>
+  </g>
+
+  <!-- list precedent -->
+  <g class="fmc-form fmc-form-list">
+    <g class="fmc-row"><text x="60" y="80"><tspan class="fmc-mark">1.</tspan> llama.cpp &#8212; low latency</text></g>
+    <g class="fmc-row"><text x="60" y="122"><tspan class="fmc-mark">2.</tspan> vLLM &#8212; high throughput</text></g>
+    <g class="fmc-ghost">
+      <rect x="52" y="146" width="340" height="30" rx="6"/>
+      <text x="60" y="166">3. TensorRT &#8212; fast prefill</text>
+    </g>
+    <path class="fmc-arc" d="M 72 146 C 66 138, 64 132, 62 130"/>
+    <path class="fmc-arc" d="M 120 146 C 100 120, 80 100, 68 88"/>
+  </g>
+
+  <text class="fmc-note" x="40" y="228">Same items, same meaning. Under the table precedent the next token is <tspan style="font-family: ui-monospace, Menlo, monospace;">|</tspan>; under the list</text>
+  <text class="fmc-note" x="40" y="244">precedent it is <tspan style="font-family: ui-monospace, Menlo, monospace;">3.</tspan> &#8212; and the counter lives rows away. JSON nesting, rhyme schemes, and</text>
+  <text class="fmc-note" x="40" y="260">CSV columns all work this way: continuation is defined by structural precedent, far upstream.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Switch the established format precedent">Switch to a numbered list</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Table precedent</strong> &#8212; two pipe-delimited rows established the pattern, so the continuation (dashed) must open with <code>|</code> and land its columns on the same boundaries. Nothing about "TensorRT" demands a pipe; the format does.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    table: '<strong>Table precedent</strong> — two pipe-delimited rows established the pattern, so the continuation (dashed) must open with <code>|</code> and land its columns on the same boundaries. Nothing about "TensorRT" demands a pipe; the format does.',
+    list: '<strong>List precedent</strong> — the same content as a numbered list, and the correct next token becomes <code>3.</code> — a numeral computed from counters two rows upstream. The content is identical; the continuation\'s shape is pure structural precedent.'
+  };
+  btn.addEventListener('click', () => {
+    const list = root.classList.toggle('is-list');
+    caption.innerHTML = list ? CAP.list : CAP.table;
+    btn.textContent = list ? 'Switch to a markdown table' : 'Switch to a numbered list';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

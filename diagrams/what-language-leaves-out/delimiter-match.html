@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delimiter matching: the closer's role lives at the opener</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Delimiter matching</h1>
+<p>The same quote token opens or closes a string depending on a delimiter far upstream — remove one opener and every quote after it changes role.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-delimiter-match">
+<style>
+.fg-delimiter-match {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-delimiter-match svg { display: block; width: 100%; height: auto; }
+.fg-delimiter-match text { font-family: inherit; }
+
+.fg-delimiter-match .dlm-note { fill: var(--muted); font-size: 11px; }
+.fg-delimiter-match .dlm-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-delimiter-match .dlm-tok text { fill: var(--text); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
+
+/* segment shading: string vs code, flips with parity */
+.fg-delimiter-match .dlm-seg-a rect, .fg-delimiter-match .dlm-seg-c rect { fill: #0e4429; stroke: var(--ok); }
+.fg-delimiter-match .dlm-seg-b rect { fill: var(--panel); stroke: var(--border); }
+.fg-delimiter-match.is-dropped .dlm-seg-a rect, .fg-delimiter-match.is-dropped .dlm-seg-c rect { fill: var(--panel); stroke: var(--border); }
+.fg-delimiter-match.is-dropped .dlm-seg-b rect { fill: #0e4429; stroke: var(--ok); }
+
+/* the first quote: present vs a dashed ghost hole */
+.fg-delimiter-match .dlm-q1 { transition: opacity 0.7s; }
+.fg-delimiter-match .dlm-q1-hole { opacity: 0; transition: opacity 0.7s; }
+.fg-delimiter-match .dlm-q1-hole rect { fill: none; stroke: var(--hot); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-delimiter-match .dlm-q1-hole text { fill: var(--hot); font-size: 10px; text-anchor: middle; }
+.fg-delimiter-match.is-dropped .dlm-q1 { opacity: 0; }
+.fg-delimiter-match.is-dropped .dlm-q1-hole { opacity: 1; }
+
+/* role tags under the quote tokens */
+.fg-delimiter-match .dlm-tag { font-size: 10px; text-anchor: middle; transition: opacity 0.7s; }
+.fg-delimiter-match .dlm-tag-open { fill: var(--accent); }
+.fg-delimiter-match .dlm-tag-close { fill: var(--ok); }
+.fg-delimiter-match .dlm-tag-hot { fill: var(--hot); }
+.fg-delimiter-match .dlm-full { opacity: 1; }
+.fg-delimiter-match .dlm-drop { opacity: 0; }
+.fg-delimiter-match.is-dropped .dlm-full { opacity: 0; }
+.fg-delimiter-match.is-dropped .dlm-drop { opacity: 1; }
+
+/* pairing arcs: closer -> its opener */
+.fg-delimiter-match .dlm-arc { fill: none; stroke: var(--ok); stroke-width: 2; transition: opacity 0.7s; }
+.fg-delimiter-match .dlm-arc-full { opacity: 1; }
+.fg-delimiter-match .dlm-arc-drop { opacity: 0; }
+.fg-delimiter-match.is-dropped .dlm-arc-full { opacity: 0; }
+.fg-delimiter-match.is-dropped .dlm-arc-drop { opacity: 1; }
+
+.fg-delimiter-match .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-delimiter-match .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-delimiter-match .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-delimiter-match .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-delimiter-match .fg-caption strong { color: var(--ok); font-weight: 600; }
+.fg-delimiter-match .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-delimiter-match .dlm-q1, .fg-delimiter-match .dlm-q1-hole,
+  .fg-delimiter-match .dlm-tag, .fg-delimiter-match .dlm-arc,
+  .fg-delimiter-match .dlm-tok rect { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A row of code tokens: quote, alpha, quote, plus beta plus, quote, gamma, quote. With all four quotes present the quotes alternate open, close, open, close, and the segments alpha and gamma are shaded green as string content while beta is plain code. A button removes the first quote, leaving a dashed red hole. Every remaining quote flips role: the second quote becomes an opener, beta becomes the string, gamma becomes code, and the final quote is left dangling, unclosed, in red. Pairing arcs from each closer to its opener re-draw. One distant token changed every later token's role.">
+  <text class="dlm-note" x="40" y="26">the closing token's role is not in the token &#8212; it is at the distant opener</text>
+
+  <!-- token row: " alpha " + beta + " gamma " -->
+  <g class="dlm-q1 dlm-tok">
+    <rect x="48" y="88" width="34" height="40" rx="6"/>
+    <text x="65" y="114">"</text>
+  </g>
+  <g class="dlm-q1-hole">
+    <rect x="48" y="88" width="34" height="40" rx="6"/>
+    <text x="65" y="80">deleted</text>
+  </g>
+  <g class="dlm-tok dlm-seg-a">
+    <rect x="90" y="88" width="80" height="40" rx="6"/>
+    <text x="130" y="114">alpha</text>
+  </g>
+  <g class="dlm-tok dlm-q2">
+    <rect x="178" y="88" width="34" height="40" rx="6"/>
+    <text x="195" y="114">"</text>
+  </g>
+  <g class="dlm-tok dlm-seg-b">
+    <rect x="220" y="88" width="104" height="40" rx="6"/>
+    <text x="272" y="114">+ beta +</text>
+  </g>
+  <g class="dlm-tok dlm-q3">
+    <rect x="332" y="88" width="34" height="40" rx="6"/>
+    <text x="349" y="114">"</text>
+  </g>
+  <g class="dlm-tok dlm-seg-c">
+    <rect x="374" y="88" width="94" height="40" rx="6"/>
+    <text x="421" y="114">gamma</text>
+  </g>
+  <g class="dlm-tok dlm-q4">
+    <rect x="476" y="88" width="34" height="40" rx="6"/>
+    <text x="493" y="114">"</text>
+  </g>
+
+  <!-- role tags: full state -->
+  <g class="dlm-full">
+    <text class="dlm-tag dlm-tag-open" x="65" y="148">OPEN</text>
+    <text class="dlm-tag dlm-tag-close" x="195" y="148">CLOSE</text>
+    <text class="dlm-tag dlm-tag-open" x="349" y="148">OPEN</text>
+    <text class="dlm-tag dlm-tag-close" x="493" y="148">CLOSE</text>
+  </g>
+  <!-- role tags: dropped state -->
+  <g class="dlm-drop">
+    <text class="dlm-tag dlm-tag-open" x="195" y="148">OPEN</text>
+    <text class="dlm-tag dlm-tag-close" x="349" y="148">CLOSE</text>
+    <text class="dlm-tag dlm-tag-hot" x="493" y="148">OPEN &#8212; unclosed</text>
+  </g>
+
+  <!-- pairing arcs (closer back to opener) -->
+  <g class="dlm-arc-full">
+    <path class="dlm-arc" d="M 186 88 C 160 58, 100 58, 72 84" marker-end="url(#dlm-arrow)"/>
+    <path class="dlm-arc" d="M 484 88 C 450 52, 388 52, 356 84" marker-end="url(#dlm-arrow)"/>
+  </g>
+  <g class="dlm-arc-drop">
+    <path class="dlm-arc" d="M 340 88 C 310 56, 232 56, 202 84" marker-end="url(#dlm-arrow)"/>
+  </g>
+
+  <text class="dlm-note" x="40" y="196">Parity: every quote's role depends on how many quotes precede it. Delete one, thousands of</text>
+  <text class="dlm-note" x="40" y="212">tokens upstream, and every later quote, bracket, or tag flips between "code" and "string".</text>
+  <text class="dlm-note" x="40" y="240">The same holds for <tspan style="font-family: ui-monospace, Menlo, monospace;">}</tspan> and <tspan style="font-family: ui-monospace, Menlo, monospace;">&lt;/div&gt;</tspan> and ``` &#8212; a closer is meaningless without its opener.</text>
+
+  <defs>
+    <marker id="dlm-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Delete or restore the first quote">Delete the first quote</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Balanced</strong> &#8212; four quotes, alternating <code>OPEN</code>/<code>CLOSE</code>: "alpha" and "gamma" are string content, "+ beta +" is code. Each closer's arc points at its opener &#8212; that pairing is the closer's entire meaning.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    full: '<strong>Balanced</strong> — four quotes, alternating <code>OPEN</code>/<code>CLOSE</code>: "alpha" and "gamma" are string content, "+ beta +" is code. Each closer\'s arc points at its opener — that pairing is the closer\'s entire meaning.',
+    drop: '<strong>One opener deleted</strong> — every surviving quote flips role: the old closer now opens, beta becomes the string, gamma becomes code, and the final quote dangles unclosed. No downstream token changed; their roles all did.'
+  };
+  btn.addEventListener('click', () => {
+    const dropped = root.classList.toggle('is-dropped');
+    caption.innerHTML = dropped ? CAP.drop : CAP.full;
+    btn.textContent = dropped ? 'Restore the first quote' : 'Delete the first quote';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
