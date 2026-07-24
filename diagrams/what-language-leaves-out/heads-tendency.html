@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heads: labor divided loosely</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Heads divide the labor — loosely</h1>
+<p>A few attention-head tendencies have names; most heads resist naming, and the named ones are redundant and replaceable. A tendency chart, not an org chart.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-heads-tendency">
+<style>
+.fg-heads-tendency {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-heads-tendency svg { display: block; width: 100%; height: auto; }
+.fg-heads-tendency text { font-family: inherit; }
+
+.fg-heads-tendency .hdt-note { fill: var(--muted); font-size: 11px; }
+.fg-heads-tendency .hdt-chip rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.3s, stroke 0.3s; cursor: pointer; }
+.fg-heads-tendency .hdt-chip:hover rect { fill: var(--panel-hover); }
+.fg-heads-tendency .hdt-chip text { fill: var(--text); font-size: 12px; text-anchor: middle; pointer-events: none; }
+.fg-heads-tendency .hdt-prev:hover rect { stroke: var(--accent); }
+.fg-heads-tendency .hdt-pos:hover rect { stroke: var(--violet); }
+.fg-heads-tendency .hdt-ind rect { stroke: var(--ok); }
+.fg-heads-tendency .hdt-ind:hover rect { stroke: var(--ok); fill: #0e4429; }
+.fg-heads-tendency .hdt-syn:hover rect { stroke: var(--warn); }
+.fg-heads-tendency .hdt-unk rect { stroke-dasharray: 6 4; }
+.fg-heads-tendency .hdt-unk text { fill: var(--muted); }
+.fg-heads-tendency .hdt-unk:hover rect { stroke: var(--hot); }
+
+.fg-heads-tendency .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longest hover text: no page reflow */
+  color: var(--muted); font-size: 13px; min-height: 6.6em;
+  transition: color 0.3s;
+}
+.fg-heads-tendency .fg-caption.is-active { color: var(--text); }
+.fg-heads-tendency .fg-caption strong { color: var(--accent); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-heads-tendency .hdt-chip rect { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Two rows of attention-head chips. Four carry names — previous-token, positional, induction (highlighted green as the found circuit), and syntax-ish. Eight more are dashed and labeled with question marks: the majority of heads resist naming. A note beneath reads: the named tendencies are real but redundant — ablate one and backups compensate; the picture is a tendency chart, not an org chart.">
+  <text class="hdt-note" x="40" y="24">what interpretability can name &#8212; and the honest proportion it cannot</text>
+
+  <!-- named chips -->
+  <g class="hdt-chip hdt-prev" data-info="Previous-token heads — attend one position back, feeding local composition (and the first half of the induction circuit). One of the earliest tendencies ever named. Caveat: real models contain several; ablate one and others compensate.">
+    <rect x="48" y="52" width="140" height="38" rx="19"/>
+    <text x="118" y="76">previous-token</text>
+  </g>
+  <g class="hdt-chip hdt-pos" data-info="Positional heads — attend by position pattern (first token, fixed offsets) more than by content. Useful bookkeeping. Caveat: the label describes the attention map's shape, which is not the same as knowing what the head contributes downstream.">
+    <rect x="200" y="52" width="120" height="38" rx="19"/>
+    <text x="260" y="76">positional</text>
+  </g>
+  <g class="hdt-chip hdt-ind" data-info="Induction heads — the found circuit from post 7: match the current token's previous occurrence, attend one past it, support copying and in-context learning. The strongest mechanism claim in this whole diagram — and it holds for the crisp, string-matching cases, not for everything ICL does.">
+    <rect x="332" y="52" width="120" height="38" rx="19"/>
+    <text x="392" y="76">induction</text>
+  </g>
+  <g class="hdt-chip hdt-syn" data-info="Syntax-ish heads — heads whose attention tracks dependencies like subject–verb or head–modifier above chance. The suffix is doing real work: the correlation is reliable, the mechanism reading is not. Parse-shaped attention is not the same as parsing.">
+    <rect x="464" y="52" width="120" height="38" rx="19"/>
+    <text x="524" y="76">syntax-ish</text>
+  </g>
+
+  <!-- unnamed chips -->
+  <g class="hdt-chip hdt-unk" data-info="The honest majority — most heads have no accepted name. Their attention maps look diffuse or polysemantic; ablating them hurts a little, everywhere. Whatever pragmatics, style, and world-knowledge integration run on, it is mostly in here — distributed, redundant, unnamed.">
+    <rect x="48" y="112" width="72" height="38" rx="19"/><text x="84" y="136">???</text>
+  </g>
+  <g class="hdt-chip hdt-unk" data-info="The honest majority — most heads have no accepted name. Their attention maps look diffuse or polysemantic; ablating them hurts a little, everywhere. Whatever pragmatics, style, and world-knowledge integration run on, it is mostly in here — distributed, redundant, unnamed.">
+    <rect x="132" y="112" width="72" height="38" rx="19"/><text x="168" y="136">???</text>
+  </g>
+  <g class="hdt-chip hdt-unk" data-info="The honest majority — most heads have no accepted name. Their attention maps look diffuse or polysemantic; ablating them hurts a little, everywhere. Whatever pragmatics, style, and world-knowledge integration run on, it is mostly in here — distributed, redundant, unnamed.">
+    <rect x="216" y="112" width="72" height="38" rx="19"/><text x="252" y="136">???</text>
+  </g>
+  <g class="hdt-chip hdt-unk" data-info="The honest majority — most heads have no accepted name. Their attention maps look diffuse or polysemantic; ablating them hurts a little, everywhere. Whatever pragmatics, style, and world-knowledge integration run on, it is mostly in here — distributed, redundant, unnamed.">
+    <rect x="300" y="112" width="72" height="38" rx="19"/><text x="336" y="136">???</text>
+  </g>
+  <g class="hdt-chip hdt-unk" data-info="The honest majority — most heads have no accepted name. Their attention maps look diffuse or polysemantic; ablating them hurts a little, everywhere. Whatever pragmatics, style, and world-knowledge integration run on, it is mostly in here — distributed, redundant, unnamed.">
+    <rect x="384" y="112" width="72" height="38" rx="19"/><text x="420" y="136">???</text>
+  </g>
+  <g class="hdt-chip hdt-unk" data-info="The honest majority — most heads have no accepted name. Their attention maps look diffuse or polysemantic; ablating them hurts a little, everywhere. Whatever pragmatics, style, and world-knowledge integration run on, it is mostly in here — distributed, redundant, unnamed.">
+    <rect x="468" y="112" width="72" height="38" rx="19"/><text x="504" y="136">???</text>
+  </g>
+  <g class="hdt-chip hdt-unk" data-info="The honest majority — most heads have no accepted name. Their attention maps look diffuse or polysemantic; ablating them hurts a little, everywhere. Whatever pragmatics, style, and world-knowledge integration run on, it is mostly in here — distributed, redundant, unnamed.">
+    <rect x="552" y="112" width="72" height="38" rx="19"/><text x="588" y="136">???</text>
+  </g>
+
+  <text class="hdt-note" x="40" y="192">The named tendencies are real, and redundant: ablate a named head and backups pick up the slack.</text>
+  <text class="hdt-note" x="40" y="208">The dashed majority is the point of the picture. A tendency chart &#8212; not an org chart.</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover a chip. Four tendencies have earned names; the induction chip is the only one backed by a found circuit. The dashed majority is drawn to scale with the field's honesty, not with any particular model.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover a chip. Four tendencies have earned names; the induction chip is the only one backed by a found circuit. The dashed majority is drawn to scale with the field\'s honesty, not with any particular model.';
+  root.querySelectorAll('.hdt-chip[data-info]').forEach((el) => {
+    el.addEventListener('mouseenter', () => {
+      caption.textContent = el.getAttribute('data-info');
+      caption.classList.add('is-active');
+    });
+    el.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

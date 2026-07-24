@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soft lookup: resolution as a weighted mixture</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>The soft lookup</h1>
+<p>The series' first sentence, re-answered with the mechanism: "they" asks for what it needs, every position answers with a match strength, and the resolution is a weighted blend — never a pointer.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-soft-lookup">
+<style>
+.fg-soft-lookup {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-soft-lookup svg { display: block; width: 100%; height: auto; }
+.fg-soft-lookup text { font-family: inherit; }
+
+.fg-soft-lookup .sfl-note { fill: var(--muted); font-size: 11px; }
+.fg-soft-lookup .sfl-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-soft-lookup .sfl-tok text { fill: var(--text); font-size: 13px; text-anchor: middle; }
+
+/* the pronoun */
+.fg-soft-lookup .sfl-they rect { stroke: var(--accent); stroke-width: 2; }
+.fg-soft-lookup .sfl-they text { fill: var(--accent); font-weight: 600; }
+
+/* step 1: query badge */
+.fg-soft-lookup .sfl-query { opacity: 0; transition: opacity 0.7s; }
+.fg-soft-lookup .sfl-query rect { fill: var(--bg); stroke: var(--accent); stroke-width: 1.5; }
+.fg-soft-lookup .sfl-query text { fill: var(--accent); font-size: 11px; text-anchor: middle; }
+.fg-soft-lookup.is-step-1 .sfl-query, .fg-soft-lookup.is-step-2 .sfl-query,
+.fg-soft-lookup.is-step-3 .sfl-query { opacity: 1; }
+
+/* step 2: keys light with graded strength — several, none exclusive */
+.fg-soft-lookup .sfl-match { transition: opacity 0.7s; opacity: 0; pointer-events: none; }
+.fg-soft-lookup.is-step-2 .sfl-match, .fg-soft-lookup.is-step-3 .sfl-match { opacity: 1; }
+.fg-soft-lookup .sfl-match rect { fill: var(--ok); }
+.fg-soft-lookup .sfl-mlabel { fill: var(--ok); font-size: 10px; text-anchor: middle; }
+
+/* step 3: weighted arcs converge on the pronoun; widths encode weight */
+.fg-soft-lookup .sfl-arc { fill: none; stroke: var(--ok); opacity: 0; transition: opacity 0.7s; }
+.fg-soft-lookup.is-step-3 .sfl-arc { opacity: 1; }
+.fg-soft-lookup.is-step-3 .sfl-they rect { fill: #0e4429; stroke: var(--ok); }
+
+/* fixed footer caption slot */
+.fg-soft-lookup .sfl-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-soft-lookup.is-step-0 .sfl-cap-0, .fg-soft-lookup.is-step-1 .sfl-cap-1,
+.fg-soft-lookup.is-step-2 .sfl-cap-2, .fg-soft-lookup.is-step-3 .sfl-cap-3 { opacity: 1; }
+
+.fg-soft-lookup .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-soft-lookup .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-soft-lookup .fg-controls button:hover { border-color: var(--accent); }
+.fg-soft-lookup .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-soft-lookup * { transition: none !important; }
+}
+</style>
+
+<svg viewBox="0 0 720 330" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Step animation of attention as a soft lookup over the Winograd sentence: The city councilmen refused the demonstrators a permit because they feared violence. Step 1: the pronoun they emits a query badge — what am I? Step 2: every earlier token answers with a graded match strength shown as bars of different heights: the councilmen strongest, the demonstrators and feared partial, function words faint. Several positions light; none is exclusive. Step 3: arcs of different thicknesses, thickness encoding weight, converge from those positions into they, whose box fills green: the pronoun's updated representation is a weighted mixture of what the context offered — a blend, never a pointer. An on-canvas note states this is a schematic of the operation, not a map of any real attention head.">
+  <text class="sfl-note" x="40" y="24">the operation, schematically &#8212; NOT a map of any real head (real models: many heads, many layers)</text>
+
+  <!-- token row -->
+  <g class="sfl-tok sfl-c1">
+    <rect x="40" y="90" width="150" height="36" rx="6"/>
+    <text x="115" y="113">the councilmen</text>
+  </g>
+  <g class="sfl-tok">
+    <rect x="198" y="90" width="74" height="36" rx="6"/>
+    <text x="235" y="113">refused</text>
+  </g>
+  <g class="sfl-tok sfl-c2">
+    <rect x="280" y="90" width="158" height="36" rx="6"/>
+    <text x="359" y="113">the demonstrators</text>
+  </g>
+  <g class="sfl-tok">
+    <rect x="446" y="90" width="86" height="36" rx="6"/>
+    <text x="489" y="113">a permit</text>
+  </g>
+  <g class="sfl-tok">
+    <rect x="86" y="150" width="84" height="36" rx="6"/>
+    <text x="128" y="173">because</text>
+  </g>
+  <g class="sfl-tok sfl-they">
+    <rect x="178" y="150" width="56" height="36" rx="6"/>
+    <text x="206" y="173">they</text>
+  </g>
+  <g class="sfl-tok sfl-c3">
+    <rect x="242" y="150" width="72" height="36" rx="6"/>
+    <text x="278" y="173">feared</text>
+  </g>
+  <g class="sfl-tok">
+    <rect x="322" y="150" width="90" height="36" rx="6"/>
+    <text x="367" y="173">violence.</text>
+  </g>
+
+  <!-- step 1: query badge above "they" -->
+  <g class="sfl-query">
+    <rect x="160" y="200" width="92" height="24" rx="12"/>
+    <text x="206" y="216">query: who am I?</text>
+  </g>
+
+  <!-- step 2: graded match bars above candidate tokens -->
+  <g class="sfl-match">
+    <rect x="95" y="76" width="40" height="8" rx="2" opacity="0.9"/>
+    <text class="sfl-mlabel" x="115" y="68">strong</text>
+  </g>
+  <g class="sfl-match">
+    <rect x="344" y="76" width="30" height="8" rx="2" opacity="0.45"/>
+    <text class="sfl-mlabel" x="359" y="68">partial</text>
+  </g>
+  <g class="sfl-match">
+    <rect x="220" y="76" width="14" height="8" rx="2" opacity="0.2"/>
+  </g>
+  <g class="sfl-match">
+    <rect x="474" y="76" width="14" height="8" rx="2" opacity="0.2"/>
+  </g>
+  <g class="sfl-match">
+    <rect x="264" y="136" width="28" height="8" rx="2" opacity="0.45"/>
+    <text class="sfl-mlabel" x="278" y="130">partial</text>
+  </g>
+
+  <!-- step 3: weighted arcs into "they" (stroke width = weight) -->
+  <path class="sfl-arc" d="M 130 126 C 150 140, 170 148, 188 150" stroke-width="4"/>
+  <path class="sfl-arc" d="M 350 126 C 320 140, 260 146, 224 150" stroke-width="2"/>
+  <path class="sfl-arc" d="M 262 146 C 250 148, 240 150, 234 156" stroke-width="2"/>
+  <path class="sfl-arc" d="M 480 126 C 420 152, 300 130, 226 148" stroke-width="0.8"/>
+
+  <!-- fixed footer caption slot -->
+  <text class="sfl-note sfl-cap sfl-cap-0" x="40" y="262">Step 0 &#8212; the series' first sentence, one last time. "they" must import its meaning; the question is HOW.</text>
+  <text class="sfl-note sfl-cap sfl-cap-1" x="40" y="262">Step 1 &#8212; the pronoun's position emits a query: a description of the information it is missing.</text>
+  <text class="sfl-note sfl-cap sfl-cap-2" x="40" y="262">Step 2 &#8212; every earlier position answers with a match strength. Several light up. None is exclusive.</text>
+  <text class="sfl-note sfl-cap sfl-cap-3" x="40" y="262">Step 3 &#8212; import = weighted blend, thickness = weight. The resolution is a mixture, never a pointer.</text>
+
+  <text class="sfl-note" x="40" y="296">That softness is the whole trick: a hard symbol-table lookup cannot be learned by gradient descent.</text>
+  <text class="sfl-note" x="40" y="312">A weighted average can &#8212; and prediction pressure alone taught it to weight "the councilmen" heaviest.</text>
+</svg>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button data-fg="play" aria-label="Play or pause">&#9654;</button>
+  <button data-fg="next" aria-label="Next step">&#8250;</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const TOTAL = 3, STEP_MS = 2200;
+  let step = 0, timer = null;
+
+  function apply() {
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
+    pause() { clearInterval(timer); timer = null; },
+  };
+
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  function sync() {
+    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  apply();
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
