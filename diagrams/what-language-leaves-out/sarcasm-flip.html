@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarcasm: the polarity is not in the word</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Irony and sarcasm</h1>
+<p>"Great, another meeting." — whether "great" means great depends entirely on the discourse around it.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-sarcasm-flip">
+<style>
+.fg-sarcasm-flip {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-sarcasm-flip svg { display: block; width: 100%; height: auto; }
+.fg-sarcasm-flip text { font-family: inherit; }
+
+.fg-sarcasm-flip .src-note { fill: var(--muted); font-size: 11px; }
+.fg-sarcasm-flip .src-tok {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+}
+.fg-sarcasm-flip .src-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
+.fg-sarcasm-flip .src-great .src-tok { stroke: var(--warn); }
+
+/* context lines cross-fade */
+.fg-sarcasm-flip .src-ctx { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-sarcasm-flip .src-ctx text { fill: var(--text); font-size: 13px; }
+.fg-sarcasm-flip .src-ctx-pos { opacity: 1; }
+.fg-sarcasm-flip .src-ctx-neg { opacity: 0; }
+.fg-sarcasm-flip.is-sarcastic .src-ctx-pos { opacity: 0; }
+.fg-sarcasm-flip.is-sarcastic .src-ctx-neg { opacity: 1; }
+
+/* sentiment tag flips */
+.fg-sarcasm-flip .src-sent { transition: opacity 0.7s; }
+.fg-sarcasm-flip .src-sent rect { stroke-width: 1.5; }
+.fg-sarcasm-flip .src-sent text { font-size: 11px; text-anchor: middle; }
+.fg-sarcasm-flip .src-sent-pos { opacity: 1; }
+.fg-sarcasm-flip .src-sent-pos rect { fill: #0e4429; stroke: var(--ok); }
+.fg-sarcasm-flip .src-sent-pos text { fill: var(--ok); }
+.fg-sarcasm-flip .src-sent-neg { opacity: 0; }
+.fg-sarcasm-flip .src-sent-neg rect { fill: #4a1d1d; stroke: var(--hot); }
+.fg-sarcasm-flip .src-sent-neg text { fill: var(--hot); }
+.fg-sarcasm-flip.is-sarcastic .src-sent-pos { opacity: 0; }
+.fg-sarcasm-flip.is-sarcastic .src-sent-neg { opacity: 1; }
+
+/* arc from great to the context line */
+.fg-sarcasm-flip .src-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
+
+.fg-sarcasm-flip .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-sarcasm-flip .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-sarcasm-flip .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-sarcasm-flip .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-sarcasm-flip .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-sarcasm-flip .src-ctx, .fg-sarcasm-flip .src-sent { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A context line a button swaps between: We just landed the client, and: Back-to-back calls since eight. Below it, the fixed sentence: Great, another meeting, with the word Great outlined in amber. A sentiment tag above Great flips between a green POSITIVE chip and a red NEGATIVE chip as the context changes. A green arc runs from Great up to the context line. No token in the target sentence changes.">
+  <text class="src-note" x="40" y="26">the polarity of "great" is computed from the discourse, not from "great"</text>
+
+  <!-- context lines -->
+  <g class="src-ctx src-ctx-pos">
+    <text x="90" y="66">"We just landed the client &#8212;</text>
+  </g>
+  <g class="src-ctx src-ctx-neg">
+    <text x="90" y="66">"Back-to-back calls since eight &#8212;</text>
+  </g>
+
+  <!-- arc: great -> context -->
+  <path class="src-arc" d="M 130 118 C 110 100, 100 90, 96 74" marker-end="url(#src-arrow)"/>
+
+  <!-- target sentence -->
+  <g class="src-great">
+    <rect class="src-tok" x="110" y="122" width="66" height="36" rx="6"/>
+    <text class="src-word" x="143" y="145">Great,</text>
+  </g>
+  <rect class="src-tok" x="184" y="122" width="76" height="36" rx="6"/>
+  <text class="src-word" x="222" y="145">another</text>
+  <rect class="src-tok" x="268" y="122" width="86" height="36" rx="6"/>
+  <text class="src-word" x="311" y="145">meeting."</text>
+
+  <!-- sentiment tags -->
+  <g class="src-sent src-sent-pos">
+    <rect x="400" y="122" width="110" height="26" rx="13"/>
+    <text x="455" y="139">POSITIVE</text>
+  </g>
+  <g class="src-sent src-sent-neg">
+    <rect x="400" y="122" width="110" height="26" rx="13"/>
+    <text x="455" y="139">NEGATIVE</text>
+  </g>
+  <text class="src-note" x="530" y="139">&#8592; sentiment of "Great"</text>
+
+  <text class="src-note" x="40" y="204">Every token of "Great, another meeting." is identical in both states. The flip happens</text>
+  <text class="src-note" x="40" y="220">entirely in the preceding line &#8212; sarcasm has no marker of its own in text.</text>
+
+  <defs>
+    <marker id="src-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Swap the discourse context to flip the polarity">Swap the context</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Sincere</strong> &#8212; after "We just landed the client," a meeting is good news and "Great" means great. The word's dictionary polarity and its polarity in use agree.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    pos: '<strong>Sincere</strong> — after "We just landed the client," a meeting is good news and "Great" means great. The word\'s dictionary polarity and its polarity in use agree.',
+    neg: '<strong>Sarcastic</strong> — after "Back-to-back calls since eight," the same "Great" inverts to a complaint. The polarity flipped without a single token of the sentence changing; the cue lives one line up, in the discourse.'
+  };
+  btn.addEventListener('click', () => {
+    const sar = root.classList.toggle('is-sarcastic');
+    caption.innerHTML = sar ? CAP.neg : CAP.pos;
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

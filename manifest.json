@@ -362,5 +362,61 @@
     "title": "Tense and aspect: does the state persist?",
     "post": "what-language-leaves-out-semantic",
     "description": "Toggle flips \u201cI've lived here\u201d / \u201cI lived here\u201d on a timeline bar; a Mandarin row shows a dashed empty tense slot filled by a context adverb."
+  },
+  {
+    "id": "wllo-speech-act",
+    "path": "diagrams/what-language-leaves-out/speech-act.html",
+    "title": "Speech-act ambiguity",
+    "post": "what-language-leaves-out-pragmatic",
+    "description": "\"Can you pass the salt?\" dispatched to a question handler vs a request handler; the literal answer is technically responsive, socially broken."
+  },
+  {
+    "id": "wllo-implicature-gap",
+    "path": "diagrams/what-language-leaves-out/implicature-gap.html",
+    "title": "Indirect answers and implicature",
+    "post": "what-language-leaves-out-pragmatic",
+    "description": "\"Did you like the movie?\" / \"The popcorn was good.\" \u2014 toggle materializes the implicated verdict carried by the unaddressed question."
+  },
+  {
+    "id": "wllo-sarcasm-flip",
+    "path": "diagrams/what-language-leaves-out/sarcasm-flip.html",
+    "title": "Irony and sarcasm",
+    "post": "what-language-leaves-out-pragmatic",
+    "description": "\"Great, another meeting.\" \u2014 swapping the preceding discourse line flips the sentiment tag on \"Great\" without changing a token."
+  },
+  {
+    "id": "wllo-deixis-chat",
+    "path": "diagrams/what-language-leaves-out/deixis-chat.html",
+    "title": "Deixis in a chat transcript",
+    "post": "what-language-leaves-out-pragmatic",
+    "description": "A three-turn transcript where \"I\" and \"you\" re-bind to opposite speakers on every turn; arcs to the speaker labels."
+  },
+  {
+    "id": "wllo-presupposition-split",
+    "path": "diagrams/what-language-leaves-out/presupposition-split.html",
+    "title": "Presupposition and accommodation",
+    "post": "what-language-leaves-out-pragmatic",
+    "description": "\"John stopped smoking\" split into asserted and presupposed cards; negation flips only the asserted card."
+  },
+  {
+    "id": "wllo-discourse-relation",
+    "path": "diagrams/what-language-leaves-out/discourse-relation.html",
+    "title": "Discourse relations",
+    "post": "what-language-leaves-out-pragmatic",
+    "description": "\"He fell. He was pushed / He got up.\" \u2014 a dashed BECAUSE/THEN ghost edge between the sentences; the connective has no token."
+  },
+  {
+    "id": "wllo-topic-tracking",
+    "path": "diagrams/what-language-leaves-out/topic-tracking.html",
+    "title": "Topic and focus tracking",
+    "post": "what-language-leaves-out-pragmatic",
+    "description": "Changing which entity the opening sentence establishes as topic re-points a later \"it\" between bridge and river."
+  },
+  {
+    "id": "wllo-register-frame",
+    "path": "diagrams/what-language-leaves-out/register-frame.html",
+    "title": "Genre and register",
+    "post": "what-language-leaves-out-pragmatic",
+    "description": "The same sentence inside a statute and a physics paper; the document's register re-glosses \"state\" and \"notice\" wholesale."
   }
 ]
