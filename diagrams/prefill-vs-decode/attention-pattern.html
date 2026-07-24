@@ -13,19 +13,43 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-attention-pattern">
 <style>
+/* fg:begin palette-classic v1 */
 .fg-attention-pattern {
-  --bg: #0f172a; --panel: #1e293b; --border: #334155;
-  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
-  --ok: #34d399; --warn: #fbbf24; --line: #64748b;
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-attention-pattern {
   background: var(--bg);
   border-radius: 12px;
-  padding: 16px 16px 12px;
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .fg-attention-pattern svg { display: block; width: 100%; height: auto; }
 .fg-attention-pattern text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-attention-pattern {
+  padding: 16px 16px 12px;
+}
+
 
 .fg-attention-pattern .apf-lab  { fill: var(--muted); font-size: 13px; text-anchor: middle; }
 .fg-attention-pattern .apf-head { fill: var(--text); font-size: 15px; font-weight: 600; }
@@ -77,19 +101,24 @@
 .fg-attention-pattern.is-step-3 .apf-phase-decode,
 .fg-attention-pattern.is-step-4 .apf-phase-decode { opacity: 1; }
 
+/* fg:begin controls-bar v1 */
 .fg-attention-pattern .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .fg-attention-pattern .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
   cursor: pointer; padding: 0; line-height: 1;
 }
-.fg-attention-pattern .fg-controls button:hover { border-color: var(--accent); }
+.fg-attention-pattern .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
 .fg-attention-pattern .fg-controls [data-fg="counter"] {
-  color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
 }
+/* fg:end controls-bar */
+/* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-attention-pattern * { transition: none !important; }
+  .fg-attention-pattern, .fg-attention-pattern * { transition: none !important; animation: none !important; }
 }
+/* fg:end reduced-motion */
 </style>
 
 <svg viewBox="0 0 620 560" xmlns="http://www.w3.org/2000/svg" role="img"

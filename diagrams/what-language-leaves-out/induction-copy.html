@@ -13,20 +13,38 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-induction-copy">
 <style>
+/* fg:begin palette-pastel-dark v1 */
 .fg-induction-copy {
-  --bg: #0f172a; --panel: #1e293b; --panel-hover: #2b3a52; --border: #3b4a63;
-  --text: #f8fafc; --muted: #a5b4cd; --line: #7c8db0;
-  --mint: #a7f3d0; --lavender: #c4b5fd; --peach: #fed7aa; --rose: #fda4af; --blue: #bae6fd;
-  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #2b3a52;
+  --border: #3b4a63;
+  --text: #f8fafc;
+  --muted: #a5b4cd;
+  --line: #7c8db0;
+  --mint: #a7f3d0;
+  --lavender: #c4b5fd;
+  --peach: #fed7aa;
+  --rose: #fda4af;
+  --blue: #bae6fd;
+}
+/* fg:end palette-pastel-dark */
+/* fg:begin panel-base v1 */
+.fg-induction-copy {
   background: var(--bg);
   border-radius: 12px;
-  padding: 16px 16px 12px;
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .fg-induction-copy svg { display: block; width: 100%; height: auto; }
 .fg-induction-copy text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-induction-copy {
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  padding: 16px 16px 12px;
+}
+
 
 .fg-induction-copy .idc-note { fill: var(--muted); font-size: 11px; }
 .fg-induction-copy .idc-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -78,20 +96,27 @@
 .fg-induction-copy.is-step-0 .idc-cap-0, .fg-induction-copy.is-step-1 .idc-cap-1,
 .fg-induction-copy.is-step-2 .idc-cap-2, .fg-induction-copy.is-step-3 .idc-cap-3 { opacity: 1; }
 
+/* fg:begin controls-bar v1 */
 .fg-induction-copy .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .fg-induction-copy .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
   cursor: pointer; padding: 0; line-height: 1;
 }
-.fg-induction-copy .fg-controls button:hover { border-color: var(--blue); }
+.fg-induction-copy .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
 .fg-induction-copy .fg-controls [data-fg="counter"] {
   color: var(--muted); font-size: 12px; margin-left: 4px;
   font-variant-numeric: tabular-nums;
 }
+/* fg:end controls-bar */
+.fg-induction-copy { --fg-ctl-accent: var(--blue); }
 
+/* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-induction-copy * { transition: none !important; }
+  .fg-induction-copy, .fg-induction-copy * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
   .fg-induction-copy .idc-comet-back, .fg-induction-copy .idc-comet-copy { display: none; }
   .fg-induction-copy .idc-halo { opacity: 0; }
 }
@@ -194,19 +219,12 @@
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
   const TOTAL = 3, STEP_MS = 2200;
-  let step = 0, timer = null;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function launchComets(selector) {
-    root.querySelectorAll(selector + ' animateMotion').forEach((m) => m.beginElement());
-  }
+  // fg:begin timeline-core v1
+  let step = 0, timer = null;
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
-    if (!reduced) {
-      if (step === 1) launchComets('.idc-comet-back');
-      if (step === 3) launchComets('.idc-comet-copy');
-    }
     root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
   }
   const tl = {
@@ -215,22 +233,35 @@
     go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
     next() { tl.go(step + 1); },
     prev() { tl.go(step - 1); },
-    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
-    pause() { clearInterval(timer); timer = null; },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); root.classList.add('is-playing'); } },
+    pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
-
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
   btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
   btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
   btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  const counter = btn('counter');
   function sync() {
-    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
     btn('play').textContent = tl.playing ? '❚❚' : '▶';
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
-  apply();
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // fg:end timeline-core
 
+  // step-triggered comets: kick the SMIL animations for the entered step
+  function launchComets(selector) {
+    if (reduced) return;
+    root.querySelectorAll(selector + ' animateMotion').forEach((m) => m.beginElement());
+  }
+  root.addEventListener('fg:step', (e) => {
+    if (e.detail.step === 1) launchComets('.idc-comet-back');
+    if (e.detail.step === 3) launchComets('.idc-comet-copy');
+  });
+
+  // fg:begin timeline-start v1
+  apply();
   if (reduced) {
     tl.go(TOTAL); // show final state, manual stepping still available
   } else {
@@ -240,6 +271,7 @@
     );
     io.observe(root);
   }
+  // fg:end timeline-start
 })();</script>
 </div>
 <!-- fg:embed-end -->

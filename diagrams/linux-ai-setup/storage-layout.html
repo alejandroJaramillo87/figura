@@ -13,24 +13,49 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-storage-layout">
 <style>
+/* fg:begin palette-pastel-light v1 */
 .fg-storage-layout {
-  --bg: #fdfbf7; --panel: #f6f1e7; --panel-hover: #efe8da; --border: #e3dbc9;
-  --text: #3f3a33; --muted: #8a8172; --line: #b3a98f;
-  --mint-fill: #d1fae5; --mint-stroke: #34d399; --mint-text: #065f46;
-  --blue-fill: #e0f2fe; --blue-stroke: #38bdf8; --blue-text: #075985;
-  --peach-fill: #ffedd5; --peach-stroke: #fb923c; --peach-text: #9a3412;
-  --lavender-fill: #ede9fe; --lavender-stroke: #a78bfa; --lavender-text: #5b21b6;
-  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --bg: #fdfbf7;
+  --panel: #f6f1e7;
+  --panel-hover: #efe8da;
+  --border: #e3dbc9;
+  --text: #3f3a33;
+  --muted: #8a8172;
+  --line: #b3a98f;
+  --mint-fill: #d1fae5;
+  --mint-stroke: #34d399;
+  --mint-text: #065f46;
+  --lavender-fill: #ede9fe;
+  --lavender-stroke: #a78bfa;
+  --lavender-text: #5b21b6;
+  --peach-fill: #ffedd5;
+  --peach-stroke: #fb923c;
+  --peach-text: #9a3412;
+  --rose-fill: #ffe4e6;
+  --rose-stroke: #fb7185;
+  --rose-text: #9f1239;
+  --blue-fill: #e0f2fe;
+  --blue-stroke: #38bdf8;
+  --blue-text: #075985;
+}
+/* fg:end palette-pastel-light */
+/* fg:begin panel-base-light v1 */
+.fg-storage-layout {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 16px;
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
   box-shadow: 0 2px 12px rgba(120, 100, 60, 0.10);
 }
 .fg-storage-layout svg { display: block; width: 100%; height: auto; }
 .fg-storage-layout text { font-family: inherit; }
+/* fg:end panel-base-light */
+.fg-storage-layout {
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  padding: 16px;
+}
+
 
 .fg-storage-layout .stl-drive {
   fill: var(--panel); stroke: var(--line); stroke-width: 1.5; rx: 10;
@@ -74,10 +99,11 @@
   background: rgba(120, 100, 60, 0.10); padding: 1px 5px; border-radius: 4px;
 }
 
+/* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-storage-layout .stl-link { animation: none; }
-  .fg-storage-layout .stl-block { transition: none; }
+  .fg-storage-layout, .fg-storage-layout * { transition: none !important; animation: none !important; }
 }
+/* fg:end reduced-motion */
 </style>
 
 <svg viewBox="0 0 560 470" xmlns="http://www.w3.org/2000/svg" role="img"

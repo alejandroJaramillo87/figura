@@ -13,20 +13,43 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-ambiguity-ladder">
 <style>
+/* fg:begin palette-classic v1 */
 .fg-ambiguity-ladder {
-  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
-  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
-  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-ambiguity-ladder {
   background: var(--bg);
   border-radius: 12px;
-  padding: 16px;
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .fg-ambiguity-ladder svg { display: block; width: 100%; height: auto; }
 .fg-ambiguity-ladder text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-ambiguity-ladder {
+  padding: 16px;
+}
+
 
 .fg-ambiguity-ladder .abl-rung {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
@@ -59,9 +82,11 @@
 .fg-ambiguity-ladder .fg-caption strong { color: var(--accent); font-weight: 600; }
 .fg-ambiguity-ladder .fg-caption em { color: var(--text); font-style: italic; }
 
+/* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-ambiguity-ladder .abl-rung { transition: none; }
+  .fg-ambiguity-ladder, .fg-ambiguity-ladder * { transition: none !important; animation: none !important; }
 }
+/* fg:end reduced-motion */
 </style>
 
 <svg viewBox="0 0 720 430" xmlns="http://www.w3.org/2000/svg" role="img"
