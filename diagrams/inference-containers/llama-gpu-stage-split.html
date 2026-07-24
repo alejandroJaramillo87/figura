@@ -136,7 +136,7 @@
     <text class="lgs-sub" x="226" y="224">FORCE_CUBLAS · CUDA_GRAPHS · FA_ALL_QUANTS</text>
   </g>
 
-  <g class="lgs-group" data-title="Compile llama-server" data-info="cmake --build targets llama-server only. The compile happens entirely against headers and stubs — the first time this binary touches real silicon is at container run time on the workstation.">
+  <g class="lgs-group" data-title="Compile llama-server" data-info="cmake --build targets llama-server only. The compile happens entirely against headers and stubs — the first time this binary touches real silicon is at container run time on the rig.">
     <rect class="lgs-box" x="36" y="248" width="380" height="42" rx="8"/>
     <text class="lgs-title" x="226" y="274">build llama-server (-j nproc)</text>
   </g>
@@ -160,7 +160,7 @@
   <text class="lgs-sub" x="446" y="296">COPY --from=builder</text>
 
   <!-- runtime reality -->
-  <g class="lgs-group" data-title="Run time: the real driver arrives" data-info="On the workstation, the NVIDIA container runtime mounts the host's real libcuda.so into the container. The stub that satisfied the linker at build time is out of the picture — the loader resolves the mounted driver, and sm_120 kernels run on the actual RTX 5090.">
+  <g class="lgs-group" data-title="Run time: the real driver arrives" data-info="On the rig, the NVIDIA container runtime mounts the host's real libcuda.so into the container. The stub that satisfied the linker at build time is out of the picture — the loader resolves the mounted driver, and sm_120 kernels run on the actual RTX 5090.">
     <rect class="lgs-box" x="160" y="350" width="400" height="60" rx="8"/>
     <text class="lgs-title" x="360" y="374">run time: host driver mounted by NVIDIA runtime</text>
     <text class="lgs-sub" x="360" y="392">real libcuda.so replaces the stub · RTX 5090 visible</text>

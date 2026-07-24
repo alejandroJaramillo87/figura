@@ -8,7 +8,7 @@
 </head>
 <body>
 <h1>Dual-SSD storage layout for AI workloads</h1>
-<p>Hover a block to inspect it: the OS lives on one NVMe drive, models and caches on a second drive mounted at /mnt/ai-data.</p>
+<p>Hover a block to inspect it: the OS lives on one NVMe drive, models and caches on a second, faster drive mounted at /mnt/ai-data. A comet traces the cache symlinks from home onto the data drive.</p>
 
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-storage-layout">
@@ -63,8 +63,12 @@
 .fg-storage-layout .stl-drive-label { fill: var(--text); font-size: 14px; font-weight: 600; }
 .fg-storage-layout .stl-drive-sub   { fill: var(--muted); font-size: 11.5px; }
 
-.fg-storage-layout .stl-block { stroke-width: 1.5; transition: filter 0.3s, transform 0.3s; cursor: pointer; }
-.fg-storage-layout .stl-group:hover .stl-block { filter: brightness(1.3); }
+.fg-storage-layout .stl-block { stroke-width: 1.5; transition: stroke-width 0.3s; cursor: pointer; }
+.fg-storage-layout .stl-group:hover .stl-block { stroke-width: 2.5; }
+
+/* hover glow: pre-blurred halo behind each block, opacity only */
+.fg-storage-layout .stl-halo { filter: blur(7px); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.fg-storage-layout .stl-group:hover .stl-halo { opacity: 0.5; }
 .fg-storage-layout .stl-os     { fill: var(--accent-dim); stroke: var(--accent); }
 .fg-storage-layout .stl-models { fill: var(--ok-dim); stroke: var(--ok); }
 .fg-storage-layout .stl-data   { fill: var(--warn-dim); stroke: var(--warn); }
@@ -79,17 +83,24 @@
 
 .fg-storage-layout .stl-link {
   stroke: var(--line); stroke-width: 1.5; fill: none;
-  stroke-dasharray: 4 4; animation: fg-stl-link 1.6s linear infinite;
+  stroke-dasharray: 4 4; opacity: 0.8;
+  transition: stroke 0.3s, opacity 0.3s;
 }
-@keyframes fg-stl-link { to { stroke-dashoffset: -16; } }
-.fg-storage-layout .stl-link-label { fill: var(--muted); font-size: 11px; text-anchor: middle; }
+.fg-storage-layout .stl-link-label { fill: var(--muted); font-size: 11px; text-anchor: middle; transition: fill 0.3s; }
+
+/* hovering /home/user or cache/ lights the symlink route */
+.fg-storage-layout.is-sym-hot .stl-link { stroke: var(--violet); opacity: 1; }
+.fg-storage-layout.is-sym-hot .stl-link-sym { fill: var(--violet); }
+
+/* ambient comet riding the symlink path (the one always-on motion) */
+.fg-storage-layout .stl-comet circle { fill: var(--violet); }
 
 .fg-storage-layout .fg-caption {
   margin-top: 12px; padding: 10px 14px;
   background: var(--panel); border-left: 3px solid var(--ok);
   border-radius: 0 8px 8px 0;
   /* tall enough for the longest data-info at column width: no page reflow on hover */
-  color: var(--muted); font-size: 13px; min-height: 5.2em;
+  color: var(--muted); font-size: 13px; min-height: 6em;
   transition: color 0.3s;
 }
 .fg-storage-layout .fg-caption.is-active { color: var(--text); }
@@ -104,62 +115,78 @@
   .fg-storage-layout, .fg-storage-layout * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .fg-storage-layout .stl-comet { display: none; }
+}
 </style>
 
 <svg viewBox="0 0 560 470" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Dual-SSD storage layout: a 2TB OS drive holding the root filesystem and home directory, and a separate data drive mounted at /mnt/ai-data holding models, datasets, caches, and workspace, with framework cache directories symlinked from home onto the data drive.">
+     aria-label="Dual-SSD storage layout: a 1TB OS drive holding the root filesystem and home directory, and a separate 2TB data drive mounted at /mnt/ai-data holding models, datasets, caches, and workspace, with framework cache directories symlinked from home onto the data drive.">
 
   <!-- OS drive -->
   <rect class="stl-drive" x="20" y="30" width="240" height="180" rx="10"/>
-  <text class="stl-drive-label" x="36" y="56">OS SSD — Samsung 990 Pro</text>
-  <text class="stl-drive-sub"   x="36" y="74">2TB NVMe · ext4</text>
+  <text class="stl-drive-label" x="36" y="56">OS SSD — 990 EVO</text>
+  <text class="stl-drive-sub"   x="36" y="74">Samsung · 1TB NVMe · ext4</text>
 
-  <g class="stl-group" data-info="Ubuntu 24.04 LTS root filesystem on the faster drive: OS, applications, Docker images, and dotfiles. Kept lean — nothing model-sized lives here, so OS reinstalls and Clonezilla images stay small.">
+  <g class="stl-group" data-info="Ubuntu 24.04 LTS root filesystem: OS, applications, Docker images, and dotfiles. Kept lean — nothing model-sized lives here, so OS reinstalls and Clonezilla images stay small.">
+    <rect class="stl-halo" x="36" y="90" width="208" height="48" rx="6" fill="var(--accent)"/>
     <rect class="stl-block stl-os" x="36" y="90" width="208" height="48" rx="6"/>
     <text class="stl-title stl-t-os" x="140" y="110">/ (root)</text>
     <text class="stl-sub stl-t-os"   x="140" y="127">Ubuntu 24.04 · Docker · tools</text>
   </g>
 
-  <g class="stl-group" data-info="Home holds config and code only. The heavyweight cache directories inside it (~/.cache/huggingface and friends) are symlinks that resolve onto the data drive — tools keep their default paths, bytes land on the data SSD.">
+  <g class="stl-group" data-sym data-info="Home holds config and code only. The heavyweight cache directories inside it (~/.cache/huggingface and friends) are symlinks that resolve onto the data drive — tools keep their default paths, bytes land on the data SSD.">
+    <rect class="stl-halo" x="36" y="148" width="208" height="48" rx="6" fill="var(--accent)"/>
     <rect class="stl-block stl-os" x="36" y="148" width="208" height="48" rx="6"/>
     <text class="stl-title stl-t-os" x="140" y="168">/home/user</text>
-    <text class="stl-sub stl-t-os"   x="140" y="185">configs · code · symlinked caches</text>
+    <text class="stl-sub stl-t-os"   x="140" y="185">configs · code · cache links</text>
   </g>
 
   <!-- data drive -->
   <rect class="stl-drive" x="300" y="30" width="240" height="360" rx="10"/>
-  <text class="stl-drive-label" x="316" y="56">Data SSD — Samsung 990 EVO</text>
-  <text class="stl-drive-sub"   x="316" y="74">/mnt/ai-data · ext4, noatime</text>
+  <text class="stl-drive-label" x="316" y="56">Data SSD — 990 Pro</text>
+  <text class="stl-drive-sub"   x="316" y="74">Samsung · 2TB NVMe · /mnt/ai-data</text>
 
-  <g class="stl-group" data-info="All model weights in one tree: models/gguf for llama.cpp quantizations, models/hf for Hugging Face safetensors. Formatted with huge_file and mounted noatime so multi-gigabyte reads skip access-time writes.">
+  <g class="stl-group" data-info="All model weights in one tree on the faster 990 Pro — sequential reads here gate model load times. models/gguf for llama.cpp quantizations, models/hf for Hugging Face safetensors. Formatted with huge_file and mounted noatime so multi-gigabyte reads skip access-time writes.">
+    <rect class="stl-halo" x="316" y="90" width="208" height="60" rx="6" fill="var(--ok)"/>
     <rect class="stl-block stl-models" x="316" y="90" width="208" height="60" rx="6"/>
     <text class="stl-title stl-t-models" x="420" y="114">models/</text>
     <text class="stl-sub stl-t-models"   x="420" y="132">gguf · hf · embeddings</text>
   </g>
 
   <g class="stl-group" data-info="Training and evaluation data, kept separate from model weights so either can be pruned independently.">
+    <rect class="stl-halo" x="316" y="160" width="208" height="52" rx="6" fill="var(--warn)"/>
     <rect class="stl-block stl-data" x="316" y="160" width="208" height="52" rx="6"/>
     <text class="stl-title stl-t-data" x="420" y="182">datasets/</text>
     <text class="stl-sub stl-t-data"   x="420" y="199">training · eval corpora</text>
   </g>
 
-  <g class="stl-group" data-info="Download caches for Hugging Face, torch, and other tools. This is the symlink target from home: delete-safe, re-downloadable, and off the OS drive.">
+  <g class="stl-group" data-sym data-info="Download caches for Hugging Face, torch, and other tools. This is the symlink target from home: delete-safe, re-downloadable, and off the OS drive.">
+    <rect class="stl-halo" x="316" y="222" width="208" height="52" rx="6" fill="var(--violet)"/>
     <rect class="stl-block stl-cache" x="316" y="222" width="208" height="52" rx="6"/>
     <text class="stl-title stl-t-cache" x="420" y="244">cache/</text>
     <text class="stl-sub stl-t-cache"   x="420" y="261">hf · torch · tool caches</text>
   </g>
 
   <g class="stl-group" data-info="Scratch space for experiments plus service logs — anything large and disposable that should never compete with the OS drive for space.">
+    <rect class="stl-halo" x="316" y="284" width="208" height="52" rx="6" fill="var(--warn)"/>
     <rect class="stl-block stl-data" x="316" y="284" width="208" height="52" rx="6"/>
     <text class="stl-title stl-t-data" x="420" y="306">workspace/ · logs/</text>
     <text class="stl-sub stl-t-data"   x="420" y="323">experiments · service logs</text>
   </g>
 
-  <!-- symlink connector -->
-  <path class="stl-link" d="M 244 172 C 290 172, 270 248, 316 248"/>
-  <text class="stl-link-label" x="278" y="230">symlinks</text>
+  <!-- symlink connector; also the comet route -->
+  <path id="stl-symroute" class="stl-link" d="M 244 172 C 290 172, 270 248, 316 248"/>
+  <text class="stl-link-label stl-link-sym" x="278" y="230">symlinks</text>
 
-  <text class="stl-drive-sub" x="316" y="372">defaults,noatime,commit=30 in /etc/fstab</text>
+  <!-- ambient comet: bytes flowing from home onto the data drive -->
+  <g class="stl-comet">
+    <circle r="4.5"><animateMotion dur="2.4s" begin="0s" repeatCount="indefinite"><mpath href="#stl-symroute"/></animateMotion></circle>
+    <circle r="3" opacity="0.45"><animateMotion dur="2.4s" begin="0.12s" repeatCount="indefinite"><mpath href="#stl-symroute"/></animateMotion></circle>
+    <circle r="2" opacity="0.22"><animateMotion dur="2.4s" begin="0.22s" repeatCount="indefinite"><mpath href="#stl-symroute"/></animateMotion></circle>
+  </g>
+
+  <text class="stl-drive-sub" x="420" y="372" style="text-anchor: middle">fstab: defaults,noatime,commit=30</text>
 
   <text class="stl-link-label" x="280" y="440">one drive for the OS, one for the data it serves — provisioned by setup_data_ssd.sh</text>
 </svg>
@@ -184,6 +211,11 @@
       caption.textContent = DEFAULT;
       caption.classList.remove('is-active');
     });
+  });
+  // hovering either end of the symlink lights the route
+  root.querySelectorAll('.stl-group[data-sym]').forEach((g) => {
+    g.addEventListener('mouseenter', () => root.classList.add('is-sym-hot'));
+    g.addEventListener('mouseleave', () => root.classList.remove('is-sym-hot'));
   });
 })();</script>
 </div>
