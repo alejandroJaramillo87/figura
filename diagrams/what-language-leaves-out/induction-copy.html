@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Induction: look back, hop forward, copy</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Induction and copying</h1>
+<p>[A][B] &hellip; [A] &rarr; [B]: find the previous occurrence of the current token, look one position past it, and predict what followed last time — the induction-head mechanism.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-induction-copy">
+<style>
+.fg-induction-copy {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #2b3a52; --border: #3b4a63;
+  --text: #f8fafc; --muted: #a5b4cd; --line: #7c8db0;
+  --mint: #a7f3d0; --lavender: #c4b5fd; --peach: #fed7aa; --rose: #fda4af; --blue: #bae6fd;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px 16px 12px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-induction-copy svg { display: block; width: 100%; height: auto; }
+.fg-induction-copy text { font-family: inherit; }
+
+.fg-induction-copy .idc-note { fill: var(--muted); font-size: 11px; }
+.fg-induction-copy .idc-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-induction-copy .idc-tok text { fill: var(--text); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
+
+/* current token: lavender ring throughout */
+.fg-induction-copy .idc-cur rect { stroke: var(--lavender); stroke-width: 2; }
+
+/* step 1: the previous occurrence lights lavender (match) */
+.fg-induction-copy .idc-prev rect { transition: fill 0.7s, stroke 0.7s; }
+.fg-induction-copy.is-step-1 .idc-prev rect, .fg-induction-copy.is-step-2 .idc-prev rect,
+.fg-induction-copy.is-step-3 .idc-prev rect { stroke: var(--lavender); fill: #2a2350; }
+.fg-induction-copy.is-step-1 .idc-prev text, .fg-induction-copy.is-step-2 .idc-prev text,
+.fg-induction-copy.is-step-3 .idc-prev text { fill: var(--lavender); }
+
+/* step 2: the successor lights mint (copy source) */
+.fg-induction-copy.is-step-2 .idc-succ rect, .fg-induction-copy.is-step-3 .idc-succ rect { stroke: var(--mint); fill: #123c2e; }
+.fg-induction-copy.is-step-2 .idc-succ text, .fg-induction-copy.is-step-3 .idc-succ text { fill: var(--mint); }
+
+/* step 3: prediction fills the slot */
+.fg-induction-copy .idc-slot rect { stroke-dasharray: 6 4; stroke: var(--line); fill: none; }
+.fg-induction-copy .idc-slot .idc-q { fill: var(--muted); font-size: 14px; text-anchor: middle; font-family: var(--mono); transition: opacity 0.7s; }
+.fg-induction-copy .idc-pred { opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy .idc-pred rect { stroke: var(--mint); fill: #123c2e; stroke-width: 1.5; }
+.fg-induction-copy .idc-pred text { fill: var(--mint); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
+.fg-induction-copy.is-step-3 .idc-pred { opacity: 1; }
+.fg-induction-copy.is-step-3 .idc-slot .idc-q { opacity: 0; }
+
+/* glow halo behind the prediction (static blur, opacity only) */
+.fg-induction-copy .idc-halo { filter: blur(6px); opacity: 0; fill: var(--mint); transition: opacity 0.7s; }
+.fg-induction-copy.is-step-3 .idc-halo { opacity: 0.35; }
+
+/* hop arc prev -> succ, shown from step 2 */
+.fg-induction-copy .idc-hop { fill: none; stroke: var(--mint); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy.is-step-2 .idc-hop, .fg-induction-copy.is-step-3 .idc-hop { opacity: 1; }
+
+/* lookback arc cur -> prev, shown from step 1 */
+.fg-induction-copy .idc-back { fill: none; stroke: var(--lavender); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy.is-step-1 .idc-back, .fg-induction-copy.is-step-2 .idc-back,
+.fg-induction-copy.is-step-3 .idc-back { opacity: 1; }
+
+/* comets: hidden outside their step; SMIL kicked by JS */
+.fg-induction-copy .idc-comet-back, .fg-induction-copy .idc-comet-copy { opacity: 0; }
+.fg-induction-copy.is-step-1 .idc-comet-back { opacity: 1; }
+.fg-induction-copy.is-step-3 .idc-comet-copy { opacity: 1; }
+
+/* step labels */
+.fg-induction-copy .idc-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-induction-copy.is-step-0 .idc-cap-0, .fg-induction-copy.is-step-1 .idc-cap-1,
+.fg-induction-copy.is-step-2 .idc-cap-2, .fg-induction-copy.is-step-3 .idc-cap-3 { opacity: 1; }
+
+.fg-induction-copy .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-induction-copy .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-induction-copy .fg-controls button:hover { border-color: var(--blue); }
+.fg-induction-copy .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-induction-copy * { transition: none !important; }
+  .fg-induction-copy .idc-comet-back, .fg-induction-copy .idc-comet-copy { display: none; }
+  .fg-induction-copy .idc-halo { opacity: 0; }
+}
+</style>
+
+<svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A token stream: wug, blue, dax, red, wug, then an empty dashed prediction slot. Step animation of the induction mechanism. Step 1: a lavender comet travels backward from the current wug to its previous occurrence — match the current token against the past. Step 2: a mint arc hops one position forward from the previous wug to blue — find what followed last time. Step 3: blue materializes in the prediction slot with a soft mint glow — copy the successor as the prediction. The caption notes this look-back-hop-copy circuit, the induction head, is widely argued to underlie in-context learning: the prompt's own examples define the task.">
+  <text class="idc-note" x="40" y="24">the pattern has no meaning &#8212; and that is the point: the mechanism is pure structure</text>
+
+  <!-- token stream -->
+  <g class="idc-tok idc-prev">
+    <rect x="56" y="80" width="76" height="40" rx="6"/>
+    <text x="94" y="106">wug</text>
+  </g>
+  <g class="idc-tok idc-succ">
+    <rect x="144" y="80" width="76" height="40" rx="6"/>
+    <text x="182" y="106">blue</text>
+  </g>
+  <g class="idc-tok">
+    <rect x="232" y="80" width="70" height="40" rx="6"/>
+    <text x="267" y="106">dax</text>
+  </g>
+  <g class="idc-tok">
+    <rect x="314" y="80" width="70" height="40" rx="6"/>
+    <text x="349" y="106">red</text>
+  </g>
+  <g class="idc-tok idc-cur">
+    <rect x="396" y="80" width="76" height="40" rx="6"/>
+    <text x="434" y="106">wug</text>
+  </g>
+  <g class="idc-slot">
+    <rect x="484" y="80" width="76" height="40" rx="6"/>
+    <text class="idc-q" x="522" y="106">?</text>
+  </g>
+  <!-- prediction (fills the slot at step 3) -->
+  <rect class="idc-halo" x="484" y="80" width="76" height="40" rx="6"/>
+  <g class="idc-pred">
+    <rect x="484" y="80" width="76" height="40" rx="6"/>
+    <text x="522" y="106">blue</text>
+  </g>
+
+  <!-- lookback arc: current wug -> previous wug -->
+  <path id="idc-route-back" class="idc-back" d="M 424 80 C 360 30, 160 30, 100 76" marker-end="url(#idc-arrow-lav)"/>
+  <!-- hop arc: previous wug -> blue -->
+  <path class="idc-hop" d="M 110 124 C 130 150, 160 150, 178 128" marker-end="url(#idc-arrow-mint)"/>
+  <!-- copy route: blue -> slot (for the copy comet) -->
+  <path id="idc-route-copy" d="M 182 76 C 260 10, 460 10, 522 74" fill="none" stroke="none"/>
+
+  <!-- comets (SMIL, begin=indefinite, kicked from the step handler) -->
+  <g class="idc-comet-back">
+    <circle r="5" fill="#c4b5fd">
+      <animateMotion id="idc-back-head" dur="1.1s" begin="indefinite" fill="freeze"><mpath href="#idc-route-back"/></animateMotion>
+    </circle>
+    <circle r="3.5" fill="#c4b5fd" opacity="0.5">
+      <animateMotion dur="1.1s" begin="idc-back-head.begin+0.08s" fill="freeze"><mpath href="#idc-route-back"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#c4b5fd" opacity="0.3">
+      <animateMotion dur="1.1s" begin="idc-back-head.begin+0.16s" fill="freeze"><mpath href="#idc-route-back"/></animateMotion>
+    </circle>
+  </g>
+  <g class="idc-comet-copy">
+    <circle r="5" fill="#a7f3d0">
+      <animateMotion id="idc-copy-head" dur="1.1s" begin="indefinite" fill="freeze"><mpath href="#idc-route-copy"/></animateMotion>
+    </circle>
+    <circle r="3.5" fill="#a7f3d0" opacity="0.5">
+      <animateMotion dur="1.1s" begin="idc-copy-head.begin+0.08s" fill="freeze"><mpath href="#idc-route-copy"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#a7f3d0" opacity="0.3">
+      <animateMotion dur="1.1s" begin="idc-copy-head.begin+0.16s" fill="freeze"><mpath href="#idc-route-copy"/></animateMotion>
+    </circle>
+  </g>
+
+  <!-- fixed footer caption slot -->
+  <text class="idc-note idc-cap idc-cap-0" x="40" y="216">Step 0 &#8212; the model sits at the second "wug" and must predict the next token. Nothing about "wug" says what follows.</text>
+  <text class="idc-note idc-cap idc-cap-1" x="40" y="216">Step 1 &#8212; MATCH: attend backward to the previous occurrence of the current token. "Where have I seen this before?"</text>
+  <text class="idc-note idc-cap idc-cap-2" x="40" y="216">Step 2 &#8212; SHIFT: hop one position past the match. "What came after it last time?" That token is the copy source.</text>
+  <text class="idc-note idc-cap idc-cap-3" x="40" y="216">Step 3 &#8212; COPY: predict the successor. [A][B] &#8230; [A] &#8594; [B]. Every few-shot prompt runs on this loop.</text>
+
+  <text class="idc-note" x="40" y="256">This is the induction-head circuit &#8212; the best-understood piece of attention machinery, and the</text>
+  <text class="idc-note" x="40" y="272">leading account of in-context learning: the prompt's examples resolve what the TASK is. The</text>
+  <text class="idc-note" x="40" y="288">ultimate contextual dependency &#8212; not a word's sense but the job itself, defined by precedent.</text>
+
+  <defs>
+    <marker id="idc-arrow-lav" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#c4b5fd"/>
+    </marker>
+    <marker id="idc-arrow-mint" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#a7f3d0"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button data-fg="play" aria-label="Play or pause">&#9654;</button>
+  <button data-fg="next" aria-label="Next step">&#8250;</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const TOTAL = 3, STEP_MS = 2200;
+  let step = 0, timer = null;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function launchComets(selector) {
+    root.querySelectorAll(selector + ' animateMotion').forEach((m) => m.beginElement());
+  }
+  function apply() {
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
+    if (!reduced) {
+      if (step === 1) launchComets('.idc-comet-back');
+      if (step === 3) launchComets('.idc-comet-copy');
+    }
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
+    pause() { clearInterval(timer); timer = null; },
+  };
+
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  function sync() {
+    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  apply();
+
+  if (reduced) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
