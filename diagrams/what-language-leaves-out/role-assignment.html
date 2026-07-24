@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-role-assignment {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -59,14 +65,14 @@
 .fg-role-assignment .rla-lab { font-size: 10px; text-anchor: middle; letter-spacing: 0.06em; }
 
 /* two sentence rows cross-fade */
-.fg-role-assignment .rla-row { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-role-assignment .rla-row { transition: opacity 0.7s var(--ease); }
 .fg-role-assignment .rla-row-active { opacity: 1; }
 .fg-role-assignment .rla-row-passive { opacity: 0.14; }
 .fg-role-assignment.is-passive .rla-row-active { opacity: 0.14; }
 .fg-role-assignment.is-passive .rla-row-passive { opacity: 1; }
 
 /* role coloring: agent green, patient violet — constant across both rows */
-.fg-role-assignment .rla-agent .rla-tok { stroke: var(--ok); fill: #0e4429; }
+.fg-role-assignment .rla-agent .rla-tok { stroke: var(--ok); fill: var(--ok-dim); }
 .fg-role-assignment .rla-agent .rla-lab { fill: var(--ok); }
 .fg-role-assignment .rla-patient .rla-tok { stroke: var(--violet); }
 .fg-role-assignment .rla-patient .rla-lab { fill: var(--violet); }

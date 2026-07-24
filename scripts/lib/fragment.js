@@ -102,6 +102,14 @@ function renderBlock(name, version, style, body) {
 /* Local (unprefixed) names diagrams use, mapped from the tokens.css names. */
 const PALETTE_PREFIX = { 'palette-classic': '--fg-', 'palette-pastel-dark': '--fg-pd-', 'palette-pastel-light': '--fg-pl-' };
 
+/* Prefixed variants keep the pd-/pl- namespace in local names (--pd-mint),
+   for files that carry more than one palette (e.g. effects-sampler). */
+const PALETTE_PREFIXED = { 'palette-pastel-dark-prefixed': '--fg-pd-', 'palette-pastel-light-prefixed': '--fg-pl-' };
+
+/* Type/shape/motion tokens included in every palette block, so var(--font),
+   var(--radius), var(--ease) resolve regardless of the palette chosen. */
+const SHARED_TOKENS = ['--fg-font', '--fg-mono', '--fg-radius', '--fg-radius-sm', '--fg-dur-step', '--fg-dur-fast', '--fg-ease'];
+
 function parseTokens() {
   const css = fs.readFileSync(TOKENS_PATH, 'utf8');
   const vars = [];
@@ -113,12 +121,18 @@ function parseTokens() {
 
 /* Render a palette block body: one rule declaring local var names on SCOPE. */
 function renderPalette(name, scope) {
-  const prefix = PALETTE_PREFIX[name];
+  const prefix = PALETTE_PREFIX[name] || PALETTE_PREFIXED[name];
+  const keepNs = Boolean(PALETTE_PREFIXED[name]);   // strip only --fg-, keep pd-/pl-
   const all = parseTokens();
   const own = all.filter(([k]) =>
-    prefix === '--fg-' ? !k.startsWith('--fg-pd-') && !k.startsWith('--fg-pl-') : k.startsWith(prefix)
+    prefix === '--fg-'
+      ? !k.startsWith('--fg-pd-') && !k.startsWith('--fg-pl-')
+      : k.startsWith(prefix) || SHARED_TOKENS.includes(k)
   );
-  const lines = own.map(([k, v]) => `  --${k.slice(prefix.length)}: ${v};`);
+  const lines = own.map(([k, v]) => {
+    const cut = keepNs || SHARED_TOKENS.includes(k) ? '--fg-'.length : prefix.length;
+    return `  --${k.slice(cut)}: ${v};`;
+  });
   return `${scope} {\n${lines.join('\n')}\n}\n`;
 }
 
@@ -126,7 +140,7 @@ function renderPalette(name, scope) {
    rootCls is the root class without the leading dot, e.g. "fg-kv-cache-fill". */
 function canonicalBody(name, rootCls) {
   const scope = '.' + rootCls;
-  if (PALETTE_PREFIX[name]) return renderPalette(name, scope);
+  if (PALETTE_PREFIX[name] || PALETTE_PREFIXED[name]) return renderPalette(name, scope);
   for (const ext of ['css', 'js']) {
     const p = path.join(RUNTIME_DIR, `${name}.${ext}`);
     if (fs.existsSync(p)) return fs.readFileSync(p, 'utf8').replaceAll('{{SCOPE}}', scope);

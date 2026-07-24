@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-format-continuation {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -56,14 +62,14 @@
 .fg-format-continuation .fmc-mark { fill: var(--violet); }
 
 /* precedent variants cross-fade */
-.fg-format-continuation .fmc-form { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-format-continuation .fmc-form { transition: opacity 0.7s var(--ease); }
 .fg-format-continuation .fmc-form-table { opacity: 1; }
 .fg-format-continuation .fmc-form-list { opacity: 0; }
 .fg-format-continuation.is-list .fmc-form-table { opacity: 0; }
 .fg-format-continuation.is-list .fmc-form-list { opacity: 1; }
 
 /* ghost continuation row */
-.fg-format-continuation .fmc-ghost rect { fill: #0e4429; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-format-continuation .fmc-ghost rect { fill: var(--ok-dim); stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
 .fg-format-continuation .fmc-ghost text { font-family: var(--mono); font-size: 13px; fill: var(--ok); }
 
 /* precedent arcs from the ghost back to the pattern rows */

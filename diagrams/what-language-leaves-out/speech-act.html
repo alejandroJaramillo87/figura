@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-speech-act {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -58,7 +64,7 @@
 .fg-speech-act .spa-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
 
 /* the two dispatch targets */
-.fg-speech-act .spa-card { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-speech-act .spa-card { transition: opacity 0.7s var(--ease); }
 .fg-speech-act .spa-card rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
 .fg-speech-act .spa-card .spa-head { font-size: 11px; text-anchor: middle; fill: var(--violet); }
 .fg-speech-act .spa-card .spa-body { font-size: 13px; text-anchor: middle; fill: var(--text); }
@@ -66,7 +72,7 @@
 
 /* question state: literal card active, request dimmed */
 .fg-speech-act .spa-card-lit { opacity: 1; }
-.fg-speech-act .spa-card-lit rect { stroke: var(--hot); fill: #4a1d1d; }
+.fg-speech-act .spa-card-lit rect { stroke: var(--hot); fill: var(--hot-dim); }
 .fg-speech-act .spa-arc-lit { stroke: var(--hot); opacity: 1; }
 .fg-speech-act .spa-card-req { opacity: 0.35; }
 .fg-speech-act .spa-arc-req { stroke: var(--ok); opacity: 0; }
@@ -76,7 +82,7 @@
 .fg-speech-act.is-request .spa-card-lit { opacity: 0.35; }
 .fg-speech-act.is-request .spa-arc-lit { opacity: 0; }
 .fg-speech-act.is-request .spa-card-req { opacity: 1; }
-.fg-speech-act.is-request .spa-card-req rect { stroke: var(--ok); fill: #0e4429; }
+.fg-speech-act.is-request .spa-card-req rect { stroke: var(--ok); fill: var(--ok-dim); }
 .fg-speech-act.is-request .spa-arc-req { opacity: 1; }
 .fg-speech-act.is-request .spa-clash { opacity: 0; }
 

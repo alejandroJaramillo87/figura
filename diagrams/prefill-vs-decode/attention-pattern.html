@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-attention-pattern {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -57,7 +63,7 @@
 
 .fg-attention-pattern .apf-cell {
   fill: var(--panel); stroke: var(--border); stroke-width: 1;
-  transition: fill 0.45s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.45s;
+  transition: fill var(--dur-fast) var(--ease), stroke 0.45s;
 }
 .fg-attention-pattern .apf-cell.apf-masked { fill: transparent; stroke: #24314a; stroke-dasharray: 3 3; }
 
@@ -79,14 +85,14 @@
 .fg-attention-pattern.is-step-4 .apf-r0 .apf-cell:not(.apf-masked),
 .fg-attention-pattern.is-step-4 .apf-r1 .apf-cell:not(.apf-masked),
 .fg-attention-pattern.is-step-4 .apf-r2 .apf-cell:not(.apf-masked),
-.fg-attention-pattern.is-step-4 .apf-r3 .apf-cell:not(.apf-masked) { fill: #0e4429; stroke: var(--ok); }
+.fg-attention-pattern.is-step-4 .apf-r3 .apf-cell:not(.apf-masked) { fill: var(--ok-dim); stroke: var(--ok); }
 
 .fg-attention-pattern.is-step-2 .apf-r4 .apf-cell:not(.apf-masked),
 .fg-attention-pattern.is-step-3 .apf-r4 .apf-cell:not(.apf-masked),
 .fg-attention-pattern.is-step-4 .apf-r4 .apf-cell:not(.apf-masked),
 .fg-attention-pattern.is-step-3 .apf-r5 .apf-cell:not(.apf-masked),
 .fg-attention-pattern.is-step-4 .apf-r5 .apf-cell:not(.apf-masked),
-.fg-attention-pattern.is-step-4 .apf-r6 .apf-cell:not(.apf-masked) { fill: #4a3608; stroke: var(--warn); }
+.fg-attention-pattern.is-step-4 .apf-r6 .apf-cell:not(.apf-masked) { fill: var(--warn-dim); stroke: var(--warn); }
 
 /* highlight the row being computed this step */
 .fg-attention-pattern.is-step-2 .apf-r4 .apf-cell:not(.apf-masked),
@@ -201,9 +207,9 @@
 
   <!-- legend -->
   <g>
-    <rect x="60" y="510" width="16" height="16" rx="3" fill="#0e4429" stroke="#34d399"/>
+    <rect x="60" y="510" width="16" height="16" rx="3" fill="var(--ok-dim)" stroke="#34d399"/>
     <text x="84" y="523" class="apf-sub">prefill (batched)</text>
-    <rect x="210" y="510" width="16" height="16" rx="3" fill="#4a3608" stroke="#fbbf24"/>
+    <rect x="210" y="510" width="16" height="16" rx="3" fill="var(--warn-dim)" stroke="#fbbf24"/>
     <text x="234" y="523" class="apf-sub">decode (1 row / step)</text>
     <rect x="390" y="510" width="16" height="16" rx="3" fill="none" stroke="#24314a" stroke-dasharray="3 3"/>
     <text x="414" y="523" class="apf-sub">masked (future)</text>

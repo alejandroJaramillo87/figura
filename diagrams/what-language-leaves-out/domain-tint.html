@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-domain-tint {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -54,19 +60,19 @@
 .fg-domain-tint .dmt-note { fill: var(--muted); font-size: 11px; }
 .fg-domain-tint .dmt-doc {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: stroke 0.7s var(--ease);
 }
 .fg-domain-tint .dmt-title { fill: var(--text); font-size: 12px; font-weight: 600; }
 .fg-domain-tint .dmt-line { fill: var(--muted); font-size: 11px; }
-.fg-domain-tint .dmt-cue { transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-domain-tint .dmt-cue { transition: fill 0.7s var(--ease); }
 
 /* the shared sentence */
 .fg-domain-tint .dmt-sent rect {
   fill: var(--panel-hover); stroke: var(--accent); stroke-width: 1.5;
-  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: stroke 0.7s var(--ease);
 }
 .fg-domain-tint .dmt-sent text { fill: var(--text); font-size: 13px; }
-.fg-domain-tint .dmt-positive { font-weight: 600; transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-domain-tint .dmt-positive { font-weight: 600; transition: fill 0.7s var(--ease); }
 
 /* states: is-review tints good; default (medical) tints bad */
 .fg-domain-tint .dmt-doc-med { stroke: var(--hot); }
@@ -81,7 +87,7 @@
 
 /* verdict labels */
 .fg-domain-tint .dmt-verdict { font-size: 12px; font-weight: 600; text-anchor: middle;
-  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+  transition: opacity 0.7s var(--ease); }
 .fg-domain-tint .dmt-verdict-bad { fill: var(--hot); opacity: 1; }
 .fg-domain-tint .dmt-verdict-good { fill: var(--ok); opacity: 0; }
 .fg-domain-tint.is-review .dmt-verdict-bad { opacity: 0; }
@@ -90,7 +96,7 @@
 /* diffuse info-need arcs: from "positive" to cues scattered through the active doc */
 .fg-domain-tint .dmt-arc {
   fill: none; stroke-width: 2; stroke-dasharray: 3 4;
-  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.7s var(--ease);
 }
 .fg-domain-tint .dmt-arc-med { stroke: var(--hot); opacity: 0.85; }
 .fg-domain-tint .dmt-arc-rev { stroke: var(--ok); opacity: 0; }

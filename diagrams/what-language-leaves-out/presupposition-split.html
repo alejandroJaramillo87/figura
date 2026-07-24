@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-presupposition-split {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -54,7 +60,7 @@
 .fg-presupposition-split .psp-note { fill: var(--muted); font-size: 11px; }
 
 /* sentence variants cross-fade */
-.fg-presupposition-split .psp-sent { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-presupposition-split .psp-sent { transition: opacity 0.7s var(--ease); }
 .fg-presupposition-split .psp-sent text { fill: var(--text); font-size: 14px; }
 .fg-presupposition-split .psp-sent .psp-neg { fill: var(--hot); font-weight: 600; }
 .fg-presupposition-split .psp-sent-pos { opacity: 1; }
@@ -68,15 +74,15 @@
 .fg-presupposition-split .psp-card .psp-body { font-size: 13px; text-anchor: middle; fill: var(--text); transition: opacity 0.7s; }
 
 /* asserted card flips with negation */
-.fg-presupposition-split .psp-card-asrt rect { fill: #0e4429; stroke: var(--ok); }
-.fg-presupposition-split.is-negated .psp-card-asrt rect { fill: #4a1d1d; stroke: var(--hot); }
+.fg-presupposition-split .psp-card-asrt rect { fill: var(--ok-dim); stroke: var(--ok); }
+.fg-presupposition-split.is-negated .psp-card-asrt rect { fill: var(--hot-dim); stroke: var(--hot); }
 .fg-presupposition-split .psp-asrt-pos { opacity: 1; }
 .fg-presupposition-split .psp-asrt-neg { opacity: 0; }
 .fg-presupposition-split.is-negated .psp-asrt-pos { opacity: 0; }
 .fg-presupposition-split.is-negated .psp-asrt-neg { opacity: 1; }
 
 /* presupposed card never flips */
-.fg-presupposition-split .psp-card-pre rect { fill: #0e4429; stroke: var(--ok); }
+.fg-presupposition-split .psp-card-pre rect { fill: var(--ok-dim); stroke: var(--ok); }
 .fg-presupposition-split .psp-survive { transition: opacity 0.7s; opacity: 0; fill: var(--ok); font-size: 11px; }
 .fg-presupposition-split.is-negated .psp-survive { opacity: 1; }
 
