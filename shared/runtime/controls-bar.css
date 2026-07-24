@@ -1,0 +1,11 @@
+{{SCOPE}} .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+{{SCOPE}} .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+{{SCOPE}} .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
+{{SCOPE}} .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
