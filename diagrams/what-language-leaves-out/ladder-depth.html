@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The ladder revisited: levels against model depth</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>The ladder against depth</h1>
+<p>The series' six levels beside a model-depth column: where each level's resolution tends to settle — soft bands, because these are tendencies, not an org chart.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-ladder-depth">
+<style>
+.fg-ladder-depth {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8f8fc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-ladder-depth svg { display: block; width: 100%; height: auto; }
+.fg-ladder-depth text { font-family: inherit; }
+
+.fg-ladder-depth .lddm-note { fill: var(--muted); font-size: 11px; }
+.fg-ladder-depth .lddm-rung rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.3s, stroke 0.3s; cursor: pointer; }
+.fg-ladder-depth .lddm-level:hover .lddm-rung rect { fill: var(--panel-hover); }
+.fg-ladder-depth .lddm-l1:hover .lddm-rung rect { stroke: var(--ok); }
+.fg-ladder-depth .lddm-l2:hover .lddm-rung rect { stroke: var(--accent); }
+.fg-ladder-depth .lddm-l3:hover .lddm-rung rect { stroke: var(--warn); }
+.fg-ladder-depth .lddm-l4:hover .lddm-rung rect { stroke: var(--violet); }
+.fg-ladder-depth .lddm-l5:hover .lddm-rung rect { stroke: var(--hot); }
+.fg-ladder-depth .lddm-l6 .lddm-rung rect { stroke-dasharray: 6 4; }
+.fg-ladder-depth .lddm-name { fill: var(--text); font-size: 13px; font-weight: 600; pointer-events: none; }
+
+/* the depth column */
+.fg-ladder-depth .lddm-depth rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
+.fg-ladder-depth .lddm-band { fill: var(--muted); font-size: 11px; text-anchor: middle; }
+
+/* soft connector bands: translucent, deliberately fuzzy */
+.fg-ladder-depth .lddm-conn { opacity: 0.16; transition: opacity 0.3s; pointer-events: none; }
+.fg-ladder-depth .lddm-l1:hover ~ .lddm-conn-1, .fg-ladder-depth .lddm-l2:hover ~ .lddm-conn-2,
+.fg-ladder-depth .lddm-l3:hover ~ .lddm-conn-3, .fg-ladder-depth .lddm-l4:hover ~ .lddm-conn-4,
+.fg-ladder-depth .lddm-l5:hover ~ .lddm-conn-5, .fg-ladder-depth .lddm-l6:hover ~ .lddm-conn-6 { opacity: 0.45; }
+
+.fg-ladder-depth .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longest hover text: no page reflow */
+  color: var(--muted); font-size: 13px; min-height: 6.6em;
+  transition: color 0.3s;
+}
+.fg-ladder-depth .fg-caption.is-active { color: var(--text); }
+.fg-ladder-depth .fg-caption strong { color: var(--accent); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-ladder-depth .lddm-rung rect, .fg-ladder-depth .lddm-conn { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The series' ambiguity ladder — lexical, referential, syntactic, semantic, pragmatic, plus the LLM-structural column — beside a model-depth column divided into early, middle, and late layer bands. Soft translucent bands, deliberately fuzzy rather than crisp arrows, connect each level to the depth range where its resolution tends to settle: lexical to early layers, referential and syntactic to the lower middle, semantic to the upper middle and late, pragmatic smeared across everything with no band of its own, and structural dependencies like induction appearing strikingly early and crisply. A label reads: tendencies, not an org chart.">
+  <text class="lddm-note" x="40" y="24">where the levels tend to resolve &#8212; soft bands on purpose: tendencies, not an org chart</text>
+
+  <!-- ladder rungs (left) -->
+  <g class="lddm-level lddm-l5" data-info="Pragmatic — the level that never got a band. Probing finds no discourse-intent layer; sarcasm, speech acts, and register resolve, when they resolve, as distributed adjustments across the stack. The escalation arc's endpoint: the most diffuse context, the most diffuse machinery.">
+    <g class="lddm-rung"><rect x="56" y="44" width="240" height="46" rx="8"/></g>
+    <text class="lddm-name" x="74" y="72">5 &#183; Pragmatic</text>
+  </g>
+  <g class="lddm-level lddm-l4" data-info="Semantic — scope, roles, and figurative readings settle later than syntax, in the upper-middle and late layers, with composition distributed rather than localized. The pipeline ordering (syntax before semantics) re-emerges as depth — as a statistical tendency, re-derived from data.">
+    <g class="lddm-rung"><rect x="56" y="102" width="240" height="46" rx="8"/></g>
+    <text class="lddm-name" x="74" y="130">4 &#183; Semantic</text>
+  </g>
+  <g class="lddm-level lddm-l3" data-info="Syntactic — attachment, agreement, and structure-tracking behavior concentrates in the lower-middle stack, after lexical identity is settled and before propositional questions. Parse-shaped structure is recoverable from internal states there — recoverable, which is weaker than used.">
+    <g class="lddm-rung"><rect x="56" y="160" width="240" height="46" rx="8"/></g>
+    <text class="lddm-name" x="74" y="188">3 &#183; Syntactic</text>
+  </g>
+  <g class="lddm-level lddm-l2" data-info="Referential — pronoun and coreference resolution tends to show up mid-stack: after word identity, overlapping with syntax. Consistent with the series' framing — an antecedent is found among candidates that lower layers have already disambiguated.">
+    <g class="lddm-rung"><rect x="56" y="218" width="240" height="46" rx="8"/></g>
+    <text class="lddm-name" x="74" y="246">2 &#183; Referential</text>
+  </g>
+  <g class="lddm-level lddm-l1" data-info="Lexical — sense pinning and subword binding resolve earliest: the nearest, sharpest context, imported first. By the early layers a token's representation already reflects its neighbors — the fragments have been glued into words, the words into senses.">
+    <g class="lddm-rung"><rect x="56" y="276" width="240" height="46" rx="8"/></g>
+    <text class="lddm-name" x="74" y="304">1 &#183; Lexical</text>
+  </g>
+  <g class="lddm-level lddm-l6" data-info="Structural (LLM-specific) — the outlier that proves the pattern: induction heads appear early in training and sit at specific, findable places in the stack. Exact-match, position-offset structure is the most mechanically legible thing in the model — post 7's legibility gradient, drawn.">
+    <g class="lddm-rung"><rect x="56" y="334" width="240" height="46" rx="8"/></g>
+    <text class="lddm-name" x="74" y="362">&#8951; Structural (LLM)</text>
+  </g>
+
+  <!-- depth column (right) -->
+  <g class="lddm-depth">
+    <rect x="500" y="44" width="160" height="336" rx="8"/>
+    <line x1="500" y1="156" x2="660" y2="156" stroke="#334155" stroke-width="1.5"/>
+    <line x1="500" y1="268" x2="660" y2="268" stroke="#334155" stroke-width="1.5"/>
+  </g>
+  <text class="lddm-band" x="580" y="80">early layers</text>
+  <text class="lddm-band" x="580" y="104" font-size="10">tokens in, fragments bound</text>
+  <text class="lddm-band" x="580" y="196">middle layers</text>
+  <text class="lddm-band" x="580" y="220" font-size="10">structure and reference</text>
+  <text class="lddm-band" x="580" y="308">late layers</text>
+  <text class="lddm-band" x="580" y="332" font-size="10">propositions, prediction</text>
+
+  <!-- soft connector bands (after levels so hover sibling selector works) -->
+  <polygon class="lddm-conn lddm-conn-1" points="296,276 296,322 500,268 500,156" fill="#34d399"/>
+  <polygon class="lddm-conn lddm-conn-2" points="296,218 296,264 500,268 500,160" fill="#38bdf8"/>
+  <polygon class="lddm-conn lddm-conn-3" points="296,160 296,206 500,264 500,158" fill="#fbbf24"/>
+  <polygon class="lddm-conn lddm-conn-4" points="296,102 296,148 500,376 500,200" fill="#a78bfa"/>
+  <polygon class="lddm-conn lddm-conn-5" points="296,44 296,90 500,380 500,48" fill="#f87171"/>
+  <polygon class="lddm-conn lddm-conn-6" points="296,334 296,380 500,150 500,60" fill="#38bdf8"/>
+
+  <text class="lddm-note" x="40" y="406">Hover a level. The pragmatic band spans the whole column &#8212; that is the finding, not a rendering choice.</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover a level to see where its resolution tends to settle in the stack &#8212; and the caveat that comes with each claim. The bands are translucent and overlapping on purpose: every one of these is a tendency read off probes and ablations, not a module boundary.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover a level to see where its resolution tends to settle in the stack — and the caveat that comes with each claim. The bands are translucent and overlapping on purpose: every one of these is a tendency read off probes and ablations, not a module boundary.';
+  root.querySelectorAll('.lddm-level[data-info]').forEach((el) => {
+    el.addEventListener('mouseenter', () => {
+      caption.textContent = el.getAttribute('data-info');
+      caption.classList.add('is-active');
+    });
+    el.addEventListener('mouseleave', () => {
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
