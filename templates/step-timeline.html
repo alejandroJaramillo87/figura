@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>{{TITLE}}</h1>
+<p>TODO: one-line description for standalone viewing.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-{{NAME}}">
+<style>
+/* fg:begin {{PALETTE}} v1 */
+/* fg:end {{PALETTE}} */
+/* fg:begin {{PANEL}} v1 */
+/* fg:end {{PANEL}} */
+.fg-{{NAME}} {
+  padding: 16px 16px 12px;
+}
+
+/* --- diagram-specific styling ------------------------------------- */
+/* TODO: static styling for .{{ABBR}}-* elements */
+
+/* --- step states --------------------------------------------------- */
+/* TODO: .fg-{{NAME}}.is-step-N rules driving the animation */
+
+/* fg:begin controls-bar v1 */
+/* fg:end controls-bar */
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="TODO: describe what the animation shows, start to finish.">
+  <!-- TODO: author SVG statically; prefix all ids with {{ABBR}}- -->
+</svg>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const TOTAL = 4, STEP_MS = 1400;
+
+  // fg:begin timeline-core v1
+  // fg:end timeline-core
+
+  /* TODO: optional diagram-specific step handlers, e.g.
+  root.addEventListener('fg:step', (e) => {
+    if (e.detail.step === 1) { ... }
+  });
+  */
+
+  // fg:begin timeline-start v1
+  // fg:end timeline-start
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

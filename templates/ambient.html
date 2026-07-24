@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>{{TITLE}}</h1>
+<p>TODO: one-line description for standalone viewing.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-{{NAME}}">
+<style>
+/* fg:begin {{PALETTE}} v1 */
+/* fg:end {{PALETTE}} */
+/* fg:begin {{PANEL}} v1 */
+/* fg:end {{PANEL}} */
+.fg-{{NAME}} {
+  padding: 16px 16px 12px;
+}
+
+/* --- diagram-specific styling ------------------------------------- */
+/* TODO: static styling; ambient flow lines use stroke-dasharray plus a
+   stroke-dashoffset keyframe named fg-{{ABBR}}-* */
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="TODO: describe the diagram and its ambient motion.">
+  <!-- TODO: author SVG statically; prefix all ids with {{ABBR}}- -->
+</svg>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

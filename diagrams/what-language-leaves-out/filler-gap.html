@@ -13,19 +13,43 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-filler-gap">
 <style>
+/* fg:begin palette-classic v1 */
 .fg-filler-gap {
-  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
-  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
-  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-filler-gap {
   background: var(--bg);
   border-radius: 12px;
-  padding: 16px;
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .fg-filler-gap svg { display: block; width: 100%; height: auto; }
 .fg-filler-gap text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-filler-gap {
+  padding: 16px;
+}
+
 
 .fg-filler-gap .flg-note { fill: var(--muted); font-size: 11px; }
 .fg-filler-gap .flg-tok {
@@ -72,13 +96,15 @@
 }
 .fg-filler-gap .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
 
+/* fg:begin caption-box v1 */
 .fg-filler-gap .fg-caption {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  /* reserve height for the longer state text: no page reflow on toggle */
-  color: var(--text); font-size: 13px; min-height: 4.2em;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+/* fg:end caption-box */
 .fg-filler-gap .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-filler-gap .fg-caption code {
   font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
@@ -86,10 +112,11 @@
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
 
+/* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-filler-gap .flg-tok, .fg-filler-gap .flg-gap, .fg-filler-gap .flg-arc,
-  .fg-filler-gap .flg-badge, .fg-filler-gap .flg-mid, .fg-filler-gap .flg-zone { transition: none; }
+  .fg-filler-gap, .fg-filler-gap * { transition: none !important; animation: none !important; }
 }
+/* fg:end reduced-motion */
 </style>
 
 <svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img"

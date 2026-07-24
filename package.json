@@ -1,0 +1,15 @@
+{
+  "name": "figura",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Self-contained animated technical diagrams for the Curiosity Chronicles blog",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "check": "node scripts/build.js --check && node scripts/validate.js",
+    "validate": "node scripts/validate.js",
+    "new": "node scripts/new-diagram.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

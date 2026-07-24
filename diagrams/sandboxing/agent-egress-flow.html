@@ -13,20 +13,43 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-agent-egress-flow">
 <style>
+/* fg:begin palette-classic v1 */
 .fg-agent-egress-flow {
-  --bg: #0f172a; --panel: #1e293b; --border: #334155;
-  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
-  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-agent-egress-flow {
   background: var(--bg);
   border-radius: 12px;
-  padding: 16px 16px 12px;
   font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .fg-agent-egress-flow svg { display: block; width: 100%; height: auto; }
 .fg-agent-egress-flow text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-agent-egress-flow {
+  padding: 16px 16px 12px;
+}
+
 
 .fg-agent-egress-flow .aef-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
@@ -87,20 +110,25 @@
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
 
+/* fg:begin controls-bar v1 */
 .fg-agent-egress-flow .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .fg-agent-egress-flow .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
   cursor: pointer; padding: 0; line-height: 1;
 }
-.fg-agent-egress-flow .fg-controls button:hover { border-color: var(--accent); }
+.fg-agent-egress-flow .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
 .fg-agent-egress-flow .fg-controls [data-fg="counter"] {
-  color: var(--muted); font-size: 12px; margin-left: 4px; font-variant-numeric: tabular-nums;
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
 }
+/* fg:end controls-bar */
 
+/* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-agent-egress-flow * { transition: none !important; animation: none !important; }
+  .fg-agent-egress-flow, .fg-agent-egress-flow * { transition: none !important; animation: none !important; }
 }
+/* fg:end reduced-motion */
 </style>
 
 <svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg" role="img"
@@ -182,7 +210,6 @@
   const root = document.currentScript.closest('.fg-diagram');
   const caption = root.querySelector('[data-fg="caption"]');
   const TOTAL = 5, STEP_MS = 2800;
-  let step = 0, timer = null;
 
   const CAPTIONS = [
     'Press play or step through the egress path.',
@@ -193,20 +220,11 @@
     ['Everything else: denied', 'An injected prompt telling the agent to POST the repo to attacker.example hits a 403 at the proxy. Exfiltration is cut at the network layer, not by trusting the agent to refuse.'],
   ];
 
+  // fg:begin timeline-core v1
+  let step = 0, timer = null;
   function apply() {
-    for (let i = 1; i <= TOTAL; i++) root.classList.toggle('is-step-' + i, step === i);
-    const c = CAPTIONS[step];
-    caption.innerHTML = '';
-    if (Array.isArray(c)) {
-      const strong = document.createElement('strong');
-      strong.textContent = step + '. ' + c[0];
-      caption.appendChild(strong);
-      caption.appendChild(document.createTextNode(' — ' + c[1]));
-      caption.classList.add('is-active');
-    } else {
-      caption.textContent = c;
-      caption.classList.remove('is-active');
-    }
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
     root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
   }
   const tl = {
@@ -215,23 +233,42 @@
     go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
     next() { tl.go(step + 1); },
     prev() { tl.go(step - 1); },
-    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); } },
-    pause() { clearInterval(timer); timer = null; },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); root.classList.add('is-playing'); } },
+    pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
-
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
   btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
   btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
   btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  const counter = btn('counter');
   function sync() {
-    btn('counter').textContent = tl.step + ' / ' + TOTAL;
+    if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
     btn('play').textContent = tl.playing ? '❚❚' : '▶';
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
-  apply();
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // fg:end timeline-core
 
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  root.addEventListener('fg:step', (e) => {
+    const s = e.detail.step;
+    const c = CAPTIONS[s];
+    caption.innerHTML = '';
+    if (Array.isArray(c)) {
+      const strong = document.createElement('strong');
+      strong.textContent = s + '. ' + c[0];
+      caption.appendChild(strong);
+      caption.appendChild(document.createTextNode(' — ' + c[1]));
+      caption.classList.add('is-active');
+    } else {
+      caption.textContent = c;
+      caption.classList.remove('is-active');
+    }
+  });
+
+  // fg:begin timeline-start v1
+  apply();
+  if (reduced) {
     tl.go(TOTAL); // show final state, manual stepping still available
   } else {
     const io = new IntersectionObserver(
@@ -240,6 +277,7 @@
     );
     io.observe(root);
   }
+  // fg:end timeline-start
 })();</script>
 </div>
 <!-- fg:embed-end -->
