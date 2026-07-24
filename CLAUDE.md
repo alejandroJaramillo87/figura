@@ -18,7 +18,6 @@ one or two before writing a new one.
    ```
    node scripts/new-diagram.js <post-slug>/<kebab-name> \
      --kind step-timeline|hover-inspect|ambient \
-     --palette classic|pastel-dark|pastel-light \
      --abbr <2-6 char prefix> --title "Human-readable title"
    ```
 
@@ -49,9 +48,8 @@ CSS, `// fg:begin timeline-core v1 … // fg:end timeline-core` in JS):
 
 | block | provides |
 |---|---|
-| `palette-classic` / `palette-pastel-dark` / `palette-pastel-light` | scoped palette vars, derived from `shared/tokens.css` (local names: `--bg`, `--accent`, `--mint-fill`, …) — every palette also carries the shared type/shape/motion tokens (`--font`, `--mono`, `--radius`, `--radius-sm`, `--dur-step`, `--dur-fast`, `--ease`) |
-| `palette-pastel-dark-prefixed` / `palette-pastel-light-prefixed` | same palettes with namespaced local names (`--pd-mint`, `--pl-mint-fill`) for files carrying more than one palette (effects-sampler) |
-| `panel-base` / `panel-base-light` | panel background, radius, font, shadow, responsive `svg`/`text` base rules |
+| `palette-classic` | scoped palette vars, derived from `shared/tokens.css` (local names: `--bg`, `--accent`, `--ok-dim`, …), including the shared type/shape/motion tokens (`--font`, `--mono`, `--radius`, `--radius-sm`, `--dur-step`, `--dur-fast`, `--ease`) |
+| `panel-base` | panel background, radius, font, shadow, responsive `svg`/`text` base rules |
 | `controls-bar` | prev/play/next/counter bar styling (`--fg-ctl-accent` overrides hover color) |
 | `caption-box` | `.fg-caption` box (`--fg-cap-accent`, `--fg-cap-minh` overrides) |
 | `reduced-motion` | kill-all transitions/animations under `prefers-reduced-motion` (extra reduced-motion rules go in a second `@media` outside the block) |
@@ -131,27 +129,17 @@ is inlined into the blog. Everything the diagram needs must live inside it.
 
 ## Visual language
 
-### Palettes
+### Palette
 
-Three palettes live in `shared/tokens.css` (copy values, never link). Pick
-per diagram:
+One palette — **classic dark** (`--fg-*`, table below) — lives in
+`shared/tokens.css` (copy values via the managed block, never link). It is
+shared with the blog's design-token system: dark slate panels that read as
+framed figures on the light theme and sit nearly flush on the dark theme,
+with the same accent hues the blog uses for links and code panels. Diagrams
+never theme-switch; the dark panel is correct on both page themes.
 
-- **Classic dark** (`--fg-*`, table below) — the default for dense
-  technical diagrams (grids, matrices, pipelines).
-- **Pastel-on-dark** (`--fg-pd-*`) — dark slate panel, soft pastel accents
-  (mint `#a7f3d0`, lavender `#c4b5fd`, peach `#fed7aa`, rose `#fda4af`,
-  baby-blue `#bae6fd`). Use for effect-heavy diagrams — glows and comets
-  pop hardest on dark. Accents are contrast-safe as text and strokes.
-- **Pastel-light** (`--fg-pl-*`) — cream panel (`#fdfbf7`/`#f6f1e7`) with
-  pastel fill / saturated stroke / dark text TRIPLETS per accent. Gentler
-  look for conceptual posts. Two hard rules: the panel MUST carry
-  `border: 1px solid var(--fg-pl-border)` +
-  `box-shadow: 0 2px 12px rgba(120,100,60,.10)` so it reads as a panel on
-  the white blog page, and text on a pastel fill always uses that
-  triplet's dark text color, never the muted ink.
-
-The live reference for both pastel palettes (all swatches + every effect)
-is `diagrams/effects-sampler/effects-sampler.html`.
+The live reference (all swatches + every effect) is
+`diagrams/effects-sampler/effects-sampler.html`.
 
 ### Effects catalog
 

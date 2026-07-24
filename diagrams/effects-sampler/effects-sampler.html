@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Effects sampler — pastel palettes</title>
+<title>Effects sampler — classic palette</title>
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
 <h1>Effects sampler</h1>
-<p>Every catalog effect running live, in both pastel palettes. Hover a cell for the technique. This diagram is the canonical reference for shared/effects.css.</p>
+<p>Every catalog effect running live in the classic palette. Hover a cell for the technique. This diagram is the canonical reference for shared/effects.css.</p>
 
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-effects-sampler">
@@ -52,83 +52,11 @@
 .fg-effects-sampler svg { display: block; width: 100%; height: auto; }
 .fg-effects-sampler text { font-family: inherit; }
 /* fg:end panel-base */
-/* fg:begin palette-pastel-dark-prefixed v1 */
-.fg-effects-sampler {
-  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --radius: 12px;
-  --radius-sm: 6px;
-  --dur-step: 700ms;
-  --dur-fast: 0.45s;
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --pd-bg: #0f172a;
-  --pd-panel: #1e293b;
-  --pd-panel-hover: #2b3a52;
-  --pd-border: #3b4a63;
-  --pd-text: #f8fafc;
-  --pd-muted: #a5b4cd;
-  --pd-line: #7c8db0;
-  --pd-mint: #a7f3d0;
-  --pd-lavender: #c4b5fd;
-  --pd-peach: #fed7aa;
-  --pd-rose: #fda4af;
-  --pd-blue: #bae6fd;
-}
-/* fg:end palette-pastel-dark-prefixed */
-/* fg:begin palette-pastel-light-prefixed v1 */
-.fg-effects-sampler {
-  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --radius: 12px;
-  --radius-sm: 6px;
-  --dur-step: 700ms;
-  --dur-fast: 0.45s;
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --pl-bg: #fdfbf7;
-  --pl-panel: #f6f1e7;
-  --pl-panel-hover: #efe8da;
-  --pl-border: #e3dbc9;
-  --pl-text: #3f3a33;
-  --pl-muted: #8a8172;
-  --pl-line: #b3a98f;
-  --pl-mint-fill: #d1fae5;
-  --pl-mint-stroke: #34d399;
-  --pl-mint-text: #065f46;
-  --pl-lavender-fill: #ede9fe;
-  --pl-lavender-stroke: #a78bfa;
-  --pl-lavender-text: #5b21b6;
-  --pl-peach-fill: #ffedd5;
-  --pl-peach-stroke: #fb923c;
-  --pl-peach-text: #9a3412;
-  --pl-rose-fill: #ffe4e6;
-  --pl-rose-stroke: #fb7185;
-  --pl-rose-text: #9f1239;
-  --pl-blue-fill: #e0f2fe;
-  --pl-blue-stroke: #38bdf8;
-  --pl-blue-text: #075985;
-}
-/* fg:end palette-pastel-light-prefixed */
+.fg-effects-sampler { padding: 10px 12px 12px; }
 
-.fg-effects-sampler .efs-panel { border-radius: 12px; padding: 6px 10px 10px; }
-.fg-effects-sampler .efs-dark {
-  background: var(--pd-bg);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  margin-bottom: 14px;
-}
-.fg-effects-sampler .efs-light {
-  background: var(--pl-bg);
-  border: 1px solid var(--pl-border);
-  box-shadow: 0 2px 12px rgba(120, 100, 60, 0.10);
-}
-.fg-effects-sampler svg { display: block; width: 100%; height: auto; }
-.fg-effects-sampler text { font-family: inherit; }
-.fg-effects-sampler .efs-cell-label { font-size: 12px; text-anchor: middle; }
-.fg-effects-sampler .efs-title { font-size: 14px; font-weight: 600; }
-.fg-effects-sampler .efs-hex { font-size: 9.5px; text-anchor: middle; font-family: ui-monospace, Menlo, Consolas, monospace; }
-.fg-effects-sampler .efs-dark .efs-cell-label, .fg-effects-sampler .efs-dark .efs-hex { fill: var(--pd-muted); }
-.fg-effects-sampler .efs-dark .efs-title { fill: var(--pd-text); }
-.fg-effects-sampler .efs-light .efs-cell-label, .fg-effects-sampler .efs-light .efs-hex { fill: var(--pl-muted); }
-.fg-effects-sampler .efs-light .efs-title { fill: var(--pl-text); }
+.fg-effects-sampler .efs-cell-label { font-size: 12px; text-anchor: middle; fill: var(--muted); }
+.fg-effects-sampler .efs-title { font-size: 14px; font-weight: 600; fill: var(--text); }
+.fg-effects-sampler .efs-hex { font-size: 9.5px; text-anchor: middle; font-family: var(--mono); fill: var(--muted); }
 .fg-effects-sampler .efs-hit { fill: transparent; cursor: help; }
 
 /* --- glow: static-blurred halo behind node, opacity animated -------- */
@@ -184,12 +112,12 @@
 /* --- caption ------------------------------------------------------ */
 .fg-effects-sampler .fg-caption {
   margin-top: 10px; padding: 10px 14px; min-height: 3.2em;
-  background: var(--pd-panel); border-left: 3px solid var(--pd-blue);
-  border-radius: 0 8px 8px 0; color: var(--pd-muted); font-size: 13px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0; color: var(--muted); font-size: 13px;
   transition: color 0.3s;
 }
-.fg-effects-sampler .fg-caption.is-active { color: var(--pd-text); }
-.fg-effects-sampler .fg-caption strong { color: var(--pd-blue); font-weight: 600; }
+.fg-effects-sampler .fg-caption.is-active { color: var(--text); }
+.fg-effects-sampler .fg-caption strong { color: var(--accent); font-weight: 600; }
 
 /* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
@@ -207,25 +135,24 @@
 }
 </style>
 
-<div class="efs-panel efs-dark">
-<svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Seven animation effects — glow, sweep, comet, draw-in, ripple, shimmer, flash — rendered in the pastel-on-dark palette, with palette swatches.">
-  <text x="16" y="26" class="efs-title">pastel-on-dark</text>
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Seven animation effects — glow, sweep, comet, draw-in, ripple, shimmer, flash — rendered in the classic dark palette, with accent and dim-fill swatches.">
+  <text x="16" y="26" class="efs-title">classic — the figura palette</text>
 
   <!-- glow -->
   <g data-info="Glow — the node is duplicated behind itself with a single static blur(6px); only the halo's opacity animates. Never animate SVG filters.">
-    <rect class="efs-glow-halo" x="30" y="60" width="66" height="66" rx="10" fill="var(--pd-mint)"/>
-    <rect x="30" y="60" width="66" height="66" rx="10" fill="var(--pd-panel)" stroke="var(--pd-mint)" stroke-width="2"/>
+    <rect class="efs-glow-halo" x="30" y="60" width="66" height="66" rx="10" fill="var(--ok)"/>
+    <rect x="30" y="60" width="66" height="66" rx="10" fill="var(--panel)" stroke="var(--ok)" stroke-width="2"/>
     <text x="63" y="150" class="efs-cell-label">glow</text>
     <rect class="efs-hit" x="20" y="45" width="86" height="115"/>
   </g>
 
   <!-- sweep -->
   <g data-info="Highlight sweep — a soft-edged stripe clipped to the region, driven purely by translateX (compositable). Gradient attributes are never animated.">
-    <clipPath id="efs-d-sweep-clip"><rect x="130" y="60" width="100" height="66" rx="10"/></clipPath>
-    <rect x="130" y="60" width="100" height="66" rx="10" fill="var(--pd-panel)" stroke="var(--pd-border)" stroke-width="2"/>
-    <g clip-path="url(#efs-d-sweep-clip)">
-      <rect class="efs-sweep" x="110" y="52" width="26" height="84" fill="var(--pd-lavender)" opacity="0.6" transform-origin="center"/>
+    <clipPath id="efs-sweep-clip"><rect x="130" y="60" width="100" height="66" rx="10"/></clipPath>
+    <rect x="130" y="60" width="100" height="66" rx="10" fill="var(--panel)" stroke="var(--border)" stroke-width="2"/>
+    <g clip-path="url(#efs-sweep-clip)">
+      <rect class="efs-sweep" x="110" y="52" width="26" height="84" fill="var(--violet)" opacity="0.6" transform-origin="center"/>
     </g>
     <text x="180" y="150" class="efs-cell-label">highlight sweep</text>
     <rect class="efs-hit" x="125" y="45" width="110" height="115"/>
@@ -233,44 +160,44 @@
 
   <!-- comet -->
   <g data-info="Comet — SMIL animateMotion along an SVG path; trail circles repeat the same motion with negative begin offsets. SMIL ignores reduced-motion, so the group is CSS-gated.">
-    <path id="efs-d-route" d="M 268 120 C 300 60, 350 60, 382 118" fill="none" stroke="var(--pd-border)" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <path id="efs-route" d="M 268 120 C 300 60, 350 60, 382 118" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="4 4"/>
     <g class="efs-comet">
-      <circle r="6" fill="var(--pd-blue)">
-        <animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#efs-d-route"/></animateMotion>
+      <circle r="6" fill="var(--accent)">
+        <animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#efs-route"/></animateMotion>
       </circle>
-      <circle r="4" fill="var(--pd-blue)" opacity="0.45">
-        <animateMotion dur="2.2s" begin="-2.11s" repeatCount="indefinite"><mpath href="#efs-d-route"/></animateMotion>
+      <circle r="4" fill="var(--accent)" opacity="0.45">
+        <animateMotion dur="2.2s" begin="-2.11s" repeatCount="indefinite"><mpath href="#efs-route"/></animateMotion>
       </circle>
-      <circle r="2.5" fill="var(--pd-blue)" opacity="0.22">
-        <animateMotion dur="2.2s" begin="-2.02s" repeatCount="indefinite"><mpath href="#efs-d-route"/></animateMotion>
+      <circle r="2.5" fill="var(--accent)" opacity="0.22">
+        <animateMotion dur="2.2s" begin="-2.02s" repeatCount="indefinite"><mpath href="#efs-route"/></animateMotion>
       </circle>
     </g>
-    <circle class="efs-comet-fallback" cx="382" cy="118" r="5" fill="var(--pd-blue)" opacity="0"/>
+    <circle class="efs-comet-fallback" cx="382" cy="118" r="5" fill="var(--accent)" opacity="0"/>
     <text x="325" y="150" class="efs-cell-label">comet</text>
     <rect class="efs-hit" x="260" y="45" width="130" height="115"/>
   </g>
 
   <!-- draw-in -->
   <g data-info="Draw-in — pathLength=1 normalizes dash math (no getTotalLength measuring); stroke-dashoffset animates 1 to 0.">
-    <path class="efs-draw" pathLength="1" d="M 420 118 C 445 60, 490 130, 520 70" stroke="var(--pd-peach)"/>
+    <path class="efs-draw" pathLength="1" d="M 420 118 C 445 60, 490 130, 520 70" stroke="var(--warn)"/>
     <text x="470" y="150" class="efs-cell-label">draw-in</text>
     <rect class="efs-hit" x="412" y="45" width="118" height="115"/>
   </g>
 
   <!-- ripple -->
   <g data-info="Pulse/ripple — concentric rings scaled with CSS transform; transform-box: fill-box keeps the origin on the circle. Staggered delays make the emission feel continuous.">
-    <circle cx="595" cy="93" r="12" fill="var(--pd-panel)" stroke="var(--pd-rose)" stroke-width="2"/>
-    <circle class="efs-ripple" cx="595" cy="93" r="14" stroke="var(--pd-rose)"/>
-    <circle class="efs-ripple efs-ripple-2" cx="595" cy="93" r="14" stroke="var(--pd-rose)"/>
+    <circle cx="595" cy="93" r="12" fill="var(--panel)" stroke="var(--hot)" stroke-width="2"/>
+    <circle class="efs-ripple" cx="595" cy="93" r="14" stroke="var(--hot)"/>
+    <circle class="efs-ripple efs-ripple-2" cx="595" cy="93" r="14" stroke="var(--hot)"/>
     <text x="595" y="150" class="efs-cell-label">ripple</text>
     <rect class="efs-hit" x="550" y="45" width="90" height="115"/>
   </g>
 
   <!-- shimmer -->
   <g data-info="Shimmer — a skewed translucent stripe clipped to the panel, opacity ≤0.12 on dark. Quiet by design: it says 'alive', not 'look at me'.">
-    <clipPath id="efs-d-shim-clip"><rect x="30" y="170" width="100" height="50" rx="8"/></clipPath>
-    <rect x="30" y="170" width="100" height="50" rx="8" fill="var(--pd-panel)" stroke="var(--pd-border)" stroke-width="1.5"/>
-    <g clip-path="url(#efs-d-shim-clip)">
+    <clipPath id="efs-shim-clip"><rect x="30" y="170" width="100" height="50" rx="8"/></clipPath>
+    <rect x="30" y="170" width="100" height="50" rx="8" fill="var(--panel)" stroke="var(--border)" stroke-width="1.5"/>
+    <g clip-path="url(#efs-shim-clip)">
       <rect class="efs-shimmer" x="30" y="162" width="30" height="66" fill="#ffffff" opacity="0.10"/>
     </g>
     <text x="80" y="240" class="efs-cell-label">shimmer</text>
@@ -279,108 +206,29 @@
 
   <!-- flash -->
   <g data-info="Flash — a one-shot 600ms color blink triggered by re-adding a class after a forced reflow (restartAnimation in snippets.js). Reduced motion swaps the color instantly instead.">
-    <rect class="efs-flashable" data-fg="flash-dark" x="170" y="170" width="70" height="50" rx="8"
-          fill="var(--pd-panel)" stroke="var(--pd-border)" stroke-width="2"
-          style="--flash-fill: var(--ok-dim); --flash-stroke: var(--pd-mint);"/>
+    <rect class="efs-flashable" data-fg="flash" x="170" y="170" width="70" height="50" rx="8"
+          fill="var(--panel)" stroke="var(--border)" stroke-width="2"
+          style="--flash-fill: var(--ok-dim); --flash-stroke: var(--ok);"/>
     <text x="205" y="240" class="efs-cell-label">flash</text>
     <rect class="efs-hit" x="165" y="165" width="80" height="80"/>
   </g>
 
-  <!-- swatches -->
-  <g>
-    <rect x="300" y="176" width="56" height="26" rx="6" fill="var(--pd-mint)"/><text x="328" y="216" class="efs-hex">a7f3d0</text>
-    <rect x="364" y="176" width="56" height="26" rx="6" fill="var(--pd-lavender)"/><text x="392" y="216" class="efs-hex">c4b5fd</text>
-    <rect x="428" y="176" width="56" height="26" rx="6" fill="var(--pd-peach)"/><text x="456" y="216" class="efs-hex">fed7aa</text>
-    <rect x="492" y="176" width="56" height="26" rx="6" fill="var(--pd-rose)"/><text x="520" y="216" class="efs-hex">fda4af</text>
-    <rect x="556" y="176" width="56" height="26" rx="6" fill="var(--pd-blue)"/><text x="584" y="216" class="efs-hex">bae6fd</text>
-    <text x="300" y="240" class="efs-cell-label" style="text-anchor: start">accents: mint · lavender · peach · rose · baby blue</text>
+  <!-- accent swatches with their dim state fills -->
+  <g data-info="Accents and dim state fills — every hue pairs with a -dim fill (the hue at ~15% over the panel) for is-step-N active boxes. Both always come from the palette block, never hand-mixed.">
+    <rect x="300" y="176" width="56" height="26" rx="6" fill="var(--accent)"/><text x="328" y="216" class="efs-hex">38bdf8</text>
+    <rect x="364" y="176" width="56" height="26" rx="6" fill="var(--ok)"/><text x="392" y="216" class="efs-hex">34d399</text>
+    <rect x="428" y="176" width="56" height="26" rx="6" fill="var(--warn)"/><text x="456" y="216" class="efs-hex">fbbf24</text>
+    <rect x="492" y="176" width="56" height="26" rx="6" fill="var(--hot)"/><text x="520" y="216" class="efs-hex">f87171</text>
+    <rect x="556" y="176" width="56" height="26" rx="6" fill="var(--violet)"/><text x="584" y="216" class="efs-hex">a78bfa</text>
+    <rect x="300" y="224" width="56" height="14" rx="4" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1"/>
+    <rect x="364" y="224" width="56" height="14" rx="4" fill="var(--ok-dim)" stroke="var(--ok)" stroke-width="1"/>
+    <rect x="428" y="224" width="56" height="14" rx="4" fill="var(--warn-dim)" stroke="var(--warn)" stroke-width="1"/>
+    <rect x="492" y="224" width="56" height="14" rx="4" fill="var(--hot-dim)" stroke="var(--hot)" stroke-width="1"/>
+    <rect x="556" y="224" width="56" height="14" rx="4" fill="var(--violet-dim)" stroke="var(--violet)" stroke-width="1"/>
+    <text x="300" y="262" class="efs-cell-label" style="text-anchor: start">accents: sky · emerald · amber · red · violet — each over its dim state fill</text>
+    <rect class="efs-hit" x="295" y="165" width="330" height="105"/>
   </g>
 </svg>
-</div>
-
-<div class="efs-panel efs-light">
-<svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="The same seven effects rendered in the pastel-light palette: cream panel, pastel fills with saturated strokes and dark text.">
-  <text x="16" y="26" class="efs-title">pastel-light</text>
-
-  <g data-info="Glow on light — same pre-blurred halo technique; use the saturated stroke color for the halo so it reads against cream.">
-    <rect class="efs-glow-halo" x="30" y="60" width="66" height="66" rx="10" fill="var(--pl-mint-stroke)"/>
-    <rect x="30" y="60" width="66" height="66" rx="10" fill="var(--pl-mint-fill)" stroke="var(--pl-mint-stroke)" stroke-width="2"/>
-    <text x="63" y="150" class="efs-cell-label">glow</text>
-    <rect class="efs-hit" x="20" y="45" width="86" height="115"/>
-  </g>
-
-  <g data-info="Sweep on light — lavender stripe at higher opacity (light panels swallow subtle overlays; ≤0.35 is the ceiling).">
-    <clipPath id="efs-l-sweep-clip"><rect x="130" y="60" width="100" height="66" rx="10"/></clipPath>
-    <rect x="130" y="60" width="100" height="66" rx="10" fill="var(--pl-lavender-fill)" stroke="var(--pl-lavender-stroke)" stroke-width="2"/>
-    <g clip-path="url(#efs-l-sweep-clip)">
-      <rect class="efs-sweep" x="110" y="52" width="26" height="84" fill="#ffffff" opacity="0.8"/>
-    </g>
-    <text x="180" y="150" class="efs-cell-label">highlight sweep</text>
-    <rect class="efs-hit" x="125" y="45" width="110" height="115"/>
-  </g>
-
-  <g data-info="Comet on light — identical SMIL structure; saturated blue stroke color for the particles.">
-    <path id="efs-l-route" d="M 268 120 C 300 60, 350 60, 382 118" fill="none" stroke="var(--pl-border)" stroke-width="1.5" stroke-dasharray="4 4"/>
-    <g class="efs-comet">
-      <circle r="6" fill="var(--pl-blue-stroke)">
-        <animateMotion dur="2.2s" repeatCount="indefinite"><mpath href="#efs-l-route"/></animateMotion>
-      </circle>
-      <circle r="4" fill="var(--pl-blue-stroke)" opacity="0.45">
-        <animateMotion dur="2.2s" begin="-2.11s" repeatCount="indefinite"><mpath href="#efs-l-route"/></animateMotion>
-      </circle>
-      <circle r="2.5" fill="var(--pl-blue-stroke)" opacity="0.22">
-        <animateMotion dur="2.2s" begin="-2.02s" repeatCount="indefinite"><mpath href="#efs-l-route"/></animateMotion>
-      </circle>
-    </g>
-    <circle class="efs-comet-fallback" cx="382" cy="118" r="5" fill="var(--pl-blue-stroke)" opacity="0"/>
-    <text x="325" y="150" class="efs-cell-label">comet</text>
-    <rect class="efs-hit" x="260" y="45" width="130" height="115"/>
-  </g>
-
-  <g data-info="Draw-in on light — peach saturated stroke.">
-    <path class="efs-draw" pathLength="1" d="M 420 118 C 445 60, 490 130, 520 70" stroke="var(--pl-peach-stroke)"/>
-    <text x="470" y="150" class="efs-cell-label">draw-in</text>
-    <rect class="efs-hit" x="412" y="45" width="118" height="115"/>
-  </g>
-
-  <g data-info="Ripple on light — rose saturated stroke rings on a pastel-filled node.">
-    <circle cx="595" cy="93" r="12" fill="var(--pl-rose-fill)" stroke="var(--pl-rose-stroke)" stroke-width="2"/>
-    <circle class="efs-ripple" cx="595" cy="93" r="14" stroke="var(--pl-rose-stroke)"/>
-    <circle class="efs-ripple efs-ripple-2" cx="595" cy="93" r="14" stroke="var(--pl-rose-stroke)"/>
-    <text x="595" y="150" class="efs-cell-label">ripple</text>
-    <rect class="efs-hit" x="550" y="45" width="90" height="115"/>
-  </g>
-
-  <g data-info="Shimmer on light — white stripe at 0.35 opacity over the cream panel.">
-    <clipPath id="efs-l-shim-clip"><rect x="30" y="170" width="100" height="50" rx="8"/></clipPath>
-    <rect x="30" y="170" width="100" height="50" rx="8" fill="var(--pl-panel)" stroke="var(--pl-border)" stroke-width="1.5"/>
-    <g clip-path="url(#efs-l-shim-clip)">
-      <rect class="efs-shimmer" x="30" y="162" width="30" height="66" fill="#ffffff" opacity="0.35"/>
-    </g>
-    <text x="80" y="240" class="efs-cell-label">shimmer</text>
-    <rect class="efs-hit" x="25" y="165" width="110" height="80"/>
-  </g>
-
-  <g data-info="Flash on light — blinks to the mint fill/stroke pair. Text on pastel fills always uses the triplet's dark text color, never the muted ink.">
-    <rect class="efs-flashable" data-fg="flash-light" x="170" y="170" width="70" height="50" rx="8"
-          fill="var(--pl-panel)" stroke="var(--pl-border)" stroke-width="2"
-          style="--flash-fill: var(--pl-mint-fill); --flash-stroke: var(--pl-mint-stroke);"/>
-    <text x="205" y="240" class="efs-cell-label">flash</text>
-    <rect class="efs-hit" x="165" y="165" width="80" height="80"/>
-  </g>
-
-  <!-- swatch triplets -->
-  <g>
-    <rect x="300" y="176" width="56" height="26" rx="6" fill="var(--pl-mint-fill)" stroke="var(--pl-mint-stroke)" stroke-width="2"/><text x="328" y="193" class="efs-hex" fill="var(--pl-mint-text)" style="fill: var(--pl-mint-text)">065f46</text><text x="328" y="216" class="efs-hex">d1fae5</text>
-    <rect x="364" y="176" width="56" height="26" rx="6" fill="var(--pl-lavender-fill)" stroke="var(--pl-lavender-stroke)" stroke-width="2"/><text x="392" y="193" class="efs-hex" style="fill: var(--pl-lavender-text)">5b21b6</text><text x="392" y="216" class="efs-hex">ede9fe</text>
-    <rect x="428" y="176" width="56" height="26" rx="6" fill="var(--pl-peach-fill)" stroke="var(--pl-peach-stroke)" stroke-width="2"/><text x="456" y="193" class="efs-hex" style="fill: var(--pl-peach-text)">9a3412</text><text x="456" y="216" class="efs-hex">ffedd5</text>
-    <rect x="492" y="176" width="56" height="26" rx="6" fill="var(--pl-rose-fill)" stroke="var(--pl-rose-stroke)" stroke-width="2"/><text x="520" y="193" class="efs-hex" style="fill: var(--pl-rose-text)">9f1239</text><text x="520" y="216" class="efs-hex">ffe4e6</text>
-    <rect x="556" y="176" width="56" height="26" rx="6" fill="var(--pl-blue-fill)" stroke="var(--pl-blue-stroke)" stroke-width="2"/><text x="584" y="193" class="efs-hex" style="fill: var(--pl-blue-text)">075985</text><text x="584" y="216" class="efs-hex">e0f2fe</text>
-    <text x="300" y="240" class="efs-cell-label" style="text-anchor: start">triplets: fill / stroke / text — dark text goes ON its pastel fill</text>
-  </g>
-</svg>
-</div>
 
 <div class="fg-caption" data-fg="caption">Hover any cell for the technique behind its effect.</div>
 
