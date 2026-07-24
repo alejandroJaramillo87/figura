@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-coref-chain {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -54,7 +60,7 @@
 .fg-coref-chain .crc-note { fill: var(--muted); font-size: 11px; }
 .fg-coref-chain .crc-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1), fill 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease);
 }
 .fg-coref-chain .crc-word { fill: var(--text); font-size: 13px; text-anchor: middle; }
 .fg-coref-chain .crc-mtype { fill: var(--muted); font-size: 10px; text-anchor: middle;
@@ -66,23 +72,23 @@
 .fg-coref-chain.is-step-2 .crc-m1 .crc-tok, .fg-coref-chain.is-step-2 .crc-m2 .crc-tok,
 .fg-coref-chain.is-step-3 .crc-m1 .crc-tok, .fg-coref-chain.is-step-3 .crc-m2 .crc-tok, .fg-coref-chain.is-step-3 .crc-m3 .crc-tok,
 .fg-coref-chain.is-step-4 .crc-m1 .crc-tok, .fg-coref-chain.is-step-4 .crc-m2 .crc-tok, .fg-coref-chain.is-step-4 .crc-m3 .crc-tok, .fg-coref-chain.is-step-4 .crc-m4 .crc-tok
-  { stroke: var(--ok); fill: #0e4429; }
+  { stroke: var(--ok); fill: var(--ok-dim); }
 
 /* chain links appear per step */
 .fg-coref-chain .crc-link {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.7s var(--ease);
 }
 .fg-coref-chain.is-step-2 .crc-l1,
 .fg-coref-chain.is-step-3 .crc-l1, .fg-coref-chain.is-step-3 .crc-l2,
 .fg-coref-chain.is-step-4 .crc-l1, .fg-coref-chain.is-step-4 .crc-l2, .fg-coref-chain.is-step-4 .crc-l3 { opacity: 1; }
 
 /* entity node: appears at final step */
-.fg-coref-chain .crc-entity { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-coref-chain .crc-entity { opacity: 0; transition: opacity 0.7s var(--ease); }
 .fg-coref-chain.is-step-4 .crc-entity { opacity: 1; }
-.fg-coref-chain .crc-entity rect { fill: #0e4429; stroke: var(--ok); stroke-width: 1.5; }
+.fg-coref-chain .crc-entity rect { fill: var(--ok-dim); stroke: var(--ok); stroke-width: 1.5; }
 .fg-coref-chain .crc-spoke { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 4 4;
-  opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+  opacity: 0; transition: opacity 0.7s var(--ease); }
 .fg-coref-chain.is-step-4 .crc-spoke { opacity: 0.8; }
 
 /* footer captions */
