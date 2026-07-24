@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-topic-tracking {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -56,7 +62,7 @@
 .fg-topic-tracking .tpf-it { fill: var(--warn); font-weight: 600; }
 
 /* opening sentence variants cross-fade */
-.fg-topic-tracking .tpf-open { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-topic-tracking .tpf-open { transition: opacity 0.7s var(--ease); }
 .fg-topic-tracking .tpf-open-bridge { opacity: 1; }
 .fg-topic-tracking .tpf-open-river { opacity: 0; }
 .fg-topic-tracking.is-river .tpf-open-bridge { opacity: 0; }
@@ -66,11 +72,11 @@
 .fg-topic-tracking .tpf-ent rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: stroke 0.7s, fill 0.7s; }
 .fg-topic-tracking .tpf-ent text { fill: var(--text); font-size: 12px; text-anchor: middle; }
 .fg-topic-tracking .tpf-topictag { font-size: 10px; fill: var(--violet); text-anchor: middle; transition: opacity 0.7s; }
-.fg-topic-tracking .tpf-ent-bridge rect { stroke: var(--ok); fill: #0e4429; }
+.fg-topic-tracking .tpf-ent-bridge rect { stroke: var(--ok); fill: var(--ok-dim); }
 .fg-topic-tracking .tpf-tag-bridge { opacity: 1; }
 .fg-topic-tracking .tpf-tag-river { opacity: 0; }
 .fg-topic-tracking.is-river .tpf-ent-bridge rect { stroke: var(--border); fill: var(--panel); }
-.fg-topic-tracking.is-river .tpf-ent-river rect { stroke: var(--ok); fill: #0e4429; }
+.fg-topic-tracking.is-river .tpf-ent-river rect { stroke: var(--ok); fill: var(--ok-dim); }
 .fg-topic-tracking.is-river .tpf-tag-bridge { opacity: 0; }
 .fg-topic-tracking.is-river .tpf-tag-river { opacity: 1; }
 

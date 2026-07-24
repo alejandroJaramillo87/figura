@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-modal-flavor {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -59,7 +65,7 @@
 .fg-modal-flavor .mdf-must .mdf-tok { stroke: var(--warn); }
 
 /* context sentence cross-fades */
-.fg-modal-flavor .mdf-ctx { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-modal-flavor .mdf-ctx { transition: opacity 0.7s var(--ease); }
 .fg-modal-flavor .mdf-ctx text { fill: var(--text); font-size: 13px; }
 .fg-modal-flavor .mdf-ctx-inf { opacity: 1; }
 .fg-modal-flavor .mdf-ctx-obl { opacity: 0; }
@@ -70,10 +76,10 @@
 .fg-modal-flavor .mdf-tag { transition: opacity 0.7s; }
 .fg-modal-flavor .mdf-tag rect { stroke-width: 1.5; }
 .fg-modal-flavor .mdf-tag-inf { opacity: 1; }
-.fg-modal-flavor .mdf-tag-inf rect { fill: #0e4429; stroke: var(--ok); }
+.fg-modal-flavor .mdf-tag-inf rect { fill: var(--ok-dim); stroke: var(--ok); }
 .fg-modal-flavor .mdf-tag-inf text { fill: var(--ok); font-size: 11px; text-anchor: middle; }
 .fg-modal-flavor .mdf-tag-obl { opacity: 0; }
-.fg-modal-flavor .mdf-tag-obl rect { fill: #4a1d1d; stroke: var(--hot); }
+.fg-modal-flavor .mdf-tag-obl rect { fill: var(--hot-dim); stroke: var(--hot); }
 .fg-modal-flavor .mdf-tag-obl text { fill: var(--hot); font-size: 11px; text-anchor: middle; }
 .fg-modal-flavor.is-deontic .mdf-tag-inf { opacity: 0; }
 .fg-modal-flavor.is-deontic .mdf-tag-obl { opacity: 1; }

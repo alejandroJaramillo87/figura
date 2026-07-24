@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-subword-fusion {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -57,13 +63,13 @@
 
 .fg-subword-fusion .swf-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease);
 }
 .fg-subword-fusion .swf-word { fill: var(--text); font-size: 14px; text-anchor: middle; }
 .fg-subword-fusion .swf-sub { fill: var(--muted); font-size: 11px; text-anchor: middle; transition: fill 0.7s, opacity 0.7s; }
 
 /* step-gated groups */
-.fg-subword-fusion .swf-s { opacity: 0; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-subword-fusion .swf-s { opacity: 0; transition: opacity 0.7s var(--ease); }
 
 /* step 0: the human's word */
 .fg-subword-fusion.is-step-0 .swf-human,
@@ -88,7 +94,7 @@
 
 /* step 3: fused meaning */
 .fg-subword-fusion.is-step-3 .swf-fused { opacity: 1; }
-.fg-subword-fusion.is-step-3 .swf-frag .swf-tok { fill: #0e4429; stroke: var(--ok); }
+.fg-subword-fusion.is-step-3 .swf-frag .swf-tok { fill: var(--ok-dim); stroke: var(--ok); }
 
 /* per-step footer captions */
 .fg-subword-fusion .swf-cap { opacity: 0; transition: opacity 0.45s; }
@@ -177,7 +183,7 @@
   <!-- step 3: fused concept -->
   <g class="swf-s swf-fused">
     <path d="M 315 200 L 315 232" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#swf-arrow)"/>
-    <rect x="180" y="240" width="270" height="40" rx="8" fill="#0e4429" stroke="#34d399" stroke-width="1.5"/>
+    <rect x="180" y="240" width="270" height="40" rx="8" fill="var(--ok-dim)" stroke="#34d399" stroke-width="1.5"/>
     <text class="swf-word" x="315" y="265">one concept, three positions</text>
   </g>
 

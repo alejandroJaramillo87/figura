@@ -26,20 +26,26 @@
   --warn: #fbbf24;
   --hot: #f87171;
   --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
   --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
   --radius-sm: 6px;
   --dur-step: 700ms;
+  --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-metaphor-suppress {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -59,7 +65,7 @@
 .fg-metaphor-suppress .mtp-drown .mtp-tok { stroke: var(--accent); }
 
 /* the object slot swaps */
-.fg-metaphor-suppress .mtp-obj { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-metaphor-suppress .mtp-obj { transition: opacity 0.7s var(--ease); }
 .fg-metaphor-suppress .mtp-obj-pool { opacity: 1; }
 .fg-metaphor-suppress .mtp-obj-paper { opacity: 0; }
 .fg-metaphor-suppress.is-figurative .mtp-obj-pool { opacity: 0; }
@@ -78,7 +84,7 @@
 .fg-metaphor-suppress.is-figurative .mtp-sense-lit text { fill: var(--muted); }
 .fg-metaphor-suppress.is-figurative .mtp-sense-lit .mtp-strike { opacity: 1; }
 .fg-metaphor-suppress.is-figurative .mtp-sense-fig { opacity: 1; }
-.fg-metaphor-suppress.is-figurative .mtp-sense-fig rect { stroke: var(--ok); fill: #0e4429; }
+.fg-metaphor-suppress.is-figurative .mtp-sense-fig rect { stroke: var(--ok); fill: var(--ok-dim); }
 .fg-metaphor-suppress.is-figurative .mtp-sense-fig text { fill: var(--text); }
 
 /* arc from drowning to its object */

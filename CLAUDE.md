@@ -49,7 +49,8 @@ CSS, `// fg:begin timeline-core v1 … // fg:end timeline-core` in JS):
 
 | block | provides |
 |---|---|
-| `palette-classic` / `palette-pastel-dark` / `palette-pastel-light` | scoped palette vars, derived from `shared/tokens.css` (local names: `--bg`, `--accent`, `--mint-fill`, …) |
+| `palette-classic` / `palette-pastel-dark` / `palette-pastel-light` | scoped palette vars, derived from `shared/tokens.css` (local names: `--bg`, `--accent`, `--mint-fill`, …) — every palette also carries the shared type/shape/motion tokens (`--font`, `--mono`, `--radius`, `--radius-sm`, `--dur-step`, `--dur-fast`, `--ease`) |
+| `palette-pastel-dark-prefixed` / `palette-pastel-light-prefixed` | same palettes with namespaced local names (`--pd-mint`, `--pl-mint-fill`) for files carrying more than one palette (effects-sampler) |
 | `panel-base` / `panel-base-light` | panel background, radius, font, shadow, responsive `svg`/`text` base rules |
 | `controls-bar` | prev/play/next/counter bar styling (`--fg-ctl-accent` overrides hover color) |
 | `caption-box` | `.fg-caption` box (`--fg-cap-accent`, `--fg-cap-minh` overrides) |
@@ -193,7 +194,13 @@ Dark slate panel on the blog's light page (matches its mermaid diagrams):
 | `--warn` | `#fbbf24` | in-progress / decode / hot path |
 | `--hot` | `#f87171` | bottleneck / eviction |
 | `--violet` | `#a78bfa` | secondary series |
+| `--accent-dim` / `--ok-dim` / `--warn-dim` / `--hot-dim` / `--violet-dim` | `#0c3550` / `#0e4429` / `#4a3608` / `#4a1d1d` / `#2a2350` | `is-step-N` active box fills (accent hue ~15% over panel) — never hand-mix these |
 | `--line` | `#64748b` | connectors, arrowheads |
+
+Easing and step transitions always come from the palette block: `var(--ease)`
+and `var(--dur-fast)` (0.45s state transitions) / `var(--dur-step)` (700ms
+timeline cadence). The validator rejects literal `cubic-bezier()` or
+hand-mixed dim hexes outside managed blocks.
 
 Font: `"Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif`
 (system fallback — never fetch webfonts). Rounded corners (12px panel,

@@ -15,6 +15,13 @@
 <style>
 /* fg:begin palette-pastel-light v1 */
 .fg-storage-layout {
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --bg: #fdfbf7;
   --panel: #f6f1e7;
   --panel-hover: #efe8da;
@@ -43,8 +50,8 @@
 .fg-storage-layout {
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 2px 12px rgba(120, 100, 60, 0.10);
 }

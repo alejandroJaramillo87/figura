@@ -15,6 +15,13 @@
 <style>
 /* fg:begin palette-pastel-dark v1 */
 .fg-induction-copy {
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --bg: #0f172a;
   --panel: #1e293b;
   --panel-hover: #2b3a52;
@@ -32,8 +39,8 @@
 /* fg:begin panel-base v1 */
 .fg-induction-copy {
   background: var(--bg);
-  border-radius: 12px;
-  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  border-radius: var(--radius);
+  font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
@@ -47,7 +54,7 @@
 
 
 .fg-induction-copy .idc-note { fill: var(--muted); font-size: 11px; }
-.fg-induction-copy .idc-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-induction-copy .idc-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s var(--ease), stroke 0.7s var(--ease); }
 .fg-induction-copy .idc-tok text { fill: var(--text); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
 
 /* current token: lavender ring throughout */
@@ -56,19 +63,19 @@
 /* step 1: the previous occurrence lights lavender (match) */
 .fg-induction-copy .idc-prev rect { transition: fill 0.7s, stroke 0.7s; }
 .fg-induction-copy.is-step-1 .idc-prev rect, .fg-induction-copy.is-step-2 .idc-prev rect,
-.fg-induction-copy.is-step-3 .idc-prev rect { stroke: var(--lavender); fill: #2a2350; }
+.fg-induction-copy.is-step-3 .idc-prev rect { stroke: var(--lavender); fill: var(--violet-dim); }
 .fg-induction-copy.is-step-1 .idc-prev text, .fg-induction-copy.is-step-2 .idc-prev text,
 .fg-induction-copy.is-step-3 .idc-prev text { fill: var(--lavender); }
 
 /* step 2: the successor lights mint (copy source) */
-.fg-induction-copy.is-step-2 .idc-succ rect, .fg-induction-copy.is-step-3 .idc-succ rect { stroke: var(--mint); fill: #123c2e; }
+.fg-induction-copy.is-step-2 .idc-succ rect, .fg-induction-copy.is-step-3 .idc-succ rect { stroke: var(--mint); fill: var(--ok-dim); }
 .fg-induction-copy.is-step-2 .idc-succ text, .fg-induction-copy.is-step-3 .idc-succ text { fill: var(--mint); }
 
 /* step 3: prediction fills the slot */
 .fg-induction-copy .idc-slot rect { stroke-dasharray: 6 4; stroke: var(--line); fill: none; }
 .fg-induction-copy .idc-slot .idc-q { fill: var(--muted); font-size: 14px; text-anchor: middle; font-family: var(--mono); transition: opacity 0.7s; }
 .fg-induction-copy .idc-pred { opacity: 0; transition: opacity 0.7s; }
-.fg-induction-copy .idc-pred rect { stroke: var(--mint); fill: #123c2e; stroke-width: 1.5; }
+.fg-induction-copy .idc-pred rect { stroke: var(--mint); fill: var(--ok-dim); stroke-width: 1.5; }
 .fg-induction-copy .idc-pred text { fill: var(--mint); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
 .fg-induction-copy.is-step-3 .idc-pred { opacity: 1; }
 .fg-induction-copy.is-step-3 .idc-slot .idc-q { opacity: 0; }
