@@ -13,8 +13,25 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-training-loop">
 <style>
-/* fg:begin palette-pastel-dark v1 */
+/* fg:begin palette-classic v1 */
 .fg-training-loop {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
@@ -22,20 +39,8 @@
   --dur-step: 700ms;
   --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --bg: #0f172a;
-  --panel: #1e293b;
-  --panel-hover: #2b3a52;
-  --border: #3b4a63;
-  --text: #f8fafc;
-  --muted: #a5b4cd;
-  --line: #7c8db0;
-  --mint: #a7f3d0;
-  --lavender: #c4b5fd;
-  --peach: #fed7aa;
-  --rose: #fda4af;
-  --blue: #bae6fd;
 }
-/* fg:end palette-pastel-dark */
+/* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-training-loop {
   background: var(--bg);
@@ -48,7 +53,6 @@
 .fg-training-loop text { font-family: inherit; }
 /* fg:end panel-base */
 .fg-training-loop {
-  --ease: var(--ease);
   padding: 16px 16px 12px;
 }
 
@@ -60,7 +64,7 @@
 
 /* forward edges: draw-in on step 1, stay lit through step 2 */
 .fg-training-loop .trl-fwd {
-  stroke: var(--blue); stroke-width: 2; fill: none; stroke-linecap: round;
+  stroke: var(--accent); stroke-width: 2; fill: none; stroke-linecap: round;
   stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.35;
   transition: stroke-dashoffset 0.7s var(--ease), opacity 0.4s;
 }
@@ -75,7 +79,7 @@
 
 /* backward edge (single long path under the chain) */
 .fg-training-loop .trl-bwd {
-  stroke: var(--rose); stroke-width: 2; fill: none; stroke-linecap: round;
+  stroke: var(--hot); stroke-width: 2; fill: none; stroke-linecap: round;
   stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.35;
   transition: stroke-dashoffset 1.1s var(--ease), opacity 0.4s;
 }
@@ -92,19 +96,19 @@
 .fg-training-loop .trl-loss-halo { filter: blur(7px); opacity: 0; transition: opacity 0.4s; }
 .fg-training-loop.is-step-2 .trl-loss-halo { animation: fg-trl-glow 1.4s var(--ease) infinite alternate; }
 @keyframes fg-trl-glow { from { opacity: 0.3; } to { opacity: 0.85; } }
-.fg-training-loop.is-step-2 .trl-loss-node { stroke: var(--peach); }
+.fg-training-loop.is-step-2 .trl-loss-node { stroke: var(--warn); }
 .fg-training-loop.is-step-2 .trl-loss-edge { opacity: 0.9; }
 .fg-training-loop .trl-loss-edge {
-  stroke: var(--peach); stroke-width: 2; fill: none; stroke-dasharray: 4 4; opacity: 0.25; transition: opacity 0.4s;
+  stroke: var(--warn); stroke-width: 2; fill: none; stroke-dasharray: 4 4; opacity: 0.25; transition: opacity 0.4s;
 }
 
 /* logits flash on step 2 */
 .fg-training-loop .trl-flashable.is-flashing { animation: fg-trl-flash 0.6s var(--ease) 1; }
-@keyframes fg-trl-flash { 30% { fill: var(--ok-dim); stroke: var(--mint); } }
+@keyframes fg-trl-flash { 30% { fill: var(--ok-dim); stroke: var(--ok); } }
 
 /* weight-update ripples, staggered per layer, only in step 4 */
 .fg-training-loop .trl-ripple {
-  fill: none; stroke: var(--mint); stroke-width: 2; opacity: 0;
+  fill: none; stroke: var(--ok); stroke-width: 2; opacity: 0;
   transform-box: fill-box; transform-origin: center;
 }
 .fg-training-loop.is-step-4 .trl-ripple { animation: fg-trl-ripple 1.5s var(--ease) infinite; }
@@ -116,7 +120,7 @@
   0%   { transform: scale(0.5); opacity: 0.9; }
   100% { transform: scale(2.1); opacity: 0; }
 }
-.fg-training-loop.is-step-4 .trl-layer { stroke: var(--mint); }
+.fg-training-loop.is-step-4 .trl-layer { stroke: var(--ok); }
 
 /* idle shimmer across the layer chain (step 0 only) */
 .fg-training-loop .trl-shimmer { opacity: 0; }
@@ -146,7 +150,7 @@
   font-variant-numeric: tabular-nums;
 }
 /* fg:end controls-bar */
-.fg-training-loop { --fg-ctl-accent: var(--blue); }
+.fg-training-loop { --fg-ctl-accent: var(--accent); }
 
 /* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
@@ -179,7 +183,7 @@
   <!-- idle shimmer stripe clipped to the chain band -->
   <clipPath id="trl-chain-clip"><rect x="24" y="150" width="716" height="64" rx="10"/></clipPath>
   <g clip-path="url(#trl-chain-clip)">
-    <rect class="trl-shimmer" x="-40" y="140" width="34" height="84" fill="#ffffff" opacity="0.08"/>
+    <rect class="trl-shimmer" x="-40" y="140" width="34" height="84" fill="rgba(255,255,255,0.08)"/>
   </g>
 
   <!-- forward edges (top lane) -->
@@ -190,7 +194,7 @@
   <text class="trl-lab" x="24" y="136">forward →</text>
 
   <!-- loss node upper right -->
-  <rect class="trl-loss-halo" x="612" y="34" width="128" height="58" rx="10" fill="var(--peach)"/>
+  <rect class="trl-loss-halo" x="612" y="34" width="128" height="58" rx="10" fill="var(--warn)"/>
   <rect class="trl-node trl-loss-node" x="612" y="34" width="128" height="58" rx="10"/>
   <text class="trl-title" x="676" y="59">Loss</text>
   <text class="trl-sub" x="676" y="77">cross-entropy vs ŷ</text>
@@ -204,26 +208,26 @@
   <!-- forward comets (step 1): full-chain route -->
   <path id="trl-froute" d="M 80 172 L 694 172" fill="none" stroke="none"/>
   <g class="trl-comet-fwd">
-    <circle r="6" fill="var(--blue)">
+    <circle r="6" fill="var(--accent)">
       <animateMotion id="trl-cf-head" dur="1.8s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#trl-froute"/></animateMotion>
     </circle>
-    <circle r="4" fill="var(--blue)" opacity="0.45">
+    <circle r="4" fill="var(--accent)" opacity="0.45">
       <animateMotion dur="1.8s" begin="trl-cf-head.begin+0.10s" repeatCount="1" fill="freeze"><mpath href="#trl-froute"/></animateMotion>
     </circle>
-    <circle r="2.5" fill="var(--blue)" opacity="0.22">
+    <circle r="2.5" fill="var(--accent)" opacity="0.22">
       <animateMotion dur="1.8s" begin="trl-cf-head.begin+0.19s" repeatCount="1" fill="freeze"><mpath href="#trl-froute"/></animateMotion>
     </circle>
   </g>
 
   <!-- backward comets (step 3): along the backward route -->
   <g class="trl-comet-bwd">
-    <circle r="6" fill="var(--rose)">
+    <circle r="6" fill="var(--hot)">
       <animateMotion id="trl-cb-head" dur="2.2s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#trl-broute"/></animateMotion>
     </circle>
-    <circle r="4" fill="var(--rose)" opacity="0.45">
+    <circle r="4" fill="var(--hot)" opacity="0.45">
       <animateMotion dur="2.2s" begin="trl-cb-head.begin+0.10s" repeatCount="1" fill="freeze"><mpath href="#trl-broute"/></animateMotion>
     </circle>
-    <circle r="2.5" fill="var(--rose)" opacity="0.22">
+    <circle r="2.5" fill="var(--hot)" opacity="0.22">
       <animateMotion dur="2.2s" begin="trl-cb-head.begin+0.19s" repeatCount="1" fill="freeze"><mpath href="#trl-broute"/></animateMotion>
     </circle>
   </g>

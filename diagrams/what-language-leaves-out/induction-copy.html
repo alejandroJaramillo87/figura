@@ -13,8 +13,25 @@
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-induction-copy">
 <style>
-/* fg:begin palette-pastel-dark v1 */
+/* fg:begin palette-classic v1 */
 .fg-induction-copy {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
@@ -22,20 +39,8 @@
   --dur-step: 700ms;
   --dur-fast: 0.45s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --bg: #0f172a;
-  --panel: #1e293b;
-  --panel-hover: #2b3a52;
-  --border: #3b4a63;
-  --text: #f8fafc;
-  --muted: #a5b4cd;
-  --line: #7c8db0;
-  --mint: #a7f3d0;
-  --lavender: #c4b5fd;
-  --peach: #fed7aa;
-  --rose: #fda4af;
-  --blue: #bae6fd;
 }
-/* fg:end palette-pastel-dark */
+/* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-induction-copy {
   background: var(--bg);
@@ -48,7 +53,6 @@
 .fg-induction-copy text { font-family: inherit; }
 /* fg:end panel-base */
 .fg-induction-copy {
-  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   padding: 16px 16px 12px;
 }
 
@@ -57,39 +61,39 @@
 .fg-induction-copy .idc-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s var(--ease), stroke 0.7s var(--ease); }
 .fg-induction-copy .idc-tok text { fill: var(--text); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
 
-/* current token: lavender ring throughout */
-.fg-induction-copy .idc-cur rect { stroke: var(--lavender); stroke-width: 2; }
+/* current token: violet ring throughout */
+.fg-induction-copy .idc-cur rect { stroke: var(--violet); stroke-width: 2; }
 
-/* step 1: the previous occurrence lights lavender (match) */
+/* step 1: the previous occurrence lights violet (match) */
 .fg-induction-copy .idc-prev rect { transition: fill 0.7s, stroke 0.7s; }
 .fg-induction-copy.is-step-1 .idc-prev rect, .fg-induction-copy.is-step-2 .idc-prev rect,
-.fg-induction-copy.is-step-3 .idc-prev rect { stroke: var(--lavender); fill: var(--violet-dim); }
+.fg-induction-copy.is-step-3 .idc-prev rect { stroke: var(--violet); fill: var(--violet-dim); }
 .fg-induction-copy.is-step-1 .idc-prev text, .fg-induction-copy.is-step-2 .idc-prev text,
-.fg-induction-copy.is-step-3 .idc-prev text { fill: var(--lavender); }
+.fg-induction-copy.is-step-3 .idc-prev text { fill: var(--violet); }
 
-/* step 2: the successor lights mint (copy source) */
-.fg-induction-copy.is-step-2 .idc-succ rect, .fg-induction-copy.is-step-3 .idc-succ rect { stroke: var(--mint); fill: var(--ok-dim); }
-.fg-induction-copy.is-step-2 .idc-succ text, .fg-induction-copy.is-step-3 .idc-succ text { fill: var(--mint); }
+/* step 2: the successor lights green (copy source) */
+.fg-induction-copy.is-step-2 .idc-succ rect, .fg-induction-copy.is-step-3 .idc-succ rect { stroke: var(--ok); fill: var(--ok-dim); }
+.fg-induction-copy.is-step-2 .idc-succ text, .fg-induction-copy.is-step-3 .idc-succ text { fill: var(--ok); }
 
 /* step 3: prediction fills the slot */
 .fg-induction-copy .idc-slot rect { stroke-dasharray: 6 4; stroke: var(--line); fill: none; }
 .fg-induction-copy .idc-slot .idc-q { fill: var(--muted); font-size: 14px; text-anchor: middle; font-family: var(--mono); transition: opacity 0.7s; }
 .fg-induction-copy .idc-pred { opacity: 0; transition: opacity 0.7s; }
-.fg-induction-copy .idc-pred rect { stroke: var(--mint); fill: var(--ok-dim); stroke-width: 1.5; }
-.fg-induction-copy .idc-pred text { fill: var(--mint); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
+.fg-induction-copy .idc-pred rect { stroke: var(--ok); fill: var(--ok-dim); stroke-width: 1.5; }
+.fg-induction-copy .idc-pred text { fill: var(--ok); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
 .fg-induction-copy.is-step-3 .idc-pred { opacity: 1; }
 .fg-induction-copy.is-step-3 .idc-slot .idc-q { opacity: 0; }
 
 /* glow halo behind the prediction (static blur, opacity only) */
-.fg-induction-copy .idc-halo { filter: blur(6px); opacity: 0; fill: var(--mint); transition: opacity 0.7s; }
+.fg-induction-copy .idc-halo { filter: blur(6px); opacity: 0; fill: var(--ok); transition: opacity 0.7s; }
 .fg-induction-copy.is-step-3 .idc-halo { opacity: 0.35; }
 
 /* hop arc prev -> succ, shown from step 2 */
-.fg-induction-copy .idc-hop { fill: none; stroke: var(--mint); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy .idc-hop { fill: none; stroke: var(--ok); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
 .fg-induction-copy.is-step-2 .idc-hop, .fg-induction-copy.is-step-3 .idc-hop { opacity: 1; }
 
 /* lookback arc cur -> prev, shown from step 1 */
-.fg-induction-copy .idc-back { fill: none; stroke: var(--lavender); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy .idc-back { fill: none; stroke: var(--violet); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
 .fg-induction-copy.is-step-1 .idc-back, .fg-induction-copy.is-step-2 .idc-back,
 .fg-induction-copy.is-step-3 .idc-back { opacity: 1; }
 
@@ -116,7 +120,7 @@
   font-variant-numeric: tabular-nums;
 }
 /* fg:end controls-bar */
-.fg-induction-copy { --fg-ctl-accent: var(--blue); }
+.fg-induction-copy { --fg-ctl-accent: var(--accent); }
 
 /* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
@@ -130,7 +134,7 @@
 </style>
 
 <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="A token stream: wug, blue, dax, red, wug, then an empty dashed prediction slot. Step animation of the induction mechanism. Step 1: a lavender comet travels backward from the current wug to its previous occurrence — match the current token against the past. Step 2: a mint arc hops one position forward from the previous wug to blue — find what followed last time. Step 3: blue materializes in the prediction slot with a soft mint glow — copy the successor as the prediction. The caption notes this look-back-hop-copy circuit, the induction head, is widely argued to underlie in-context learning: the prompt's own examples define the task.">
+     aria-label="A token stream: wug, blue, dax, red, wug, then an empty dashed prediction slot. Step animation of the induction mechanism. Step 1: a violet comet travels backward from the current wug to its previous occurrence — match the current token against the past. Step 2: a green arc hops one position forward from the previous wug to blue — find what followed last time. Step 3: blue materializes in the prediction slot with a soft green glow — copy the successor as the prediction. The caption notes this look-back-hop-copy circuit, the induction head, is widely argued to underlie in-context learning: the prompt's own examples define the task.">
   <text class="idc-note" x="40" y="24">the pattern has no meaning &#8212; and that is the point: the mechanism is pure structure</text>
 
   <!-- token stream -->
@@ -166,32 +170,32 @@
   </g>
 
   <!-- lookback arc: current wug -> previous wug -->
-  <path id="idc-route-back" class="idc-back" d="M 424 80 C 360 30, 160 30, 100 76" marker-end="url(#idc-arrow-lav)"/>
+  <path id="idc-route-back" class="idc-back" d="M 424 80 C 360 30, 160 30, 100 76" marker-end="url(#idc-arrow-violet)"/>
   <!-- hop arc: previous wug -> blue -->
-  <path class="idc-hop" d="M 110 124 C 130 150, 160 150, 178 128" marker-end="url(#idc-arrow-mint)"/>
+  <path class="idc-hop" d="M 110 124 C 130 150, 160 150, 178 128" marker-end="url(#idc-arrow-ok)"/>
   <!-- copy route: blue -> slot (for the copy comet) -->
   <path id="idc-route-copy" d="M 182 76 C 260 10, 460 10, 522 74" fill="none" stroke="none"/>
 
   <!-- comets (SMIL, begin=indefinite, kicked from the step handler) -->
   <g class="idc-comet-back">
-    <circle r="5" fill="#c4b5fd">
+    <circle r="5" fill="var(--violet)">
       <animateMotion id="idc-back-head" dur="1.1s" begin="indefinite" fill="freeze"><mpath href="#idc-route-back"/></animateMotion>
     </circle>
-    <circle r="3.5" fill="#c4b5fd" opacity="0.5">
+    <circle r="3.5" fill="var(--violet)" opacity="0.5">
       <animateMotion dur="1.1s" begin="idc-back-head.begin+0.08s" fill="freeze"><mpath href="#idc-route-back"/></animateMotion>
     </circle>
-    <circle r="2.5" fill="#c4b5fd" opacity="0.3">
+    <circle r="2.5" fill="var(--violet)" opacity="0.3">
       <animateMotion dur="1.1s" begin="idc-back-head.begin+0.16s" fill="freeze"><mpath href="#idc-route-back"/></animateMotion>
     </circle>
   </g>
   <g class="idc-comet-copy">
-    <circle r="5" fill="#a7f3d0">
+    <circle r="5" fill="var(--ok)">
       <animateMotion id="idc-copy-head" dur="1.1s" begin="indefinite" fill="freeze"><mpath href="#idc-route-copy"/></animateMotion>
     </circle>
-    <circle r="3.5" fill="#a7f3d0" opacity="0.5">
+    <circle r="3.5" fill="var(--ok)" opacity="0.5">
       <animateMotion dur="1.1s" begin="idc-copy-head.begin+0.08s" fill="freeze"><mpath href="#idc-route-copy"/></animateMotion>
     </circle>
-    <circle r="2.5" fill="#a7f3d0" opacity="0.3">
+    <circle r="2.5" fill="var(--ok)" opacity="0.3">
       <animateMotion dur="1.1s" begin="idc-copy-head.begin+0.16s" fill="freeze"><mpath href="#idc-route-copy"/></animateMotion>
     </circle>
   </g>
@@ -207,11 +211,11 @@
   <text class="idc-note" x="40" y="288">ultimate contextual dependency &#8212; not a word's sense but the job itself, defined by precedent.</text>
 
   <defs>
-    <marker id="idc-arrow-lav" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#c4b5fd"/>
+    <marker id="idc-arrow-violet" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--violet)"/>
     </marker>
-    <marker id="idc-arrow-mint" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#a7f3d0"/>
+    <marker id="idc-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="var(--ok)"/>
     </marker>
   </defs>
 </svg>
