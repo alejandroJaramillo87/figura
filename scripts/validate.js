@@ -164,6 +164,11 @@ function checkFile(file) {
     }
     if (js.includes('getElementById')) report(file, 'js-scope', 'getElementById used (query within root instead)');
     if (js.includes('DOMContentLoaded')) report(file, 'js-scope', 'DOMContentLoaded used (script sits after markup)');
+    try {
+      new Function(js);   // parse only: catches syntax errors and duplicate declarations
+    } catch (e) {
+      report(file, 'js-syntax', `script does not parse: ${e.message}`);
+    }
   }
 }
 

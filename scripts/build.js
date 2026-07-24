@@ -35,7 +35,14 @@ function expandFile(file) {
       continue;
     }
     out += parts.fragment.slice(cursor, b.start);
-    out += F.renderBlock(b.name, b.version, b.style, body);
+    // re-indent to match the begin marker's indentation
+    const indentMatch = parts.fragment.slice(0, b.start).match(/(?:^|\n)([ \t]*)$/);
+    const indent = indentMatch ? indentMatch[1] : '';
+    const rendered = F.renderBlock(b.name, b.version, b.style, body)
+      .split('\n')
+      .map((l, i) => (i === 0 || !l ? l : indent + l))
+      .join('\n');
+    out += rendered;
     cursor = b.end;
   }
   out += parts.fragment.slice(cursor);
