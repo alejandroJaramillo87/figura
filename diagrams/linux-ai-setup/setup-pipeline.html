@@ -8,7 +8,7 @@
 </head>
 <body>
 <h1>The OS setup pipeline, in order</h1>
-<p>Step through the eight-stage setup order: each stage lights up with the script that automates it. Reboot points are marked.</p>
+<p>Step through the eight-stage setup order, top to bottom: each stage lights up with the script that automates it, a comet carries the flow to the next stage, and reboot points flash.</p>
 
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-setup-pipeline">
@@ -61,28 +61,53 @@
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
   transition: fill var(--dur-fast) var(--ease), stroke 0.45s;
 }
-.fg-setup-pipeline .sup-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
-.fg-setup-pipeline .sup-script { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; opacity: 0.75; transition: fill 0.45s; }
-.fg-setup-pipeline .sup-sub { fill: var(--muted); font-size: 12px; }
-.fg-setup-pipeline .sup-reboot { fill: var(--warn); font-size: 10.5px; text-anchor: middle; opacity: 0; transition: opacity 0.45s; }
+.fg-setup-pipeline .sup-title { fill: var(--muted); font-size: 14px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
+.fg-setup-pipeline .sup-script { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; opacity: 0.75; transition: fill 0.45s; }
+.fg-setup-pipeline .sup-num { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: end; opacity: 0.6; transition: fill 0.45s, opacity 0.45s; }
+.fg-setup-pipeline .sup-sub { fill: var(--muted); font-size: 12px; letter-spacing: 0.08em; }
+.fg-setup-pipeline .sup-rail { stroke: var(--border); stroke-width: 2; opacity: 0.7; }
+.fg-setup-pipeline .sup-reboot { fill: var(--warn); font-size: 11px; text-anchor: start; opacity: 0; transition: opacity 0.45s; }
 
+/* faint guide connectors, always visible */
 .fg-setup-pipeline .sup-conn {
-  stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.5;
-  transition: stroke 0.45s, opacity 0.45s;
+  stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.4;
+  transition: opacity 0.45s;
 }
 
-/* Steps 1-8: stage N becomes active (accent) and stays done (ok) afterwards. */
-.fg-setup-pipeline .sup-s1.is-done .sup-block, .fg-setup-pipeline .sup-s2.is-done .sup-block,
-.fg-setup-pipeline .sup-s3.is-done .sup-block, .fg-setup-pipeline .sup-s4.is-done .sup-block,
-.fg-setup-pipeline .sup-s5.is-done .sup-block, .fg-setup-pipeline .sup-s6.is-done .sup-block,
-.fg-setup-pipeline .sup-s7.is-done .sup-block, .fg-setup-pipeline .sup-s8.is-done .sup-block
-  { fill: var(--ok-dim); stroke: var(--ok); }
+/* draw-in overlay: the completed path turns green as stages finish */
+.fg-setup-pipeline .sup-flow {
+  stroke: var(--ok); stroke-width: 2.5; fill: none; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0;
+  transition: stroke-dashoffset 0.7s var(--ease), opacity 0.4s;
+}
+.fg-setup-pipeline .sup-flow.is-drawn { stroke-dashoffset: 0; opacity: 0.85; }
+
+/* stage states: active (accent) then done (ok) */
 .fg-setup-pipeline .sup-stage.is-active .sup-block { fill: var(--accent-dim); stroke: var(--accent); }
+.fg-setup-pipeline .sup-stage.is-done .sup-block { fill: var(--ok-dim); stroke: var(--ok); }
 .fg-setup-pipeline .sup-stage.is-done .sup-title,
 .fg-setup-pipeline .sup-stage.is-active .sup-title { fill: var(--text); }
 .fg-setup-pipeline .sup-stage.is-active .sup-script { fill: var(--accent); opacity: 1; }
+.fg-setup-pipeline .sup-stage.is-active .sup-num { fill: var(--accent); opacity: 1; }
+.fg-setup-pipeline .sup-stage.is-done .sup-num { fill: var(--ok); opacity: 0.9; }
 .fg-setup-pipeline .sup-stage.is-active .sup-reboot,
 .fg-setup-pipeline .sup-stage.is-done .sup-reboot { opacity: 1; }
+
+/* glow halo on the active stage: pre-blurred rect, opacity pulse only */
+.fg-setup-pipeline .sup-halo { filter: blur(7px); opacity: 0; transition: opacity 0.45s; }
+.fg-setup-pipeline .sup-stage.is-active .sup-halo { animation: fg-sup-glow 1.6s var(--ease) infinite alternate; }
+@keyframes fg-sup-glow { from { opacity: 0.16; } to { opacity: 0.45; } }
+
+/* reboot marker flashes twice when its stage activates */
+.fg-setup-pipeline .sup-stage.is-active .sup-reboot { animation: fg-sup-flash 0.7s var(--ease) 2; }
+@keyframes fg-sup-flash { 40% { opacity: 0.1; } }
+
+/* step-advance comets: hidden except during their step; SMIL kicked by JS */
+.fg-setup-pipeline .sup-comet { opacity: 0; transition: opacity 0.3s; }
+.fg-setup-pipeline.is-step-2 .sup-comet-1, .fg-setup-pipeline.is-step-3 .sup-comet-2,
+.fg-setup-pipeline.is-step-4 .sup-comet-3, .fg-setup-pipeline.is-step-5 .sup-comet-4,
+.fg-setup-pipeline.is-step-6 .sup-comet-5, .fg-setup-pipeline.is-step-7 .sup-comet-6,
+.fg-setup-pipeline.is-step-8 .sup-comet-7 { opacity: 1; }
 
 /* step caption box: fixed height so text swaps never reflow the page */
 .fg-setup-pipeline .fg-caption {
@@ -118,74 +143,140 @@
   .fg-setup-pipeline, .fg-setup-pipeline * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .fg-setup-pipeline .sup-comet { display: none; }
+  .fg-setup-pipeline .sup-stage.is-active .sup-halo { opacity: 0.35; }
+}
 </style>
 
-<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Eight-stage setup pipeline: install Ubuntu, configure user and terminal, harden security, provision the data SSD, install the NVIDIA driver with a reboot, install the CUDA toolkit with a reboot, install cuDNN, and install Docker with the NVIDIA Container Toolkit.">
+<svg viewBox="0 0 720 900" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Eight-stage setup pipeline, top to bottom: install Ubuntu, configure user and terminal, harden security, provision the data SSD, install the NVIDIA driver with a reboot, install the CUDA toolkit with a reboot, install cuDNN, and install Docker with the NVIDIA Container Toolkit.">
   <defs>
     <marker id="sup-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
     </marker>
   </defs>
 
-  <!-- row 1: base system, left to right -->
-  <path class="sup-conn" d="M 178 78 L 196 78" marker-end="url(#sup-arrow)"/>
-  <path class="sup-conn" d="M 350 78 L 368 78" marker-end="url(#sup-arrow)"/>
-  <path class="sup-conn" d="M 522 78 L 540 78" marker-end="url(#sup-arrow)"/>
-  <!-- wrap to row 2 -->
-  <path class="sup-conn" d="M 626 118 C 626 150, 94 130, 94 176" marker-end="url(#sup-arrow)"/>
-  <!-- row 2: GPU + containers, left to right -->
-  <path class="sup-conn" d="M 178 222 L 196 222" marker-end="url(#sup-arrow)"/>
-  <path class="sup-conn" d="M 350 222 L 368 222" marker-end="url(#sup-arrow)"/>
-  <path class="sup-conn" d="M 522 222 L 540 222" marker-end="url(#sup-arrow)"/>
+  <!-- phase rails and rotated labels in the left margin -->
+  <path class="sup-rail" d="M 160 34 L 160 428"/>
+  <text class="sup-sub" transform="rotate(-90 140 231)" x="140" y="231" text-anchor="middle">base system</text>
+  <path class="sup-rail" d="M 160 474 L 160 868"/>
+  <text class="sup-sub" transform="rotate(-90 140 671)" x="140" y="671" text-anchor="middle">GPU stack &amp; containers</text>
+
+  <!-- faint guide connectors (always visible) -->
+  <path class="sup-conn" d="M 360 106 L 360 132" marker-end="url(#sup-arrow)"/>
+  <path class="sup-conn" d="M 360 216 L 360 242" marker-end="url(#sup-arrow)"/>
+  <path class="sup-conn" d="M 360 326 L 360 352" marker-end="url(#sup-arrow)"/>
+  <path class="sup-conn" d="M 360 436 L 360 462" marker-end="url(#sup-arrow)"/>
+  <path class="sup-conn" d="M 360 546 L 360 572" marker-end="url(#sup-arrow)"/>
+  <path class="sup-conn" d="M 360 656 L 360 682" marker-end="url(#sup-arrow)"/>
+  <path class="sup-conn" d="M 360 766 L 360 792" marker-end="url(#sup-arrow)"/>
+
+  <!-- green draw-in overlays; also the comet routes -->
+  <path id="sup-route-1" class="sup-flow" pathLength="1" d="M 360 104 L 360 138"/>
+  <path id="sup-route-2" class="sup-flow" pathLength="1" d="M 360 214 L 360 248"/>
+  <path id="sup-route-3" class="sup-flow" pathLength="1" d="M 360 324 L 360 358"/>
+  <path id="sup-route-4" class="sup-flow" pathLength="1" d="M 360 434 L 360 468"/>
+  <path id="sup-route-5" class="sup-flow" pathLength="1" d="M 360 544 L 360 578"/>
+  <path id="sup-route-6" class="sup-flow" pathLength="1" d="M 360 654 L 360 688"/>
+  <path id="sup-route-7" class="sup-flow" pathLength="1" d="M 360 764 L 360 798"/>
 
   <g class="sup-stage sup-s1">
-    <rect class="sup-block" x="26" y="38" width="152" height="80" rx="8"/>
-    <text class="sup-title" x="102" y="68">Ubuntu 24.04</text>
-    <text class="sup-script" x="102" y="88">manual install</text>
+    <rect class="sup-halo" x="200" y="30" width="320" height="72" rx="8" fill="var(--accent)"/>
+    <rect class="sup-block" x="200" y="30" width="320" height="72" rx="8"/>
+    <text class="sup-num" x="190" y="72">1</text>
+    <text class="sup-title" x="360" y="60">Ubuntu 24.04</text>
+    <text class="sup-script" x="360" y="82">manual install</text>
   </g>
   <g class="sup-stage sup-s2">
-    <rect class="sup-block" x="198" y="38" width="152" height="80" rx="8"/>
-    <text class="sup-title" x="274" y="68">User &amp; terminal</text>
-    <text class="sup-script" x="274" y="88">setup_sudo_user.sh</text>
-    <text class="sup-script" x="274" y="102">setup_terminal.sh</text>
+    <rect class="sup-halo" x="200" y="140" width="320" height="72" rx="8" fill="var(--accent)"/>
+    <rect class="sup-block" x="200" y="140" width="320" height="72" rx="8"/>
+    <text class="sup-num" x="190" y="182">2</text>
+    <text class="sup-title" x="360" y="166">User &amp; terminal</text>
+    <text class="sup-script" x="360" y="186">setup_sudo_user.sh</text>
+    <text class="sup-script" x="360" y="201">setup_terminal.sh</text>
   </g>
   <g class="sup-stage sup-s3">
-    <rect class="sup-block" x="370" y="38" width="152" height="80" rx="8"/>
-    <text class="sup-title" x="446" y="68">Security</text>
-    <text class="sup-script" x="446" y="88">setup_security.sh</text>
+    <rect class="sup-halo" x="200" y="250" width="320" height="72" rx="8" fill="var(--accent)"/>
+    <rect class="sup-block" x="200" y="250" width="320" height="72" rx="8"/>
+    <text class="sup-num" x="190" y="292">3</text>
+    <text class="sup-title" x="360" y="280">Security</text>
+    <text class="sup-script" x="360" y="302">setup_security.sh</text>
   </g>
   <g class="sup-stage sup-s4">
-    <rect class="sup-block" x="542" y="38" width="152" height="80" rx="8"/>
-    <text class="sup-title" x="618" y="68">Data SSD</text>
-    <text class="sup-script" x="618" y="88">setup_data_ssd.sh</text>
+    <rect class="sup-halo" x="200" y="360" width="320" height="72" rx="8" fill="var(--accent)"/>
+    <rect class="sup-block" x="200" y="360" width="320" height="72" rx="8"/>
+    <text class="sup-num" x="190" y="402">4</text>
+    <text class="sup-title" x="360" y="390">Data SSD</text>
+    <text class="sup-script" x="360" y="412">setup_data_ssd.sh</text>
   </g>
-
   <g class="sup-stage sup-s5">
-    <rect class="sup-block" x="26" y="182" width="152" height="80" rx="8"/>
-    <text class="sup-title" x="102" y="208">NVIDIA driver</text>
-    <text class="sup-script" x="102" y="228">setup_nvidia.sh</text>
-    <text class="sup-reboot" x="102" y="248">⟳ reboot</text>
+    <rect class="sup-halo" x="200" y="470" width="320" height="72" rx="8" fill="var(--accent)"/>
+    <rect class="sup-block" x="200" y="470" width="320" height="72" rx="8"/>
+    <text class="sup-num" x="190" y="512">5</text>
+    <text class="sup-title" x="360" y="500">NVIDIA driver</text>
+    <text class="sup-script" x="360" y="522">setup_nvidia.sh</text>
+    <text class="sup-reboot" x="536" y="512">⟳ reboot</text>
   </g>
   <g class="sup-stage sup-s6">
-    <rect class="sup-block" x="198" y="182" width="152" height="80" rx="8"/>
-    <text class="sup-title" x="274" y="208">CUDA Toolkit</text>
-    <text class="sup-script" x="274" y="228">setup_cuda.sh</text>
-    <text class="sup-reboot" x="274" y="248">⟳ reboot</text>
+    <rect class="sup-halo" x="200" y="580" width="320" height="72" rx="8" fill="var(--accent)"/>
+    <rect class="sup-block" x="200" y="580" width="320" height="72" rx="8"/>
+    <text class="sup-num" x="190" y="622">6</text>
+    <text class="sup-title" x="360" y="610">CUDA Toolkit</text>
+    <text class="sup-script" x="360" y="632">setup_cuda.sh</text>
+    <text class="sup-reboot" x="536" y="622">⟳ reboot</text>
   </g>
   <g class="sup-stage sup-s7">
-    <rect class="sup-block" x="370" y="182" width="152" height="80" rx="8"/>
-    <text class="sup-title" x="446" y="208">cuDNN</text>
-    <text class="sup-script" x="446" y="228">setup_cudnn.sh</text>
+    <rect class="sup-halo" x="200" y="690" width="320" height="72" rx="8" fill="var(--accent)"/>
+    <rect class="sup-block" x="200" y="690" width="320" height="72" rx="8"/>
+    <text class="sup-num" x="190" y="732">7</text>
+    <text class="sup-title" x="360" y="720">cuDNN</text>
+    <text class="sup-script" x="360" y="742">setup_cudnn.sh</text>
   </g>
   <g class="sup-stage sup-s8">
-    <rect class="sup-block" x="542" y="182" width="152" height="80" rx="8"/>
-    <text class="sup-title" x="618" y="208">Docker + toolkit</text>
-    <text class="sup-script" x="618" y="228">setup_docker.sh</text>
+    <rect class="sup-halo" x="200" y="800" width="320" height="72" rx="8" fill="var(--accent)"/>
+    <rect class="sup-block" x="200" y="800" width="320" height="72" rx="8"/>
+    <text class="sup-num" x="190" y="842">8</text>
+    <text class="sup-title" x="360" y="830">Docker + toolkit</text>
+    <text class="sup-script" x="360" y="852">setup_docker.sh</text>
   </g>
 
-  <text class="sup-sub" x="26" y="24">base system</text>
-  <text class="sup-sub" x="26" y="168">GPU stack &amp; containers</text>
+  <!-- step-advance comets, one per connector; trails chain off the head -->
+  <g class="sup-comet sup-comet-1">
+    <circle r="6" fill="var(--accent)"><animateMotion id="sup-c1-head" dur="0.7s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#sup-route-1"/></animateMotion></circle>
+    <circle r="4" fill="var(--accent)" opacity="0.45"><animateMotion dur="0.7s" begin="sup-c1-head.begin+0.08s" repeatCount="1" fill="freeze"><mpath href="#sup-route-1"/></animateMotion></circle>
+    <circle r="2.5" fill="var(--accent)" opacity="0.22"><animateMotion dur="0.7s" begin="sup-c1-head.begin+0.15s" repeatCount="1" fill="freeze"><mpath href="#sup-route-1"/></animateMotion></circle>
+  </g>
+  <g class="sup-comet sup-comet-2">
+    <circle r="6" fill="var(--accent)"><animateMotion id="sup-c2-head" dur="0.7s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#sup-route-2"/></animateMotion></circle>
+    <circle r="4" fill="var(--accent)" opacity="0.45"><animateMotion dur="0.7s" begin="sup-c2-head.begin+0.08s" repeatCount="1" fill="freeze"><mpath href="#sup-route-2"/></animateMotion></circle>
+    <circle r="2.5" fill="var(--accent)" opacity="0.22"><animateMotion dur="0.7s" begin="sup-c2-head.begin+0.15s" repeatCount="1" fill="freeze"><mpath href="#sup-route-2"/></animateMotion></circle>
+  </g>
+  <g class="sup-comet sup-comet-3">
+    <circle r="6" fill="var(--accent)"><animateMotion id="sup-c3-head" dur="0.7s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#sup-route-3"/></animateMotion></circle>
+    <circle r="4" fill="var(--accent)" opacity="0.45"><animateMotion dur="0.7s" begin="sup-c3-head.begin+0.08s" repeatCount="1" fill="freeze"><mpath href="#sup-route-3"/></animateMotion></circle>
+    <circle r="2.5" fill="var(--accent)" opacity="0.22"><animateMotion dur="0.7s" begin="sup-c3-head.begin+0.15s" repeatCount="1" fill="freeze"><mpath href="#sup-route-3"/></animateMotion></circle>
+  </g>
+  <g class="sup-comet sup-comet-4">
+    <circle r="6" fill="var(--accent)"><animateMotion id="sup-c4-head" dur="0.7s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#sup-route-4"/></animateMotion></circle>
+    <circle r="4" fill="var(--accent)" opacity="0.45"><animateMotion dur="0.7s" begin="sup-c4-head.begin+0.08s" repeatCount="1" fill="freeze"><mpath href="#sup-route-4"/></animateMotion></circle>
+    <circle r="2.5" fill="var(--accent)" opacity="0.22"><animateMotion dur="0.7s" begin="sup-c4-head.begin+0.15s" repeatCount="1" fill="freeze"><mpath href="#sup-route-4"/></animateMotion></circle>
+  </g>
+  <g class="sup-comet sup-comet-5">
+    <circle r="6" fill="var(--accent)"><animateMotion id="sup-c5-head" dur="0.7s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#sup-route-5"/></animateMotion></circle>
+    <circle r="4" fill="var(--accent)" opacity="0.45"><animateMotion dur="0.7s" begin="sup-c5-head.begin+0.08s" repeatCount="1" fill="freeze"><mpath href="#sup-route-5"/></animateMotion></circle>
+    <circle r="2.5" fill="var(--accent)" opacity="0.22"><animateMotion dur="0.7s" begin="sup-c5-head.begin+0.15s" repeatCount="1" fill="freeze"><mpath href="#sup-route-5"/></animateMotion></circle>
+  </g>
+  <g class="sup-comet sup-comet-6">
+    <circle r="6" fill="var(--accent)"><animateMotion id="sup-c6-head" dur="0.7s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#sup-route-6"/></animateMotion></circle>
+    <circle r="4" fill="var(--accent)" opacity="0.45"><animateMotion dur="0.7s" begin="sup-c6-head.begin+0.08s" repeatCount="1" fill="freeze"><mpath href="#sup-route-6"/></animateMotion></circle>
+    <circle r="2.5" fill="var(--accent)" opacity="0.22"><animateMotion dur="0.7s" begin="sup-c6-head.begin+0.15s" repeatCount="1" fill="freeze"><mpath href="#sup-route-6"/></animateMotion></circle>
+  </g>
+  <g class="sup-comet sup-comet-7">
+    <circle r="6" fill="var(--accent)"><animateMotion id="sup-c7-head" dur="0.7s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#sup-route-7"/></animateMotion></circle>
+    <circle r="4" fill="var(--accent)" opacity="0.45"><animateMotion dur="0.7s" begin="sup-c7-head.begin+0.08s" repeatCount="1" fill="freeze"><mpath href="#sup-route-7"/></animateMotion></circle>
+    <circle r="2.5" fill="var(--accent)" opacity="0.22"><animateMotion dur="0.7s" begin="sup-c7-head.begin+0.15s" repeatCount="1" fill="freeze"><mpath href="#sup-route-7"/></animateMotion></circle>
+  </g>
 </svg>
 
 <div class="fg-caption" data-fg="caption">Press play or step through the setup order.</div>
@@ -244,6 +335,7 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // fg:end timeline-core
 
+  let lastStep = 0;
   root.addEventListener('fg:step', (e) => {
     const s = e.detail.step;
     root.querySelectorAll('.sup-stage').forEach((g, i) => {
@@ -251,6 +343,16 @@
       g.classList.toggle('is-active', n === s);
       g.classList.toggle('is-done', n < s);
     });
+    // connector i is drawn once stage i+1 has been reached
+    root.querySelectorAll('.sup-flow').forEach((p, i) => {
+      p.classList.toggle('is-drawn', s >= i + 2);
+    });
+    // comet rides the connector only on a single forward advance
+    if (!reduced && s === lastStep + 1 && s >= 2) {
+      const head = root.querySelector('#sup-c' + (s - 1) + '-head');
+      if (head) head.beginElement();
+    }
+    lastStep = s;
     const c = CAPTIONS[s];
     caption.innerHTML = '';
     if (Array.isArray(c)) {

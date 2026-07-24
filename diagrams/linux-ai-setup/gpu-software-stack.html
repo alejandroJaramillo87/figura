@@ -61,7 +61,13 @@
   fill: var(--panel); stroke: var(--border); stroke-width: 2;
   transition: fill 0.3s, stroke 0.3s; cursor: pointer;
 }
-.fg-gpu-software-stack .gss-group:hover .gss-block { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-gpu-software-stack .gss-group { transition: transform var(--dur-fast) var(--ease); }
+.fg-gpu-software-stack .gss-group:hover { transform: translateY(-2px); }
+.fg-gpu-software-stack .gss-group:hover .gss-block { fill: var(--panel-hover); }
+
+/* hover glow: pre-blurred halo behind each layer, tinted to its stroke */
+.fg-gpu-software-stack .gss-halo { filter: blur(8px); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.fg-gpu-software-stack .gss-group:hover .gss-halo { opacity: 0.45; }
 .fg-gpu-software-stack .gss-hw { stroke: var(--ok); }
 .fg-gpu-software-stack .gss-driver { stroke: var(--accent); }
 .fg-gpu-software-stack .gss-cuda { stroke: var(--warn); }
@@ -76,6 +82,27 @@
   stroke-dasharray: 5 4; animation: fg-gss-flow 1.4s linear infinite;
 }
 @keyframes fg-gss-flow { to { stroke-dashoffset: -18; } }
+
+/* version seams: static dots; ripple pulses only on the seams touching the hovered layer */
+.fg-gpu-software-stack .gss-seam-dot { fill: var(--line); }
+.fg-gpu-software-stack .gss-ripple {
+  fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0;
+  transform-box: fill-box; transform-origin: center;
+}
+.fg-gpu-software-stack.is-hover-1 .gss-seam-1 .gss-ripple,
+.fg-gpu-software-stack.is-hover-2 .gss-seam-1 .gss-ripple,
+.fg-gpu-software-stack.is-hover-2 .gss-seam-2 .gss-ripple,
+.fg-gpu-software-stack.is-hover-3 .gss-seam-2 .gss-ripple,
+.fg-gpu-software-stack.is-hover-3 .gss-seam-3 .gss-ripple,
+.fg-gpu-software-stack.is-hover-4 .gss-seam-3 .gss-ripple,
+.fg-gpu-software-stack.is-hover-4 .gss-seam-4 .gss-ripple,
+.fg-gpu-software-stack.is-hover-5 .gss-seam-4 .gss-ripple {
+  animation: fg-gss-ripple 1.5s var(--ease) infinite;
+}
+@keyframes fg-gss-ripple {
+  0%   { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
 
 .fg-gpu-software-stack .fg-caption {
   margin-top: 12px; padding: 10px 14px;
@@ -97,6 +124,16 @@
   .fg-gpu-software-stack, .fg-gpu-software-stack * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .fg-gpu-software-stack.is-hover-1 .gss-seam-1 .gss-ripple,
+  .fg-gpu-software-stack.is-hover-2 .gss-seam-1 .gss-ripple,
+  .fg-gpu-software-stack.is-hover-2 .gss-seam-2 .gss-ripple,
+  .fg-gpu-software-stack.is-hover-3 .gss-seam-2 .gss-ripple,
+  .fg-gpu-software-stack.is-hover-3 .gss-seam-3 .gss-ripple,
+  .fg-gpu-software-stack.is-hover-4 .gss-seam-3 .gss-ripple,
+  .fg-gpu-software-stack.is-hover-4 .gss-seam-4 .gss-ripple,
+  .fg-gpu-software-stack.is-hover-5 .gss-seam-4 .gss-ripple { opacity: 0.3; transform: scale(1.6); }
+}
 </style>
 
 <svg viewBox="0 0 560 540" xmlns="http://www.w3.org/2000/svg" role="img"
@@ -114,25 +151,35 @@
   <path class="gss-flow" d="M 280 368 L 280 396" marker-end="url(#gss-arrow)"/>
   <text x="500" y="290" class="gss-side" transform="rotate(90 500 290)">calls flow down</text>
 
+  <!-- version seams between layers: dot marks the interface, ripple says "match versions here" -->
+  <g class="gss-seam gss-seam-1"><circle class="gss-ripple" cx="280" cy="98" r="8"/><circle class="gss-seam-dot" cx="280" cy="98" r="3"/></g>
+  <g class="gss-seam gss-seam-2"><circle class="gss-ripple" cx="280" cy="190" r="8"/><circle class="gss-seam-dot" cx="280" cy="190" r="3"/></g>
+  <g class="gss-seam gss-seam-3"><circle class="gss-ripple" cx="280" cy="282" r="8"/><circle class="gss-seam-dot" cx="280" cy="282" r="3"/></g>
+  <g class="gss-seam gss-seam-4"><circle class="gss-ripple" cx="280" cy="382" r="8"/><circle class="gss-seam-dot" cx="280" cy="382" r="3"/></g>
+
   <g class="gss-group" data-info="llama.cpp, vLLM, and PyTorch sit at the top. Inside containers they see the GPU through the NVIDIA Container Toolkit, which mounts the host driver libraries into the container — the driver is never installed inside the image.">
+    <rect class="gss-halo" x="110" y="20" width="340" height="64" rx="8" fill="var(--accent)"/>
     <rect class="gss-block" x="110" y="20" width="340" height="64" rx="8"/>
     <text class="gss-title" x="280" y="46">Frameworks &amp; containers</text>
     <text class="gss-sub"   x="280" y="66">llama.cpp · vLLM · PyTorch · NVIDIA Container Toolkit</text>
   </g>
 
   <g class="gss-group" data-info="cuDNN provides tuned deep-learning primitives (convolutions, attention, normalization) on top of CUDA, with FP16/FP8 paths for Blackwell tensor cores. Install tracks the CUDA major version. Verify: dpkg -l | grep cudnn">
+    <rect class="gss-halo" x="110" y="112" width="340" height="64" rx="8" fill="var(--violet)"/>
     <rect class="gss-block gss-cudnn" x="110" y="112" width="340" height="64" rx="8"/>
     <text class="gss-title" x="280" y="138">cuDNN 9.13</text>
     <text class="gss-sub"   x="280" y="158">deep-learning primitives for tensor cores</text>
   </g>
 
   <g class="gss-group" data-info="The CUDA platform: nvcc compiler, runtime and math libraries (cuBLAS, cuFFT), and headers. Targets the RTX 5090's sm_120 architecture. Needs PATH and LD_LIBRARY_PATH pointing at /usr/local/cuda. Verify: nvcc --version">
+    <rect class="gss-halo" x="110" y="204" width="340" height="64" rx="8" fill="var(--warn)"/>
     <rect class="gss-block gss-cuda" x="110" y="204" width="340" height="64" rx="8"/>
     <text class="gss-title" x="280" y="230">CUDA Toolkit 13.0</text>
     <text class="gss-sub"   x="280" y="250">nvcc · runtime · cuBLAS · sm_120</text>
   </g>
 
   <g class="gss-group" data-info="The driver bridges user space and silicon: kernel modules (nvidia, nvidia-uvm, nvidia-modeset, nvidia-drm) plus user-space libraries like libcuda.so. Persistence mode keeps it initialized between runs; the power limit caps the card at 600W. Verify: nvidia-smi">
+    <rect class="gss-halo" x="110" y="296" width="340" height="72" rx="8" fill="var(--accent)"/>
     <rect class="gss-block gss-driver" x="110" y="296" width="340" height="72" rx="8"/>
     <text class="gss-title" x="280" y="324">NVIDIA driver 580</text>
     <text class="gss-sub"   x="280" y="344">kernel modules · libcuda.so · nvidia-smi</text>
@@ -140,6 +187,7 @@
   </g>
 
   <g class="gss-group" data-info="The silicon: 21,760 CUDA cores, 32GB GDDR7, PCIe Gen5. Everything above exists to keep this layer fed. Verify link width and generation: nvidia-smi -q | grep -A 2 'Link Width'">
+    <rect class="gss-halo" x="110" y="396" width="340" height="72" rx="8" fill="var(--ok)"/>
     <rect class="gss-block gss-hw" x="110" y="396" width="340" height="72" rx="8"/>
     <text class="gss-title" x="280" y="424">RTX 5090 (Blackwell)</text>
     <text class="gss-sub"   x="280" y="444">21,760 CUDA cores · 32GB GDDR7 · PCIe Gen5</text>
@@ -155,8 +203,9 @@
   const root = document.currentScript.closest('.fg-diagram');
   const caption = root.querySelector('[data-fg="caption"]');
   const DEFAULT = 'Hover over any layer to see what it provides and how to verify it.';
-  root.querySelectorAll('.gss-group[data-info]').forEach((g) => {
+  root.querySelectorAll('.gss-group[data-info]').forEach((g, idx) => {
     g.addEventListener('mouseenter', () => {
+      root.classList.add('is-hover-' + (idx + 1));
       const title = g.querySelector('.gss-title').textContent;
       caption.innerHTML = '';
       const strong = document.createElement('strong');
@@ -175,6 +224,7 @@
       caption.classList.add('is-active');
     });
     g.addEventListener('mouseleave', () => {
+      root.classList.remove('is-hover-' + (idx + 1));
       caption.textContent = DEFAULT;
       caption.classList.remove('is-active');
     });

@@ -46,14 +46,14 @@
     "path": "diagrams/linux-ai-setup/storage-layout.html",
     "title": "Dual-SSD storage layout for AI workloads",
     "post": "linux-ai-setup",
-    "description": "OS drive vs data drive mounted at /mnt/ai-data: models, datasets, caches, workspace, and the cache symlinks that keep home lean. Hover-to-inspect."
+    "description": "1TB OS drive vs 2TB data drive mounted at /mnt/ai-data: models, datasets, caches, workspace, and an ambient comet riding the cache symlinks that keep home lean. Hover-to-inspect."
   },
   {
     "id": "setup-pipeline",
     "path": "diagrams/linux-ai-setup/setup-pipeline.html",
     "title": "The OS setup pipeline, in order",
     "post": "linux-ai-setup",
-    "description": "Eight-stage setup order from Ubuntu install to Docker with the NVIDIA Container Toolkit, each stage tagged with its automation script and reboot points. Step timeline with controls."
+    "description": "Eight-stage setup order as a vertical pipeline from Ubuntu install to Docker with the NVIDIA Container Toolkit: each stage lights up with its script, a comet carries the flow downward, and reboot points flash. Step timeline with controls."
   },
   {
     "id": "comparison-grid",
@@ -86,7 +86,7 @@
   {
     "id": "engine-comparison",
     "path": "diagrams/inference-containers/engine-comparison.html",
-    "title": "Three engines, one workstation",
+    "title": "Three engines, one rig",
     "post": "inference-containers-overview",
     "description": "Grid comparing llama-cpu, llama-gpu, and vllm-gpu: hardware, optimization target, image build style, and entrypoint pattern. Hover-to-inspect."
   },
