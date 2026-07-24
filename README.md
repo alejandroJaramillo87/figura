@@ -28,8 +28,8 @@ CLAUDE.md        generation contract (conventions, palette, patterns)
 index.html       gallery — every diagram inlined, first one twice (collision check)
 manifest.json    diagram index {id, path, title, post, description}
 shared/
-  tokens.css     palette source of truth: classic dark, pastel-on-dark,
-                 pastel-light (build.js derives the per-diagram palette blocks)
+  tokens.css     palette source of truth: classic dark, shared with the
+                 blog's tokens (build.js derives the per-diagram palette blocks)
   runtime/       canonical managed-block sources (timeline, controls bar,
                  caption box, panel base, reduced-motion) stamped into every
                  fragment by scripts/build.js

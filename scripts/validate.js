@@ -17,10 +17,8 @@ const fs = require('fs');
 const path = require('path');
 const F = require('./lib/fragment');
 
-/* effects-sampler legitimately carries two palettes and demo-only patterns */
-const EXEMPT = {
-  'diagrams/effects-sampler/effects-sampler.html': ['id-prefix'],
-};
+/* per-file rule exemptions (currently none) */
+const EXEMPT = {};
 
 const findings = [];
 function report(file, rule, msg) {
