@@ -418,5 +418,40 @@
     "title": "Genre and register",
     "post": "what-language-leaves-out-pragmatic",
     "description": "The same sentence inside a statute and a physics paper; the document's register re-glosses \"state\" and \"notice\" wholesale."
+  },
+  {
+    "id": "wllo-delimiter-match",
+    "path": "diagrams/what-language-leaves-out/delimiter-match.html",
+    "title": "Delimiter matching",
+    "post": "what-language-leaves-out-structural",
+    "description": "Deleting one distant opening quote flips every later quote's role between OPEN and CLOSE and re-shades string vs code."
+  },
+  {
+    "id": "wllo-code-binding",
+    "path": "diagrams/what-language-leaves-out/code-binding.html",
+    "title": "Code dependencies",
+    "post": "what-language-leaves-out-structural",
+    "description": "A variable use re-binds from a module-level definition to an inserted shadowing one -- coreference over code tokens."
+  },
+  {
+    "id": "wllo-format-continuation",
+    "path": "diagrams/what-language-leaves-out/format-continuation.html",
+    "title": "Format continuation",
+    "post": "what-language-leaves-out-structural",
+    "description": "The same content under a markdown-table vs numbered-list precedent; the ghost continuation's shape follows the pattern, not the grammar."
+  },
+  {
+    "id": "wllo-induction-copy",
+    "path": "diagrams/what-language-leaves-out/induction-copy.html",
+    "title": "Induction and copying",
+    "post": "what-language-leaves-out-structural",
+    "description": "Step timeline of the induction-head loop: match the current token to its previous occurrence, hop one forward, copy the successor."
+  },
+  {
+    "id": "wllo-instruction-binding",
+    "path": "diagrams/what-language-leaves-out/instruction-binding.html",
+    "title": "Instruction binding",
+    "post": "what-language-leaves-out-structural",
+    "description": "Swapping a distant instruction header flips the same passage's role and continuation -- the series' longest-range dependency."
   }
 ]

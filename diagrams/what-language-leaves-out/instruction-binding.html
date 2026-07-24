@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instruction binding: a distant header defines the passage's job</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Instruction binding</h1>
+<p>The same passage under two distant instructions — its role, and the correct continuation, are governed by a header thousands of tokens upstream.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-instruction-binding">
+<style>
+.fg-instruction-binding {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-instruction-binding svg { display: block; width: 100%; height: auto; }
+.fg-instruction-binding text { font-family: inherit; }
+
+.fg-instruction-binding .isb-note { fill: var(--muted); font-size: 11px; }
+
+/* instruction header variants cross-fade */
+.fg-instruction-binding .isb-head rect { fill: var(--panel); stroke: var(--violet); stroke-width: 1.5; }
+.fg-instruction-binding .isb-head text { fill: var(--violet); font-size: 13px; font-weight: 600; }
+.fg-instruction-binding .isb-head { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-instruction-binding .isb-head-tr { opacity: 1; }
+.fg-instruction-binding .isb-head-ct { opacity: 0; }
+.fg-instruction-binding.is-count .isb-head-tr { opacity: 0; }
+.fg-instruction-binding.is-count .isb-head-ct { opacity: 1; }
+
+/* the gap: elided middle */
+.fg-instruction-binding .isb-gap text { fill: var(--line); font-size: 12px; text-anchor: middle; letter-spacing: 2px; }
+
+/* the passage (fixed) */
+.fg-instruction-binding .isb-pass rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
+.fg-instruction-binding .isb-pass text { fill: var(--text); font-size: 13px; }
+
+/* role tag on the passage flips */
+.fg-instruction-binding .isb-role { font-size: 10px; transition: opacity 0.7s; }
+.fg-instruction-binding .isb-role-tr { fill: var(--warn); opacity: 1; }
+.fg-instruction-binding .isb-role-ct { fill: var(--warn); opacity: 0; }
+.fg-instruction-binding.is-count .isb-role-tr { opacity: 0; }
+.fg-instruction-binding.is-count .isb-role-ct { opacity: 1; }
+
+/* ghost continuation flips */
+.fg-instruction-binding .isb-cont { transition: opacity 0.7s; }
+.fg-instruction-binding .isb-cont rect { fill: #0e4429; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
+.fg-instruction-binding .isb-cont text { fill: var(--ok); font-size: 13px; font-family: var(--mono); }
+.fg-instruction-binding .isb-cont-tr { opacity: 1; }
+.fg-instruction-binding .isb-cont-ct { opacity: 0; }
+.fg-instruction-binding.is-count .isb-cont-tr { opacity: 0; }
+.fg-instruction-binding.is-count .isb-cont-ct { opacity: 1; }
+
+/* the long governing arc, spanning the gap */
+.fg-instruction-binding .isb-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
+
+.fg-instruction-binding .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-instruction-binding .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-instruction-binding .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-instruction-binding .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-instruction-binding .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-instruction-binding .isb-head, .fg-instruction-binding .isb-role,
+  .fg-instruction-binding .isb-cont { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A prompt laid out vertically. At the top an instruction header that a button toggles between: Translate the following report to French, and: Count the sentences in the following report. Below it a dotted gap labeled thousands of tokens. Then the fixed passage: The cache was empty. The server restarted. Its role tag flips between data to translate and data to count. At the bottom a dashed continuation flips between Le cache était vide and the numeral 2. A single long green arc runs from the passage all the way up to the distant header — the passage's function is governed from far away.">
+  <text class="isb-note" x="40" y="24">the function of a passage &#8212; not its meaning &#8212; is assigned by a distant instruction</text>
+
+  <!-- instruction header variants -->
+  <g class="isb-head isb-head-tr">
+    <rect x="56" y="40" width="420" height="34" rx="8"/>
+    <text x="72" y="62">Translate the following report to French:</text>
+  </g>
+  <g class="isb-head isb-head-ct">
+    <rect x="56" y="40" width="420" height="34" rx="8"/>
+    <text x="72" y="62">Count the sentences in the following report:</text>
+  </g>
+
+  <!-- elided middle -->
+  <g class="isb-gap">
+    <text x="266" y="102">&#8942;&#8942;&#8942;&#8942;&#8942;&#8942;&#8942;&#8942;&#8942;&#8942;&#8942;&#8942;&#8942;&#8942;&#8942;</text>
+    <text x="266" y="122">&#8230; thousands of tokens &#8230;</text>
+  </g>
+
+  <!-- the fixed passage -->
+  <g class="isb-pass">
+    <rect x="56" y="140" width="420" height="56" rx="8"/>
+    <text x="72" y="164">"The cache was empty."</text>
+    <text x="72" y="186">"The server restarted."</text>
+  </g>
+  <text class="isb-role isb-role-tr" x="490" y="164">role: data to translate</text>
+  <text class="isb-role isb-role-ct" x="490" y="164">role: data to count</text>
+
+  <!-- ghost continuation variants -->
+  <g class="isb-cont isb-cont-tr">
+    <rect x="56" y="218" width="300" height="34" rx="8"/>
+    <text x="70" y="240">Le cache &#233;tait vide. &#8230;</text>
+  </g>
+  <g class="isb-cont isb-cont-ct">
+    <rect x="56" y="218" width="300" height="34" rx="8"/>
+    <text x="70" y="240">2</text>
+  </g>
+
+  <!-- the long governing arc: passage up to the header, across the gap -->
+  <path class="isb-arc" d="M 500 168 C 620 140, 620 80, 486 58" marker-end="url(#isb-arrow)"/>
+  <text class="isb-note" x="596" y="112" fill="#34d399">the series'</text>
+  <text class="isb-note" x="596" y="126" fill="#34d399">longest arc</text>
+
+  <text class="isb-note" x="40" y="284">Where this binding weakens &#8212; instructions buried mid-context are used less reliably &#8212; the model</text>
+  <text class="isb-note" x="40" y="300">drifts; where it inverts, text that should be data gets read as instructions: prompt injection.</text>
+
+  <defs>
+    <marker id="isb-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Swap the distant instruction header">Swap the instruction</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Translate</strong> &#8212; the header assigns every later sentence the role "data to translate", and the correct continuation is French. The passage's own tokens carry its meaning, but not its job &#8212; that is governed from thousands of tokens away.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    tr: '<strong>Translate</strong> — the header assigns every later sentence the role "data to translate", and the correct continuation is French. The passage\'s own tokens carry its meaning, but not its job — that is governed from thousands of tokens away.',
+    ct: '<strong>Count</strong> — same passage, untouched; swap the distant header and its role flips to "data to count", the correct continuation to "2". The longest-range dependency in the series: one early line conditions the function of everything after it.'
+  };
+  btn.addEventListener('click', () => {
+    const count = root.classList.toggle('is-count');
+    caption.innerHTML = count ? CAP.ct : CAP.tr;
+    btn.textContent = count ? 'Swap back to translate' : 'Swap the instruction';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
