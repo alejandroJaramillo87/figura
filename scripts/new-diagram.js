@@ -5,7 +5,7 @@
  * Usage:
  *   node scripts/new-diagram.js <post-slug>/<kebab-name> \
  *     --kind step-timeline|hover-inspect|ambient \
- *     --palette classic|pastel-dark|pastel-light \
+ *     --palette classic \
  *     --abbr <short-prefix> \
  *     [--title "Human-readable title"]
  *
@@ -42,8 +42,6 @@ const title = arg('title', name.replace(/-/g, ' '));
 
 const PALETTE_BLOCK = {
   classic: 'palette-classic',
-  'pastel-dark': 'palette-pastel-dark',
-  'pastel-light': 'palette-pastel-light',
 };
 if (!PALETTE_BLOCK[paletteArg]) fail('unknown palette: ' + paletteArg);
 if (!abbr || !/^[a-z0-9]{2,6}$/.test(abbr)) fail('--abbr <2-6 char prefix> is required (e.g. kvcf)');
@@ -54,7 +52,7 @@ if (!fs.existsSync(tplPath)) fail('unknown kind: ' + kind);
 const outPath = path.join(F.DIAGRAMS_DIR, slug, name + '.html');
 if (fs.existsSync(outPath)) fail('already exists: ' + F.relPath(outPath));
 
-const panel = paletteArg === 'pastel-light' ? 'panel-base-light' : 'panel-base';
+const panel = 'panel-base';
 let out = fs.readFileSync(tplPath, 'utf8')
   .replaceAll('{{NAME}}', name)
   .replaceAll('{{TITLE}}', title)
