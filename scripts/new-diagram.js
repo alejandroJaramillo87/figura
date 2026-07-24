@@ -4,7 +4,7 @@
  *
  * Usage:
  *   node scripts/new-diagram.js <post-slug>/<kebab-name> \
- *     --kind step-timeline|hover-inspect|ambient \
+ *     --kind step-timeline|hover-inspect|ambient|hero \
  *     --palette classic \
  *     --abbr <short-prefix> \
  *     [--title "Human-readable title"]
@@ -75,6 +75,7 @@ manifest.push({
   path: F.relPath(outPath),
   title,
   post: slug,
+  kind,
   description: 'TODO: one-sentence description for the gallery.',
 });
 fs.writeFileSync(F.MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n');

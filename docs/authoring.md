@@ -12,6 +12,7 @@ swatch and effect is `diagrams/effects-sampler/effects-sampler.html`.
 | **step-timeline** | a process unfolds over discrete steps: loops, cache fills, pipelines | prev/play/next controls drive `is-step-N` root classes; autoplays when ~30% visible, pauses off-screen |
 | **hover-inspect** | an architecture/block diagram where parts need explanation | blocks carry `data-info`; hovering fills the `.fg-caption` box |
 | **ambient** | continuous flow with no natural steps | looping CSS animation (e.g. dashed-line `stroke-dashoffset` flow) |
+| **hero** | a cinematic wide-aspect post hero — sets the scene rather than explains | no controls; intro choreography fires once at ~30% visibility (`is-live`), settles after `INTRO_MS` (`is-settled`), then a quiet ambient loop that pauses off-screen (`is-paused`) |
 
 Kinds compose — a step timeline can also have hover captions — but
 start from the template closest to the primary interaction.

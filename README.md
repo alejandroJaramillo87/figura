@@ -54,7 +54,7 @@ scripts/
                  palette generation) used by all three scripts
 docs/            project documentation (architecture, blog integration,
                  development, authoring)
-templates/       step-timeline, hover-inspect, ambient scaffolds
+templates/       step-timeline, hover-inspect, ambient, hero scaffolds
 diagrams/<post-slug>/<kebab-name>.html
 ```
 

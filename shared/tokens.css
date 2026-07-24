@@ -47,4 +47,10 @@
   --fg-dur-step: 700ms;
   --fg-dur-fast: 0.45s;
   --fg-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Hero choreography (hero kind only — see CLAUDE.md) */
+  --fg-ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1); /* back-out entrance bounce */
+  --fg-ease-out: cubic-bezier(0.16, 1, 0.3, 1);           /* long decelerating settle */
+  --fg-dur-hero-in: 900ms;                                /* per-element entrance */
+  --fg-stagger: 80ms;   /* stagger unit: calc(var(--i) * var(--stagger)) */
 }

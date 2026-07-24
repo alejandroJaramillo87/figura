@@ -21,7 +21,7 @@ development workflow, authoring guide) lives in `docs/` — see
 
    ```
    node scripts/new-diagram.js <post-slug>/<kebab-name> \
-     --kind step-timeline|hover-inspect|ambient \
+     --kind step-timeline|hover-inspect|ambient|hero \
      --abbr <2-6 char prefix> --title "Human-readable title"
    ```
 
@@ -60,6 +60,7 @@ CSS, `// fg:begin timeline-core v1 … // fg:end timeline-core` in JS):
 | `timeline-core` | `tl` step state machine (`is-step-N`, `fg:step` events, `is-playing`), control wiring, `reduced` flag — expects `TOTAL` and `STEP_MS` consts above it |
 | `timeline-start` | initial `apply()` plus reduced-motion final-state jump or IntersectionObserver autoplay — place after any `fg:step` listeners |
 | `hover-caption` | `data-info` → `.fg-caption` hover wiring |
+| `hero-start` | hero lifecycle: IntersectionObserver-gated `is-live` (intro fires once per page load) → `is-settled` after `INTRO_MS` (immediate under reduced motion) → `is-paused` toggling while off-screen — expects an `INTRO_MS` const above it |
 
 `node scripts/build.js` re-expands every block (idempotent); `--check`
 fails if any block drifted from its canonical source. Palette changes are
@@ -163,6 +164,10 @@ copying. Additional hard rules that come with the effects:
   concurrently. Effects must explain (a comet shows direction, a glow
   shows activation, a ripple shows an in-place update) — decoration for
   its own sake reads as noise on a technical blog.
+  **Hero-kind carve-out:** during a hero's *intro* choreography, dense
+  staggered entrances and overlapping one-shots are allowed — spectacle
+  is the point of a hero. The ≤3-concurrent rule still applies to the
+  hero's *ambient loop* after settle.
 
 Step-triggered one-shots use `restartAnimation()` and `launchComets()`
 from `shared/snippets.js` (comets authored with `begin="indefinite"`,
@@ -191,8 +196,12 @@ Dark slate panel on the blog's light page (matches its mermaid diagrams):
 
 Easing and step transitions always come from the palette block: `var(--ease)`
 and `var(--dur-fast)` (0.45s state transitions) / `var(--dur-step)` (700ms
-timeline cadence). The validator rejects literal `cubic-bezier()` or
-hand-mixed dim hexes outside managed blocks.
+timeline cadence). Hero choreography additionally gets
+`var(--ease-overshoot)` (back-out entrance bounce), `var(--ease-out)`
+(long decelerating settle), `var(--dur-hero-in)` (900ms entrances) and
+`var(--stagger)` (80ms stagger unit, `calc(var(--i) * var(--stagger))`
+with `style="--i: N"` per element). The validator rejects literal
+`cubic-bezier()` or hand-mixed dim hexes outside managed blocks.
 
 Font: `"Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif`
 (system fallback — never fetch webfonts). Rounded corners (12px panel,
@@ -205,6 +214,15 @@ Interaction patterns to reuse (see `shared/snippets.js`):
   the SVG shows details; good for architecture block diagrams.
 - **Ambient flow** — dashed `stroke-dasharray` lines with a `stroke-dashoffset`
   keyframe animation for data flowing along paths.
+- **Hero** — cinematic wide-aspect (~1200×500) post hero, no controls or
+  caption. Lifecycle intro → settle → ambient loop, driven by root
+  classes from the `hero-start` block: `.is-live` fires the intro (CSS
+  `animation-delay` staggering via `--i`), `.is-settled` gates the
+  ambient loop, `.is-paused` pauses it off-screen. The `.is-settled`
+  static rules must render the complete final composition on their own —
+  that is what reduced-motion users see. Prefer CSS motion paths
+  (`offset-path`) over SMIL for hero comets so they sync with the CSS
+  delay clock and honor reduced motion for free.
 
 ## Embedding in the blog
 

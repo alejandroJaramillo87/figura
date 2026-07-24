@@ -43,7 +43,7 @@ diagram — from colliding.
 
 ```
 diagrams/<post-slug>/<name>.html   the diagrams (one dir per blog post)
-templates/                         scaffolds: step-timeline, hover-inspect, ambient
+templates/                         scaffolds: step-timeline, hover-inspect, ambient, hero
 shared/
   tokens.css                       palette source of truth (classic dark)
   runtime/                         canonical managed-block sources
