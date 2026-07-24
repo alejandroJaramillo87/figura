@@ -453,5 +453,26 @@
     "title": "Instruction binding",
     "post": "what-language-leaves-out-structural",
     "description": "Swapping a distant instruction header flips the same passage's role and continuation -- the series' longest-range dependency."
+  },
+  {
+    "id": "wllo-ladder-depth",
+    "path": "diagrams/what-language-leaves-out/ladder-depth.html",
+    "title": "The ladder against depth",
+    "post": "what-language-leaves-out-capstone",
+    "description": "The series' six levels beside a model-depth column, connected by deliberately soft bands -- tendencies, not an org chart."
+  },
+  {
+    "id": "wllo-soft-lookup",
+    "path": "diagrams/what-language-leaves-out/soft-lookup.html",
+    "title": "The soft lookup",
+    "post": "what-language-leaves-out-capstone",
+    "description": "Step timeline re-answering the Winograd pronoun with the mechanism: query, graded matches, weighted blend -- a mixture, never a pointer."
+  },
+  {
+    "id": "wllo-heads-tendency",
+    "path": "diagrams/what-language-leaves-out/heads-tendency.html",
+    "title": "Heads divide the labor loosely",
+    "post": "what-language-leaves-out-capstone",
+    "description": "Four named head tendencies (induction the only found circuit) beside a dashed majority of unnamed heads."
   }
 ]
