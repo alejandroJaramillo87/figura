@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Register: the document conditions every token</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Genre and register</h1>
+<p>The same sentence inside a statute and inside a physics paper — the document's register re-glosses its words wholesale.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-register-frame">
+<style>
+.fg-register-frame {
+  --bg: #0f172a; --panel: #1e293b; --panel-hover: #334155; --border: #334155;
+  --text: #f8fafc; --muted: #94a3b8; --accent: #38bdf8;
+  --ok: #34d399; --warn: #fbbf24; --hot: #f87171; --violet: #a78bfa; --line: #64748b;
+  background: var(--bg);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-register-frame svg { display: block; width: 100%; height: auto; }
+.fg-register-frame text { font-family: inherit; }
+
+.fg-register-frame .rgs-note { fill: var(--muted); font-size: 11px; }
+
+/* document frame */
+.fg-register-frame .rgs-doc rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
+.fg-register-frame .rgs-head { transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+.fg-register-frame .rgs-head text { font-size: 12px; fill: var(--violet); }
+.fg-register-frame .rgs-cue { transition: opacity 0.7s; }
+.fg-register-frame .rgs-cue text { font-size: 11px; fill: var(--muted); font-style: italic; }
+.fg-register-frame .rgs-head-law, .fg-register-frame .rgs-cue-law { opacity: 1; }
+.fg-register-frame .rgs-head-phys, .fg-register-frame .rgs-cue-phys { opacity: 0; }
+.fg-register-frame.is-physics .rgs-head-law, .fg-register-frame.is-physics .rgs-cue-law { opacity: 0; }
+.fg-register-frame.is-physics .rgs-head-phys, .fg-register-frame.is-physics .rgs-cue-phys { opacity: 1; }
+
+/* the shared sentence */
+.fg-register-frame .rgs-sent { fill: var(--text); font-size: 14px; }
+.fg-register-frame .rgs-key { fill: var(--warn); font-weight: 600; }
+
+/* glosses cross-fade */
+.fg-register-frame .rgs-gloss { transition: opacity 0.7s; }
+.fg-register-frame .rgs-gloss text { font-size: 12px; fill: var(--ok); }
+.fg-register-frame .rgs-gloss-law { opacity: 1; }
+.fg-register-frame .rgs-gloss-phys { opacity: 0; }
+.fg-register-frame.is-physics .rgs-gloss-law { opacity: 0; }
+.fg-register-frame.is-physics .rgs-gloss-phys { opacity: 1; }
+
+/* diffuse arcs from the key tokens to register cues */
+.fg-register-frame .rgs-arc { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 3 5; }
+
+.fg-register-frame .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+.fg-register-frame .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color 0.3s, background 0.3s;
+}
+.fg-register-frame .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+
+.fg-register-frame .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* reserve height for the longer state text: no page reflow on toggle */
+  color: var(--text); font-size: 13px; min-height: 4.2em;
+}
+.fg-register-frame .fg-caption strong { color: var(--ok); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fg-register-frame .rgs-head, .fg-register-frame .rgs-cue, .fg-register-frame .rgs-gloss { transition: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A document panel whose header a button flips between: Title 4, section 12 — Obligations of the parties, and: Physical Review — thermodynamics of driven systems. Inside sits the fixed sentence: The state changes when notice is given, with state and notice in amber. Below, glosses cross-fade: in the statute, state means legal status and notice means formal notification; in the paper, state means thermodynamic state and notice reads as an odd word choice. Dashed arcs run from the amber words to register cues in the header and footer — the whole document conditions every token.">
+  <text class="rgs-note" x="40" y="24">not one word's sense this time &#8212; the register re-glosses the whole sentence at once</text>
+
+  <!-- document frame -->
+  <g class="rgs-doc">
+    <rect x="60" y="40" width="600" height="160" rx="10"/>
+  </g>
+  <g class="rgs-head rgs-head-law">
+    <text x="84" y="66">TITLE 4, &#167; 12 &#8212; OBLIGATIONS OF THE PARTIES</text>
+  </g>
+  <g class="rgs-head rgs-head-phys">
+    <text x="84" y="66">PHYS. REV. E &#8212; THERMODYNAMICS OF DRIVEN SYSTEMS</text>
+  </g>
+
+  <!-- shared sentence -->
+  <text class="rgs-sent" x="84" y="118">"The <tspan class="rgs-key">state</tspan> changes when <tspan class="rgs-key">notice</tspan> is given."</text>
+
+  <!-- register cue lines (document body flavor) -->
+  <g class="rgs-cue rgs-cue-law">
+    <text x="84" y="156">&#8230; the party of the first part shall &#8230;</text>
+    <text x="84" y="180">&#8230; pursuant to subsection (b) &#8230;</text>
+  </g>
+  <g class="rgs-cue rgs-cue-phys">
+    <text x="84" y="156">&#8230; the ensemble relaxes toward equilibrium &#8230;</text>
+    <text x="84" y="180">&#8230; where T denotes temperature &#8230;</text>
+  </g>
+
+  <!-- diffuse arcs: key tokens -> cues above and below -->
+  <path class="rgs-arc" d="M 130 104 C 120 90, 110 80, 100 70"/>
+  <path class="rgs-arc" d="M 130 124 C 120 136, 110 144, 100 152"/>
+  <path class="rgs-arc" d="M 300 124 C 290 140, 260 160, 230 176"/>
+  <path class="rgs-arc" d="M 310 104 C 340 92, 380 76, 420 68"/>
+
+  <!-- glosses -->
+  <g class="rgs-gloss rgs-gloss-law">
+    <text x="84" y="234">"state" = legal status of the agreement &#160;&#183;&#160; "notice" = formal written notification</text>
+  </g>
+  <g class="rgs-gloss rgs-gloss-phys">
+    <text x="84" y="234">"state" = thermodynamic state of the system &#160;&#183;&#160; "notice" now reads as a misfit word</text>
+  </g>
+
+  <text class="rgs-note" x="40" y="266">The dashed arcs are deliberately diffuse: no single cue decides. The register is established</text>
+  <text class="rgs-note" x="40" y="282">by the whole document, and it conditions the reading of every token inside it.</text>
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="Move the sentence into the other document">Move to the physics paper</button>
+</div>
+
+<div class="fg-caption" data-fg="caption"><strong>Legal register</strong> &#8212; inside a statute, "state" is a legal status and "notice" is a formal act, because everything around the sentence says so. Post 2's domain effect, scaled up: not one word's sense, but the interpretive frame for all of them.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const btn = root.querySelector('[data-fg="toggle"]');
+  const CAP = {
+    law: '<strong>Legal register</strong> — inside a statute, "state" is a legal status and "notice" is a formal act, because everything around the sentence says so. Post 2\'s domain effect, scaled up: not one word\'s sense, but the interpretive frame for all of them.',
+    phys: '<strong>Physics register</strong> — the same tokens inside a paper: "state" snaps to thermodynamic state, and "notice" starts to feel like the wrong word entirely. The conditioning context is the most diffuse in the series: the whole document, all at once.'
+  };
+  btn.addEventListener('click', () => {
+    const phys = root.classList.toggle('is-physics');
+    caption.innerHTML = phys ? CAP.phys : CAP.law;
+    btn.textContent = phys ? 'Move to the statute' : 'Move to the physics paper';
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
