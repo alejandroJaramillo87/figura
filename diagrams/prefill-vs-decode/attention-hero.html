@@ -8,7 +8,7 @@
 </head>
 <body>
 <h1>Attention &amp; KV cache — hero</h1>
-<p>Cinematic hero: prompt tokens cascade in, causal attention arcs draw, and a comet sweeps the KV cache as entries fill.</p>
+<p>Abstract raster hero: a pixel stream, staircase arcs, a dither field, and a comet-swept cache run — frame-ticked like an encoded GIF.</p>
 
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-attention-hero">
@@ -43,6 +43,9 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-hero-in: 900ms;
   --stagger: 80ms;
+  --ease-frames: steps(10);
+  --ease-frames-coarse: steps(4, jump-none);
+  --dur-tick: 100ms;
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
@@ -60,111 +63,103 @@
   padding: 0; /* heroes are full-bleed inside the panel */
   overflow: hidden;
 }
+.fg-attention-hero svg { shape-rendering: crispEdges; }
 
-/* --- static scene --------------------------------------------------- */
-.fg-attention-hero .ath-label { font-size: 13px; fill: var(--muted); opacity: 0; }
-.fg-attention-hero .ath-tok { fill: var(--panel); stroke: var(--border); opacity: 0;
-  transform-box: fill-box; transform-origin: center; }
+/* --- static scene (all geometry on the 4-unit pixel grid) ----------- */
+.fg-attention-hero .ath-tok { opacity: 0; }
 .fg-attention-hero .ath-m { opacity: 0; }
-.fg-attention-hero .ath-on { fill: var(--accent-dim); stroke: var(--border); }
-.fg-attention-hero .ath-off { fill: var(--panel); stroke: var(--border); }
-.fg-attention-hero .ath-kv { fill: var(--panel); stroke: var(--border); opacity: 0;
-  transform-box: fill-box; transform-origin: center; }
-.fg-attention-hero .ath-arc { fill: none; stroke-width: 1.5; opacity: 0.7;
+.fg-attention-hero .ath-kv { fill: var(--panel); stroke: var(--border); opacity: 0; }
+.fg-attention-hero .ath-arc { fill: none; stroke-width: 3; opacity: 0.7;
   stroke-dasharray: 1; stroke-dashoffset: 1; }
 .fg-attention-hero .ath-arc-a { stroke: var(--accent); }
 .fg-attention-hero .ath-arc-v { stroke: var(--violet); }
-.fg-attention-hero .ath-halo { fill: var(--ok); filter: blur(8px); opacity: 0; }
+.fg-attention-hero .ath-halo-px { opacity: 0; }
 .fg-attention-hero .ath-comet { fill: var(--accent); opacity: 0;
-  offset-path: path('M 434 116 L 1110 116'); }
-.fg-attention-hero .ath-flow { fill: none; stroke: var(--line); stroke-width: 1.5;
-  stroke-dasharray: 6 10; opacity: 0; }
+  offset-path: path('M 512 104 H 1124'); offset-rotate: 0deg; }
+.fg-attention-hero .ath-flow { fill: none; stroke: var(--line); stroke-width: 4;
+  stroke-dasharray: 8 8; opacity: 0; }
 .fg-attention-hero .ath-orbit { fill: var(--violet); opacity: 0;
   transform-box: fill-box; transform-origin: center; }
 
-/* --- intro (fires on .is-live; delays stagger via --i) -------------- */
+/* --- intro (fires on .is-live; frame-quantized, staggered via --i) -- */
 .fg-attention-hero.is-live .ath-tok {
-  animation: fg-ath-pop var(--dur-hero-in) var(--ease-overshoot)
+  animation: fg-ath-pop 0.5s var(--ease-frames-coarse)
     calc(var(--i) * var(--stagger)) both;
 }
-.fg-attention-hero.is-live .ath-label {
-  animation: fg-ath-fade 0.9s var(--ease-out) 0.3s both;
-}
 .fg-attention-hero.is-live .ath-m {
-  animation: fg-ath-fade 0.7s var(--ease-out) calc(0.5s + var(--i) * var(--stagger)) both;
+  animation: fg-ath-on 0.3s var(--ease-frames-coarse) calc(0.5s + var(--i) * var(--stagger)) both;
 }
 .fg-attention-hero.is-live .ath-kv {
   animation:
-    fg-ath-pop var(--dur-hero-in) var(--ease-overshoot) calc(0.6s + var(--i) * var(--stagger)) both,
-    fg-ath-fill 0.5s var(--ease-out) calc(3.5s + var(--i) * 0.12s) forwards;
+    fg-ath-pop 0.5s var(--ease-frames-coarse) calc(0.6s + var(--i) * var(--stagger)) both,
+    fg-ath-fill 0.2s steps(1, jump-end) calc(3.5s + var(--i) * 0.12s) forwards;
 }
 .fg-attention-hero.is-live .ath-arc {
-  animation: fg-ath-draw 0.9s var(--ease-out) calc(1.2s + var(--i) * 0.18s) both;
+  animation: fg-ath-draw 0.9s var(--ease-frames) calc(1.2s + var(--i) * 0.18s) both;
 }
 .fg-attention-hero.is-live .ath-comet {
-  animation: fg-ath-comet 1.8s var(--ease-out) 3.4s both;
+  animation: fg-ath-comet 1.8s steps(24, jump-none) 3.4s both;
 }
 .fg-attention-hero.is-live .ath-c2 { animation-delay: 3.5s; }
 .fg-attention-hero.is-live .ath-c3 { animation-delay: 3.58s; }
-.fg-attention-hero.is-live .ath-halo {
-  animation: fg-ath-bloom 1.4s var(--ease-out) 4.6s both;
+.fg-attention-hero.is-live .ath-halo-px {
+  animation: fg-ath-bloom 1s var(--ease-frames-coarse) 4.6s both;
 }
 .fg-attention-hero.is-live .ath-flow {
-  animation: fg-ath-fade-half 1s var(--ease-out) 5.8s both;
+  animation: fg-ath-on-half 0.4s var(--ease-frames-coarse) 5.8s both;
 }
 .fg-attention-hero.is-live .ath-orbit {
-  animation: fg-ath-fade-half 1s var(--ease-out) 6s both;
+  animation: fg-ath-on-half 0.4s var(--ease-frames-coarse) 6s both;
 }
 
 @keyframes fg-ath-pop {
-  from { opacity: 0; transform: translateY(14px) scale(0.6); }
+  from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: none; }
 }
-@keyframes fg-ath-fade { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fg-ath-fade-half { from { opacity: 0; } to { opacity: 0.5; } }
+@keyframes fg-ath-on { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fg-ath-on-half { from { opacity: 0; } to { opacity: 0.5; } }
 @keyframes fg-ath-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes fg-ath-fill { to { fill: var(--ok-dim); stroke: var(--ok); } }
 @keyframes fg-ath-comet {
   0%   { offset-distance: 0%; opacity: 0; }
   8%   { opacity: 1; }
-  85%  { opacity: 1; }
+  92%  { opacity: 1; }
   100% { offset-distance: 100%; opacity: 0; }
 }
 @keyframes fg-ath-bloom {
-  0% { opacity: 0; } 40% { opacity: 0.35; } 100% { opacity: 0.12; }
+  0% { opacity: 0; } 50% { opacity: 0.5; } 100% { opacity: 0.2; }
 }
 
-/* --- settled state (must render the complete final composition;
-       this is also what prefers-reduced-motion users see) ------------ */
+/* --- settled state (complete final composition; the reduced-motion
+       rendering) ---------------------------------------------------- */
 .fg-attention-hero.is-settled .ath-tok { opacity: 1; transform: none; }
-.fg-attention-hero.is-settled .ath-label { opacity: 1; }
 .fg-attention-hero.is-settled .ath-m { opacity: 1; }
 .fg-attention-hero.is-settled .ath-kv { opacity: 1; transform: none;
   fill: var(--ok-dim); stroke: var(--ok); }
 .fg-attention-hero.is-settled .ath-arc { stroke-dashoffset: 0; }
-.fg-attention-hero.is-settled .ath-halo { opacity: 0.12; }
+.fg-attention-hero.is-settled .ath-halo-px { opacity: 0.2; }
 .fg-attention-hero.is-settled .ath-flow { opacity: 0.5; }
 .fg-attention-hero.is-settled .ath-orbit { opacity: 0.5; }
 
-/* --- ambient loop (≤3 concurrent; gated on .is-settled) ------------- */
+/* --- ambient loop (≤3 concurrent; frame-ticked; gated on settle) ---- */
 .fg-attention-hero.is-settled .ath-flow {
-  animation: fg-ath-dash 6s linear infinite;
+  animation: fg-ath-hop calc(var(--dur-tick) * 8) steps(8) infinite;
 }
-.fg-attention-hero.is-settled .ath-halo {
-  animation: fg-ath-breathe 3.2s var(--ease) infinite alternate;
+.fg-attention-hero.is-settled .ath-halo-px {
+  animation: fg-ath-blink calc(var(--dur-tick) * 8) steps(2, jump-none) infinite;
 }
 .fg-attention-hero.is-settled .ath-orbit {
-  animation: fg-ath-orbit 14s linear infinite;
+  animation: fg-ath-orbit 12s steps(12) infinite;
 }
 .fg-attention-hero.is-paused .ath-flow,
-.fg-attention-hero.is-paused .ath-halo,
+.fg-attention-hero.is-paused .ath-halo-px,
 .fg-attention-hero.is-paused .ath-orbit { animation-play-state: paused; }
 
-@keyframes fg-ath-dash { to { stroke-dashoffset: -160; } }
-@keyframes fg-ath-breathe { from { opacity: 0.06; } to { opacity: 0.18; } }
+@keyframes fg-ath-hop { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -16; } }
+@keyframes fg-ath-blink { 50% { opacity: 0.35; } }
 @keyframes fg-ath-orbit {
-  from { transform: rotate(0turn) translateX(126px); }
-  to   { transform: rotate(1turn) translateX(126px); }
+  from { transform: rotate(0turn) translateX(124px); }
+  to   { transform: rotate(1turn) translateX(124px); }
 }
 
 /* fg:begin reduced-motion v1 */
@@ -175,137 +170,107 @@
 </style>
 
 <svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Animated hero scene: a row of prompt tokens streams in, a causal attention mask and attention arcs connect earlier tokens to later ones, and a comet sweeps the KV cache row as its entries fill.">
-  <!-- causal mask (8x8, lower triangle active) -->
-  <text class="ath-label" x="90" y="78">causal mask</text>
+     aria-label="Abstract animated hero: a stream of pixel blocks flows along the bottom while blocky staircase arcs rise between them, a triangular dither field builds row by row, and a square comet sweeps a row of cells that snap green — all motion ticking in coarse frames like an animated GIF.">
+  <defs>
+    <pattern id="ath-d25" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="4" height="4" fill="var(--accent)"/>
+    </pattern>
+    <pattern id="ath-d50" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="4" height="4" fill="var(--accent)"/>
+      <rect x="4" y="4" width="4" height="4" fill="var(--accent)"/>
+    </pattern>
+    <pattern id="ath-d75" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="var(--accent)"/>
+      <rect x="4" y="0" width="4" height="4" fill="var(--bg)"/>
+    </pattern>
+    <pattern id="ath-dok50" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="4" height="4" fill="var(--ok)"/>
+      <rect x="4" y="4" width="4" height="4" fill="var(--ok)"/>
+    </pattern>
+    <pattern id="ath-scan" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="1" fill="#000000" opacity="0.18"/>
+    </pattern>
+    <filter id="ath-grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0"/>
+    </filter>
+  </defs>
+
+  <!-- dither field (builds row by row) -->
   <g>
-    <rect class="ath-m ath-on"  style="--i:0" x="90"  y="92"  width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:0" x="114" y="92"  width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:0" x="138" y="92"  width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:0" x="162" y="92"  width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:0" x="186" y="92"  width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:0" x="210" y="92"  width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:0" x="234" y="92"  width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:0" x="258" y="92"  width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:1" x="90"  y="116" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:1" x="114" y="116" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:1" x="138" y="116" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:1" x="162" y="116" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:1" x="186" y="116" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:1" x="210" y="116" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:1" x="234" y="116" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:1" x="258" y="116" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:2" x="90"  y="140" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:2" x="114" y="140" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:2" x="138" y="140" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:2" x="162" y="140" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:2" x="186" y="140" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:2" x="210" y="140" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:2" x="234" y="140" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:2" x="258" y="140" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:3" x="90"  y="164" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:3" x="114" y="164" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:3" x="138" y="164" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:3" x="162" y="164" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:3" x="186" y="164" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:3" x="210" y="164" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:3" x="234" y="164" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:3" x="258" y="164" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:4" x="90"  y="188" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:4" x="114" y="188" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:4" x="138" y="188" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:4" x="162" y="188" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:4" x="186" y="188" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:4" x="210" y="188" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:4" x="234" y="188" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:4" x="258" y="188" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:5" x="90"  y="212" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:5" x="114" y="212" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:5" x="138" y="212" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:5" x="162" y="212" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:5" x="186" y="212" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:5" x="210" y="212" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:5" x="234" y="212" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:5" x="258" y="212" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:6" x="90"  y="236" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:6" x="114" y="236" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:6" x="138" y="236" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:6" x="162" y="236" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:6" x="186" y="236" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:6" x="210" y="236" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:6" x="234" y="236" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-off" style="--i:6" x="258" y="236" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:7" x="90"  y="260" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:7" x="114" y="260" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:7" x="138" y="260" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:7" x="162" y="260" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:7" x="186" y="260" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:7" x="210" y="260" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:7" x="234" y="260" width="20" height="20" rx="3"/>
-    <rect class="ath-m ath-on"  style="--i:7" x="258" y="260" width="20" height="20" rx="3"/>
+    <rect class="ath-m" style="--i:0" x="60" y="68" width="48" height="20" fill="url(#ath-d25)"/>
+    <rect class="ath-m" style="--i:1" x="60" y="92" width="96" height="20" fill="url(#ath-d25)"/>
+    <rect class="ath-m" style="--i:2" x="60" y="116" width="144" height="20" fill="url(#ath-d25)"/>
+    <rect class="ath-m" style="--i:3" x="60" y="140" width="192" height="20" fill="url(#ath-d50)"/>
+    <rect class="ath-m" style="--i:4" x="60" y="164" width="240" height="20" fill="url(#ath-d50)"/>
+    <rect class="ath-m" style="--i:5" x="60" y="188" width="288" height="20" fill="url(#ath-d50)"/>
+    <rect class="ath-m" style="--i:6" x="60" y="212" width="336" height="20" fill="url(#ath-d75)"/>
+    <rect class="ath-m" style="--i:7" x="60" y="236" width="384" height="20" fill="url(#ath-d75)"/>
   </g>
-  <!-- orbiting particle (ambient) circles the mask center -->
-  <circle class="ath-orbit" cx="184" cy="186" r="3"/>
+  <!-- orbiting pixel (ambient) -->
+  <rect class="ath-orbit" x="248" y="156" width="16" height="16"/>
 
-  <!-- KV cache row + glow halo + comet -->
-  <text class="ath-label" x="440" y="88">KV cache</text>
-  <rect class="ath-halo" x="434" y="94" width="676" height="44" rx="8"/>
+  <!-- cache run: dithered halo + cells + pixel comet -->
+  <rect class="ath-halo-px" x="508" y="84" width="628" height="56" fill="url(#ath-dok50)"/>
   <g>
-    <rect class="ath-kv" style="--i:0"  x="440"  y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:1"  x="496"  y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:2"  x="552"  y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:3"  x="608"  y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:4"  x="664"  y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:5"  x="720"  y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:6"  x="776"  y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:7"  x="832"  y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:8"  x="888"  y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:9"  x="944"  y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:10" x="1000" y="100" width="48" height="32" rx="4"/>
-    <rect class="ath-kv" style="--i:11" x="1056" y="100" width="48" height="32" rx="4"/>
+    <rect class="ath-kv" style="--i:0" x="520" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:1" x="572" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:2" x="624" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:3" x="676" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:4" x="728" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:5" x="780" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:6" x="832" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:7" x="884" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:8" x="936" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:9" x="988" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:10" x="1040" y="96" width="40" height="32"/>
+    <rect class="ath-kv" style="--i:11" x="1092" y="96" width="40" height="32"/>
   </g>
-  <circle class="ath-comet ath-c1" r="5"/>
-  <circle class="ath-comet ath-c2" r="3.5" opacity="0.5"/>
-  <circle class="ath-comet ath-c3" r="2.5" opacity="0.3"/>
+  <rect class="ath-comet ath-c1" x="-4" y="-4" width="8" height="8"/>
+  <rect class="ath-comet ath-c2" x="-16" y="-4" width="8" height="8" opacity="0.5"/>
+  <rect class="ath-comet ath-c3" x="-28" y="-4" width="8" height="8" opacity="0.3"/>
 
-  <!-- ambient dataflow from the newest token up into the cache -->
-  <path class="ath-flow" d="M 1072 424 C 1072 320 1080 240 1080 138"/>
+  <!-- pixel-dash flow from the stream up into the run (ambient hop) -->
+  <path class="ath-flow" d="M 984 428 v -96 h 56 v -96 h 56 v -96"/>
 
-  <!-- attention arcs (earlier token -> later token, causal) -->
+  <!-- staircase arcs -->
   <g>
-    <path class="ath-arc ath-arc-a" style="--i:0" pathLength="1" d="M 104 426 Q 192 330 280 426"/>
-    <path class="ath-arc ath-arc-v" style="--i:1" pathLength="1" d="M 192 426 Q 280 330 368 426"/>
-    <path class="ath-arc ath-arc-a" style="--i:2" pathLength="1" d="M 280 426 Q 412 260 544 426"/>
-    <path class="ath-arc ath-arc-a" style="--i:3" pathLength="1" d="M 456 426 Q 544 330 632 426"/>
-    <path class="ath-arc ath-arc-v" style="--i:4" pathLength="1" d="M 368 426 Q 544 180 720 426"/>
-    <path class="ath-arc ath-arc-a" style="--i:5" pathLength="1" d="M 632 426 Q 720 330 808 426"/>
-    <path class="ath-arc ath-arc-v" style="--i:6" pathLength="1" d="M 544 426 Q 720 180 896 426"/>
-    <path class="ath-arc ath-arc-a" style="--i:7" pathLength="1" d="M 808 426 Q 896 330 984 426"/>
-    <path class="ath-arc ath-arc-v" style="--i:8" pathLength="1" d="M 720 426 Q 896 180 1072 426"/>
-    <path class="ath-arc ath-arc-a" style="--i:9" pathLength="1" d="M 984 426 Q 1028 360 1072 426"/>
+    <path class="ath-arc ath-arc-a" style="--i:0" pathLength="1" d="M 104 420 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 48 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8"/>
+    <path class="ath-arc ath-arc-v" style="--i:1" pathLength="1" d="M 192 420 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 48 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8"/>
+    <path class="ath-arc ath-arc-a" style="--i:2" pathLength="1" d="M 280 420 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 24 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8"/>
+    <path class="ath-arc ath-arc-a" style="--i:3" pathLength="1" d="M 456 420 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 48 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8"/>
+    <path class="ath-arc ath-arc-v" style="--i:4" pathLength="1" d="M 368 420 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 0 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8"/>
+    <path class="ath-arc ath-arc-a" style="--i:5" pathLength="1" d="M 632 420 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 48 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8"/>
+    <path class="ath-arc ath-arc-v" style="--i:6" pathLength="1" d="M 544 420 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 0 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8"/>
+    <path class="ath-arc ath-arc-a" style="--i:7" pathLength="1" d="M 720 420 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 8 v -8 h 0 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8 v 8 h 8"/>
   </g>
 
-  <!-- prompt token row -->
-  <text class="ath-label" x="72" y="414">prompt tokens</text>
+  <!-- pixel-block stream -->
   <g>
-    <rect class="ath-tok" style="--i:0"  x="72"   y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:1"  x="160"  y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:2"  x="248"  y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:3"  x="336"  y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:4"  x="424"  y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:5"  x="512"  y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:6"  x="600"  y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:7"  x="688"  y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:8"  x="776"  y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:9"  x="864"  y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:10" x="952"  y="430" width="64" height="40" rx="6"/>
-    <rect class="ath-tok" style="--i:11" x="1040" y="430" width="64" height="40" rx="6"/>
+    <rect class="ath-tok" style="--i:0" x="72" y="432" width="32" height="32" fill="var(--panel)" stroke="var(--border)"/>
+    <rect class="ath-tok" style="--i:1" x="140" y="444" width="24" height="24" fill="var(--panel)" stroke="var(--border)"/>
+    <rect class="ath-tok" style="--i:2" x="204" y="428" width="32" height="32" fill="var(--accent-dim)" stroke="var(--accent)"/>
+    <rect class="ath-tok" style="--i:3" x="276" y="448" width="16" height="16" fill="var(--panel)" stroke="var(--border)"/>
+    <rect class="ath-tok" style="--i:4" x="332" y="432" width="32" height="32" fill="var(--panel)" stroke="var(--border)"/>
+    <rect class="ath-tok" style="--i:5" x="408" y="440" width="24" height="24" fill="var(--violet-dim)" stroke="var(--violet)"/>
+    <rect class="ath-tok" style="--i:6" x="472" y="428" width="32" height="32" fill="var(--panel)" stroke="var(--border)"/>
+    <rect class="ath-tok" style="--i:7" x="548" y="444" width="24" height="24" fill="var(--panel)" stroke="var(--border)"/>
+    <rect class="ath-tok" style="--i:8" x="612" y="432" width="32" height="32" fill="var(--warn-dim)" stroke="var(--warn)"/>
+    <rect class="ath-tok" style="--i:9" x="688" y="448" width="16" height="16" fill="var(--panel)" stroke="var(--border)"/>
+    <rect class="ath-tok" style="--i:10" x="744" y="428" width="32" height="32" fill="var(--panel)" stroke="var(--border)"/>
+    <rect class="ath-tok" style="--i:11" x="820" y="440" width="24" height="24" fill="var(--accent-dim)" stroke="var(--accent)"/>
+    <rect class="ath-tok" style="--i:12" x="884" y="432" width="32" height="32" fill="var(--panel)" stroke="var(--border)"/>
+    <rect class="ath-tok" style="--i:13" x="960" y="444" width="24" height="24" fill="var(--ok-dim)" stroke="var(--ok)"/>
   </g>
+
+  <!-- raster finish: scanlines + static grain (never animated) -->
+  <rect x="0" y="0" width="1200" height="500" fill="url(#ath-scan)"/>
+  <rect x="0" y="0" width="1200" height="500" filter="url(#ath-grain)"/>
 </svg>
 
 <script>
 (() => {
-  const INTRO_MS = 7000; // KV fill ends ~5.3s, bloom ~6s, fades ~6.8s
+  const INTRO_MS = 7000; // cell snaps end ~5.1s, bloom ~5.6s, fades ~6.4s
 
   // fg:begin hero-start v1
   const root = document.currentScript.closest('.fg-diagram');

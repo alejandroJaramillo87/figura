@@ -180,3 +180,89 @@
 @media (prefers-reduced-motion: reduce) {
   .fg-scope .XX-flashable.is-flashing { animation: none; } /* state class alone shows the change */
 }
+
+/* =====================================================================
+ * RASTER KIT (hero kind) — GIF-frame look: dither, scanlines, grain,
+ * pixel geometry, frame-quantized motion
+ * =====================================================================
+ * Heroes read as frames of an encoded GIF while staying live SVG.
+ * Ingredients (all inline, ids renamed to the diagram's abbr):
+ *
+ *  - Frame-quantized motion: var(--ease-frames) / var(--ease-frames-coarse)
+ *    timing, ambient loops as calc(var(--dur-tick) * N) with steps(N).
+ *  - Pixel grid: 4 viewBox units = 1 raster pixel; snap every coordinate;
+ *    shape-rendering: crispEdges on the <svg>; no rx rounding.
+ *  - image-rendering: pixelated does NOTHING for SVG shapes — don't use it.
+ *
+ * DITHER PATTERNS — 8x8 userSpaceOnUse Bayer-style checkers for
+ * posterized "gradients" (dense / mid / sparse). Pattern content cannot
+ * inherit currentColor from the referencing element, so make one
+ * pattern per color you need:
+ *
+ *   <pattern id="XX-dither-75" width="8" height="8" patternUnits="userSpaceOnUse">
+ *     <rect width="8" height="8" fill="COLOR"/>
+ *     <rect x="4" y="0" width="4" height="4" fill="BG"/>
+ *   </pattern>
+ *   <pattern id="XX-dither-50" width="8" height="8" patternUnits="userSpaceOnUse">
+ *     <rect x="0" y="0" width="4" height="4" fill="COLOR"/>
+ *     <rect x="4" y="4" width="4" height="4" fill="COLOR"/>
+ *   </pattern>
+ *   <pattern id="XX-dither-25" width="8" height="8" patternUnits="userSpaceOnUse">
+ *     <rect x="0" y="0" width="4" height="4" fill="COLOR"/>
+ *   </pattern>
+ *
+ * SCANLINES — full-panel overlay rect on top of the scene:
+ *
+ *   <pattern id="XX-scan" width="4" height="4" patternUnits="userSpaceOnUse">
+ *     <rect width="4" height="1" fill="#000" opacity="0.18"/>
+ *   </pattern>
+ *   <rect class="XX-scanlines" width="1200" height="500" fill="url(#XX-scan)"/>
+ *
+ * GRAIN — static feTurbulence noise, applied once (NEVER animate filter
+ * primitives — hard rule):
+ *
+ *   <filter id="XX-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9"
+ *     numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="matrix"
+ *     values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0"/></filter>
+ *   <rect width="1200" height="500" filter="url(#XX-grain)"/>
+ */
+
+/* DITHERED HALO — replaces the blur glow in raster heroes: concentric
+ * pixel rings at decreasing dither density; "breathing" is a 2-frame
+ * stepped blink, not a fade. */
+.fg-scope .XX-halo-px {
+  animation: fg-XX-halo-blink calc(var(--dur-tick) * 8) steps(2, jump-none) infinite;
+}
+@keyframes fg-XX-halo-blink { 50% { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) {
+  .fg-scope .XX-halo-px { animation: none; opacity: 0.2; } /* frozen ring */
+}
+
+/* STAIRCASE LINE — smooth beziers rebuilt as blocky H/V staircases on
+ * 8-unit runs; draw-in stays dashoffset-based but frame-ticked:
+ *
+ *   <path class="XX-stair" pathLength="1"
+ *         d="M 104 426 h 16 v -8 h 16 v -8 ... "/>
+ */
+.fg-scope .XX-stair {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: fg-XX-stair-in 0.9s var(--ease-frames) both;
+}
+@keyframes fg-XX-stair-in { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .fg-scope .XX-stair { stroke-dashoffset: 0; animation: none; }
+}
+
+/* PIXEL COMET — square head + square trail teleporting along a run via
+ * coarse steps (offset-path keeps the geometry declarative):
+ *
+ *   <rect class="XX-comet-px" width="8" height="8"/>
+ */
+.fg-scope .XX-comet-px {
+  offset-path: path('M 0 0 H 640');   /* renamed + real run per diagram */
+  animation: fg-XX-comet-px 1.8s steps(24, jump-none) both;
+}
+@keyframes fg-XX-comet-px {
+  from { offset-distance: 0%; } to { offset-distance: 100%; }
+}

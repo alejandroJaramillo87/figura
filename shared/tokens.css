@@ -53,4 +53,13 @@
   --fg-ease-out: cubic-bezier(0.16, 1, 0.3, 1);           /* long decelerating settle */
   --fg-dur-hero-in: 900ms;                                /* per-element entrance */
   --fg-stagger: 80ms;   /* stagger unit: calc(var(--i) * var(--stagger)) */
+
+  /* Hero raster look — frame-quantized motion like an encoded GIF.
+     steps() can't take its count from a token, so tokens hold whole
+     timing functions. Pixel-grid convention: 4 viewBox units = 1 raster
+     "pixel" (a 1200x500 hero is a 300x125 pixel canvas); snap all
+     geometry to it and use shape-rendering: crispEdges. */
+  --fg-ease-frames: steps(10);                 /* ~11 fps feel on a 900ms entrance */
+  --fg-ease-frames-coarse: steps(4, jump-none); /* chunky pops, blinks */
+  --fg-dur-tick: 100ms; /* one "GIF frame"; loops: calc(var(--dur-tick) * N) + steps(N) */
 }

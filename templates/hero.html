@@ -21,8 +21,20 @@
   padding: 0; /* heroes are full-bleed inside the panel */
   overflow: hidden;
 }
+.fg-{{NAME}} svg { shape-rendering: crispEdges; }
 
-/* --- hero choreography --------------------------------------------- */
+/* --- hero choreography (raster / GIF-frame aesthetic) -------------- */
+/* Heroes are ABSTRACT ART inspired by the post — no labels, no literal
+   diagram anatomy. They should read like frames of an encoded GIF:
+   - Pixel grid: 4 viewBox units = 1 raster pixel; snap every coordinate;
+     shape-rendering: crispEdges on the <svg>; no rx rounding.
+   - Frame-quantized motion: var(--ease-frames) / var(--ease-frames-coarse)
+     timing; ambient loops as calc(var(--dur-tick) * N) with steps(N).
+   - Texture from the RASTER KIT in shared/effects.css: Bayer dither
+     patterns for posterized fills, a scanline overlay, static
+     feTurbulence grain (never animate filter primitives), dithered
+     halos (stepped blink) instead of blur glows, staircase lines
+     instead of smooth beziers. Rename all XX- ids to {{ABBR}}-. */
 /* Lifecycle (driven by the hero-start block):
      .is-live    — added at first ~30% visibility; fires the intro
      .is-settled — added after INTRO_MS (or immediately under

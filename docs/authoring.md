@@ -12,10 +12,34 @@ swatch and effect is `diagrams/effects-sampler/effects-sampler.html`.
 | **step-timeline** | a process unfolds over discrete steps: loops, cache fills, pipelines | prev/play/next controls drive `is-step-N` root classes; autoplays when ~30% visible, pauses off-screen |
 | **hover-inspect** | an architecture/block diagram where parts need explanation | blocks carry `data-info`; hovering fills the `.fg-caption` box |
 | **ambient** | continuous flow with no natural steps | looping CSS animation (e.g. dashed-line `stroke-dashoffset` flow) |
-| **hero** | a cinematic wide-aspect post hero — sets the scene rather than explains | no controls; intro choreography fires once at ~30% visibility (`is-live`), settles after `INTRO_MS` (`is-settled`), then a quiet ambient loop that pauses off-screen (`is-paused`) |
+| **hero** | a cinematic wide-aspect post hero — abstract art inspired by the post, sets a mood rather than explains | no controls; intro choreography fires once at ~30% visibility (`is-live`), settles after `INTRO_MS` (`is-settled`), then a quiet ambient loop that pauses off-screen (`is-paused`) |
 
 Kinds compose — a step timeline can also have hover captions — but
 start from the template closest to the primary interaction.
+
+## Hero raster style
+
+Heroes deliberately break from the crisp vector look of the other
+kinds: they read as frames of an encoded GIF while staying live SVG.
+The recipe (copy-sources in the RASTER KIT section of
+`shared/effects.css`; live reference in the effects sampler):
+
+- **Pixel grid** — 4 viewBox units = 1 raster "pixel" (a 1200×500 hero
+  is a 300×125 pixel canvas). Snap every coordinate, set
+  `shape-rendering: crispEdges` on the `<svg>`, and drop all `rx`
+  rounding.
+- **Frame-quantized motion** — entrances use `var(--ease-frames)` or
+  `var(--ease-frames-coarse)`; ambient loops tick as
+  `calc(var(--dur-tick) * N)` with a matching `steps(N)`. Nothing
+  glides; everything jumps between frames.
+- **Posterized texture** — Bayer dither patterns instead of gradients,
+  a scanline overlay, static `feTurbulence` grain (never animate
+  filter primitives), dithered blink halos instead of blur glows, and
+  staircase paths instead of smooth beziers.
+- **Abstract, not labeled** — heroes evoke the post's subject without
+  diagram anatomy: no axis labels, no captions inside the art.
+- `image-rendering: pixelated` does nothing for SVG shapes — don't
+  cargo-cult it; the chunkiness comes from the grid and `crispEdges`.
 
 ## Palette semantics
 

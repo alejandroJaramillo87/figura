@@ -200,8 +200,12 @@ timeline cadence). Hero choreography additionally gets
 `var(--ease-overshoot)` (back-out entrance bounce), `var(--ease-out)`
 (long decelerating settle), `var(--dur-hero-in)` (900ms entrances) and
 `var(--stagger)` (80ms stagger unit, `calc(var(--i) * var(--stagger))`
-with `style="--i: N"` per element). The validator rejects literal
-`cubic-bezier()` or hand-mixed dim hexes outside managed blocks.
+with `style="--i: N"` per element), plus the raster frame-tick set:
+`var(--ease-frames)` (steps(10)), `var(--ease-frames-coarse)`
+(steps(4, jump-none)) and `var(--dur-tick)` (100ms — one "GIF frame";
+loops as `calc(var(--dur-tick) * N)` with `steps(N)`). The validator
+rejects literal `cubic-bezier()` or hand-mixed dim hexes outside
+managed blocks.
 
 Font: `"Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif`
 (system fallback — never fetch webfonts). Rounded corners (12px panel,
@@ -223,6 +227,17 @@ Interaction patterns to reuse (see `shared/snippets.js`):
   that is what reduced-motion users see. Prefer CSS motion paths
   (`offset-path`) over SMIL for hero comets so they sync with the CSS
   delay clock and honor reduced motion for free.
+  Heroes are **abstract art**, not diagrams: inspired by the post's
+  material but evocative rather than explanatory — no labels, no
+  literal diagram anatomy; the "effects must explain" rule applies to
+  diagrams, not heroes. Their look is **rasterized**, like frames of an
+  encoded GIF: geometry snapped to a 4-unit pixel grid with
+  `shape-rendering: crispEdges` (no `rx`), motion frame-quantized via
+  `var(--ease-frames)` / `var(--ease-frames-coarse)` and
+  `var(--dur-tick)`-based stepped loops, and texture from the RASTER
+  KIT section of `shared/effects.css` (Bayer dither fills, scanlines,
+  static grain, dithered blink halos instead of blur glows, staircase
+  lines instead of smooth beziers).
 
 ## Embedding in the blog
 

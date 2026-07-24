@@ -43,6 +43,9 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --dur-hero-in: 900ms;
   --stagger: 80ms;
+  --ease-frames: steps(10);
+  --ease-frames-coarse: steps(4, jump-none);
+  --dur-tick: 100ms;
 }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
@@ -113,6 +116,18 @@
 .fg-effects-sampler .efs-flashable.is-flashing { animation: fg-efs-flash 0.6s var(--ease) 1; }
 @keyframes fg-efs-flash { 30% { fill: var(--flash-fill); stroke: var(--flash-stroke); } }
 
+/* --- raster kit (hero): dither, scanlines, stepped blink ---------- */
+.fg-effects-sampler .efs-halo-px {
+  animation: fg-efs-halo-blink calc(var(--dur-tick) * 8) steps(2, jump-none) infinite;
+}
+@keyframes fg-efs-halo-blink { 50% { opacity: 0.35; } }
+.fg-effects-sampler .efs-stair {
+  fill: none; stroke: var(--warn); stroke-width: 3;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  animation: fg-efs-stair-in 1.6s var(--ease-frames) infinite alternate;
+}
+@keyframes fg-efs-stair-in { to { stroke-dashoffset: 0; } }
+
 /* --- caption ------------------------------------------------------ */
 .fg-effects-sampler .fg-caption {
   margin-top: 10px; padding: 10px 14px; min-height: 3.2em;
@@ -136,11 +151,13 @@
   .fg-effects-sampler .efs-ripple-2 { opacity: 0; }
   .fg-effects-sampler .efs-comet { display: none; }
   .fg-effects-sampler .efs-comet-fallback { opacity: 1 !important; }
+  .fg-effects-sampler .efs-halo-px { animation: none; opacity: 0.2; }
+  .fg-effects-sampler .efs-stair { animation: none; stroke-dashoffset: 0; }
 }
 </style>
 
-<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Seven animation effects — glow, sweep, comet, draw-in, ripple, shimmer, flash — rendered in the classic dark palette, with accent and dim-fill swatches.">
+<svg viewBox="0 0 720 372" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Seven animation effects — glow, sweep, comet, draw-in, ripple, shimmer, flash — rendered in the classic dark palette, with accent and dim-fill swatches, plus the hero raster kit: dither densities, scanlines, stepped blink, and a staircase line.">
   <text x="16" y="26" class="efs-title">classic — the figura palette</text>
 
   <!-- glow -->
@@ -231,6 +248,37 @@
     <rect x="556" y="224" width="56" height="14" rx="4" fill="var(--violet-dim)" stroke="var(--violet)" stroke-width="1"/>
     <text x="300" y="262" class="efs-cell-label" style="text-anchor: start">accents: sky · emerald · amber · red · violet — each over its dim state fill</text>
     <rect class="efs-hit" x="295" y="165" width="330" height="105"/>
+  </g>
+
+  <!-- raster kit (hero) -->
+  <g data-info="Raster kit (hero) — Bayer dither patterns at 25/50/75% density for posterized fills, a scanline overlay, a 2-frame stepped halo blink, and a staircase line drawn in with steps() timing. Heroes look like GIF frames while staying live SVG.">
+    <pattern id="efs-dither-25" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="4" height="4" fill="var(--accent)"/>
+    </pattern>
+    <pattern id="efs-dither-50" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="4" height="4" fill="var(--accent)"/>
+      <rect x="4" y="4" width="4" height="4" fill="var(--accent)"/>
+    </pattern>
+    <pattern id="efs-dither-75" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="8" height="8" fill="var(--accent)"/>
+      <rect x="4" y="0" width="4" height="4" fill="var(--bg)"/>
+    </pattern>
+    <pattern id="efs-scan" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="1" fill="#000000" opacity="0.35"/>
+    </pattern>
+    <rect x="30" y="288" width="48" height="32" fill="url(#efs-dither-25)"/>
+    <rect x="86" y="288" width="48" height="32" fill="url(#efs-dither-50)"/>
+    <rect x="142" y="288" width="48" height="32" fill="url(#efs-dither-75)"/>
+    <text x="110" y="344" class="efs-cell-label">dither 25 · 50 · 75</text>
+    <rect x="230" y="288" width="80" height="32" fill="var(--ok-dim)" stroke="var(--ok)"/>
+    <rect x="230" y="288" width="80" height="32" fill="url(#efs-scan)"/>
+    <text x="270" y="344" class="efs-cell-label">scanlines</text>
+    <rect class="efs-halo-px" x="346" y="284" width="40" height="40" fill="url(#efs-dither-50)" opacity="0.7"/>
+    <rect x="354" y="292" width="24" height="24" fill="var(--panel)" stroke="var(--accent)" stroke-width="2"/>
+    <text x="366" y="344" class="efs-cell-label">stepped blink</text>
+    <path class="efs-stair" pathLength="1" d="M 440 320 h 16 v -8 h 16 v -8 h 16 v -8 h 16 v -8 h 16"/>
+    <text x="480" y="344" class="efs-cell-label">staircase line</text>
+    <rect class="efs-hit" x="25" y="278" width="530" height="80"/>
   </g>
 </svg>
 
