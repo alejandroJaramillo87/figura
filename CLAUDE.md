@@ -12,15 +12,57 @@ one or two before writing a new one.
 
 1. Read the diagram notes provided by the author.
 2. Read 1–2 existing diagrams closest in kind (step-timeline vs hover-inspect).
-3. Copy needed palette values from `shared/tokens.css` and helper patterns
-   from `shared/snippets.js` into the new file (copy, never link — see below).
-4. Create `diagrams/<post-slug>/<kebab-name>.html` where `<post-slug>`
-   matches the blog post's filename stem in `content/posts/`.
-5. Append an entry to `manifest.json` (`id`, `path`, `title`, `post`,
-   `description`).
-6. Preview: open the file directly in a browser, and check the gallery
+3. Scaffold the file (this also appends the `manifest.json` entry —
+   fill in its `description`):
+
+   ```
+   node scripts/new-diagram.js <post-slug>/<kebab-name> \
+     --kind step-timeline|hover-inspect|ambient \
+     --palette classic|pastel-dark|pastel-light \
+     --abbr <2-6 char prefix> --title "Human-readable title"
+   ```
+
+   `<post-slug>` matches the blog post's filename stem in `content/posts/`.
+4. Author only the diagram-specific parts: the SVG (statically — never
+   generate markup at runtime), the `is-step-N` / state CSS, effect
+   keyframes copied from `shared/effects.css` (renamed to the abbr), and
+   any `fg:step` handlers or custom interaction JS.
+5. **Never edit inside `fg:begin <name> vN` / `fg:end <name>` sentinel
+   blocks.** Those regions are owned by `scripts/build.js` and re-expanded
+   from `shared/runtime/` and `shared/tokens.css`. Diagram-specific tuning
+   uses the hook variables the blocks expose (`--fg-ctl-accent`,
+   `--fg-cap-accent`, `--fg-cap-minh`) or additional rules outside the
+   blocks.
+6. Check: `node scripts/build.js --check && node scripts/validate.js`
+   (also available as `npm run check`) — the validator enforces every hard
+   rule below plus manifest sync.
+7. Preview: open the file directly in a browser, and check the gallery
    (`python3 -m http.server`, open `index.html`) — the gallery renders the
    first manifest entry twice as a multi-instance regression check.
+
+## Managed blocks (the shared runtime)
+
+Boilerplate every diagram needs is not hand-copied; it lives once under
+`shared/runtime/` and is stamped into each fragment between sentinel
+comments (`/* fg:begin controls-bar v1 */ … /* fg:end controls-bar */` in
+CSS, `// fg:begin timeline-core v1 … // fg:end timeline-core` in JS):
+
+| block | provides |
+|---|---|
+| `palette-classic` / `palette-pastel-dark` / `palette-pastel-light` | scoped palette vars, derived from `shared/tokens.css` (local names: `--bg`, `--accent`, `--mint-fill`, …) |
+| `panel-base` / `panel-base-light` | panel background, radius, font, shadow, responsive `svg`/`text` base rules |
+| `controls-bar` | prev/play/next/counter bar styling (`--fg-ctl-accent` overrides hover color) |
+| `caption-box` | `.fg-caption` box (`--fg-cap-accent`, `--fg-cap-minh` overrides) |
+| `reduced-motion` | kill-all transitions/animations under `prefers-reduced-motion` (extra reduced-motion rules go in a second `@media` outside the block) |
+| `timeline-core` | `tl` step state machine (`is-step-N`, `fg:step` events, `is-playing`), control wiring, `reduced` flag — expects `TOTAL` and `STEP_MS` consts above it |
+| `timeline-start` | initial `apply()` plus reduced-motion final-state jump or IntersectionObserver autoplay — place after any `fg:step` listeners |
+| `hover-caption` | `data-info` → `.fg-caption` hover wiring |
+
+`node scripts/build.js` re-expands every block (idempotent); `--check`
+fails if any block drifted from its canonical source. Palette changes are
+made in `shared/tokens.css`, then `node scripts/build.js` propagates them
+to all 68+ diagrams. CI (`.github/workflows/validate.yml`) runs
+`build --check` and the validator on every push and PR.
 
 ## File anatomy
 
