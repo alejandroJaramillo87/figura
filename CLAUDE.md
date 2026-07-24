@@ -8,6 +8,10 @@ time by a Hugo shortcode, so every file must follow the conventions below
 exactly. Existing diagrams under `diagrams/` are the style reference — read
 one or two before writing a new one.
 
+Detailed human-oriented documentation (architecture, blog integration,
+development workflow, authoring guide) lives in `docs/` — see
+`docs/README.md` for the index. This file remains the enforced contract.
+
 ## Workflow for generating a new diagram
 
 1. Read the diagram notes provided by the author.
@@ -60,7 +64,7 @@ CSS, `// fg:begin timeline-core v1 … // fg:end timeline-core` in JS):
 `node scripts/build.js` re-expands every block (idempotent); `--check`
 fails if any block drifted from its canonical source. Palette changes are
 made in `shared/tokens.css`, then `node scripts/build.js` propagates them
-to all 68+ diagrams. CI (`.github/workflows/validate.yml`) runs
+to every diagram in the library. CI (`.github/workflows/validate.yml`) runs
 `build --check` and the validator on every push and PR.
 
 ## File anatomy

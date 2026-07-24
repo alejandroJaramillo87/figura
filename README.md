@@ -21,6 +21,14 @@ blog (LLM internals, mech interp, inference engines).
   contract in [CLAUDE.md](CLAUDE.md) and using existing diagrams as style
   reference — the library grows organically with each post.
 
+## Documentation
+
+Detailed project docs live in [docs/](docs/README.md): architecture
+(the managed-blocks system and scripts pipeline), blog integration
+(submodule + shortcode + release flow), development workflow, and the
+diagram authoring guide. [CLAUDE.md](CLAUDE.md) remains the enforced
+generation contract.
+
 ## Layout
 
 ```
@@ -42,6 +50,10 @@ scripts/
   build.js       re-expand managed blocks (--check fails on drift)
   validate.js    contract linter: scoping, id prefixes, reduced motion,
                  a11y, self-containment, manifest sync
+  lib/fragment.js shared parsing helpers (embed split, block finding,
+                 palette generation) used by all three scripts
+docs/            project documentation (architecture, blog integration,
+                 development, authoring)
 templates/       step-timeline, hover-inspect, ambient scaffolds
 diagrams/<post-slug>/<kebab-name>.html
 ```
