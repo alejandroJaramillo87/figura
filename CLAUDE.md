@@ -193,7 +193,7 @@ Dark slate panel on the blog's light page (matches its mermaid diagrams):
 | `--violet` | `#a78bfa` | secondary series |
 | `--accent-dim` / `--ok-dim` / `--warn-dim` / `--hot-dim` / `--violet-dim` | `#0c3550` / `#0e4429` / `#4a3608` / `#4a1d1d` / `#2a2350` | `is-step-N` active box fills (accent hue ~15% over panel) — never hand-mix these |
 | `--line` | `#64748b` | connectors, arrowheads |
-| `--px-outline`, `--px-steel-1..4`, `--px-amber-1..3`, `--px-green-1..3`, `--px-sky-1..3` | see `shared/tokens.css` | hero pixel-art sprite ramps — hue-shifted shading (shadows cool, highlights warm) plus a blue-violet selective-outline color; sprites only, never diagram anatomy |
+| `--px-outline`, `--px-steel-1..4`, `--px-amber-1..3`, `--px-green-1..3`, `--px-sky-1..3`, `--px-dusk-1..3`, `--px-violet-1..3`, `--px-hot-1..3` | see `shared/tokens.css` | hero pixel-art sprite ramps — hue-shifted shading (shadows cool, highlights warm) plus a blue-violet selective-outline color; sprites only, never diagram anatomy. This is a **closed set**: heroes compose from the existing ramps, ramp tokens are never added per hero, and the validator rejects unknown `var(--px-*)` refs |
 
 Easing and step transitions always come from the palette block: `var(--ease)`
 and `var(--dur-fast)` (0.45s state transitions) / `var(--dur-step)` (700ms
@@ -245,9 +245,17 @@ Interaction patterns to reuse (see `shared/snippets.js`):
   epsilon before 100%) — one-shot reveals use `steps(1, jump-start)`
   plus a delay, and multi-stutter keyframes use paired hold
   percentages so the last interval's start value equals the settled
-  value. Heroes are generated from ASCII pixel maps by the scripts in
-  `tools/heroes/` — edit the generator and re-run it, never the
-  diagram file directly (see `tools/heroes/README.md`).
+  value. Heroes are generated from ASCII pixel maps: each is a
+  generator + template pair under `tools/heroes/` sharing common
+  machinery from `tools/heroes/herolib.py` (canonical palette
+  character alphabet, `rects`/`rect`/`dither` helpers, `emit`) —
+  `new-diagram.js --kind hero` scaffolds the pair, `npm run heroes`
+  regenerates the whole library. Edit the generator/template and
+  re-run, never the diagram file directly. The validator enforces
+  generator↔template class sync (`hero-sync`), settled-state
+  completeness (`hero-settled`), and the closed `--px-*` ramp set
+  (see `tools/heroes/README.md` for the contract and the
+  `fg:sync-exempt` / `fg:settled-exempt` escape hatches).
 
 ## Embedding in the blog
 

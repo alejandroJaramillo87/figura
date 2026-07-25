@@ -75,7 +75,78 @@ function collectSelectors(css, out) {
   }
 }
 
-function checkFile(file) {
+/* The closed set of sprite-ramp tokens (declared in shared/tokens.css) —
+   a var(--px-*) reference outside this set resolves to nothing at render
+   time, so a typo'd or invented ramp token fails silently. */
+const PX_TOKENS = (() => {
+  const css = fs.readFileSync(path.join(F.REPO_ROOT, 'shared', 'tokens.css'), 'utf8');
+  return new Set([...css.matchAll(/--fg-(px-[a-z0-9-]+)\s*:/g)].map((m) => m[1]));
+})();
+
+/* --- hero checks: generator/template class sync + settled completeness --- */
+
+function checkHero(file, frag, cls) {
+  if (frag.includes('@SPRITES@')) {
+    report(file, 'hero-sprites', 'unsubstituted @SPRITES@ marker (generator not run?)');
+  }
+
+  /* classes attached to SVG elements by the generator */
+  const svg = (frag.match(/<svg\b[\s\S]*?<\/svg>/) || [''])[0];
+  const markupClasses = new Set();
+  for (const m of svg.matchAll(/class="([^"]+)"/g)) {
+    for (const c of m[1].split(/\s+/)) if (c) markupClasses.add(c);
+  }
+
+  /* classes the template's CSS selects */
+  const styles = [...frag.matchAll(/<style>([\s\S]*?)<\/style>/g)].map((m) => m[1]);
+  const rawCss = styles.join('\n');
+  const exempt = new Set(
+    [...rawCss.matchAll(/fg:settled-exempt\s+([a-zA-Z0-9_-]+)/g)].map((m) => m[1]));
+  /* structural grouping classes with no CSS of their own (variants carry
+     the rules) are declared via fg:sync-exempt in a template comment */
+  const syncExempt = new Set(
+    [...rawCss.matchAll(/fg:sync-exempt\s+([a-zA-Z0-9_ -]+)/g)]
+      .flatMap((m) => m[1].trim().split(/\s+/)));
+  const out = { selectors: [], keyframes: [] };
+  for (const s of styles) collectSelectors(stripCssComments(s), out);
+  const STATE = new Set(['is-live', 'is-settled', 'is-paused', 'fg-diagram', cls]);
+  const cssClasses = new Set();
+  const liveClasses = new Set();
+  const settledClasses = new Set();
+  for (const selList of out.selectors) {
+    for (const sel of selList.split(',')) {
+      const classes = [...sel.matchAll(/\.([a-zA-Z0-9_-]+)/g)]
+        .map((m) => m[1]).filter((c) => !STATE.has(c));
+      for (const c of classes) cssClasses.add(c);
+      if (sel.includes('.is-live')) for (const c of classes) liveClasses.add(c);
+      if (sel.includes('.is-settled')) for (const c of classes) settledClasses.add(c);
+    }
+  }
+
+  /* symmetric generator <-> template sync */
+  for (const c of markupClasses) {
+    if (!cssClasses.has(c) && !syncExempt.has(c)) {
+      report(file, 'hero-sync', `SVG class "${c}" has no CSS rule (generator/template drift)`);
+    }
+  }
+  for (const c of cssClasses) {
+    if (!markupClasses.has(c)) {
+      report(file, 'hero-sync', `CSS class ".${c}" not attached to any SVG element (generator/template drift)`);
+    }
+  }
+
+  /* the settled state is the reduced-motion rendering — it must cover
+     every class the intro animates */
+  for (const c of liveClasses) {
+    if (!settledClasses.has(c) && !exempt.has(c)) {
+      report(file, 'hero-settled',
+        `class "${c}" animated under .is-live has no .is-settled rule ` +
+        '(add one, or mark intro-only via /* fg:settled-exempt ' + c + ' */)');
+    }
+  }
+}
+
+function checkFile(file, kind) {
   const source = fs.readFileSync(file, 'utf8');
   const rel = F.relPath(file);
 
@@ -137,7 +208,14 @@ function checkFile(file) {
     for (const h of dimHexes) {
       report(file, 'dim-token', `hand-mixed dim state fill ${h} (use var(--accent-dim)/--ok-dim/--warn-dim/--hot-dim/--violet-dim)`);
     }
+    for (const m of unmanaged.matchAll(/var\(--(px-[a-z0-9-]+)/g)) {
+      if (!PX_TOKENS.has(m[1])) {
+        report(file, 'px-token', `unknown sprite-ramp token var(--${m[1]}) (the --px-* set in shared/tokens.css is closed)`);
+      }
+    }
   }
+
+  if (kind === 'hero') checkHero(file, frag, cls);
 
   /* reduced motion */
   if (!frag.includes('prefers-reduced-motion')) {
@@ -225,7 +303,11 @@ function checkManifest(files) {
 function main() {
   const warnOnly = process.argv.includes('--warn');
   const files = F.listDiagramFiles();
-  for (const f of files) checkFile(f);
+  let kinds = new Map();
+  try {
+    kinds = new Map(F.loadManifest().map((e) => [e.path, e.kind]));
+  } catch (e) { /* unreadable manifest is reported by checkManifest */ }
+  for (const f of files) checkFile(f, kinds.get(F.relPath(f)));
   checkManifest(files);
 
   for (const f of findings) console.error(`[${warnOnly ? 'WARN' : 'FAIL'}] ${f.rel} (${f.rule}): ${f.msg}`);

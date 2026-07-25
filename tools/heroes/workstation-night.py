@@ -3,51 +3,7 @@
 canvas. Night scene — the monitor is the light source; a boot flipbook
 drives a color-changing glow spill over desk, wall and floor. Window with
 rain, moon, and a city skyline. Steel ramp 1..4; selective outlines 'o'."""
-import os
-HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', '..', 'diagrams', 'linux-ai-setup')
-C = 8
-COL = {
-    'B': 'var(--bg)', 'P': 'var(--panel)', 'H': 'var(--panel-hover)',
-    'M': 'var(--muted)', 'T': 'var(--text)',
-    'V': 'var(--violet-dim)', 'v': 'var(--violet)', 'D': 'var(--accent-dim)',
-    'E': 'var(--ok-dim)', 'w': 'var(--warn-dim)',
-    'L': 'var(--line)',
-    'o': 'var(--px-outline)',
-    '1': 'var(--px-steel-1)', '2': 'var(--px-steel-2)',
-    '3': 'var(--px-steel-3)', '4': 'var(--px-steel-4)',
-    'a': 'var(--px-amber-1)', 'b': 'var(--px-amber-2)', 'c': 'var(--px-amber-3)',
-    'g': 'var(--px-green-1)', 'G': 'var(--px-green-2)', 'e': 'var(--px-green-3)',
-    's': 'var(--px-sky-1)', 'S': 'var(--px-sky-2)', 'k': 'var(--px-sky-3)',
-    'p': 'var(--px-dusk-1)', 'r': 'var(--px-dusk-2)', 'h': 'var(--px-dusk-3)',
-}
-
-def dither(ox, y, w, ch, phase=0):
-    # 2-cell checker blocks every 4 cells — band-transition dither
-    return '\n'.join(rect(x, y, 2, 1, ch)
-                     for x in range(ox + phase * 2, ox + w - 1, 4))
-
-def rects(ox, oy, rows, indent='    '):
-    out = []
-    for ry, row in enumerate(rows):
-        x = 0
-        while x < len(row):
-            ch = row[x]
-            if ch == '.':
-                x += 1; continue
-            x2 = x
-            while x2 + 1 < len(row) and row[x2 + 1] == ch:
-                x2 += 1
-            out.append(f'{indent}<rect x="{(ox+x)*C}" y="{(oy+ry)*C}" '
-                       f'width="{(x2-x+1)*C}" height="{C}" fill="{COL[ch]}"/>')
-            x = x2 + 1
-    return '\n'.join(out)
-
-def rect(cx, cy, cw, ch_, color, cls='', style='', indent='    '):
-    a = f' class="{cls}"' if cls else ''
-    s = f' style="{style}"' if style else ''
-    return (f'{indent}<rect{a}{s} x="{cx*C}" y="{cy*C}" width="{cw*C}" '
-            f'height="{ch_*C}" fill="{COL[color]}"/>')
+from herolib import C, dither, emit, rect, rects
 
 S = []
 
@@ -382,8 +338,4 @@ S.append(spill('E', 'wsn-sp-post'))      # POST green
 S.append(spill('w', 'wsn-sp-logo'))      # boot-logo amber
 S.append(spill('V', 'wsn-sp-desktop'))   # desktop violet (persists settled)
 
-sprites = '\n'.join(S)
-tpl = open(os.path.join(HERE, 'wsn-template.html')).read()
-open(os.path.join(OUT, 'workstation-night.html'), 'w').write(
-    tpl.replace('@SPRITES@', sprites))
-print(f'rects: {sprites.count("<rect")}')
+emit('wsn-template.html', 'linux-ai-setup/workstation-night.html', '\n'.join(S))
