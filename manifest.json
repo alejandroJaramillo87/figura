@@ -514,5 +514,13 @@
     "post": "sandboxing-interp",
     "kind": "hover-inspect",
     "description": "Hover-inspect map of the Mech Interp sandbox: JupyterLab on 127.0.0.1:8888 with a per-launch token, the shared hardening floor on an isolated bridge, one reserved GPU behind a preflight check, and four mounts including the read-write repo at /workspace."
+  },
+  {
+    "id": "training-net",
+    "path": "diagrams/sandboxing/training-net.html",
+    "title": "Training net",
+    "post": "sandboxing-training",
+    "kind": "hero",
+    "description": "Pixel-art hero for the training sandboxing post: a small feedforward neural network of chunky steel nodes and stepped pixel wires. The layers snap in left to right; then an amber activation pulse sweeps through the net layer by layer — a forward pass on repeat."
   }
 ]

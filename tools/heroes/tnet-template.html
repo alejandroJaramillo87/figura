@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training net</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Training net</h1>
+<p>Pixel-art hero: a small feedforward neural network of chunky steel nodes and stepped pixel wires. The layers snap in left to right; then an amber activation pulse sweeps through the net layer by layer — a forward pass on repeat.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-training-net">
+<style>
+/* fg:begin palette-classic v1 */
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+/* fg:end panel-base */
+.fg-training-net {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+.fg-training-net svg { shape-rendering: crispEdges; }
+
+/* --- static scene defaults ------------------------------------------ */
+/* Intro: layers hard-cut on left to right (nodes staggered within a
+   layer, wires between them). Ambient: three amber pulse frames toggle
+   in sequence — a forward pass with a rest beat between passes. */
+.fg-training-net .tnet-in,
+.fg-training-net .tnet-hid,
+.fg-training-net .tnet-out,
+.fg-training-net .tnet-e1,
+.fg-training-net .tnet-e2,
+.fg-training-net .tnet-p1,
+.fg-training-net .tnet-p2,
+.fg-training-net .tnet-p3 { opacity: 0; }
+
+/* --- intro ----------------------------------------------------------- */
+/* one-shot reveals: steps(1, jump-start) + delay (a jump-end at exactly
+   100% can be missed to float error) */
+.fg-training-net.is-live .tnet-in {
+  animation: fg-tnet-on 0.1s steps(1, jump-start)
+    calc(0.3s + var(--i) * var(--stagger)) both;
+}
+.fg-training-net.is-live .tnet-e1 {
+  animation: fg-tnet-on 0.1s steps(1, jump-start) 0.8s both;
+}
+.fg-training-net.is-live .tnet-hid {
+  animation: fg-tnet-on 0.1s steps(1, jump-start)
+    calc(1.1s + var(--i) * var(--stagger)) both;
+}
+.fg-training-net.is-live .tnet-e2 {
+  animation: fg-tnet-on 0.1s steps(1, jump-start) 1.6s both;
+}
+.fg-training-net.is-live .tnet-out {
+  animation: fg-tnet-on 0.1s steps(1, jump-start)
+    calc(1.9s + var(--i) * var(--stagger)) both;
+}
+
+@keyframes fg-tnet-on { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+/* --- settled state (complete final composition; the reduced-motion
+       rendering) ---------------------------------------------------- */
+.fg-training-net.is-settled .tnet-in,
+.fg-training-net.is-settled .tnet-hid,
+.fg-training-net.is-settled .tnet-out,
+.fg-training-net.is-settled .tnet-e1,
+.fg-training-net.is-settled .tnet-e2 { opacity: 1; }
+.fg-training-net.is-settled .tnet-p1,
+.fg-training-net.is-settled .tnet-p2,
+.fg-training-net.is-settled .tnet-p3 { opacity: 0; }
+
+/* --- ambient loop (exactly 3: the pulse frames) --------------------- */
+/* forward pass: inputs fire, hidden layer fires, outputs light, then a
+   dark rest beat — one 24-tick cycle (paired holds; last interval =
+   settled off) */
+.fg-training-net.is-settled .tnet-p1 {
+  animation: fg-tnet-pf1 calc(var(--dur-tick) * 24) steps(1, jump-end)
+    calc(var(--dur-tick) * 4) infinite;
+}
+.fg-training-net.is-settled .tnet-p2 {
+  animation: fg-tnet-pf2 calc(var(--dur-tick) * 24) steps(1, jump-end)
+    calc(var(--dur-tick) * 4) infinite;
+}
+.fg-training-net.is-settled .tnet-p3 {
+  animation: fg-tnet-pf3 calc(var(--dur-tick) * 24) steps(1, jump-end)
+    calc(var(--dur-tick) * 4) infinite;
+}
+.fg-training-net.is-paused .tnet-p1,
+.fg-training-net.is-paused .tnet-p2,
+.fg-training-net.is-paused .tnet-p3 { animation-play-state: paused; }
+
+@keyframes fg-tnet-pf1 { 0%, 15% { opacity: 1; } 16%, 100% { opacity: 0; } }
+@keyframes fg-tnet-pf2 { 0%, 15% { opacity: 0; } 16%, 32% { opacity: 1; }
+                         33%, 100% { opacity: 0; } }
+@keyframes fg-tnet-pf3 { 0%, 32% { opacity: 0; } 33%, 49% { opacity: 1; }
+                         50%, 100% { opacity: 0; } }
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Pixel-art animated hero: a small feedforward neural network — three input nodes, four hidden, two output — drawn as chunky steel pixel spheres joined by stepped wires. The layers snap in left to right; then an amber activation pulse sweeps through the network layer by layer, a forward pass repeating with a pause between passes.">
+@SPRITES@
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2400; // inputs 0.3s+, wires 0.8/1.6s, hidden 1.1s+, outputs 1.9s+
+
+  // fg:begin hero-start v1
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
