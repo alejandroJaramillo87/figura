@@ -47,4 +47,41 @@
   --fg-dur-step: 700ms;
   --fg-dur-fast: 0.45s;
   --fg-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Hero choreography (hero kind only — see CLAUDE.md) */
+  --fg-ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1); /* back-out entrance bounce */
+  --fg-ease-out: cubic-bezier(0.16, 1, 0.3, 1);           /* long decelerating settle */
+  --fg-dur-hero-in: 900ms;                                /* per-element entrance */
+  --fg-stagger: 80ms;   /* stagger unit: calc(var(--i) * var(--stagger)) */
+
+  /* Hero raster look — frame-quantized motion like an encoded GIF.
+     steps() can't take its count from a token, so tokens hold whole
+     timing functions. Pixel-grid convention: 4 viewBox units = 1 raster
+     "pixel" (a 1200x500 hero is a 300x125 pixel canvas); snap all
+     geometry to it and use shape-rendering: crispEdges. */
+  --fg-ease-frames: steps(10);                 /* ~11 fps feel on a 900ms entrance */
+  --fg-ease-frames-coarse: steps(4, jump-none); /* chunky pops, blinks */
+  --fg-dur-tick: 100ms; /* one "GIF frame"; loops: calc(var(--dur-tick) * N) + steps(N) */
+
+  /* Sprite ramps (hero pixel-art only) — hue-shifted shading ramps per
+     pixel-art practice: shadows lean cool (blue-violet), highlights lean
+     warm. Anchored to the semantic hues above so sprites stay on-brand.
+     Use for hand-drawn pixel sprites, never for diagram anatomy. */
+  --fg-px-outline: #0b1020;  /* selective outline — dark blue-violet, not black */
+  --fg-px-steel-1: #232c44;  /* body shadow (cool) */
+  --fg-px-steel-2: #3b4a5e;  /* body mid */
+  --fg-px-steel-3: #64748b;  /* body lit */
+  --fg-px-steel-4: #a7b0b8;  /* body highlight (warm-gray) */
+  --fg-px-amber-1: #92400e;  /* amber shadow (toward orange) */
+  --fg-px-amber-2: #f59e0b;  /* amber mid */
+  --fg-px-amber-3: #fcd34d;  /* amber highlight (toward yellow) */
+  --fg-px-green-1: #166534;  /* green shadow */
+  --fg-px-green-2: #34d399;  /* green mid (= --fg-ok) */
+  --fg-px-green-3: #a7f3d0;  /* green highlight */
+  --fg-px-sky-1: #0369a1;    /* sky shadow */
+  --fg-px-sky-2: #38bdf8;    /* sky mid (= --fg-accent) */
+  --fg-px-sky-3: #bae6fd;    /* sky highlight */
+  --fg-px-dusk-1: #2b1b3d;   /* dusk plum band (cool shadow) */
+  --fg-px-dusk-2: #7c3a58;   /* dusk dusty-rose band */
+  --fg-px-dusk-3: #e8a87c;   /* dusk peach horizon (warm highlight) */
 }

@@ -196,12 +196,16 @@ function checkManifest(files) {
     report(null, 'manifest', `manifest.json unreadable: ${e.message}`);
     return;
   }
+  const KINDS = ['step-timeline', 'hover-inspect', 'ambient', 'hero'];
   const rels = new Set(files.map((f) => F.relPath(f)));
   const seenIds = new Set();
   const seenPaths = new Set();
   for (const entry of manifest) {
     for (const k of ['id', 'path', 'title', 'post', 'description']) {
       if (!(k in entry)) report(null, 'manifest', `entry "${entry.id || entry.path}" missing field "${k}"`);
+    }
+    if ('kind' in entry && !KINDS.includes(entry.kind)) {
+      report(null, 'manifest', `entry "${entry.id}" has unknown kind "${entry.kind}"`);
     }
     if (seenIds.has(entry.id)) report(null, 'manifest', `duplicate id "${entry.id}"`);
     if (seenPaths.has(entry.path)) report(null, 'manifest', `duplicate path "${entry.path}"`);

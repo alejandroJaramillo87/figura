@@ -12,7 +12,7 @@ Scaffold with the CLI (`npm run new -- …` or directly):
 
 ```bash
 node scripts/new-diagram.js <post-slug>/<kebab-name> \
-  --kind step-timeline|hover-inspect|ambient \
+  --kind step-timeline|hover-inspect|ambient|hero \
   --abbr <2-6 char prefix> --title "Human-readable title"
 ```
 

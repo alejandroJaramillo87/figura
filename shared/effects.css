@@ -180,3 +180,4 @@
 @media (prefers-reduced-motion: reduce) {
   .fg-scope .XX-flashable.is-flashing { animation: none; } /* state class alone shows the change */
 }
+

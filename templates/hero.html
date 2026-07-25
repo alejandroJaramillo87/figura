@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>{{TITLE}}</h1>
+<p>TODO: one-line description for standalone viewing.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-{{NAME}}">
+<style>
+/* fg:begin {{PALETTE}} v1 */
+/* fg:end {{PALETTE}} */
+/* fg:begin {{PANEL}} v1 */
+/* fg:end {{PANEL}} */
+.fg-{{NAME}} {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+.fg-{{NAME}} svg { shape-rendering: crispEdges; }
+
+/* --- hero choreography (clean pixel-art aesthetic) ----------------- */
+/* Heroes are ABSTRACT ART inspired by the post — no labels, no literal
+   diagram anatomy. Hand-placed pixel sprites, generated from ASCII
+   pixel maps (see tools/heroes/README.md):
+   - Cell grid: 8 viewBox units = 1 cell; snap every coordinate;
+     shape-rendering: crispEdges on the <svg>; no rx rounding.
+   - Sprite ramps: shade with the --px-* tokens (shadows cool,
+     highlights warm; --px-outline silhouettes) — never flat fills.
+   - Frame-quantized motion: var(--ease-frames) / var(--ease-frames-coarse)
+     timing; ambient loops as calc(var(--dur-tick) * N) with steps(N);
+     reveals hard-cut with steps(1) — no plain opacity fades, no
+     filters, no pattern fills, no overlay textures.
+   - One-shot steps(1) reveals use jump-start + delay (a jump-end at
+     exactly 100% can be missed to float error); multi-stutter
+     keyframes use paired holds so the last interval's start value
+     equals the settled value. */
+/* Lifecycle (driven by the hero-start block):
+     .is-live    — added at first ~30% visibility; fires the intro
+     .is-settled — added after INTRO_MS (or immediately under
+                   prefers-reduced-motion); gates the ambient loop
+     .is-paused  — toggled while scrolled off-screen after the intro;
+                   map it to animation-play-state: paused on ambient
+                   elements. Intro plays once per page load.
+   Conventions:
+   - Intro elements start at opacity: 0 and animate in via
+     fg-{{ABBR}}-enter-* keyframes with `animation-fill-mode: both`,
+     delayed per element: animation-delay: calc(var(--i) * var(--stagger))
+     with style="--i: N" on the element. Entrances use
+     var(--ease-overshoot) / var(--dur-hero-in); long settles use
+     var(--ease-out).
+   - The .is-settled state (no .is-live needed) must render the COMPLETE
+     final composition — it is what reduced-motion users see.
+   - Ambient loop: at most ~3 concurrent animated elements, gated on
+     .is-settled, paused via .is-paused.
+   - SMIL comets are intro-only and MUST have the display:none
+     reduced-motion gate. */
+
+/* TODO: intro keyframes (fg-{{ABBR}}-enter-*), settled-state rules,
+   ambient keyframes (fg-{{ABBR}}-*) */
+
+/* example ambient pause hook:
+.fg-{{NAME}}.is-paused .{{ABBR}}-ambient { animation-play-state: paused; }
+*/
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="TODO: describe the hero scene and what the motion depicts.">
+  <!-- TODO: author SVG statically; prefix all ids with {{ABBR}}- -->
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 7000; // TODO: total intro duration before settle
+
+  // fg:begin hero-start v1
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

@@ -15,6 +15,7 @@ header { max-width: 760px; margin: 0 auto 2rem; }
 h1 { font-size: 1.4rem; margin: 0 0 0.4rem; }
 header p { color: #666; margin: 0; font-size: 0.95rem; }
 .entry { max-width: 760px; margin: 0 auto 3rem; }
+.entry--hero { max-width: 1100px; }
 .entry h2 { font-size: 1.05rem; margin: 0 0 0.2rem; }
 .entry .meta { color: #888; font-size: 0.8rem; margin: 0 0 0.75rem; }
 .entry .meta code { background: #e8e8e8; padding: 1px 5px; border-radius: 4px; }
@@ -28,7 +29,7 @@ header p { color: #666; margin: 0; font-size: 0.95rem; }
   <h1>figura — diagram gallery</h1>
   <p>Every diagram in the library, inlined exactly as the blog inlines it.
      Serve this page over HTTP (<code>python3 -m http.server</code>) — the manifest fetch fails over <code>file://</code>.
-     The first diagram is rendered twice to verify that multiple instances on one page don't interfere.</p>
+     The first diagram (and the first hero) is rendered twice to verify that multiple instances on one page don't interfere.</p>
 </header>
 <main id="gallery"></main>
 <script>
@@ -59,10 +60,11 @@ header p { color: #666; margin: 0; font-size: 0.95rem; }
     container.appendChild(holder);
   }
 
+  const firstHero = manifest.findIndex((d) => d.kind === 'hero');
   for (let i = 0; i < manifest.length; i++) {
     const d = manifest[i];
     const section = document.createElement('section');
-    section.className = 'entry';
+    section.className = d.kind === 'hero' ? 'entry entry--hero' : 'entry';
     section.innerHTML =
       '<h2></h2><p class="meta"><code></code> · post: <span></span></p><p class="desc"></p>';
     section.querySelector('h2').textContent = d.title;
@@ -72,7 +74,7 @@ header p { color: #666; margin: 0; font-size: 0.95rem; }
     main.appendChild(section);
     try {
       await embed(section, d.path);
-      if (i === 0) {
+      if (i === 0 || i === firstHero) {
         const note = document.createElement('p');
         note.className = 'dup-note';
         note.textContent = 'Duplicate instance (multi-instance regression check):';
