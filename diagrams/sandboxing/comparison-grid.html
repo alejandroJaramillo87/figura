@@ -99,6 +99,37 @@
 .fg-comparison-grid .scg-head {
   fill: var(--panel); stroke-width: 2;
 }
+
+/* glow pattern: halo rects are blurred once, statically; only opacity animates */
+.fg-comparison-grid .scg-halo {
+  filter: blur(6px); opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.fg-comparison-grid .scg-group:hover .scg-halo { opacity: 0.45; }
+.fg-comparison-grid .scg-halo-inf { fill: var(--accent); }
+.fg-comparison-grid .scg-halo-trn { fill: var(--warn); }
+.fg-comparison-grid .scg-halo-agt { fill: var(--violet); }
+.fg-comparison-grid .scg-halo-ok  { fill: var(--ok); }
+
+/* per-column hover: cell lifts to the column's dim fill, value text brightens */
+.fg-comparison-grid .scg-group.scg-inf:hover .scg-cell { fill: var(--accent-dim); }
+.fg-comparison-grid .scg-group.scg-trn:hover .scg-cell { fill: var(--warn-dim); }
+.fg-comparison-grid .scg-group.scg-agt:hover .scg-cell { fill: var(--violet-dim); }
+.fg-comparison-grid .scg-group:hover .scg-vsub { fill: var(--text); }
+.fg-comparison-grid .scg-vsub { transition: fill 0.3s; }
+
+/* shared floor: hover state in --ok, plus a slow ambient sheen (the floor is
+   the thesis of the post — the one effect this diagram keeps running) */
+.fg-comparison-grid .scg-group.scg-flr:hover .scg-cell { fill: var(--ok-dim); stroke: var(--ok); }
+.fg-comparison-grid .scg-sweep {
+  animation: fg-scg-sweep 7s var(--ease) infinite;
+}
+@keyframes fg-scg-sweep {
+  0%        { transform: translateX(-60px); opacity: 0; }
+  6%        { opacity: 0.5; }
+  30%       { transform: translateX(588px); opacity: 0.5; }
+  36%, 100% { transform: translateX(588px); opacity: 0; }
+}
 .fg-comparison-grid .scg-head-inf { stroke: var(--accent); }
 .fg-comparison-grid .scg-head-trn { stroke: var(--warn); }
 .fg-comparison-grid .scg-head-agt { stroke: var(--violet); }
@@ -130,23 +161,38 @@
   .fg-comparison-grid, .fg-comparison-grid * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .fg-comparison-grid .scg-sweep { display: none; }
+  .fg-comparison-grid .scg-group:hover .scg-halo { opacity: 0.45; } /* hover halo stays, without transition */
+}
 </style>
 
 <svg viewBox="0 0 720 460" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Comparison grid of three sandboxes. Inference writes only logs, binds inbound to localhost with open outbound, uses the GPU, and runs as a daemon. Training writes checkpoints, needs no network at run time, uses the GPU, and runs per job. Agents write a git worktree, get outbound access only through an egress allowlist, use no GPU, and run per session with one scoped secret.">
+     aria-label="Comparison grid of three sandboxes. Inference writes only logs, binds inbound to localhost with open outbound, uses the GPU, and runs as a long-lived service. Training writes checkpoints, needs no network at run time, uses the GPU, and runs per job. Agents write a git worktree, get outbound access only through an egress allowlist, use no GPU, and run per session with one scoped secret.">
+  <defs>
+    <linearGradient id="scg-sweep-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"   style="stop-color: var(--ok)" stop-opacity="0"/>
+      <stop offset="0.5" style="stop-color: var(--ok)" stop-opacity="0.35"/>
+      <stop offset="1"   style="stop-color: var(--ok)" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="scg-sweep-clip"><rect x="180" y="380" width="528" height="48" rx="6"/></clipPath>
+  </defs>
 
   <!-- column headers -->
   <g class="scg-group scg-inf" data-fg="head" data-title="Inference" data-info="Three llama.cpp and vLLM servers: fixed-function appliances that load a model and serve an API. The most constrained workload — it needs to change almost nothing, so almost everything can be locked.">
+    <rect class="scg-halo scg-halo-inf" x="180" y="16" width="168" height="56" rx="8"/>
     <rect class="scg-head scg-head-inf" x="180" y="16" width="168" height="56" rx="8"/>
     <text class="scg-htitle" x="264" y="40">Inference</text>
     <text class="scg-hsub" x="264" y="58">llama.cpp · vLLM servers</text>
   </g>
   <g class="scg-group scg-trn" data-fg="head" data-title="Training" data-info="The fine-tuning and pretraining container — interp recipes ride the same image. A batch job runner, not a server: it exists to transform data into checkpoints and exit.">
+    <rect class="scg-halo scg-halo-trn" x="360" y="16" width="168" height="56" rx="8"/>
     <rect class="scg-head scg-head-trn" x="360" y="16" width="168" height="56" rx="8"/>
     <text class="scg-htitle" x="444" y="40">Training</text>
     <text class="scg-hsub" x="444" y="58">fine-tuning · interp jobs</text>
   </g>
   <g class="scg-group scg-agt" data-fg="head" data-title="Agents" data-info="Coding agents (Claude Code, OpenCode) running autonomously. The hardest case: the workload is a general-purpose mutator that must edit code and talk to APIs — so the sandbox constrains where, not whether.">
+    <rect class="scg-halo scg-halo-agt" x="540" y="16" width="168" height="56" rx="8"/>
     <rect class="scg-head scg-head-agt" x="540" y="16" width="168" height="56" rx="8"/>
     <text class="scg-htitle" x="624" y="40">Agents</text>
     <text class="scg-hsub" x="624" y="58">Claude Code · OpenCode</text>
@@ -155,12 +201,12 @@
   <!-- row: writes -->
   <text class="scg-row" x="16" y="106">What must</text>
   <text class="scg-row" x="16" y="122">it write?</text>
-  <g class="scg-group scg-inf" data-title="Inference: writes" data-info="Read-only rootfs, read-only model mount. The only writable path is a bind-mounted log directory. A compromised server has nowhere to persist.">
+  <g class="scg-group scg-inf" data-title="Inference: writes" data-info="Read-only rootfs, models mounted :ro from /mnt/ai-data/models. The only durable writable path is a bind-mounted log directory; the GPU servers get a bounded tmpfs /tmp (4GB) for the CUDA JIT cache. A compromised server has nowhere to persist.">
     <rect class="scg-cell" x="180" y="84" width="168" height="60" rx="6"/>
     <text class="scg-val" x="264" y="110">logs only</text>
     <text class="scg-vsub" x="264" y="128">models mounted :ro</text>
   </g>
-  <g class="scg-group scg-trn" data-title="Training: writes" data-info="Checkpoints, shards, and run outputs land under one writable training root. Models stay read-only; the rootfs stays read-only; a tmpfs /tmp carries the JIT caches.">
+  <g class="scg-group scg-trn" data-title="Training: writes" data-info="Checkpoints, shards, and run outputs land under one writable training root. Models and the rootfs stay read-only; a 16GB /dev/shm feeds dataloader workers and a tmpfs /tmp (8GB, exec) carries the Triton and CUDA JIT caches.">
     <rect class="scg-cell" x="360" y="84" width="168" height="60" rx="6"/>
     <text class="scg-val" x="444" y="110">checkpoints</text>
     <text class="scg-vsub" x="444" y="128">one writable data root</text>
@@ -174,7 +220,7 @@
   <!-- row: network -->
   <text class="scg-row" x="16" y="178">Where must</text>
   <text class="scg-row" x="16" y="194">it talk?</text>
-  <g class="scg-group scg-inf" data-title="Inference: network" data-info="Inbound is the risk: every port binds to 127.0.0.1 only, so nothing off the machine can reach the servers. Outbound stays open on the bridge network for image and model pulls.">
+  <g class="scg-group scg-inf" data-title="Inference: network" data-info="Inbound is the risk: every port (8001, 8002, 8003) binds to 127.0.0.1 only, so nothing off the machine can reach the servers. Outbound stays open on the bridge network for image and model pulls.">
     <rect class="scg-cell" x="180" y="156" width="168" height="60" rx="6"/>
     <text class="scg-val" x="264" y="182">inbound: localhost</text>
     <text class="scg-vsub" x="264" y="200">127.0.0.1 binding</text>
@@ -184,7 +230,7 @@
     <text class="scg-val" x="444" y="182">none needed</text>
     <text class="scg-vsub" x="444" y="200">data already local</text>
   </g>
-  <g class="scg-group scg-agt" data-title="Agents: network" data-info="Outbound is the risk: exfiltration. The agent's network is internal: true — no route to the internet except through a Squid proxy that allows a short list of domains and denies everything else.">
+  <g class="scg-group scg-agt" data-title="Agents: network" data-info="Outbound is the risk: exfiltration. The agent's network is internal: true — no route to the internet except through a Squid proxy whose allowlist is a handful of domains (Anthropic, GitHub, npm, PyPI) and whose last rule is deny all.">
     <rect class="scg-cell" x="540" y="156" width="168" height="60" rx="6"/>
     <text class="scg-val" x="624" y="182">egress allowlist</text>
     <text class="scg-vsub" x="624" y="200">deny-by-default proxy</text>
@@ -210,9 +256,9 @@
 
   <!-- row: lifecycle -->
   <text class="scg-row" x="16" y="330">Lifecycle</text>
-  <g class="scg-group scg-inf" data-title="Inference: lifecycle" data-info="A daemon: restart: unless-stopped, healthchecks every 30s, long start periods for model loading. The service is meant to be up whenever the machine is.">
+  <g class="scg-group scg-inf" data-title="Inference: lifecycle" data-info="A long-lived service: restart: unless-stopped, healthchecks every 30s, long start periods for model loading. The container is meant to be up whenever the machine is.">
     <rect class="scg-cell" x="180" y="300" width="168" height="60" rx="6"/>
-    <text class="scg-val" x="264" y="326">daemon</text>
+    <text class="scg-val" x="264" y="326">long-lived service</text>
     <text class="scg-vsub" x="264" y="344">restart: unless-stopped</text>
   </g>
   <g class="scg-group scg-trn" data-title="Training: lifecycle" data-info="Per job: docker compose run --rm. No port, no healthcheck, no restart policy — the container exists for the duration of one job and is removed when it exits.">
@@ -227,8 +273,12 @@
   </g>
 
   <!-- shared baseline -->
-  <g class="scg-group" data-title="Shared baseline" data-info="Every sandbox starts from the same four lines before it diverges: cap_drop: ALL, no-new-privileges, read_only rootfs, and a non-root user. The differences above are deltas on this common floor.">
+  <g class="scg-group scg-flr" data-title="Shared baseline" data-info="Every sandbox starts from the same four lines before it diverges: cap_drop: ALL, no-new-privileges, read_only rootfs, and a non-root user. None of them cost measurable performance, so they are unconditional — the differences above are deltas on this common floor.">
+    <rect class="scg-halo scg-halo-ok" x="180" y="380" width="528" height="48" rx="6"/>
     <rect class="scg-cell" x="180" y="380" width="528" height="48" rx="6"/>
+    <g clip-path="url(#scg-sweep-clip)">
+      <rect class="scg-sweep" x="180" y="380" width="40" height="48" fill="url(#scg-sweep-grad)"/>
+    </g>
     <text class="scg-val" x="444" y="400">shared floor: cap_drop ALL · no-new-privileges · read-only rootfs · non-root user</text>
     <text class="scg-vsub" x="444" y="418">every container, all three shapes</text>
   </g>
