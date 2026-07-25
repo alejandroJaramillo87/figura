@@ -11,45 +11,43 @@ from herolib import emit, rect, rects
 S = []
 
 # 7x7 node sprites: outline ring, body lit from the upper left.
-# Same shape, ramp swapped per layer. The darkest ramp shade sits in the
-# background cells at the ring's diagonal corners — sprite AA that rounds
-# the octagonal silhouette into a circle.
+# Same shape, ramp swapped per layer.
 NODE = [
-    '.1ooo1.',
-    '1o443o1',
+    '..ooo..',
+    '.o443o.',
     'o43332o',
     'o43322o',
     'o33221o',
-    '1o221o1',
-    '.1ooo1.',
+    '.o221o.',
+    '..ooo..',
 ]
 NODE_SKY = [
-    '.1ooo1.',
-    '1okkSo1',
+    '..ooo..',
+    '.okkSo.',
     'okSSSso',
     'okSSsso',
     'oSSssso',
-    '1oSsso1',
-    '.1ooo1.',
+    '.oSsso.',
+    '..ooo..',
 ]
 NODE_GRN = [
-    '.1ooo1.',
-    '1oeeGo1',
+    '..ooo..',
+    '.oeeGo.',
     'oeGGGgo',
     'oeGGggo',
     'oGGgggo',
-    '1oGggo1',
-    '.1ooo1.',
+    '.oGggo.',
+    '..ooo..',
 ]
 # amber-lit variant for the forward-pass pulse frames
 NODE_LIT = [
-    '.1ooo1.',
-    '1occbo1',
+    '..ooo..',
+    '.occbo.',
     'occbbbo',
     'ocbbbao',
     'obbbaao',
-    '1obaao1',
-    '.1ooo1.',
+    '.obaao.',
+    '..ooo..',
 ]
 
 # node centers in cell coordinates (cx, cy)
