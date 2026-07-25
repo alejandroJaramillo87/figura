@@ -91,7 +91,19 @@
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
   transition: fill 0.3s, stroke 0.3s; cursor: pointer;
 }
-.fg-inference-topology .ift-group:hover .ift-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-inference-topology .ift-group:hover .ift-box { fill: var(--accent-dim); stroke: var(--accent); }
+.fg-inference-topology .ift-group.ift-ok:hover .ift-box { fill: var(--ok-dim); stroke: var(--ok); }
+.fg-inference-topology .ift-group:hover .ift-sub { fill: var(--text); }
+.fg-inference-topology .ift-sub { transition: fill 0.3s; }
+
+/* glow pattern: halo rects are blurred once, statically; only opacity animates */
+.fg-inference-topology .ift-halo {
+  filter: blur(6px); opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.fg-inference-topology .ift-group:hover .ift-halo { opacity: 0.45; }
+.fg-inference-topology .ift-halo-acc { fill: var(--accent); }
+.fg-inference-topology .ift-halo-ok  { fill: var(--ok); }
 .fg-inference-topology .ift-zone {
   fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
   transition: stroke 0.3s; cursor: pointer;
@@ -99,6 +111,21 @@
 .fg-inference-topology .ift-group:hover .ift-zone { stroke: var(--accent); }
 .fg-inference-topology .ift-wall {
   stroke: var(--hot); stroke-width: 3; fill: none;
+}
+/* the wall is the thesis of the post — the one ambient effect this diagram
+   keeps running is a slow hot sheen traveling along it */
+.fg-inference-topology .ift-wall-sweep {
+  animation: fg-ift-sweep 7s var(--ease) infinite;
+}
+@keyframes fg-ift-sweep {
+  0%        { transform: translateX(-80px); opacity: 0; }
+  6%        { opacity: 0.6; }
+  38%       { transform: translateX(700px); opacity: 0.6; }
+  44%, 100% { transform: translateX(700px); opacity: 0; }
+}
+/* inbound attempt from outside: hot dashed arrow that stops dead at the wall */
+.fg-inference-topology .ift-blocked {
+  stroke: var(--hot); stroke-width: 2; fill: none; stroke-dasharray: 4 4;
 }
 .fg-inference-topology .ift-title { fill: var(--text); font-size: 13.5px; font-weight: 600; text-anchor: middle; pointer-events: none; }
 .fg-inference-topology .ift-sub   { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
@@ -112,6 +139,10 @@
 }
 @keyframes fg-ift-flow { to { stroke-dashoffset: -18; } }
 .fg-inference-topology .ift-flow-ok { stroke: var(--ok); }
+/* model mounts are static links: the read path is passive, not traffic */
+.fg-inference-topology .ift-link {
+  stroke: var(--line); stroke-width: 2; fill: none; stroke-dasharray: 5 4;
+}
 
 .fg-inference-topology .fg-caption {
   margin-top: 12px; padding: 10px 14px;
@@ -133,6 +164,10 @@
   .fg-inference-topology, .fg-inference-topology * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .fg-inference-topology .ift-wall-sweep { display: none; }
+  .fg-inference-topology .ift-group:hover .ift-halo { opacity: 0.45; } /* hover halo stays, without transition */
+}
 </style>
 
 <svg viewBox="0 0 720 480" xmlns="http://www.w3.org/2000/svg" role="img"
@@ -144,12 +179,25 @@
     <marker id="ift-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
     </marker>
+    <marker id="ift-arrow-hot" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171"/>
+    </marker>
+    <linearGradient id="ift-sweep-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"   style="stop-color: var(--hot)" stop-opacity="0"/>
+      <stop offset="0.5" style="stop-color: var(--hot)" stop-opacity="0.5"/>
+      <stop offset="1"   style="stop-color: var(--hot)" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="ift-sweep-clip"><rect x="20" y="40" width="680" height="8"/></clipPath>
   </defs>
 
   <!-- the outside world, walled off -->
   <text class="ift-label" x="20" y="30">rest of the network / internet</text>
   <g class="ift-group" data-title="The wall: 127.0.0.1 binding" data-info="Every port mapping is prefixed 127.0.0.1: — Docker publishes the ports on the loopback interface only. A machine on the LAN scanning this host finds nothing listening. No firewall rule to forget; the binding itself is the boundary.">
     <line class="ift-wall" x1="20" y1="44" x2="700" y2="44"/>
+    <g clip-path="url(#ift-sweep-clip)">
+      <rect class="ift-wall-sweep" x="20" y="40" width="60" height="8" fill="url(#ift-sweep-grad)"/>
+    </g>
+    <path class="ift-blocked" d="M 640 14 L 640 38" marker-end="url(#ift-arrow-hot)"/>
     <text class="ift-deny" x="360" y="66">inbound blocked — every port binds to 127.0.0.1 only</text>
   </g>
 
@@ -159,6 +207,7 @@
   </g>
   <text class="ift-label" x="34" y="102">host · localhost clients (browser, curl)</text>
   <g class="ift-group" data-title="Open WebUI" data-info="The web interface, reached at 127.0.0.1:3000. It talks to the inference servers by container name over the internal bridge (http://llama-gpu:8002/v1) — no API keys needed because the network itself is the boundary.">
+    <rect class="ift-halo ift-halo-acc" x="280" y="108" width="160" height="40" rx="6"/>
     <rect class="ift-box" x="280" y="108" width="160" height="40" rx="6"/>
     <text class="ift-title" x="360" y="128">Open WebUI</text>
     <text class="ift-sub" x="360" y="142">127.0.0.1:3000</text>
@@ -179,30 +228,34 @@
   <text class="ift-label" x="34" y="220">ai-network · bridge 172.20.0.0/16 · isolated from LAN</text>
 
   <g class="ift-group" data-title="llama-cpu" data-info="CPU inference server. Hardening: cap_drop ALL, no-new-privileges, read-only rootfs, non-root appuser, pinned to cores 0-15 with a hard 96GB memory limit so a runaway model cannot starve the host.">
+    <rect class="ift-halo ift-halo-acc" x="60" y="240" width="180" height="72" rx="8"/>
     <rect class="ift-box" x="60" y="240" width="180" height="72" rx="8"/>
     <text class="ift-title" x="150" y="266">llama-cpu</text>
     <text class="ift-sub" x="150" y="284">cpuset 0-15 · 96GB limit</text>
     <text class="ift-sub" x="150" y="300">read_only · non-root</text>
   </g>
   <g class="ift-group" data-title="llama-gpu" data-info="GPU llama.cpp server. Same hardening floor as llama-cpu, plus an explicit single-GPU reservation through the NVIDIA runtime (NVIDIA_VISIBLE_DEVICES=0) — only containers that declare the reservation see the card.">
+    <rect class="ift-halo ift-halo-acc" x="270" y="240" width="180" height="72" rx="8"/>
     <rect class="ift-box" x="270" y="240" width="180" height="72" rx="8"/>
     <text class="ift-title" x="360" y="266">llama-gpu</text>
     <text class="ift-sub" x="360" y="284">1 GPU reserved</text>
     <text class="ift-sub" x="360" y="300">read_only · non-root</text>
   </g>
   <g class="ift-group" data-title="vllm-gpu" data-info="vLLM server for high-throughput serving. Adds tmpfs mounts (/tmp, 4GB cap) for the CUDA JIT caches that a read-only rootfs would otherwise block — writable space is granted by the mount, never by opening the rootfs.">
+    <rect class="ift-halo ift-halo-acc" x="480" y="240" width="180" height="72" rx="8"/>
     <rect class="ift-box" x="480" y="240" width="180" height="72" rx="8"/>
     <text class="ift-title" x="570" y="266">vllm-gpu</text>
     <text class="ift-sub" x="570" y="284">tmpfs /tmp 4GB</text>
     <text class="ift-sub" x="570" y="300">read_only · non-root</text>
   </g>
 
-  <!-- model mount -->
-  <path class="ift-flow" d="M 150 400 L 150 316" marker-end="url(#ift-arrow)"/>
-  <path class="ift-flow" d="M 360 400 L 360 316" marker-end="url(#ift-arrow)"/>
-  <path class="ift-flow" d="M 570 400 L 570 316" marker-end="url(#ift-arrow)"/>
+  <!-- model mount: static links — the read path is passive, not traffic -->
+  <path class="ift-link" d="M 150 400 L 150 316" marker-end="url(#ift-arrow)"/>
+  <path class="ift-link" d="M 360 400 L 360 316" marker-end="url(#ift-arrow)"/>
+  <path class="ift-link" d="M 570 400 L 570 316" marker-end="url(#ift-arrow)"/>
 
-  <g class="ift-group" data-title="Model storage, read-only" data-info="/mnt/ai-data/models mounts into every container as :ro. The multi-gigabyte weights are the untrusted input here — a read-only mount means a compromised server can read them but never modify or replant them, and log directories are the only writable bind mounts.">
+  <g class="ift-group ift-ok" data-title="Model storage, read-only" data-info="/mnt/ai-data/models mounts into every container as :ro. The multi-gigabyte weights are the untrusted input here — a read-only mount means a compromised server can read them but never modify or replant them, and log directories are the only writable bind mounts.">
+    <rect class="ift-halo ift-halo-ok" x="60" y="400" width="600" height="52" rx="8"/>
     <rect class="ift-box" x="60" y="400" width="600" height="52" rx="8"/>
     <text class="ift-title" x="360" y="422">/mnt/ai-data/models</text>
     <text class="ift-sub" x="360" y="438">mounted :ro into every container · logs are the only writable mounts</text>
