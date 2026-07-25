@@ -521,6 +521,6 @@
     "title": "Training net",
     "post": "sandboxing-training",
     "kind": "hero",
-    "description": "Pixel-art hero for the training sandboxing post: a small feedforward neural network of chunky steel nodes and stepped pixel wires. The layers snap in left to right; then an amber activation pulse sweeps through the net layer by layer — a forward pass on repeat."
+    "description": "Pixel-art hero for the training sandboxing post: a four-layer feedforward neural network — sky input nodes, two steel hidden layers, green output nodes — joined by stepped pixel wires. An amber activation pulse sweeps forward and a sky gradient pulse sweeps back — one training step on repeat, with glints twinkling on the node rims."
   }
 ]
