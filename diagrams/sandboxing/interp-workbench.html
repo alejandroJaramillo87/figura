@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The interp workbench sandbox</title>
+<title>The Mech Interp sandbox</title>
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>The interp workbench sandbox</h1>
-<p>Hover a boundary, container, or mount to inspect the interp workbench sandbox: a long-running JupyterLab service on 127.0.0.1:8888 with the shared hardening floor, its own bridge network, and a read-write repo mount.</p>
+<h1>The Mech Interp sandbox</h1>
+<p>Hover a boundary, container, or mount to inspect the Mech Interp sandbox: a long-running JupyterLab service on 127.0.0.1:8888 with the shared hardening floor, its own bridge network, and a read-write repo mount.</p>
 
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-interp-workbench">
@@ -166,7 +166,7 @@
 </style>
 
 <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Interp workbench sandbox: JupyterLab binds to 127.0.0.1:8888 only, token-authenticated, with remote access over an SSH tunnel. The interp container keeps the shared hardening floor — cap_drop ALL, no-new-privileges, read-only rootfs, non-root — on its own interp-network bridge with one reserved GPU. Four mounts attach: the repository read-write at /workspace, a writable artifact tree at /mnt/ai-data/interp, models read-only, and a writable harvest seam into /mnt/ai-data/training.">
+     aria-label="Mech Interp sandbox: JupyterLab binds to 127.0.0.1:8888 only, token-authenticated, with remote access over an SSH tunnel. The interp container keeps the shared hardening floor — cap_drop ALL, no-new-privileges, read-only rootfs, non-root — on its own interp-network bridge with one reserved GPU. Four mounts attach: the repository read-write at /workspace, a writable artifact tree at /mnt/ai-data/interp, models read-only, and a writable harvest seam into /mnt/ai-data/training.">
   <defs>
     <marker id="ipw-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
@@ -198,7 +198,7 @@
     <rect class="ipw-zone" x="20" y="80" width="720" height="72" rx="10"/>
   </g>
   <text class="ipw-label" x="34" y="102">host · browser at 127.0.0.1:8888 · SSH tunnel from elsewhere</text>
-  <g class="ipw-group" data-info="JupyterLab — the workbench entry point, started explicitly by make interp-up after preflight. A notebook kernel executes arbitrary code by design, which is exactly why the container around it keeps the full hardening floor.">
+  <g class="ipw-group" data-info="JupyterLab — the Mech Interp entry point, started explicitly by make interp-up after preflight. A notebook kernel executes arbitrary code by design, which is exactly why the container around it keeps the full hardening floor.">
     <rect class="ipw-halo ipw-halo-acc" x="290" y="104" width="180" height="40" rx="6"/>
     <rect class="ipw-box" x="290" y="104" width="180" height="40" rx="6"/>
     <text class="ipw-title" x="380" y="124">JupyterLab</text>
@@ -209,7 +209,7 @@
   <text class="ipw-port" x="404" y="176">:8888</text>
 
   <!-- interp-network zone -->
-  <g class="ipw-group" data-info="interp-network — the workbench's own bridge. It never joins ai-network: the GPU inference stack and the workbench are never up at the same time, so there is nothing to be adjacent to.">
+  <g class="ipw-group" data-info="interp-network — the Mech Interp container's own bridge. It never joins ai-network: the GPU inference stack and the Mech Interp session are never up at the same time, so there is nothing to be adjacent to.">
     <rect class="ipw-zone" x="20" y="192" width="720" height="128" rx="10"/>
   </g>
   <text class="ipw-label" x="34" y="216">interp-network · own bridge · never joins ai-network</text>
@@ -217,11 +217,11 @@
   <g class="ipw-group" data-info="interp container — the same floor as every service in the series: cap_drop ALL, no-new-privileges, read-only rootfs, non-root. Writable scratch is tmpfs only (/tmp, 8GB, exec flag for the CUDA and Triton JIT caches); 8GB shm feeds dataloader workers. restart: no — started explicitly, never on boot.">
     <rect class="ipw-halo ipw-halo-acc" x="60" y="232" width="400" height="72" rx="8"/>
     <rect class="ipw-box" x="60" y="232" width="400" height="72" rx="8"/>
-    <text class="ipw-title" x="260" y="256">interp workbench container</text>
+    <text class="ipw-title" x="260" y="256">Mech Interp container</text>
     <text class="ipw-sub" x="260" y="274">cap_drop ALL · no-new-privileges · read_only · non-root</text>
     <text class="ipw-sub" x="260" y="290">tmpfs /tmp 8G exec · shm 8g · restart: no</text>
   </g>
-  <g class="ipw-group" data-info="RTX 5090 + preflight — one GPU consumer at a time. scripts/interp/preflight.sh refuses to start the workbench while llama-gpu or vllm-gpu is running (llama-cpu on its dedicated cores is permitted), and the check runs on the host before anything starts.">
+  <g class="ipw-group" data-info="RTX 5090 + preflight — one GPU consumer at a time. scripts/interp/preflight.sh refuses to start the session while llama-gpu or vllm-gpu is running (llama-cpu on its dedicated cores is permitted), and the check runs on the host before anything starts.">
     <rect class="ipw-halo ipw-halo-acc" x="520" y="232" width="180" height="72" rx="8"/>
     <rect class="ipw-box" x="520" y="232" width="180" height="72" rx="8"/>
     <text class="ipw-title" x="610" y="256">RTX 5090</text>
@@ -248,7 +248,7 @@
     <text class="ipw-title" x="296" y="374">/mnt/ai-data/interp</text>
     <text class="ipw-sub" x="296" y="392">rw — artifacts, HF cache</text>
   </g>
-  <g class="ipw-group" data-info="/mnt/ai-data/models — served weights mount read-only, exactly as the inference services mount them. The workbench can read provenance of served GGUFs; it can never modify what inference serves.">
+  <g class="ipw-group" data-info="/mnt/ai-data/models — served weights mount read-only, exactly as the inference services mount them. The Mech Interp session can read provenance of served GGUFs; it can never modify what inference serves.">
     <rect class="ipw-halo ipw-halo-acc" x="402" y="352" width="160" height="56" rx="8"/>
     <rect class="ipw-box" x="402" y="352" width="160" height="56" rx="8"/>
     <text class="ipw-title" x="482" y="374">/mnt/ai-data/models</text>

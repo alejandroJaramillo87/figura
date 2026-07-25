@@ -172,7 +172,7 @@
 </style>
 
 <svg viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Comparison grid of four sandboxes. Inference writes only logs, binds inbound to localhost with open outbound, uses the GPU, and runs as a long-lived service. Training writes checkpoints, needs no network at run time, uses the GPU, and runs per job. The workbench writes the repo and the interp tree, binds JupyterLab to localhost with a per-launch token, uses the GPU behind a preflight check, and runs as a long-running session. Agents write a git worktree, get outbound access only through an egress allowlist, use no GPU, and run per session with one scoped secret.">
+     aria-label="Comparison grid of four sandboxes. Inference writes only logs, binds inbound to localhost with open outbound, uses the GPU, and runs as a long-lived service. Training writes checkpoints, needs no network at run time, uses the GPU, and runs per job. Mech Interp writes the repo and the interp tree, binds JupyterLab to localhost with a per-launch token, uses the GPU behind a preflight check, and runs as a long-running session. Agents write a git worktree, get outbound access only through an egress allowlist, use no GPU, and run per session with one scoped secret.">
   <defs>
     <linearGradient id="scg-sweep-grad" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0"   style="stop-color: var(--ok)" stop-opacity="0"/>
@@ -195,10 +195,10 @@
     <text class="scg-htitle" x="444" y="40">Training</text>
     <text class="scg-hsub" x="444" y="58">fine-tuning · pretraining</text>
   </g>
-  <g class="scg-group scg-wbn" data-fg="head" data-title="Workbench" data-info="The interpretability workbench: a JupyterLab session for probing models cell by cell. The hybrid shape — a long-running service like inference, mounted into the data trees like training, with a human driving every cell.">
+  <g class="scg-group scg-wbn" data-fg="head" data-title="Mech Interp" data-info="Mechanistic interpretability: a JupyterLab session for probing models cell by cell. The hybrid shape — a long-running service like inference, mounted into the data trees like training, with a human driving every cell.">
     <rect class="scg-halo scg-halo-wbn" x="540" y="16" width="168" height="56" rx="8"/>
     <rect class="scg-head scg-head-wbn" x="540" y="16" width="168" height="56" rx="8"/>
-    <text class="scg-htitle" x="624" y="40">Workbench</text>
+    <text class="scg-htitle" x="624" y="40">Mech Interp</text>
     <text class="scg-hsub" x="624" y="58">JupyterLab · interp</text>
   </g>
   <g class="scg-group scg-agt" data-fg="head" data-title="Agents" data-info="Coding agents (Claude Code, OpenCode) running autonomously. The hardest case: the workload is a general-purpose mutator that must edit code and talk to APIs — so the sandbox constrains where, not whether.">
@@ -221,7 +221,7 @@
     <text class="scg-val" x="444" y="110">checkpoints</text>
     <text class="scg-vsub" x="444" y="128">one writable data root</text>
   </g>
-  <g class="scg-group scg-wbn" data-title="Workbench: writes" data-info="The repository itself, mounted read-write at /workspace — the biggest loosening in the series, recoverable via git. Heavy artifacts (activations, SAEs, HF cache) land on /mnt/ai-data/interp; models stay :ro; a harvest seam writes into the training tree under the shared run lock.">
+  <g class="scg-group scg-wbn" data-title="Mech Interp: writes" data-info="The repository itself, mounted read-write at /workspace — the biggest loosening in the series, recoverable via git. Heavy artifacts (activations, SAEs, HF cache) land on /mnt/ai-data/interp; models stay :ro; a harvest seam writes into the training tree under the shared run lock.">
     <rect class="scg-cell" x="540" y="84" width="168" height="60" rx="6"/>
     <text class="scg-val" x="624" y="110">repo + interp tree</text>
     <text class="scg-vsub" x="624" y="128">rw workspace mount</text>
@@ -245,7 +245,7 @@
     <text class="scg-val" x="444" y="182">none needed</text>
     <text class="scg-vsub" x="444" y="200">data already local</text>
   </g>
-  <g class="scg-group scg-wbn" data-title="Workbench: network" data-info="A notebook kernel is arbitrary code execution by design, so the Jupyter port (8888) binds to 127.0.0.1 only, with a fresh JUPYTER_TOKEN per launch. Remote access is an SSH tunnel, never a wider bind. The container rides its own interp-network bridge.">
+  <g class="scg-group scg-wbn" data-title="Mech Interp: network" data-info="A notebook kernel is arbitrary code execution by design, so the Jupyter port (8888) binds to 127.0.0.1 only, with a fresh JUPYTER_TOKEN per launch. Remote access is an SSH tunnel, never a wider bind. The container rides its own interp-network bridge.">
     <rect class="scg-cell" x="540" y="156" width="168" height="60" rx="6"/>
     <text class="scg-val" x="624" y="182">inbound: localhost</text>
     <text class="scg-vsub" x="624" y="200">127.0.0.1 + token</text>
@@ -268,7 +268,7 @@
     <text class="scg-val" x="444" y="254">yes</text>
     <text class="scg-vsub" x="444" y="272">one consumer at a time</text>
   </g>
-  <g class="scg-group scg-wbn" data-title="Workbench: GPU" data-info="Yes — one GPU reservation, but exclusivity is procedural: a host-side preflight refuses to start the workbench while any GPU service is running (llama-cpu, on its dedicated cores, is permitted).">
+  <g class="scg-group scg-wbn" data-title="Mech Interp: GPU" data-info="Yes — one GPU reservation, but exclusivity is procedural: a host-side preflight refuses to start the session while any GPU service is running (llama-cpu, on its dedicated cores, is permitted).">
     <rect class="scg-cell" x="540" y="228" width="168" height="60" rx="6"/>
     <text class="scg-val" x="624" y="254">yes</text>
     <text class="scg-vsub" x="624" y="272">preflight: sole consumer</text>
@@ -291,7 +291,7 @@
     <text class="scg-val" x="444" y="326">per job</text>
     <text class="scg-vsub" x="444" y="344">compose run --rm</text>
   </g>
-  <g class="scg-group scg-wbn" data-title="Workbench: lifecycle" data-info="A long-running session, started explicitly by make interp-up and never resurrected on boot (restart: no). It stays up as long as the human is working — the conversation with the model cannot be a batch job.">
+  <g class="scg-group scg-wbn" data-title="Mech Interp: lifecycle" data-info="A long-running session, started explicitly by make interp-up and never resurrected on boot (restart: no). It stays up as long as the human is working — the conversation with the model cannot be a batch job.">
     <rect class="scg-cell" x="540" y="300" width="168" height="60" rx="6"/>
     <text class="scg-val" x="624" y="326">long-running session</text>
     <text class="scg-vsub" x="624" y="344">restart: no</text>

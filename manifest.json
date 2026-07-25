@@ -60,7 +60,7 @@
     "path": "diagrams/sandboxing/comparison-grid.html",
     "title": "Four sandboxes, two questions",
     "post": "sandboxing-overview",
-    "description": "Comparison grid of the inference, training, workbench, and agent sandboxes: what each workload must write, where it must talk, GPU access, and lifecycle — over a shared hardening floor. Hover-to-inspect with column glow highlights and an ambient sheen on the shared floor."
+    "description": "Comparison grid of the inference, training, Mech Interp, and agent sandboxes: what each workload must write, where it must talk, GPU access, and lifecycle — over a shared hardening floor. Hover-to-inspect with column glow highlights and an ambient sheen on the shared floor."
   },
   {
     "id": "inference-topology",
@@ -510,9 +510,9 @@
   {
     "id": "interp-workbench",
     "path": "diagrams/sandboxing/interp-workbench.html",
-    "title": "The interp workbench sandbox",
+    "title": "The Mech Interp sandbox",
     "post": "sandboxing-interp",
     "kind": "hover-inspect",
-    "description": "Hover-inspect map of the interp workbench sandbox: JupyterLab on 127.0.0.1:8888 with a per-launch token, the shared hardening floor on an isolated bridge, one reserved GPU behind a preflight check, and four mounts including the read-write repo at /workspace."
+    "description": "Hover-inspect map of the Mech Interp sandbox: JupyterLab on 127.0.0.1:8888 with a per-launch token, the shared hardening floor on an isolated bridge, one reserved GPU behind a preflight check, and four mounts including the read-write repo at /workspace."
   }
 ]
