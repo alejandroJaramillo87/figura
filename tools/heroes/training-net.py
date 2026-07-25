@@ -70,27 +70,43 @@ def node(center, rows):
 
 
 def edge_runs(a, b):
-    """1-cell-thick staircase between two node centers, clear of the
-    sprites; returns horizontal runs (x, y, w)."""
+    """1-cell-thick 8-connected line between two node centers, clear of
+    the sprites; cells merged into horizontal runs (x, y, w)."""
     (x1, y1), (x2, y2) = a, b
     x1, x2 = x1 + 4, x2 - 4
-    n = x2 - x1
-    pts = [(x1 + i, round(y1 + (y2 - y1) * i / n)) for i in range(n + 1)]
-    runs, (sx, sy) = [], pts[0]
-    for x, y in pts[1:]:
-        if y != sy:
-            runs.append((sx, sy, x - sx))
-            sx, sy = x, y
-    runs.append((sx, sy, pts[-1][0] - sx + 1))
+    n = max(x2 - x1, abs(y2 - y1))
+    cells = []
+    for i in range(n + 1):
+        c = (x1 + round((x2 - x1) * i / n), y1 + round((y2 - y1) * i / n))
+        if not cells or c != cells[-1]:
+            cells.append(c)
+    runs, (sx, sy) = [], cells[0]
+    w = 1
+    for x, y in cells[1:]:
+        if y == sy:
+            w += 1
+        else:
+            runs.append((sx, sy, w))
+            sx, sy, w = x, y, 1
+    runs.append((sx, sy, w))
     return runs
 
 
-def edge(a, b, color):
-    return '\n'.join(rect(x, y, w, 1, color) for x, y, w in edge_runs(a, b))
+def edge(a, b, color, aa):
+    """Staircase runs in `color`; on shallow steps (wide runs) a dimmer
+    `aa` pixel softens the corner — pixel-art anti-aliasing. Steep
+    zigzags stay bare: the 8-connected diagonal is already smooth."""
+    runs = edge_runs(a, b)
+    out = [rect(x, y, w, 1, color) for x, y, w in runs]
+    for (px, py, pw), (nx, ny, nw) in zip(runs, runs[1:]):
+        if pw >= 2 and nw >= 2:
+            out.append(rect(nx, py, 1, 1, aa))   # extend prev row one dim cell
+
+    return '\n'.join(out)
 
 
-def stage(pairs, la, lb, color):
-    return '\n'.join(edge(la[i], lb[j], color) for i, j in pairs)
+def stage(pairs, la, lb, color, aa):
+    return '\n'.join(edge(la[i], lb[j], color, aa) for i, j in pairs)
 
 
 # ============ structure: nodes and wires, layer by layer ============
@@ -103,15 +119,15 @@ def layer(cls, centers, rows):
 
 layer('tnet-in', IN, NODE_SKY)
 S.append('  <g class="tnet-e1">')
-S.append(stage(E1, IN, H1, '2'))
+S.append(stage(E1, IN, H1, '2', '1'))
 S.append('  </g>')
 layer('tnet-h1', H1, NODE)
 S.append('  <g class="tnet-e2">')
-S.append(stage(E2, H1, H2, '2'))
+S.append(stage(E2, H1, H2, '2', '1'))
 S.append('  </g>')
 layer('tnet-h2', H2, NODE)
 S.append('  <g class="tnet-e3">')
-S.append(stage(E3, H2, OUT, '2'))
+S.append(stage(E3, H2, OUT, '2', '1'))
 S.append('  </g>')
 layer('tnet-out', OUT, NODE_GRN)
 
@@ -119,19 +135,19 @@ layer('tnet-out', OUT, NODE_GRN)
 S.append('  <g class="tnet-p1">')
 for ctr in IN:
     S.append(node(ctr, NODE_LIT))
-S.append(stage(E1, IN, H1, 'b'))
+S.append(stage(E1, IN, H1, 'b', 'a'))
 S.append('  </g>')
 
 S.append('  <g class="tnet-p2">')
 for ctr in H1:
     S.append(node(ctr, NODE_LIT))
-S.append(stage(E2, H1, H2, 'b'))
+S.append(stage(E2, H1, H2, 'b', 'a'))
 S.append('  </g>')
 
 S.append('  <g class="tnet-p3">')
 for ctr in H2:
     S.append(node(ctr, NODE_LIT))
-S.append(stage(E3, H2, OUT, 'b'))
+S.append(stage(E3, H2, OUT, 'b', 'a'))
 S.append('  </g>')
 
 S.append('  <g class="tnet-p4">')
@@ -141,13 +157,13 @@ S.append('  </g>')
 
 # ============ backward pass: 3 sky edge-overlay frames ============
 S.append('  <g class="tnet-b1">')
-S.append(stage(E3, H2, OUT, 'S'))
+S.append(stage(E3, H2, OUT, 'S', 's'))
 S.append('  </g>')
 S.append('  <g class="tnet-b2">')
-S.append(stage(E2, H1, H2, 'S'))
+S.append(stage(E2, H1, H2, 'S', 's'))
 S.append('  </g>')
 S.append('  <g class="tnet-b3">')
-S.append(stage(E1, IN, H1, 'S'))
+S.append(stage(E1, IN, H1, 'S', 's'))
 S.append('  </g>')
 
 # ============ rim glints: 2 alternating scatter frames ============
