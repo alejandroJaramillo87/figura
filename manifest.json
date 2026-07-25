@@ -506,5 +506,13 @@
     "post": "linux-ai-setup",
     "kind": "hero",
     "description": "Pixel-art night-scene hero: a dark room where the booting monitor is the only light source \u2014 its glow spills onto wall, desk, and floor in the color of each boot phase (flash, POST green, logo amber, desktop violet) while rain falls past a moonlit city skyline outside the window."
+  },
+  {
+    "id": "motherboard-city",
+    "path": "diagrams/linux-ai-setup/motherboard-city.html",
+    "title": "Motherboard city at dusk",
+    "post": "linux-ai-setup",
+    "kind": "hero",
+    "description": "Pixel-art aerial hero: a motherboard as a city at dusk \u2014 CPU heatsink downtown, four identical RAM tower blocks, a VRM industrial quarter and a coin-cell stadium under a banded plum-to-peach sky with a setting sun. Power-on plays as the city waking: a substation flash, light racing down trace-road streets, then districts flickering on one by one; headlights travel the foreground avenue after settle."
   }
 ]

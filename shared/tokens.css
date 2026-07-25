@@ -83,4 +83,7 @@
   --fg-px-sky-1: #0369a1;    /* sky shadow */
   --fg-px-sky-2: #38bdf8;    /* sky mid (= --fg-accent) */
   --fg-px-sky-3: #bae6fd;    /* sky highlight */
+  --fg-px-dusk-1: #2b1b3d;   /* dusk plum band (cool shadow) */
+  --fg-px-dusk-2: #7c3a58;   /* dusk dusty-rose band */
+  --fg-px-dusk-3: #e8a87c;   /* dusk peach horizon (warm highlight) */
 }
