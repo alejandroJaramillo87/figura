@@ -506,5 +506,13 @@
     "post": "sandboxing-inference",
     "kind": "hero",
     "description": "Pixel-art hero for the inference sandboxing post: a chip package holding a pixel brain — the sealed mind of a fixed-function appliance. A green trace loops out of one pin and back into its neighbor while a hot inbound attempt bursts against the package wall; intro boots the brain hemisphere by hemisphere, ambient loop sparkles synapses and circulates loopback packets."
+  },
+  {
+    "id": "interp-workbench",
+    "path": "diagrams/sandboxing/interp-workbench.html",
+    "title": "The interp workbench sandbox",
+    "post": "sandboxing-interp",
+    "kind": "hover-inspect",
+    "description": "Hover-inspect map of the interp workbench sandbox: JupyterLab on 127.0.0.1:8888 with a per-launch token, the shared hardening floor on an isolated bridge, one reserved GPU behind a preflight check, and four mounts including the read-write repo at /workspace."
   }
 ]

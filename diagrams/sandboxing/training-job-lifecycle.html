@@ -8,7 +8,7 @@
 </head>
 <body>
 <h1>The per-job training sandbox lifecycle</h1>
-<p>Step through one training job: compose run creates the container, mounts attach, the job runs against the GPU, checkpoints land on the data root, and the container is removed.</p>
+<p>Step through one training job: compose run creates the container, mounts attach, the job runs against the GPU, checkpoints land on the data root, and the container is removed while the data mounts persist.</p>
 
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-training-job-lifecycle">
@@ -115,16 +115,46 @@
 .fg-training-job-lifecycle.is-step-3 .tjl-s3 .tjl-title, .fg-training-job-lifecycle.is-step-4 .tjl-s4 .tjl-title
   { fill: var(--text); }
 
+/* the GPU is held while the job runs (steps 3-4) and released at removal */
+.fg-training-job-lifecycle.is-step-3 .tjl-gpu .tjl-box, .fg-training-job-lifecycle.is-step-4 .tjl-gpu .tjl-box
+  { fill: var(--accent-dim); stroke: var(--accent); }
+.fg-training-job-lifecycle.is-step-3 .tjl-gpu .tjl-title, .fg-training-job-lifecycle.is-step-4 .tjl-gpu .tjl-title
+  { fill: var(--text); }
+
+/* draw-in: mount connectors draw themselves at step 2, staggered per mount */
+.fg-training-job-lifecycle .tjl-draw {
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.9s var(--ease) var(--d, 0s), stroke 0.45s, opacity 0.45s;
+}
+.fg-training-job-lifecycle.is-step-2 .tjl-draw, .fg-training-job-lifecycle.is-step-3 .tjl-draw,
+.fg-training-job-lifecycle.is-step-4 .tjl-draw, .fg-training-job-lifecycle.is-step-5 .tjl-draw
+  { stroke-dashoffset: 0; }
+
 /* mounts light up at step 2+ */
 .fg-training-job-lifecycle.is-step-2 .tjl-mount, .fg-training-job-lifecycle.is-step-3 .tjl-mount,
 .fg-training-job-lifecycle.is-step-4 .tjl-mount { opacity: 1; stroke: var(--accent); }
 .fg-training-job-lifecycle.is-step-2 .tjl-mount-label, .fg-training-job-lifecycle.is-step-3 .tjl-mount-label,
-.fg-training-job-lifecycle.is-step-4 .tjl-mount-label { opacity: 1; fill: var(--text); }
+.fg-training-job-lifecycle.is-step-4 .tjl-mount-label, .fg-training-job-lifecycle.is-step-5 .tjl-mount-label
+  { opacity: 1; fill: var(--text); }
 
 /* checkpoint write path lights at step 4 */
 .fg-training-job-lifecycle .tjl-ckpt { stroke: var(--line); stroke-width: 2.5; fill: none; opacity: 0.3; transition: stroke 0.45s, opacity 0.45s; }
 .fg-training-job-lifecycle.is-step-4 .tjl-ckpt { stroke: var(--ok); opacity: 1; stroke-dasharray: 5 4; animation: fg-tjl-flow 1.2s linear infinite; }
 @keyframes fg-tjl-flow { to { stroke-dashoffset: -18; } }
+
+/* step-4 comet along the checkpoint path (kicked from the fg:step handler) */
+.fg-training-job-lifecycle .tjl-comet { display: none; }
+.fg-training-job-lifecycle.is-step-4 .tjl-comet { display: inline; }
+
+/* step-5 payoff: the persistent stores glow while the container evaporates.
+   Glow pattern: halo rects are blurred once, statically; only opacity animates. */
+.fg-training-job-lifecycle .tjl-halo {
+  filter: blur(6px); fill: var(--ok); opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.fg-training-job-lifecycle.is-step-5 .tjl-halo { opacity: 0.4; }
+.fg-training-job-lifecycle.is-step-5 .tjl-persist .tjl-box { stroke: var(--ok); }
+.fg-training-job-lifecycle.is-step-5 .tjl-persist .tjl-title { fill: var(--text); }
 
 .fg-training-job-lifecycle .fg-caption {
   margin-top: 10px; padding: 10px 14px;
@@ -159,10 +189,13 @@
   .fg-training-job-lifecycle, .fg-training-job-lifecycle * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .fg-training-job-lifecycle .tjl-comet { display: none !important; } /* SMIL ignores reduced motion */
+}
 </style>
 
 <svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Lifecycle of one training job: docker compose run creates an ephemeral hardened container; read-only model and recipe mounts plus one writable training root attach; the job trains against the reserved GPU; checkpoints stream to the training root; the container is removed while the checkpoints persist.">
+     aria-label="Lifecycle of one training job: docker compose run creates an ephemeral hardened container; the model, recipe, and code mounts attach read-only alongside the writable training root and a narrow read-write window for exported GGUFs; the job trains against the reserved GPU; checkpoints stream to the training root; the container is removed and the GPU released while the data mounts persist.">
   <defs>
     <marker id="tjl-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
@@ -190,44 +223,66 @@
     </g>
     <g class="tjl-stage tjl-s3">
       <rect class="tjl-box" x="48" y="192" width="384" height="52" rx="8"/>
-      <text class="tjl-title" x="240" y="214">job: fine-tune / pretrain / interp recipe</text>
+      <text class="tjl-title" x="240" y="214">job: fine-tune / pretrain recipe</text>
       <text class="tjl-sub" x="240" y="232">tmpfs /tmp (exec) for CUDA JIT · shm 16g for dataloaders</text>
     </g>
   </g>
 
   <!-- GPU -->
-  <g class="tjl-stage tjl-s3b">
+  <g class="tjl-stage tjl-gpu">
     <rect class="tjl-box" x="520" y="140" width="180" height="56" rx="8"/>
     <text class="tjl-title" x="610" y="164">RTX 5090</text>
-    <text class="tjl-sub" x="610" y="182">1 GPU reserved · sole consumer</text>
+    <text class="tjl-sub" x="610" y="182">1 GPU · sole consumer</text>
   </g>
-  <path class="tjl-mount" d="M 460 176 L 516 172" marker-end="url(#tjl-arrow)"/>
+  <path class="tjl-mount tjl-draw" pathLength="1" d="M 460 176 L 516 172" marker-end="url(#tjl-arrow)"/>
 
-  <!-- mounts -->
+  <!-- mounts: three read-only, the training root, and the narrow export window -->
   <g class="tjl-stage tjl-s2b">
-    <rect class="tjl-box" x="20" y="296" width="210" height="56" rx="8"/>
-    <text class="tjl-title" x="125" y="318">/mnt/ai-data/models</text>
-    <text class="tjl-sub" x="125" y="336">:ro — weights in</text>
+    <rect class="tjl-box" x="20" y="296" width="160" height="56" rx="8"/>
+    <text class="tjl-title" x="100" y="318">/mnt/ai-data/models</text>
+    <text class="tjl-sub" x="100" y="336">:ro — weights in</text>
   </g>
-  <g class="tjl-stage tjl-s4">
-    <rect class="tjl-box" x="255" y="296" width="230" height="56" rx="8"/>
-    <text class="tjl-title" x="370" y="318">/mnt/ai-data/training</text>
-    <text class="tjl-sub" x="370" y="336">rw — checkpoints out</text>
+  <g class="tjl-stage tjl-s4 tjl-persist">
+    <rect class="tjl-halo" x="196" y="296" width="170" height="56" rx="8"/>
+    <rect class="tjl-box" x="196" y="296" width="170" height="56" rx="8"/>
+    <text class="tjl-title" x="281" y="318">/mnt/ai-data/training</text>
+    <text class="tjl-sub" x="281" y="336">rw — checkpoints out</text>
+  </g>
+  <g class="tjl-stage tjl-persist">
+    <rect class="tjl-halo" x="382" y="296" width="160" height="56" rx="8"/>
+    <rect class="tjl-box" x="382" y="296" width="160" height="56" rx="8"/>
+    <text class="tjl-title" x="462" y="318">models/trained</text>
+    <text class="tjl-sub" x="462" y="336">rw — exported GGUFs</text>
   </g>
   <g class="tjl-stage tjl-s2c">
-    <rect class="tjl-box" x="510" y="296" width="190" height="56" rx="8"/>
-    <text class="tjl-title" x="605" y="318">./scripts (recipes)</text>
-    <text class="tjl-sub" x="605" y="336">:ro — config in</text>
+    <rect class="tjl-box" x="558" y="296" width="142" height="56" rx="8"/>
+    <text class="tjl-title" x="629" y="318">repo sources</text>
+    <text class="tjl-sub" x="629" y="336">:ro — recipes, code in</text>
   </g>
 
-  <path class="tjl-mount" d="M 125 292 L 125 264"/>
-  <text class="tjl-mount-label" x="86" y="282">ro</text>
-  <path class="tjl-ckpt" d="M 300 260 L 340 292" marker-end="url(#tjl-arrow-ok)"/>
-  <text class="tjl-mount-label" x="332" y="278">rw</text>
-  <path class="tjl-mount" d="M 605 292 L 440 250"/>
-  <text class="tjl-mount-label" x="520" y="278">ro</text>
+  <path class="tjl-mount tjl-draw" pathLength="1" d="M 100 292 L 100 264"/>
+  <text class="tjl-mount-label" x="62" y="282">ro</text>
+  <path id="tjl-ckpt-route" class="tjl-ckpt tjl-draw" pathLength="1" style="--d: 0.15s" d="M 281 260 L 281 292" marker-end="url(#tjl-arrow-ok)"/>
+  <text class="tjl-mount-label" x="292" y="280">rw</text>
+  <path class="tjl-mount tjl-draw" pathLength="1" style="--d: 0.3s" d="M 420 260 L 456 292"/>
+  <text class="tjl-mount-label" x="448" y="278">rw</text>
+  <path class="tjl-mount tjl-draw" pathLength="1" style="--d: 0.45s" d="M 629 292 L 456 250"/>
+  <text class="tjl-mount-label" x="540" y="280">ro</text>
 
-  <text class="tjl-label" x="20" y="388">the container is disposable; only the training root persists</text>
+  <!-- step-4 comet: a checkpoint traveling the write path -->
+  <g class="tjl-comet">
+    <circle class="tjl-comet-head" r="5" fill="#34d399">
+      <animateMotion id="tjl-comet-run" dur="1.2s" begin="indefinite" repeatCount="2"><mpath href="#tjl-ckpt-route"/></animateMotion>
+    </circle>
+    <circle r="3.5" fill="#34d399" opacity="0.5">
+      <animateMotion dur="1.2s" begin="tjl-comet-run.begin+0.1s" repeatCount="2"><mpath href="#tjl-ckpt-route"/></animateMotion>
+    </circle>
+    <circle r="2.5" fill="#34d399" opacity="0.3">
+      <animateMotion dur="1.2s" begin="tjl-comet-run.begin+0.2s" repeatCount="2"><mpath href="#tjl-ckpt-route"/></animateMotion>
+    </circle>
+  </g>
+
+  <text class="tjl-label" x="20" y="388">the container is disposable; only the data mounts persist</text>
 </svg>
 
 <div class="fg-caption" data-fg="caption">Press play or step through one training job.</div>
@@ -247,10 +302,10 @@
   const CAPTIONS = [
     'Press play or step through one training job.',
     ['Invoke', 'docker compose run --rm training <command> — a fresh container per job, from a separate compose file that make up never touches. There is no daemon to keep patched and no port to expose.'],
-    ['Attach mounts', 'The hardened container comes up read-only and non-root, with cap_drop ALL. Models and recipes mount read-only; exactly one path — the training root — mounts read-write.'],
-    ['Run the job', 'The recipe trains against the reserved GPU. tmpfs /tmp with the exec flag carries the CUDA and Triton JIT caches that a read-only rootfs would block; 16GB shm feeds the dataloader workers.'],
-    ['Write checkpoints', 'Checkpoints, shards, and run outputs stream to /mnt/ai-data/training — the single writable surface. Nothing else the job touches can persist.'],
-    ['Remove', 'The job exits and --rm deletes the container. The checkpoints on the data root are the only trace the job ever ran. The next job starts from the same clean image.'],
+    ['Attach mounts', 'The hardened container comes up read-only and non-root, with cap_drop ALL. Models, recipes, and code mount read-only; the training data root mounts read-write, plus one narrow window — models/trained — where exported GGUFs land.'],
+    ['Run the job', 'The recipe trains against the reserved GPU — the sole consumer while it holds the card. tmpfs /tmp with the exec flag carries the CUDA and Triton JIT caches that a read-only rootfs would block; 16GB shm feeds the dataloader workers.'],
+    ['Write checkpoints', 'Checkpoints, shards, and run outputs stream to /mnt/ai-data/training, the writable data root. Nothing the job writes outside the data mounts can outlive it.'],
+    ['Remove', 'The job exits, --rm deletes the container, and the GPU is released. The artifacts on the data mounts — checkpoints on the training root, exported GGUFs under models/trained — are the only trace the job ever ran.'],
   ];
 
   // fg:begin timeline-core v1
@@ -296,6 +351,13 @@
     } else {
       caption.textContent = c;
       caption.classList.remove('is-active');
+    }
+  });
+
+  // step-triggered comet: kick only the head; trails chain via syncbase timing
+  root.addEventListener('fg:step', (e) => {
+    if (e.detail.step === 4 && !reduced) {
+      root.querySelectorAll('.tjl-comet-head animateMotion').forEach((m) => m.beginElement());
     }
   });
 
