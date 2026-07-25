@@ -84,4 +84,10 @@
   --fg-px-dusk-1: #2b1b3d;   /* dusk plum band (cool shadow) */
   --fg-px-dusk-2: #7c3a58;   /* dusk dusty-rose band */
   --fg-px-dusk-3: #e8a87c;   /* dusk peach horizon (warm highlight) */
+  --fg-px-violet-1: #3c2a6e; /* violet shadow (cool) */
+  --fg-px-violet-2: #a78bfa; /* violet mid (= --fg-violet) */
+  --fg-px-violet-3: #ddd6fe; /* violet highlight */
+  --fg-px-hot-1: #7f1d1d;    /* ember shadow (toward maroon) */
+  --fg-px-hot-2: #f87171;    /* ember mid (= --fg-hot) */
+  --fg-px-hot-3: #fdba74;    /* ember highlight (toward orange) */
 }

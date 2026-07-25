@@ -53,15 +53,34 @@ const outPath = path.join(F.DIAGRAMS_DIR, slug, name + '.html');
 if (fs.existsSync(outPath)) fail('already exists: ' + F.relPath(outPath));
 
 const panel = 'panel-base';
-let out = fs.readFileSync(tplPath, 'utf8')
-  .replaceAll('{{NAME}}', name)
-  .replaceAll('{{TITLE}}', title)
-  .replaceAll('{{ABBR}}', abbr)
-  .replaceAll('{{PALETTE}}', PALETTE_BLOCK[paletteArg])
-  .replaceAll('{{PANEL}}', panel);
+function instantiate(p) {
+  return fs.readFileSync(p, 'utf8')
+    .replaceAll('{{NAME}}', name)
+    .replaceAll('{{TITLE}}', title)
+    .replaceAll('{{ABBR}}', abbr)
+    .replaceAll('{{SLUG}}', slug)
+    .replaceAll('{{PALETTE}}', PALETTE_BLOCK[paletteArg])
+    .replaceAll('{{PANEL}}', panel);
+}
 
-fs.mkdirSync(path.dirname(outPath), { recursive: true });
-fs.writeFileSync(outPath, out);
+if (kind === 'hero') {
+  // Heroes are generated, never hand-edited: scaffold the generator +
+  // per-hero template pair under tools/heroes/, then run the generator
+  // to produce the diagram file (see tools/heroes/README.md).
+  const heroesDir = path.join(F.REPO_ROOT, 'tools', 'heroes');
+  const heroTplPath = path.join(heroesDir, abbr + '-template.html');
+  const genPath = path.join(heroesDir, name + '.py');
+  for (const p of [heroTplPath, genPath]) {
+    if (fs.existsSync(p)) fail('already exists: ' + F.relPath(p));
+  }
+  fs.writeFileSync(heroTplPath, instantiate(tplPath));
+  fs.writeFileSync(genPath, instantiate(path.join(F.REPO_ROOT, 'templates', 'hero.py')));
+  execFileSync('python3', [genPath], { cwd: F.REPO_ROOT, stdio: 'inherit' });
+  console.log('[OK] created ' + F.relPath(genPath) + ' and ' + F.relPath(heroTplPath));
+} else {
+  fs.mkdirSync(path.dirname(outPath), { recursive: true });
+  fs.writeFileSync(outPath, instantiate(tplPath));
+}
 
 // expand managed blocks in the new file
 execFileSync(process.execPath, [path.join(__dirname, 'build.js'), '--file', F.relPath(outPath)], {
@@ -82,5 +101,10 @@ fs.writeFileSync(F.MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n');
 
 console.log('[OK] created ' + F.relPath(outPath));
 console.log('[OK] manifest entry appended (fill in the description)');
-console.log('Next: author the SVG and step CSS, then run:');
+if (kind === 'hero') {
+  console.log('Next: author the scene in the generator + choreography in the');
+  console.log('template, re-run the generator (or `npm run heroes`), then:');
+} else {
+  console.log('Next: author the SVG and step CSS, then run:');
+}
 console.log('  node scripts/build.js --check && node scripts/validate.js');

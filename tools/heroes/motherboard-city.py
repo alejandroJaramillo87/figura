@@ -3,55 +3,7 @@
 canvas. Aerial pixel city at dusk — CPU heatsink downtown, RAM tower
 blocks, VRM industrial district, trace-road streets. Power-on lights the
 roads then each district; ambient headlights on the foreground avenue."""
-import os
-HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, '..', '..', 'diagrams', 'linux-ai-setup')
-C = 8
-COL = {
-    'B': 'var(--bg)', 'P': 'var(--panel)', 'H': 'var(--panel-hover)',
-    'M': 'var(--muted)', 'T': 'var(--text)',
-    'V': 'var(--violet-dim)', 'v': 'var(--violet)', 'D': 'var(--accent-dim)',
-    'E': 'var(--ok-dim)', 'w': 'var(--warn-dim)', 'R': 'var(--hot)',
-    'L': 'var(--line)',
-    'o': 'var(--px-outline)',
-    '1': 'var(--px-steel-1)', '2': 'var(--px-steel-2)',
-    '3': 'var(--px-steel-3)', '4': 'var(--px-steel-4)',
-    'a': 'var(--px-amber-1)', 'b': 'var(--px-amber-2)', 'c': 'var(--px-amber-3)',
-    'g': 'var(--px-green-1)', 'G': 'var(--px-green-2)', 'e': 'var(--px-green-3)',
-    's': 'var(--px-sky-1)', 'S': 'var(--px-sky-2)', 'k': 'var(--px-sky-3)',
-    'p': 'var(--px-dusk-1)', 'r': 'var(--px-dusk-2)', 'h': 'var(--px-dusk-3)',
-}
-
-def rects(ox, oy, rows, indent='    '):
-    out = []
-    for ry, row in enumerate(rows):
-        x = 0
-        while x < len(row):
-            ch = row[x]
-            if ch == '.':
-                x += 1; continue
-            x2 = x
-            while x2 + 1 < len(row) and row[x2 + 1] == ch:
-                x2 += 1
-            out.append(f'{indent}<rect x="{(ox+x)*C}" y="{(oy+ry)*C}" '
-                       f'width="{(x2-x+1)*C}" height="{C}" fill="{COL[ch]}"/>')
-            x = x2 + 1
-    return '\n'.join(out)
-
-def rect(cx, cy, cw, ch_, color, cls='', style='', indent='    '):
-    a = f' class="{cls}"' if cls else ''
-    s = f' style="{style}"' if style else ''
-    return (f'{indent}<rect{a}{s} x="{cx*C}" y="{cy*C}" width="{cw*C}" '
-            f'height="{ch_*C}" fill="{COL[color]}"/>')
-
-def dither_row(y, ch, phase=0):
-    """2-cell checker blocks across the full width (chunky band edge)."""
-    out = []
-    x = phase * 2
-    while x < 150:
-        out.append(rect(x, y, 2, 1, ch))
-        x += 4
-    return '\n'.join(out)
+from herolib import dither_row, emit, rect, rects
 
 S = []
 
@@ -313,8 +265,4 @@ for j in range(8):                            # car B: westbound, lower lane
     S.append(rect(140 - j * 18, 53, 2, 1, 'R', cls=f'mbc-cp{(j + 4) % 8}'))
 S.append('  </g>')
 
-sprites = '\n'.join(S)
-tpl = open(os.path.join(HERE, 'mbc-template.html')).read()
-open(os.path.join(OUT, 'motherboard-city.html'), 'w').write(
-    tpl.replace('@SPRITES@', sprites))
-print(f'rects: {sprites.count("<rect")}')
+emit('mbc-template.html', 'linux-ai-setup/motherboard-city.html', '\n'.join(S))
