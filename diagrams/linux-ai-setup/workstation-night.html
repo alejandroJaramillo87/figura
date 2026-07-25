@@ -8,7 +8,7 @@
 </head>
 <body>
 <h1>Workstation at night — hero</h1>
-<p>Pixel-art night scene: a dark room where the monitor is the only light source — it boots through POST, a logo, and a desktop, and its glow spills onto the wall, desk, and floor in the color of each boot phase, while rain falls past a city skyline outside the window.</p>
+<p>Pixel-art night scene: a dark room where the monitor is the only light source — it boots through POST, a logo, and a desktop, and its glow spills onto the wall, desk, and floor in the color of each boot phase, while rain falls past a city skyline under a banded dusk sky outside the window.</p>
 
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-workstation-night">
@@ -127,14 +127,14 @@
   animation: fg-wsn-sc-post 7s steps(1, jump-end) both;
 }
 .fg-workstation-night.is-live .wsn-post-row {
-  animation: fg-wsn-on 0.1s steps(1, jump-end)
+  animation: fg-wsn-on 0.1s steps(1, jump-start)
     calc(2.5s + var(--i) * 0.3s) both;
 }
 .fg-workstation-night.is-live .wsn-scene-logo {
   animation: fg-wsn-sc-logo 7s steps(1, jump-end) both;
 }
 .fg-workstation-night.is-live .wsn-boot-dot {
-  animation: fg-wsn-on 0.1s steps(1, jump-end)
+  animation: fg-wsn-on 0.1s steps(1, jump-start)
     calc(4.7s + var(--i) * 0.15s) both;
 }
 .fg-workstation-night.is-live .wsn-scene-desktop {
@@ -168,7 +168,11 @@
 
 @keyframes fg-wsn-pop { from { opacity: 0; transform: translateY(16px); }
                         to   { opacity: 1; transform: none; } }
-@keyframes fg-wsn-on { to { opacity: 1; } }
+/* one-shot reveals use steps(1, jump-start) — the jump fires at the start
+   of the active interval, with the delay supplying the off period. A
+   jump-end at exactly 100% can be missed to float error in the clamped
+   end time, leaving the element stuck at its pre-jump value. */
+@keyframes fg-wsn-on { 0% { opacity: 0; } 100% { opacity: 1; } }
 @keyframes fg-wsn-led-on   { 0%, 25% { opacity: 0; } 26%, 100% { opacity: 1; } }
 /* screen flipbook: off -> flash T (31%) -> flash sky (32%) -> post -> logo -> desktop */
 @keyframes fg-wsn-sc-off     { 0%, 30% { opacity: 1; } 31%, 100% { opacity: 0; } }
@@ -239,7 +243,7 @@
 </style>
 
 <svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Pixel-art animated hero: a dark room at night — rain falls past a window with a moon and a distant city skyline while a PC tower and monitor sit on a desk. The machine wakes: its LED lights, the fan spins up, and the monitor boots through a flash, green startup text, an amber boot logo, then a desktop — the screen's glow spilling onto the wall, desk, and floor in the color of each boot phase, settling on a violet desktop glow with a blinking cursor.">
+     aria-label="Pixel-art animated hero: a dark room at night — rain falls past a window with a moon, a dusk sky banding from plum to peach, and a distant city skyline while a PC tower and monitor sit on a desk. The machine wakes: its LED lights, the fan spins up, and the monitor boots through a flash, green startup text, an amber boot logo, then a desktop — the screen's glow spilling onto the wall, desk, and floor in the color of each boot phase, settling on a violet desktop glow with a blinking cursor.">
   <g class="wsn-pop" style="--i: 0">
     <rect x="0" y="448" width="1200" height="8" fill="var(--px-steel-1)"/>
     <rect x="0" y="456" width="1200" height="40" fill="var(--px-outline)"/>
@@ -247,6 +251,26 @@
     <rect x="80" y="224" width="288" height="8" fill="var(--px-steel-1)"/>
     <rect x="80" y="48" width="8" height="176" fill="var(--px-steel-1)"/>
     <rect x="360" y="48" width="8" height="176" fill="var(--px-steel-1)"/>
+    <rect x="88" y="48" width="272" height="80" fill="var(--px-dusk-1)"/>
+    <rect x="88" y="120" width="16" height="8" fill="var(--px-dusk-2)"/>
+    <rect x="120" y="120" width="16" height="8" fill="var(--px-dusk-2)"/>
+    <rect x="152" y="120" width="16" height="8" fill="var(--px-dusk-2)"/>
+    <rect x="184" y="120" width="16" height="8" fill="var(--px-dusk-2)"/>
+    <rect x="216" y="120" width="16" height="8" fill="var(--px-dusk-2)"/>
+    <rect x="248" y="120" width="16" height="8" fill="var(--px-dusk-2)"/>
+    <rect x="280" y="120" width="16" height="8" fill="var(--px-dusk-2)"/>
+    <rect x="312" y="120" width="16" height="8" fill="var(--px-dusk-2)"/>
+    <rect x="344" y="120" width="16" height="8" fill="var(--px-dusk-2)"/>
+    <rect x="88" y="128" width="272" height="40" fill="var(--px-dusk-2)"/>
+    <rect x="104" y="160" width="16" height="8" fill="var(--px-dusk-3)"/>
+    <rect x="136" y="160" width="16" height="8" fill="var(--px-dusk-3)"/>
+    <rect x="168" y="160" width="16" height="8" fill="var(--px-dusk-3)"/>
+    <rect x="200" y="160" width="16" height="8" fill="var(--px-dusk-3)"/>
+    <rect x="232" y="160" width="16" height="8" fill="var(--px-dusk-3)"/>
+    <rect x="264" y="160" width="16" height="8" fill="var(--px-dusk-3)"/>
+    <rect x="296" y="160" width="16" height="8" fill="var(--px-dusk-3)"/>
+    <rect x="328" y="160" width="16" height="8" fill="var(--px-dusk-3)"/>
+    <rect x="88" y="168" width="272" height="16" fill="var(--px-dusk-3)"/>
     <rect x="216" y="48" width="8" height="176" fill="var(--px-steel-1)"/>
     <rect x="88" y="128" width="272" height="8" fill="var(--px-steel-1)"/>
     <rect x="72" y="232" width="304" height="8" fill="var(--px-steel-2)"/>
