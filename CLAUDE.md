@@ -193,6 +193,7 @@ Dark slate panel on the blog's light page (matches its mermaid diagrams):
 | `--violet` | `#a78bfa` | secondary series |
 | `--accent-dim` / `--ok-dim` / `--warn-dim` / `--hot-dim` / `--violet-dim` | `#0c3550` / `#0e4429` / `#4a3608` / `#4a1d1d` / `#2a2350` | `is-step-N` active box fills (accent hue ~15% over panel) — never hand-mix these |
 | `--line` | `#64748b` | connectors, arrowheads |
+| `--px-outline`, `--px-steel-1..4`, `--px-amber-1..3`, `--px-green-1..3`, `--px-sky-1..3` | see `shared/tokens.css` | hero pixel-art sprite ramps — hue-shifted shading (shadows cool, highlights warm) plus a blue-violet selective-outline color; sprites only, never diagram anatomy |
 
 Easing and step transitions always come from the palette block: `var(--ease)`
 and `var(--dur-fast)` (0.45s state transitions) / `var(--dur-step)` (700ms

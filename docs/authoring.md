@@ -69,6 +69,33 @@ the sampler's bottom row):
   path — full-panel dither is cheaper as a CSS
   `repeating-conic-gradient` background on the container.
 
+### Clean pixel-art sprites (the alternative hero style)
+
+Figurative heroes can skip the raster kit entirely and be drawn as
+hand-placed pixel sprites — plain `<rect>`s on a coarse cell grid
+(8 viewBox units per cell reads well at column width), animated only
+with `steps()` flipbook keyframes. The craft rules that make sprites
+read as art rather than programmer boxes:
+
+- **Sprite ramps, not flat fills** — every material gets 3–4 shades
+  from the `--px-*` ramp tokens in `shared/tokens.css`, hue-shifted:
+  shadows lean cool (blue-violet), highlights lean warm. One
+  consistent light source (top-left) across the whole scene.
+- **Selective outlines** — silhouettes carry a `--px-outline`
+  (dark blue-violet, not black) edge; interior detail uses the
+  ramp's shadow shade instead.
+- **Grounding** — contact shadows under everything that touches the
+  floor, and set dressing (shelf, poster, floor dither) so the scene
+  reads as a place, not sprites on a void.
+- **Animation principles at low frame counts** — anticipation before
+  an action, a frame of overshoot after it, 2–4-frame sprite-swap
+  flipbooks (discrete opacity groups on one `steps(1, jump-end)`
+  master timeline) instead of tweens.
+
+Reference implementation: `diagrams/linux-ai-setup/robot-boot-hero.html`
+(generated from ASCII pixel maps; horizontal same-color runs merged
+into single rects).
+
 Watchlist (documented, deliberately not kit yet): scroll-driven
 `animation-timeline` + steps() flipbooks (Firefox stable still
 flagged), feImage/feDisplacementMap CRT warp (Safari feImage

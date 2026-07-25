@@ -64,4 +64,23 @@
   --fg-dur-tick: 100ms; /* one "GIF frame"; loops: calc(var(--dur-tick) * N) + steps(N) */
   --fg-ease-frames-fine: steps(24, jump-none); /* comet-grade sweeps */
   --fg-dur-flicker: 800ms; /* interlace flicker floor — never cycle faster (WCAG 2.3.1) */
+
+  /* Sprite ramps (hero pixel-art only) — hue-shifted shading ramps per
+     pixel-art practice: shadows lean cool (blue-violet), highlights lean
+     warm. Anchored to the semantic hues above so sprites stay on-brand.
+     Use for hand-drawn pixel sprites, never for diagram anatomy. */
+  --fg-px-outline: #0b1020;  /* selective outline — dark blue-violet, not black */
+  --fg-px-steel-1: #232c44;  /* body shadow (cool) */
+  --fg-px-steel-2: #3b4a5e;  /* body mid */
+  --fg-px-steel-3: #64748b;  /* body lit */
+  --fg-px-steel-4: #a7b0b8;  /* body highlight (warm-gray) */
+  --fg-px-amber-1: #92400e;  /* amber shadow (toward orange) */
+  --fg-px-amber-2: #f59e0b;  /* amber mid */
+  --fg-px-amber-3: #fcd34d;  /* amber highlight (toward yellow) */
+  --fg-px-green-1: #166534;  /* green shadow */
+  --fg-px-green-2: #34d399;  /* green mid (= --fg-ok) */
+  --fg-px-green-3: #a7f3d0;  /* green highlight */
+  --fg-px-sky-1: #0369a1;    /* sky shadow */
+  --fg-px-sky-2: #38bdf8;    /* sky mid (= --fg-accent) */
+  --fg-px-sky-3: #bae6fd;    /* sky highlight */
 }
