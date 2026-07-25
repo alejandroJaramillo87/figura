@@ -58,9 +58,9 @@
   {
     "id": "comparison-grid",
     "path": "diagrams/sandboxing/comparison-grid.html",
-    "title": "Three sandboxes, two questions",
+    "title": "Four sandboxes, two questions",
     "post": "sandboxing-overview",
-    "description": "Comparison grid of the inference, training, and agent sandboxes: what each workload must write, where it must talk, GPU access, and lifecycle — over a shared hardening floor. Hover-to-inspect with column glow highlights and an ambient sheen on the shared floor."
+    "description": "Comparison grid of the inference, training, workbench, and agent sandboxes: what each workload must write, where it must talk, GPU access, and lifecycle — over a shared hardening floor. Hover-to-inspect with column glow highlights and an ambient sheen on the shared floor."
   },
   {
     "id": "inference-topology",

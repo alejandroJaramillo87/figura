@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Three sandboxes, two questions</title>
+<title>Four sandboxes, two questions</title>
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Three sandboxes, two questions</h1>
+<h1>Four sandboxes, two questions</h1>
 <p>Hover any cell to inspect how each workload answers "what must it write?" and "where must it talk?" — and what that answer forces the sandbox to look like.</p>
 
 <!-- fg:embed-start -->
@@ -94,6 +94,7 @@
 .fg-comparison-grid .scg-group:hover .scg-cell { fill: var(--panel-hover); }
 .fg-comparison-grid .scg-group.scg-inf:hover .scg-cell { stroke: var(--accent); }
 .fg-comparison-grid .scg-group.scg-trn:hover .scg-cell { stroke: var(--warn); }
+.fg-comparison-grid .scg-group.scg-wbn:hover .scg-cell { stroke: var(--ok); }
 .fg-comparison-grid .scg-group.scg-agt:hover .scg-cell { stroke: var(--violet); }
 
 .fg-comparison-grid .scg-head {
@@ -108,12 +109,14 @@
 .fg-comparison-grid .scg-group:hover .scg-halo { opacity: 0.45; }
 .fg-comparison-grid .scg-halo-inf { fill: var(--accent); }
 .fg-comparison-grid .scg-halo-trn { fill: var(--warn); }
+.fg-comparison-grid .scg-halo-wbn { fill: var(--ok); }
 .fg-comparison-grid .scg-halo-agt { fill: var(--violet); }
 .fg-comparison-grid .scg-halo-ok  { fill: var(--ok); }
 
 /* per-column hover: cell lifts to the column's dim fill, value text brightens */
 .fg-comparison-grid .scg-group.scg-inf:hover .scg-cell { fill: var(--accent-dim); }
 .fg-comparison-grid .scg-group.scg-trn:hover .scg-cell { fill: var(--warn-dim); }
+.fg-comparison-grid .scg-group.scg-wbn:hover .scg-cell { fill: var(--ok-dim); }
 .fg-comparison-grid .scg-group.scg-agt:hover .scg-cell { fill: var(--violet-dim); }
 .fg-comparison-grid .scg-group:hover .scg-vsub { fill: var(--text); }
 .fg-comparison-grid .scg-vsub { transition: fill 0.3s; }
@@ -127,11 +130,12 @@
 @keyframes fg-scg-sweep {
   0%        { transform: translateX(-60px); opacity: 0; }
   6%        { opacity: 0.5; }
-  30%       { transform: translateX(588px); opacity: 0.5; }
-  36%, 100% { transform: translateX(588px); opacity: 0; }
+  30%       { transform: translateX(768px); opacity: 0.5; }
+  36%, 100% { transform: translateX(768px); opacity: 0; }
 }
 .fg-comparison-grid .scg-head-inf { stroke: var(--accent); }
 .fg-comparison-grid .scg-head-trn { stroke: var(--warn); }
+.fg-comparison-grid .scg-head-wbn { stroke: var(--ok); }
 .fg-comparison-grid .scg-head-agt { stroke: var(--violet); }
 
 .fg-comparison-grid .scg-htitle { fill: var(--text); font-size: 15px; font-weight: 600; text-anchor: middle; pointer-events: none; }
@@ -167,15 +171,15 @@
 }
 </style>
 
-<svg viewBox="0 0 720 460" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Comparison grid of three sandboxes. Inference writes only logs, binds inbound to localhost with open outbound, uses the GPU, and runs as a long-lived service. Training writes checkpoints, needs no network at run time, uses the GPU, and runs per job. Agents write a git worktree, get outbound access only through an egress allowlist, use no GPU, and run per session with one scoped secret.">
+<svg viewBox="0 0 900 460" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Comparison grid of four sandboxes. Inference writes only logs, binds inbound to localhost with open outbound, uses the GPU, and runs as a long-lived service. Training writes checkpoints, needs no network at run time, uses the GPU, and runs per job. The workbench writes the repo and the interp tree, binds JupyterLab to localhost with a per-launch token, uses the GPU behind a preflight check, and runs as a long-running session. Agents write a git worktree, get outbound access only through an egress allowlist, use no GPU, and run per session with one scoped secret.">
   <defs>
     <linearGradient id="scg-sweep-grad" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0"   style="stop-color: var(--ok)" stop-opacity="0"/>
       <stop offset="0.5" style="stop-color: var(--ok)" stop-opacity="0.35"/>
       <stop offset="1"   style="stop-color: var(--ok)" stop-opacity="0"/>
     </linearGradient>
-    <clipPath id="scg-sweep-clip"><rect x="180" y="380" width="528" height="48" rx="6"/></clipPath>
+    <clipPath id="scg-sweep-clip"><rect x="180" y="380" width="708" height="48" rx="6"/></clipPath>
   </defs>
 
   <!-- column headers -->
@@ -185,17 +189,23 @@
     <text class="scg-htitle" x="264" y="40">Inference</text>
     <text class="scg-hsub" x="264" y="58">llama.cpp · vLLM servers</text>
   </g>
-  <g class="scg-group scg-trn" data-fg="head" data-title="Training" data-info="The fine-tuning and pretraining container — interp recipes ride the same image. A batch job runner, not a server: it exists to transform data into checkpoints and exit.">
+  <g class="scg-group scg-trn" data-fg="head" data-title="Training" data-info="The fine-tuning and pretraining container. A batch job runner, not a server: it exists to transform data into checkpoints and exit.">
     <rect class="scg-halo scg-halo-trn" x="360" y="16" width="168" height="56" rx="8"/>
     <rect class="scg-head scg-head-trn" x="360" y="16" width="168" height="56" rx="8"/>
     <text class="scg-htitle" x="444" y="40">Training</text>
-    <text class="scg-hsub" x="444" y="58">fine-tuning · interp jobs</text>
+    <text class="scg-hsub" x="444" y="58">fine-tuning · pretraining</text>
+  </g>
+  <g class="scg-group scg-wbn" data-fg="head" data-title="Workbench" data-info="The interpretability workbench: a JupyterLab session for probing models cell by cell. The hybrid shape — a long-running service like inference, mounted into the data trees like training, with a human driving every cell.">
+    <rect class="scg-halo scg-halo-wbn" x="540" y="16" width="168" height="56" rx="8"/>
+    <rect class="scg-head scg-head-wbn" x="540" y="16" width="168" height="56" rx="8"/>
+    <text class="scg-htitle" x="624" y="40">Workbench</text>
+    <text class="scg-hsub" x="624" y="58">JupyterLab · interp</text>
   </g>
   <g class="scg-group scg-agt" data-fg="head" data-title="Agents" data-info="Coding agents (Claude Code, OpenCode) running autonomously. The hardest case: the workload is a general-purpose mutator that must edit code and talk to APIs — so the sandbox constrains where, not whether.">
-    <rect class="scg-halo scg-halo-agt" x="540" y="16" width="168" height="56" rx="8"/>
-    <rect class="scg-head scg-head-agt" x="540" y="16" width="168" height="56" rx="8"/>
-    <text class="scg-htitle" x="624" y="40">Agents</text>
-    <text class="scg-hsub" x="624" y="58">Claude Code · OpenCode</text>
+    <rect class="scg-halo scg-halo-agt" x="720" y="16" width="168" height="56" rx="8"/>
+    <rect class="scg-head scg-head-agt" x="720" y="16" width="168" height="56" rx="8"/>
+    <text class="scg-htitle" x="804" y="40">Agents</text>
+    <text class="scg-hsub" x="804" y="58">Claude Code · OpenCode</text>
   </g>
 
   <!-- row: writes -->
@@ -211,10 +221,15 @@
     <text class="scg-val" x="444" y="110">checkpoints</text>
     <text class="scg-vsub" x="444" y="128">one writable data root</text>
   </g>
-  <g class="scg-group scg-agt" data-title="Agents: writes" data-info="A git worktree, mounted read-write — never the real repo root, never $HOME. The agent's whole purpose is to edit code, so damage is confined to something git can diff and discard.">
+  <g class="scg-group scg-wbn" data-title="Workbench: writes" data-info="The repository itself, mounted read-write at /workspace — the biggest loosening in the series, recoverable via git. Heavy artifacts (activations, SAEs, HF cache) land on /mnt/ai-data/interp; models stay :ro; a harvest seam writes into the training tree under the shared run lock.">
     <rect class="scg-cell" x="540" y="84" width="168" height="60" rx="6"/>
-    <text class="scg-val" x="624" y="110">git worktree</text>
-    <text class="scg-vsub" x="624" y="128">recoverable via git</text>
+    <text class="scg-val" x="624" y="110">repo + interp tree</text>
+    <text class="scg-vsub" x="624" y="128">rw workspace mount</text>
+  </g>
+  <g class="scg-group scg-agt" data-title="Agents: writes" data-info="A git worktree, mounted read-write — never the real repo root, never $HOME. The agent's whole purpose is to edit code, so damage is confined to something git can diff and discard.">
+    <rect class="scg-cell" x="720" y="84" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="804" y="110">git worktree</text>
+    <text class="scg-vsub" x="804" y="128">recoverable via git</text>
   </g>
 
   <!-- row: network -->
@@ -230,10 +245,15 @@
     <text class="scg-val" x="444" y="182">none needed</text>
     <text class="scg-vsub" x="444" y="200">data already local</text>
   </g>
-  <g class="scg-group scg-agt" data-title="Agents: network" data-info="Outbound is the risk: exfiltration. The agent's network is internal: true — no route to the internet except through a Squid proxy whose allowlist is a handful of domains (Anthropic, GitHub, npm, PyPI) and whose last rule is deny all.">
+  <g class="scg-group scg-wbn" data-title="Workbench: network" data-info="A notebook kernel is arbitrary code execution by design, so the Jupyter port (8888) binds to 127.0.0.1 only, with a fresh JUPYTER_TOKEN per launch. Remote access is an SSH tunnel, never a wider bind. The container rides its own interp-network bridge.">
     <rect class="scg-cell" x="540" y="156" width="168" height="60" rx="6"/>
-    <text class="scg-val" x="624" y="182">egress allowlist</text>
-    <text class="scg-vsub" x="624" y="200">deny-by-default proxy</text>
+    <text class="scg-val" x="624" y="182">inbound: localhost</text>
+    <text class="scg-vsub" x="624" y="200">127.0.0.1 + token</text>
+  </g>
+  <g class="scg-group scg-agt" data-title="Agents: network" data-info="Outbound is the risk: exfiltration. The agent's network is internal: true — no route to the internet except through a Squid proxy whose allowlist is a handful of domains (Anthropic, GitHub, npm, PyPI) and whose last rule is deny all.">
+    <rect class="scg-cell" x="720" y="156" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="804" y="182">egress allowlist</text>
+    <text class="scg-vsub" x="804" y="200">deny-by-default proxy</text>
   </g>
 
   <!-- row: GPU -->
@@ -248,10 +268,15 @@
     <text class="scg-val" x="444" y="254">yes</text>
     <text class="scg-vsub" x="444" y="272">one consumer at a time</text>
   </g>
-  <g class="scg-group scg-agt" data-title="Agents: GPU" data-info="No. The NVIDIA container runtime widens the escape surface, and an agent does not need silicon — a benchmark task drives the existing GPU services over the network instead.">
+  <g class="scg-group scg-wbn" data-title="Workbench: GPU" data-info="Yes — one GPU reservation, but exclusivity is procedural: a host-side preflight refuses to start the workbench while any GPU service is running (llama-cpu, on its dedicated cores, is permitted).">
     <rect class="scg-cell" x="540" y="228" width="168" height="60" rx="6"/>
-    <text class="scg-val" x="624" y="254">no</text>
-    <text class="scg-vsub" x="624" y="272">smaller escape surface</text>
+    <text class="scg-val" x="624" y="254">yes</text>
+    <text class="scg-vsub" x="624" y="272">preflight: sole consumer</text>
+  </g>
+  <g class="scg-group scg-agt" data-title="Agents: GPU" data-info="No. The NVIDIA container runtime widens the escape surface, and an agent does not need silicon — a benchmark task drives the existing GPU services over the network instead.">
+    <rect class="scg-cell" x="720" y="228" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="804" y="254">no</text>
+    <text class="scg-vsub" x="804" y="272">smaller escape surface</text>
   </g>
 
   <!-- row: lifecycle -->
@@ -266,21 +291,26 @@
     <text class="scg-val" x="444" y="326">per job</text>
     <text class="scg-vsub" x="444" y="344">compose run --rm</text>
   </g>
-  <g class="scg-group scg-agt" data-title="Agents: lifecycle" data-info="Per session: one-shot run --rm with a tmpfs home that forgets everything at exit. Exactly one scoped secret is injected per tool — and each tool's secret is never visible to the other.">
+  <g class="scg-group scg-wbn" data-title="Workbench: lifecycle" data-info="A long-running session, started explicitly by make interp-up and never resurrected on boot (restart: no). It stays up as long as the human is working — the conversation with the model cannot be a batch job.">
     <rect class="scg-cell" x="540" y="300" width="168" height="60" rx="6"/>
-    <text class="scg-val" x="624" y="326">per session</text>
-    <text class="scg-vsub" x="624" y="344">one scoped secret</text>
+    <text class="scg-val" x="624" y="326">long-running session</text>
+    <text class="scg-vsub" x="624" y="344">restart: no</text>
+  </g>
+  <g class="scg-group scg-agt" data-title="Agents: lifecycle" data-info="Per session: one-shot run --rm with a tmpfs home that forgets everything at exit. Exactly one scoped secret is injected per tool — and each tool's secret is never visible to the other.">
+    <rect class="scg-cell" x="720" y="300" width="168" height="60" rx="6"/>
+    <text class="scg-val" x="804" y="326">per session</text>
+    <text class="scg-vsub" x="804" y="344">one scoped secret</text>
   </g>
 
   <!-- shared baseline -->
   <g class="scg-group scg-flr" data-title="Shared baseline" data-info="Every sandbox starts from the same four lines before it diverges: cap_drop: ALL, no-new-privileges, read_only rootfs, and a non-root user. None of them cost measurable performance, so they are unconditional — the differences above are deltas on this common floor.">
-    <rect class="scg-halo scg-halo-ok" x="180" y="380" width="528" height="48" rx="6"/>
-    <rect class="scg-cell" x="180" y="380" width="528" height="48" rx="6"/>
+    <rect class="scg-halo scg-halo-ok" x="180" y="380" width="708" height="48" rx="6"/>
+    <rect class="scg-cell" x="180" y="380" width="708" height="48" rx="6"/>
     <g clip-path="url(#scg-sweep-clip)">
       <rect class="scg-sweep" x="180" y="380" width="40" height="48" fill="url(#scg-sweep-grad)"/>
     </g>
-    <text class="scg-val" x="444" y="400">shared floor: cap_drop ALL · no-new-privileges · read-only rootfs · non-root user</text>
-    <text class="scg-vsub" x="444" y="418">every container, all three shapes</text>
+    <text class="scg-val" x="534" y="400">shared floor: cap_drop ALL · no-new-privileges · read-only rootfs · non-root user</text>
+    <text class="scg-vsub" x="534" y="418">every container, all four shapes</text>
   </g>
   <text class="scg-q" x="16" y="404">common to all</text>
 </svg>
