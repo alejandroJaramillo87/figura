@@ -62,8 +62,6 @@
   --fg-ease-frames: steps(10);                 /* ~11 fps feel on a 900ms entrance */
   --fg-ease-frames-coarse: steps(4, jump-none); /* chunky pops, blinks */
   --fg-dur-tick: 100ms; /* one "GIF frame"; loops: calc(var(--dur-tick) * N) + steps(N) */
-  --fg-ease-frames-fine: steps(24, jump-none); /* comet-grade sweeps */
-  --fg-dur-flicker: 800ms; /* interlace flicker floor — never cycle faster (WCAG 2.3.1) */
 
   /* Sprite ramps (hero pixel-art only) — hue-shifted shading ramps per
      pixel-art practice: shadows lean cool (blue-violet), highlights lean

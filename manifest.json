@@ -476,30 +476,6 @@
     "description": "Four named head tendencies (induction the only found circuit) beside a dashed majority of unnamed heads."
   },
   {
-    "id": "attention-hero",
-    "path": "diagrams/prefill-vs-decode/attention-hero.html",
-    "title": "Attention & KV cache \u2014 hero",
-    "post": "prefill-vs-decode",
-    "kind": "hero",
-    "description": "Cinematic post hero: prompt tokens cascade in with overshoot pops, causal attention arcs draw between them, and a comet sweeps the KV cache row as entries fill, settling into a calm ambient loop."
-  },
-  {
-    "id": "boot-strata-hero",
-    "path": "diagrams/linux-ai-setup/boot-strata-hero.html",
-    "title": "Boot-up strata \u2014 hero",
-    "post": "linux-ai-setup",
-    "kind": "hero",
-    "description": "Abstract raster hero for the Ubuntu setup post: dithered strata assemble bottom-up like a machine booting \u2014 seam lines, reboot flashes, RGB-split boot jitter, and a posterized glow cap settling into a quiet hum."
-  },
-  {
-    "id": "robot-boot-hero",
-    "path": "diagrams/linux-ai-setup/robot-boot-hero.html",
-    "title": "Robot boots Ubuntu \u2014 hero",
-    "post": "linux-ai-setup",
-    "kind": "hero",
-    "description": "Pure pixel-art hero (no raster effects): a robot at a desk presses the tower's power button and the monitor boots \u2014 POST rows, a boot logo with loading dots, then a desktop with a blinking cursor."
-  },
-  {
     "id": "workstation-night",
     "path": "diagrams/linux-ai-setup/workstation-night.html",
     "title": "Workstation at night",

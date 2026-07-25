@@ -201,12 +201,10 @@ timeline cadence). Hero choreography additionally gets
 `var(--ease-overshoot)` (back-out entrance bounce), `var(--ease-out)`
 (long decelerating settle), `var(--dur-hero-in)` (900ms entrances) and
 `var(--stagger)` (80ms stagger unit, `calc(var(--i) * var(--stagger))`
-with `style="--i: N"` per element), plus the raster frame-tick set:
+with `style="--i: N"` per element), plus the frame-tick set:
 `var(--ease-frames)` (steps(10)), `var(--ease-frames-coarse)`
-(steps(4, jump-none)), `var(--ease-frames-fine)` (steps(24, jump-none) —
-comet-grade sweeps), `var(--dur-tick)` (100ms — one "GIF frame";
-loops as `calc(var(--dur-tick) * N)` with `steps(N)`) and
-`var(--dur-flicker)` (800ms — the interlace-flicker floor). The validator
+(steps(4, jump-none)) and `var(--dur-tick)` (100ms — one "GIF frame";
+loops as `calc(var(--dur-tick) * N)` with `steps(N)`). The validator
 rejects literal `cubic-bezier()` or hand-mixed dim hexes outside
 managed blocks.
 
@@ -233,29 +231,23 @@ Interaction patterns to reuse (see `shared/snippets.js`):
   Heroes are **abstract art**, not diagrams: inspired by the post's
   material but evocative rather than explanatory — no labels, no
   literal diagram anatomy; the "effects must explain" rule applies to
-  diagrams, not heroes. Their look is **rasterized**, like frames of an
-  encoded GIF: geometry snapped to a 4-unit pixel grid with
-  `shape-rendering: crispEdges` (no `rx`), motion frame-quantized via
+  diagrams, not heroes. Their look is **clean pixel art**: hand-placed
+  `<rect>` sprites on a coarse cell grid (8 viewBox units per cell)
+  with `shape-rendering: crispEdges` (no `rx`), shaded with the
+  `--px-*` sprite ramp tokens (shadows cool, highlights warm,
+  `--px-outline` silhouettes), and motion frame-quantized via
   `var(--ease-frames)` / `var(--ease-frames-coarse)` and
-  `var(--dur-tick)`-based stepped loops, and texture from the RASTER
-  KIT section of `shared/effects.css` (Bayer dither fills, scanlines,
-  static grain, dithered blink halos instead of blur glows, staircase
-  lines instead of smooth beziers). RASTER KIT v2 adds discrete
-  posterize (`feComponentTransfer type="discrete"` with
-  `color-interpolation-filters="sRGB"`), RGB-split chromatic aberration
-  (screened red/cyan duplicates inside an `isolation: isolate` group),
-  checkerboard dissolves (hard-cut dither-density chains instead of
-  opacity fades — plain alpha fades are the biggest "modern" tell),
-  band glitch (clip-path bands, transform-only stepped shear), interlace
-  flicker, a static pixelation filter chain, feMorphology slab strokes
-  and an `@property` stepped drive. Additional hard rules that travel
-  with v2: **filters only on static bounded subtrees** (a filter over
-  animating content re-rasterizes every frame); **interlace flicker
-  never exceeds 0.1 opacity delta and never cycles faster than
-  `var(--dur-flicker)`** (WCAG 2.3.1); SVG `<pattern>` fills over large
-  areas are a Chromium slow path — prefer a CSS
-  `repeating-conic-gradient` background on the container or a larger
-  scaled tile for full-panel dither.
+  `var(--dur-tick)`-based `steps(N)` flipbook loops — no filters, no
+  `<pattern>` fills, no overlay textures, and **no plain opacity
+  fades** (reveals hard-cut with `steps(1)`). Timing hard rule: a
+  one-shot `steps(1, jump-end)` animation can freeze at its pre-jump
+  value (the finished animation's clamped time can land a float
+  epsilon before 100%) — one-shot reveals use `steps(1, jump-start)`
+  plus a delay, and multi-stutter keyframes use paired hold
+  percentages so the last interval's start value equals the settled
+  value. Heroes are generated from ASCII pixel maps by the scripts in
+  `tools/heroes/` — edit the generator and re-run it, never the
+  diagram file directly (see `tools/heroes/README.md`).
 
 ## Embedding in the blog
 

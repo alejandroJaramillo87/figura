@@ -23,18 +23,22 @@
 }
 .fg-{{NAME}} svg { shape-rendering: crispEdges; }
 
-/* --- hero choreography (raster / GIF-frame aesthetic) -------------- */
+/* --- hero choreography (clean pixel-art aesthetic) ----------------- */
 /* Heroes are ABSTRACT ART inspired by the post — no labels, no literal
-   diagram anatomy. They should read like frames of an encoded GIF:
-   - Pixel grid: 4 viewBox units = 1 raster pixel; snap every coordinate;
+   diagram anatomy. Hand-placed pixel sprites, generated from ASCII
+   pixel maps (see tools/heroes/README.md):
+   - Cell grid: 8 viewBox units = 1 cell; snap every coordinate;
      shape-rendering: crispEdges on the <svg>; no rx rounding.
+   - Sprite ramps: shade with the --px-* tokens (shadows cool,
+     highlights warm; --px-outline silhouettes) — never flat fills.
    - Frame-quantized motion: var(--ease-frames) / var(--ease-frames-coarse)
-     timing; ambient loops as calc(var(--dur-tick) * N) with steps(N).
-   - Texture from the RASTER KIT in shared/effects.css: Bayer dither
-     patterns for posterized fills, a scanline overlay, static
-     feTurbulence grain (never animate filter primitives), dithered
-     halos (stepped blink) instead of blur glows, staircase lines
-     instead of smooth beziers. Rename all XX- ids to {{ABBR}}-. */
+     timing; ambient loops as calc(var(--dur-tick) * N) with steps(N);
+     reveals hard-cut with steps(1) — no plain opacity fades, no
+     filters, no pattern fills, no overlay textures.
+   - One-shot steps(1) reveals use jump-start + delay (a jump-end at
+     exactly 100% can be missed to float error); multi-stutter
+     keyframes use paired holds so the last interval's start value
+     equals the settled value. */
 /* Lifecycle (driven by the hero-start block):
      .is-live    — added at first ~30% visibility; fires the intro
      .is-settled — added after INTRO_MS (or immediately under
