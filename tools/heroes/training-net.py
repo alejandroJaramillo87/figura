@@ -11,43 +11,45 @@ from herolib import emit, rect, rects
 S = []
 
 # 7x7 node sprites: outline ring, body lit from the upper left.
-# Same shape, ramp swapped per layer.
+# Same shape, ramp swapped per layer. The darkest ramp shade sits in the
+# background cells at the ring's diagonal corners — sprite AA that rounds
+# the octagonal silhouette into a circle.
 NODE = [
-    '..ooo..',
-    '.o443o.',
+    '.1ooo1.',
+    '1o443o1',
     'o43332o',
     'o43322o',
     'o33221o',
-    '.o221o.',
-    '..ooo..',
+    '1o221o1',
+    '.1ooo1.',
 ]
 NODE_SKY = [
-    '..ooo..',
-    '.okkSo.',
+    '.1ooo1.',
+    '1okkSo1',
     'okSSSso',
     'okSSsso',
     'oSSssso',
-    '.oSsso.',
-    '..ooo..',
+    '1oSsso1',
+    '.1ooo1.',
 ]
 NODE_GRN = [
-    '..ooo..',
-    '.oeeGo.',
+    '.1ooo1.',
+    '1oeeGo1',
     'oeGGGgo',
     'oeGGggo',
     'oGGgggo',
-    '.oGggo.',
-    '..ooo..',
+    '1oGggo1',
+    '.1ooo1.',
 ]
 # amber-lit variant for the forward-pass pulse frames
 NODE_LIT = [
-    '..ooo..',
-    '.occbo.',
+    '.1ooo1.',
+    '1occbo1',
     'occbbbo',
     'ocbbbao',
     'obbbaao',
-    '.obaao.',
-    '..ooo..',
+    '1obaao1',
+    '.1ooo1.',
 ]
 
 # node centers in cell coordinates (cx, cy)
@@ -97,7 +99,17 @@ def edge(a, b, color, aa):
     `aa` pixel softens the corner — pixel-art anti-aliasing. Steep
     zigzags stay bare: the 8-connected diagonal is already smooth."""
     runs = edge_runs(a, b)
-    out = [rect(x, y, w, 1, color) for x, y, w in runs]
+    out = []
+    for i, (x, y, w) in enumerate(runs):
+        # taper: the wire's first and last cell dim into the node rings
+        head = 1 if i == 0 else 0
+        tail = 1 if i == len(runs) - 1 else 0
+        if head:
+            out.append(rect(x, y, 1, 1, aa))
+        if w > head + tail:
+            out.append(rect(x + head, y, w - head - tail, 1, color))
+        if tail and w > head:
+            out.append(rect(x + w - 1, y, 1, 1, aa))
     for (px, py, pw), (nx, ny, nw) in zip(runs, runs[1:]):
         if pw >= 2 and nw >= 2:
             out.append(rect(nx, py, 1, 1, aa))   # extend prev row one dim cell
