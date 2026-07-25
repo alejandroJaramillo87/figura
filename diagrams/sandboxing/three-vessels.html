@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three vessels on one floor</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Three vessels on one floor</h1>
+<p>Pixel-art hero: three container vessels of different silhouettes — a sealed appliance, an open-top hopper, and a box with one gated pipe — assemble onto a single shared foundation slab, then tick along in an ambient loop: a blinking status LED, a filling-and-dumping charge gauge, and a packet metered out through the pipe.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-three-vessels">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-three-vessels {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-hero-in: 900ms;
+  --stagger: 80ms;
+  --ease-frames: steps(10);
+  --ease-frames-coarse: steps(4, jump-none);
+  --dur-tick: 100ms;
+  --px-outline: #0b1020;
+  --px-steel-1: #232c44;
+  --px-steel-2: #3b4a5e;
+  --px-steel-3: #64748b;
+  --px-steel-4: #a7b0b8;
+  --px-amber-1: #92400e;
+  --px-amber-2: #f59e0b;
+  --px-amber-3: #fcd34d;
+  --px-green-1: #166534;
+  --px-green-2: #34d399;
+  --px-green-3: #a7f3d0;
+  --px-sky-1: #0369a1;
+  --px-sky-2: #38bdf8;
+  --px-sky-3: #bae6fd;
+  --px-dusk-1: #2b1b3d;
+  --px-dusk-2: #7c3a58;
+  --px-dusk-3: #e8a87c;
+  --px-violet-1: #3c2a6e;
+  --px-violet-2: #a78bfa;
+  --px-violet-3: #ddd6fe;
+  --px-hot-1: #7f1d1d;
+  --px-hot-2: #f87171;
+  --px-hot-3: #fdba74;
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-three-vessels {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-three-vessels svg { display: block; width: 100%; height: auto; }
+.fg-three-vessels text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-three-vessels {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+.fg-three-vessels svg { shape-rendering: crispEdges; }
+
+/* fg:sync-exempt tvs-chg tvs-px — grouping classes; their frame
+   variants (tvs-chg-N, tvs-px-N) carry the rules */
+/* --- static scene defaults ------------------------------------------ */
+/* Three vessels on one slab: the intro drops the slab first, then each
+   vessel left to right; the ambient loop runs one tick per vessel
+   (LED blink, charge-gauge fill/dump, egress-pipe pulse). */
+.fg-three-vessels .tvs-pop { opacity: 0; }
+.fg-three-vessels .tvs-led { opacity: 0; }
+.fg-three-vessels .tvs-chg-1,
+.fg-three-vessels .tvs-chg-2,
+.fg-three-vessels .tvs-chg-3 { opacity: 0; }
+.fg-three-vessels .tvs-px-1,
+.fg-three-vessels .tvs-px-2,
+.fg-three-vessels .tvs-px-3 { opacity: 0; }
+
+/* --- intro: slab lands first, vessels follow left to right ---------- */
+.fg-three-vessels.is-live .tvs-pop {
+  animation: fg-tvs-pop 0.4s var(--ease-frames-coarse)
+    calc(var(--i) * calc(var(--stagger) * 4)) both;
+}
+/* LED wakes at the intro tail with a fluorescent stutter: on-off-on,
+   then hold — the last interval's start value equals the settled value */
+.fg-three-vessels.is-live .tvs-led {
+  animation: fg-tvs-led-on 2.4s steps(1, jump-end) both;
+}
+
+@keyframes fg-tvs-pop { from { opacity: 0; transform: translateY(16px); }
+                        to   { opacity: 1; transform: none; } }
+@keyframes fg-tvs-led-on { 0%, 64% { opacity: 0; } 65%, 69% { opacity: 1; }
+                           70%, 74% { opacity: 0; } 75%, 100% { opacity: 1; } }
+
+/* --- settled state (complete final composition; the reduced-motion
+       rendering) ---------------------------------------------------- */
+.fg-three-vessels.is-settled .tvs-pop { opacity: 1; transform: none; }
+.fg-three-vessels.is-settled .tvs-led { opacity: 1; }
+.fg-three-vessels.is-settled .tvs-chg-1 { opacity: 1; }
+.fg-three-vessels.is-settled .tvs-chg-2,
+.fg-three-vessels.is-settled .tvs-chg-3 { opacity: 0; }
+.fg-three-vessels.is-settled .tvs-px-1,
+.fg-three-vessels.is-settled .tvs-px-2,
+.fg-three-vessels.is-settled .tvs-px-3 { opacity: 0; }
+
+/* --- ambient loop (exactly 3: LED, charge gauge, egress pulse) ------ */
+/* LED: mostly on with a brief periodic blink-off */
+.fg-three-vessels.is-settled .tvs-led {
+  animation: fg-tvs-led calc(var(--dur-tick) * 16) steps(1, jump-end)
+    calc(var(--dur-tick) * 3) infinite;
+}
+/* charge gauge: low -> mid -> full -> empty (the dump) */
+.fg-three-vessels.is-settled .tvs-chg-1 {
+  animation: fg-tvs-chg-f1 calc(var(--dur-tick) * 24) steps(1, jump-end) infinite;
+}
+.fg-three-vessels.is-settled .tvs-chg-2 {
+  animation: fg-tvs-chg-f2 calc(var(--dur-tick) * 24) steps(1, jump-end) infinite;
+}
+.fg-three-vessels.is-settled .tvs-chg-3 {
+  animation: fg-tvs-chg-f3 calc(var(--dur-tick) * 24) steps(1, jump-end) infinite;
+}
+/* egress pulse: one packet steps along the pipe, then a dead interval
+   so the flow reads as metered; half-cycle delay de-syncs its clock */
+.fg-three-vessels.is-settled .tvs-px-1 {
+  animation: fg-tvs-px-f1 calc(var(--dur-tick) * 12) steps(1, jump-end)
+    calc(var(--dur-tick) * 6) infinite;
+}
+.fg-three-vessels.is-settled .tvs-px-2 {
+  animation: fg-tvs-px-f2 calc(var(--dur-tick) * 12) steps(1, jump-end)
+    calc(var(--dur-tick) * 6) infinite;
+}
+.fg-three-vessels.is-settled .tvs-px-3 {
+  animation: fg-tvs-px-f3 calc(var(--dur-tick) * 12) steps(1, jump-end)
+    calc(var(--dur-tick) * 6) infinite;
+}
+.fg-three-vessels.is-paused .tvs-led,
+.fg-three-vessels.is-paused .tvs-chg-1,
+.fg-three-vessels.is-paused .tvs-chg-2,
+.fg-three-vessels.is-paused .tvs-chg-3,
+.fg-three-vessels.is-paused .tvs-px-1,
+.fg-three-vessels.is-paused .tvs-px-2,
+.fg-three-vessels.is-paused .tvs-px-3 { animation-play-state: paused; }
+
+@keyframes fg-tvs-led { 0%, 74% { opacity: 1; } 75%, 80% { opacity: 0; }
+                        81%, 100% { opacity: 1; } }
+@keyframes fg-tvs-chg-f1 { 0%, 24% { opacity: 1; } 25%, 100% { opacity: 0; } }
+@keyframes fg-tvs-chg-f2 { 0%, 24% { opacity: 0; } 25%, 49% { opacity: 1; }
+                           50%, 100% { opacity: 0; } }
+@keyframes fg-tvs-chg-f3 { 0%, 49% { opacity: 0; } 50%, 79% { opacity: 1; }
+                           80%, 100% { opacity: 0; } }
+@keyframes fg-tvs-px-f1 { 0%, 15% { opacity: 1; } 16%, 100% { opacity: 0; } }
+@keyframes fg-tvs-px-f2 { 0%, 15% { opacity: 0; } 16%, 32% { opacity: 1; }
+                          33%, 100% { opacity: 0; } }
+@keyframes fg-tvs-px-f3 { 0%, 32% { opacity: 0; } 33%, 49% { opacity: 1; }
+                          50%, 100% { opacity: 0; } }
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-three-vessels, .fg-three-vessels * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Pixel-art animated hero: three container vessels of different silhouettes stand on one shared foundation slab — a squat sealed appliance with a status LED, a tall open-top hopper with a fill gauge, and a box whose only opening is a narrow gated pipe. The slab assembles first, the vessels drop in left to right, then each ticks in place: the LED blinks, the gauge fills and dumps, and a single packet is metered out through the pipe.">
+    <rect x="224" y="80" width="8" height="8" fill="var(--panel)"/>
+    <rect x="416" y="120" width="8" height="8" fill="var(--panel)"/>
+    <rect x="608" y="56" width="8" height="8" fill="var(--panel)"/>
+    <rect x="832" y="96" width="8" height="8" fill="var(--panel)"/>
+    <rect x="1056" y="72" width="8" height="8" fill="var(--panel)"/>
+    <rect x="96" y="144" width="8" height="8" fill="var(--panel)"/>
+  <g class="tvs-pop" style="--i: 0">
+    <rect x="0" y="400" width="1200" height="8" fill="var(--px-green-3)"/>
+    <rect x="0" y="408" width="1200" height="8" fill="var(--px-green-2)"/>
+    <rect x="0" y="416" width="1200" height="16" fill="var(--px-green-1)"/>
+    <rect x="0" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="32" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="64" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="96" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="128" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="160" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="192" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="224" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="256" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="288" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="320" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="352" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="384" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="416" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="448" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="480" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="512" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="544" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="576" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="608" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="640" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="672" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="704" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="736" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="768" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="800" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="832" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="864" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="896" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="928" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="960" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="992" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="1024" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="1056" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="1088" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="1120" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="1152" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="1184" y="432" width="16" height="8" fill="var(--px-green-1)"/>
+    <rect x="0" y="440" width="1200" height="56" fill="var(--px-outline)"/>
+  </g>
+  <g class="tvs-pop" style="--i: 1">
+    <rect x="120" y="400" width="256" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="256" width="224" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="264" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="264" width="216" height="8" fill="var(--px-sky-3)"/>
+    <rect x="352" y="264" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="264" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="272" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="272" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="272" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="272" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="280" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="280" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="280" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="280" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="288" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="288" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="288" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="288" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="296" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="296" width="224" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="296" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="304" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="304" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="304" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="304" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="312" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="312" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="312" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="312" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="320" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="320" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="320" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="320" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="328" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="328" width="224" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="328" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="336" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="336" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="336" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="336" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="344" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="344" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="344" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="344" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="352" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="352" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="352" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="352" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="360" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="360" width="224" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="360" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="368" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="368" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="368" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="368" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="376" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="376" width="216" height="8" fill="var(--px-sky-2)"/>
+    <rect x="352" y="376" width="8" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="376" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="128" y="384" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="384" width="224" height="8" fill="var(--px-sky-1)"/>
+    <rect x="360" y="384" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="136" y="392" width="224" height="8" fill="var(--px-outline)"/>
+    <rect class="tvs-led" x="160" y="280" width="8" height="8" fill="var(--px-green-3)"/>
+  </g>
+  <g class="tvs-pop" style="--i: 2">
+    <rect x="488" y="400" width="208" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="144" width="176" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="152" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="152" width="176" height="8" fill="var(--bg)"/>
+    <rect x="680" y="152" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="160" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="160" width="176" height="8" fill="var(--bg)"/>
+    <rect x="680" y="160" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="168" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="168" width="168" height="8" fill="var(--px-amber-3)"/>
+    <rect x="672" y="168" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="168" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="176" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="176" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="176" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="176" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="184" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="184" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="184" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="184" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="192" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="192" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="192" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="192" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="200" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="200" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="200" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="200" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="208" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="208" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="208" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="208" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="216" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="216" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="216" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="216" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="224" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="224" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="224" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="224" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="232" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="232" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="232" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="232" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="240" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="240" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="240" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="240" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="248" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="248" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="248" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="248" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="256" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="256" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="256" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="256" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="264" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="264" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="264" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="264" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="272" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="272" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="272" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="272" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="280" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="280" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="280" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="280" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="288" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="288" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="288" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="288" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="296" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="296" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="296" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="296" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="304" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="304" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="304" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="304" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="312" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="312" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="312" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="312" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="320" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="320" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="320" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="320" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="328" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="328" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="328" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="328" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="336" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="336" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="336" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="336" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="344" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="344" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="344" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="344" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="352" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="352" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="352" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="352" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="360" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="360" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="360" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="360" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="368" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="368" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="368" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="368" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="376" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="376" width="168" height="8" fill="var(--px-amber-2)"/>
+    <rect x="672" y="376" width="8" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="376" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="496" y="384" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="384" width="176" height="8" fill="var(--px-amber-1)"/>
+    <rect x="680" y="384" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="504" y="392" width="176" height="8" fill="var(--px-outline)"/>
+    <rect x="568" y="192" width="32" height="176" fill="var(--px-outline)"/>
+    <rect x="576" y="200" width="16" height="160" fill="var(--bg)"/>
+    <g class="tvs-chg tvs-chg-1">
+      <rect x="576" y="320" width="16" height="40" fill="var(--px-amber-3)"/>
+    </g>
+    <g class="tvs-chg tvs-chg-2">
+      <rect x="576" y="264" width="16" height="96" fill="var(--px-amber-3)"/>
+    </g>
+    <g class="tvs-chg tvs-chg-3">
+      <rect x="576" y="200" width="16" height="160" fill="var(--px-amber-3)"/>
+    </g>
+  </g>
+  <g class="tvs-pop" style="--i: 3">
+    <rect x="792" y="400" width="192" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="240" width="160" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="248" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="248" width="152" height="8" fill="var(--px-violet-3)"/>
+    <rect x="960" y="248" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="248" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="256" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="256" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="256" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="256" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="264" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="264" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="264" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="264" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="272" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="272" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="272" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="272" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="280" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="280" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="280" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="280" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="288" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="288" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="288" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="288" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="296" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="296" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="296" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="296" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="304" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="304" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="304" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="304" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="312" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="312" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="312" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="312" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="320" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="320" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="320" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="320" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="328" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="328" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="328" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="328" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="336" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="336" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="336" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="336" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="344" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="344" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="344" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="344" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="352" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="352" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="352" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="352" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="360" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="360" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="360" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="360" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="368" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="368" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="368" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="368" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="376" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="376" width="152" height="8" fill="var(--px-violet-2)"/>
+    <rect x="960" y="376" width="8" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="376" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="800" y="384" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="384" width="160" height="8" fill="var(--px-violet-1)"/>
+    <rect x="968" y="384" width="8" height="8" fill="var(--px-outline)"/>
+    <rect x="808" y="392" width="160" height="8" fill="var(--px-outline)"/>
+    <rect x="976" y="296" width="168" height="8" fill="var(--px-outline)"/>
+    <rect x="976" y="304" width="168" height="8" fill="var(--px-violet-2)"/>
+    <rect x="976" y="312" width="168" height="16" fill="var(--bg)"/>
+    <rect x="976" y="328" width="168" height="8" fill="var(--px-violet-2)"/>
+    <rect x="976" y="336" width="168" height="8" fill="var(--px-outline)"/>
+    <rect x="960" y="312" width="16" height="16" fill="var(--bg)"/>
+    <rect x="1008" y="272" width="16" height="8" fill="var(--px-outline)"/>
+    <rect x="1008" y="280" width="16" height="32" fill="var(--px-violet-3)"/>
+    <rect x="1008" y="328" width="16" height="32" fill="var(--px-violet-3)"/>
+    <rect x="1008" y="360" width="16" height="8" fill="var(--px-outline)"/>
+    <g class="tvs-px tvs-px-1">
+      <rect x="984" y="312" width="16" height="16" fill="var(--px-violet-3)"/>
+    </g>
+    <g class="tvs-px tvs-px-2">
+      <rect x="1040" y="312" width="16" height="16" fill="var(--px-violet-3)"/>
+    </g>
+    <g class="tvs-px tvs-px-3">
+      <rect x="1096" y="312" width="16" height="16" fill="var(--px-violet-3)"/>
+    </g>
+  </g>
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2400; // slab + 3 vessel pops ~1.4s, LED stutter to 2.4s
+
+  // fg:begin hero-start v1
+  const root = document.currentScript.closest('.fg-diagram');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    root.classList.add('is-settled'); // final composition, no motion
+  } else {
+    let started = false;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!started) {
+        if (!e.isIntersecting) return;
+        started = true; // intro plays once per page load
+        root.classList.add('is-live');
+        setTimeout(() => root.classList.add('is-settled'), INTRO_MS);
+      } else {
+        root.classList.toggle('is-paused', !e.isIntersecting);
+      }
+    }), { threshold: 0.3 });
+    io.observe(root);
+  }
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

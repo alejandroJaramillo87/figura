@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Three vessels on one floor</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Three vessels on one floor</h1>
+<p>Pixel-art hero: three container vessels of different silhouettes — a sealed appliance, an open-top hopper, and a box with one gated pipe — assemble onto a single shared foundation slab, then tick along in an ambient loop: a blinking status LED, a filling-and-dumping charge gauge, and a packet metered out through the pipe.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-three-vessels">
+<style>
+/* fg:begin palette-classic v1 */
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+/* fg:end panel-base */
+.fg-three-vessels {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+.fg-three-vessels svg { shape-rendering: crispEdges; }
+
+/* fg:sync-exempt tvs-chg tvs-px — grouping classes; their frame
+   variants (tvs-chg-N, tvs-px-N) carry the rules */
+/* --- static scene defaults ------------------------------------------ */
+/* Three vessels on one slab: the intro drops the slab first, then each
+   vessel left to right; the ambient loop runs one tick per vessel
+   (LED blink, charge-gauge fill/dump, egress-pipe pulse). */
+.fg-three-vessels .tvs-pop { opacity: 0; }
+.fg-three-vessels .tvs-led { opacity: 0; }
+.fg-three-vessels .tvs-chg-1,
+.fg-three-vessels .tvs-chg-2,
+.fg-three-vessels .tvs-chg-3 { opacity: 0; }
+.fg-three-vessels .tvs-px-1,
+.fg-three-vessels .tvs-px-2,
+.fg-three-vessels .tvs-px-3 { opacity: 0; }
+
+/* --- intro: slab lands first, vessels follow left to right ---------- */
+.fg-three-vessels.is-live .tvs-pop {
+  animation: fg-tvs-pop 0.4s var(--ease-frames-coarse)
+    calc(var(--i) * calc(var(--stagger) * 4)) both;
+}
+/* LED wakes at the intro tail with a fluorescent stutter: on-off-on,
+   then hold — the last interval's start value equals the settled value */
+.fg-three-vessels.is-live .tvs-led {
+  animation: fg-tvs-led-on 2.4s steps(1, jump-end) both;
+}
+
+@keyframes fg-tvs-pop { from { opacity: 0; transform: translateY(16px); }
+                        to   { opacity: 1; transform: none; } }
+@keyframes fg-tvs-led-on { 0%, 64% { opacity: 0; } 65%, 69% { opacity: 1; }
+                           70%, 74% { opacity: 0; } 75%, 100% { opacity: 1; } }
+
+/* --- settled state (complete final composition; the reduced-motion
+       rendering) ---------------------------------------------------- */
+.fg-three-vessels.is-settled .tvs-pop { opacity: 1; transform: none; }
+.fg-three-vessels.is-settled .tvs-led { opacity: 1; }
+.fg-three-vessels.is-settled .tvs-chg-1 { opacity: 1; }
+.fg-three-vessels.is-settled .tvs-chg-2,
+.fg-three-vessels.is-settled .tvs-chg-3 { opacity: 0; }
+.fg-three-vessels.is-settled .tvs-px-1,
+.fg-three-vessels.is-settled .tvs-px-2,
+.fg-three-vessels.is-settled .tvs-px-3 { opacity: 0; }
+
+/* --- ambient loop (exactly 3: LED, charge gauge, egress pulse) ------ */
+/* LED: mostly on with a brief periodic blink-off */
+.fg-three-vessels.is-settled .tvs-led {
+  animation: fg-tvs-led calc(var(--dur-tick) * 16) steps(1, jump-end)
+    calc(var(--dur-tick) * 3) infinite;
+}
+/* charge gauge: low -> mid -> full -> empty (the dump) */
+.fg-three-vessels.is-settled .tvs-chg-1 {
+  animation: fg-tvs-chg-f1 calc(var(--dur-tick) * 24) steps(1, jump-end) infinite;
+}
+.fg-three-vessels.is-settled .tvs-chg-2 {
+  animation: fg-tvs-chg-f2 calc(var(--dur-tick) * 24) steps(1, jump-end) infinite;
+}
+.fg-three-vessels.is-settled .tvs-chg-3 {
+  animation: fg-tvs-chg-f3 calc(var(--dur-tick) * 24) steps(1, jump-end) infinite;
+}
+/* egress pulse: one packet steps along the pipe, then a dead interval
+   so the flow reads as metered; half-cycle delay de-syncs its clock */
+.fg-three-vessels.is-settled .tvs-px-1 {
+  animation: fg-tvs-px-f1 calc(var(--dur-tick) * 12) steps(1, jump-end)
+    calc(var(--dur-tick) * 6) infinite;
+}
+.fg-three-vessels.is-settled .tvs-px-2 {
+  animation: fg-tvs-px-f2 calc(var(--dur-tick) * 12) steps(1, jump-end)
+    calc(var(--dur-tick) * 6) infinite;
+}
+.fg-three-vessels.is-settled .tvs-px-3 {
+  animation: fg-tvs-px-f3 calc(var(--dur-tick) * 12) steps(1, jump-end)
+    calc(var(--dur-tick) * 6) infinite;
+}
+.fg-three-vessels.is-paused .tvs-led,
+.fg-three-vessels.is-paused .tvs-chg-1,
+.fg-three-vessels.is-paused .tvs-chg-2,
+.fg-three-vessels.is-paused .tvs-chg-3,
+.fg-three-vessels.is-paused .tvs-px-1,
+.fg-three-vessels.is-paused .tvs-px-2,
+.fg-three-vessels.is-paused .tvs-px-3 { animation-play-state: paused; }
+
+@keyframes fg-tvs-led { 0%, 74% { opacity: 1; } 75%, 80% { opacity: 0; }
+                        81%, 100% { opacity: 1; } }
+@keyframes fg-tvs-chg-f1 { 0%, 24% { opacity: 1; } 25%, 100% { opacity: 0; } }
+@keyframes fg-tvs-chg-f2 { 0%, 24% { opacity: 0; } 25%, 49% { opacity: 1; }
+                           50%, 100% { opacity: 0; } }
+@keyframes fg-tvs-chg-f3 { 0%, 49% { opacity: 0; } 50%, 79% { opacity: 1; }
+                           80%, 100% { opacity: 0; } }
+@keyframes fg-tvs-px-f1 { 0%, 15% { opacity: 1; } 16%, 100% { opacity: 0; } }
+@keyframes fg-tvs-px-f2 { 0%, 15% { opacity: 0; } 16%, 32% { opacity: 1; }
+                          33%, 100% { opacity: 0; } }
+@keyframes fg-tvs-px-f3 { 0%, 32% { opacity: 0; } 33%, 49% { opacity: 1; }
+                          50%, 100% { opacity: 0; } }
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Pixel-art animated hero: three container vessels of different silhouettes stand on one shared foundation slab — a squat sealed appliance with a status LED, a tall open-top hopper with a fill gauge, and a box whose only opening is a narrow gated pipe. The slab assembles first, the vessels drop in left to right, then each ticks in place: the LED blinks, the gauge fills and dumps, and a single packet is metered out through the pipe.">
+@SPRITES@
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2400; // slab + 3 vessel pops ~1.4s, LED stutter to 2.4s
+
+  // fg:begin hero-start v1
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

@@ -490,5 +490,13 @@
     "post": "linux-ai-setup",
     "kind": "hero",
     "description": "Pixel-art aerial hero: a motherboard as a city at dusk \u2014 CPU heatsink downtown, four identical RAM tower blocks, a VRM industrial quarter and a coin-cell stadium under a banded plum-to-peach sky with a setting sun. Power-on plays as the city waking: a substation flash, light racing down trace-road streets, then districts flickering on one by one; headlights travel the foreground avenue after settle."
+  },
+  {
+    "id": "three-vessels",
+    "path": "diagrams/sandboxing/three-vessels.html",
+    "title": "Three vessels on one floor",
+    "post": "sandboxing",
+    "kind": "hero",
+    "description": "Pixel-art hero for the sandboxing series opener: three container vessels of different silhouettes \u2014 a sealed appliance, an open-top hopper, and a box with one gated pipe \u2014 assemble onto a shared foundation slab, then tick in an ambient loop (LED blink, charge gauge, metered egress pulse)."
   }
 ]
