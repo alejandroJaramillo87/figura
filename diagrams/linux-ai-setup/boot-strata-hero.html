@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boot-up strata — hero</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Boot-up strata — hero</h1>
+<p>Abstract raster hero: dithered strata assemble bottom-up like a machine booting — seam lines, reboot flashes, RGB-split boot jitter, and a posterized glow cap settling into a quiet hum.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-boot-strata-hero">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-boot-strata-hero {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-hero-in: 900ms;
+  --stagger: 80ms;
+  --ease-frames: steps(10);
+  --ease-frames-coarse: steps(4, jump-none);
+  --dur-tick: 100ms;
+  --ease-frames-fine: steps(24, jump-none);
+  --dur-flicker: 800ms;
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-boot-strata-hero {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-boot-strata-hero svg { display: block; width: 100%; height: auto; }
+.fg-boot-strata-hero text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-boot-strata-hero {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+.fg-boot-strata-hero svg { shape-rendering: crispEdges; }
+
+/* --- static scene (all geometry on the 4-unit pixel grid) ----------- */
+.fg-boot-strata-hero .bst-stratum { opacity: 0; }
+.fg-boot-strata-hero .bst-seam { fill: none; stroke: var(--line); stroke-width: 4;
+  stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.8; }
+.fg-boot-strata-hero .bst-split { isolation: isolate; }
+.fg-boot-strata-hero .bst-split-r { fill: #ff0044; mix-blend-mode: screen; opacity: 0; }
+.fg-boot-strata-hero .bst-split-c { fill: #00ffee; mix-blend-mode: screen; opacity: 0; }
+.fg-boot-strata-hero .bst-flash { opacity: 0; pointer-events: none; }
+.fg-boot-strata-hero .bst-cap { opacity: 0.85; }
+.fg-boot-strata-hero .bst-cap-cover { fill: var(--bg); }
+.fg-boot-strata-hero .bst-comet { fill: var(--text); opacity: 0; offset-rotate: 0deg; }
+.fg-boot-strata-hero .bst-c1 { offset-path: path('M 320 88 V 496'); }
+.fg-boot-strata-hero .bst-c2 { offset-path: path('M 636 88 V 496'); }
+.fg-boot-strata-hero .bst-c3 { offset-path: path('M 956 88 V 496'); }
+.fg-boot-strata-hero .bst-halo-px { opacity: 0; }
+.fg-boot-strata-hero .bst-roll { opacity: 0; }
+
+/* --- intro (fires on .is-live; frame-quantized, staggered via --i) -- */
+.fg-boot-strata-hero.is-live .bst-stratum {
+  animation: fg-bst-rise 0.6s var(--ease-frames-coarse)
+    calc(var(--i) * calc(var(--stagger) * 4)) both;
+}
+.fg-boot-strata-hero.is-live .bst-seam {
+  animation: fg-bst-draw 0.8s var(--ease-frames)
+    calc(0.5s + var(--i) * calc(var(--stagger) * 4)) both;
+}
+.fg-boot-strata-hero.is-live .bst-split-r,
+.fg-boot-strata-hero.is-live .bst-split-c {
+  animation: fg-bst-splitjit calc(var(--dur-tick) * 4) steps(2, jump-none)
+    calc(0.2s + var(--i) * calc(var(--stagger) * 4)) 3;
+}
+.fg-boot-strata-hero.is-live .bst-flash-1 {
+  animation: fg-bst-flash calc(var(--dur-tick) * 3) steps(1, jump-end) 2.6s both;
+}
+.fg-boot-strata-hero.is-live .bst-flash-2 {
+  animation: fg-bst-flash calc(var(--dur-tick) * 3) steps(1, jump-end) 4.4s both;
+}
+.fg-boot-strata-hero.is-live .bst-cap-cover {
+  animation: fg-bst-uncover calc(var(--dur-tick) * 8) steps(1, jump-end) 5.2s both;
+}
+.fg-boot-strata-hero.is-live .bst-comet {
+  animation: fg-bst-drop 1s var(--ease-frames-fine) 5.8s both;
+}
+.fg-boot-strata-hero.is-live .bst-c2 { animation-delay: 6.05s; }
+.fg-boot-strata-hero.is-live .bst-c3 { animation-delay: 6.3s; }
+
+@keyframes fg-bst-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fg-bst-draw { to { stroke-dashoffset: 0; } }
+@keyframes fg-bst-splitjit {
+  0%  { opacity: 1; transform: none; }
+  50% { opacity: 1; transform: translateX(4px); }
+  100% { opacity: 0; transform: none; }
+}
+@keyframes fg-bst-flash { 0% { opacity: 0; } 33% { opacity: 0.22; } 66%, 100% { opacity: 0; } }
+@keyframes fg-bst-uncover {
+  0%   { fill: var(--bg); }
+  25%  { fill: url(#bst-cvr75); }
+  50%  { fill: url(#bst-cvr50); }
+  75%  { fill: url(#bst-cvr25); }
+  100% { fill: none; }
+}
+@keyframes fg-bst-drop {
+  0% { offset-distance: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+/* --- settled state (complete final composition; the reduced-motion
+       rendering) ---------------------------------------------------- */
+.fg-boot-strata-hero.is-settled .bst-stratum { opacity: 1; transform: none; }
+.fg-boot-strata-hero.is-settled .bst-seam { stroke-dashoffset: 0; }
+.fg-boot-strata-hero.is-settled .bst-cap-cover { fill: none; }
+.fg-boot-strata-hero.is-settled .bst-halo-px { opacity: 0.2; }
+.fg-boot-strata-hero.is-settled .bst-roll { opacity: 0.05; }
+
+/* --- ambient loop (≤3 concurrent; frame-ticked; gated on settle) ---- */
+.fg-boot-strata-hero.is-settled .bst-halo-px {
+  animation: fg-bst-blink calc(var(--dur-tick) * 8) steps(2, jump-none) infinite;
+}
+.fg-boot-strata-hero.is-settled .bst-roll {
+  animation: fg-bst-roll 6s steps(12) infinite;
+}
+.fg-boot-strata-hero.is-settled .bst-scan-b {
+  animation: fg-bst-lace var(--dur-flicker) steps(2, jump-none) infinite;
+}
+.fg-boot-strata-hero.is-paused .bst-halo-px,
+.fg-boot-strata-hero.is-paused .bst-roll,
+.fg-boot-strata-hero.is-paused .bst-scan-b { animation-play-state: paused; }
+
+@keyframes fg-bst-blink { 50% { opacity: 0.35; } }
+@keyframes fg-bst-roll { from { transform: translateY(-40px); } to { transform: translateY(500px); } }
+@keyframes fg-bst-lace { 0% { opacity: 1; } 50% { opacity: 0.9; } }
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-boot-strata-hero, .fg-boot-strata-hero * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .fg-boot-strata-hero .bst-roll { opacity: 0 !important; }
+  .fg-boot-strata-hero .bst-split-r, .fg-boot-strata-hero .bst-split-c { opacity: 0 !important; }
+  .fg-boot-strata-hero .bst-comet { opacity: 0 !important; }
+}
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Abstract animated hero: dithered horizontal strata assemble bottom-up like a machine booting, separated by seam lines that draw in; the sequence is punctuated by brief full-frame flashes and red-cyan edge jitter, then a banded warm glow uncovers above the finished stack while square comets drop down through the layers — all motion ticking in coarse frames like an animated GIF.">
+  <defs>
+    <pattern id="bst-dln75" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="var(--line)"/><rect x="4" y="0" width="4" height="4" fill="var(--bg)"/></pattern>
+    <pattern id="bst-dvi25" width="8" height="8" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="var(--violet)"/></pattern>
+    <pattern id="bst-dac25" width="8" height="8" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="var(--accent)"/></pattern>
+    <pattern id="bst-dwa25" width="8" height="8" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="var(--warn)"/></pattern>
+    <pattern id="bst-dvi50" width="8" height="8" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="var(--violet)"/><rect x="4" y="4" width="4" height="4" fill="var(--violet)"/></pattern>
+    <pattern id="bst-dac50" width="8" height="8" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="var(--accent)"/><rect x="4" y="4" width="4" height="4" fill="var(--accent)"/></pattern>
+    <pattern id="bst-dok25" width="8" height="8" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="var(--ok)"/></pattern>
+    <pattern id="bst-dok50" width="8" height="8" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="var(--ok)"/><rect x="4" y="4" width="4" height="4" fill="var(--ok)"/></pattern>
+    <pattern id="bst-fl50" width="8" height="8" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="var(--text)"/><rect x="4" y="4" width="4" height="4" fill="var(--text)"/></pattern>
+    <pattern id="bst-scan" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="1" fill="#000000" opacity="0.18"/></pattern>
+    <pattern id="bst-cvr75" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="var(--bg)"/><rect x="4" y="0" width="4" height="4" fill="none"/></pattern>
+    <pattern id="bst-cvr50" width="8" height="8" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="var(--bg)"/><rect x="4" y="4" width="4" height="4" fill="var(--bg)"/></pattern>
+    <pattern id="bst-cvr25" width="8" height="8" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="var(--bg)"/></pattern>
+    <linearGradient id="bst-capgrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="var(--warn)" stop-opacity="0.8"/>
+      <stop offset="0.5" stop-color="var(--warn)" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="var(--warn)" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="bst-poster" color-interpolation-filters="sRGB">
+      <feComponentTransfer>
+        <feFuncA type="discrete" tableValues="0 0.14 0.28 0.42 0.6"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="bst-grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0"/>
+    </filter>
+  </defs>
+
+  <!-- posterized glow cap (static; revealed by the dissolving cover) -->
+  <g class="bst-cap">
+    <rect x="0" y="80" width="880" height="112" fill="url(#bst-capgrad)" filter="url(#bst-poster)"/>
+  </g>
+  <rect class="bst-cap-cover" x="0" y="76" width="884" height="120"/>
+
+  <!-- strata (bottom-up; base fill + dither overlay + punched gaps) -->
+  <g class="bst-stratum" style="--i: 0">
+    <path d="M 0 500 H 1200 V 488 H 1184 V 476 H 1168 V 464 H 1152 V 452 H 1136 V 444 H 0 Z" fill="var(--panel)"/>
+    <path d="M 0 500 H 1200 V 488 H 1184 V 476 H 1168 V 464 H 1152 V 452 H 1136 V 444 H 0 Z" fill="url(#bst-dln75)" opacity="0.8"/>
+  </g>
+  <g class="bst-stratum" style="--i: 1">
+    <path d="M 0 444 H 1104 V 432 H 1088 V 420 H 1072 V 408 H 1056 V 400 H 0 Z" fill="var(--violet-dim)"/>
+    <path d="M 0 444 H 1104 V 432 H 1088 V 420 H 1072 V 408 H 1056 V 400 H 0 Z" fill="url(#bst-dvi25)" opacity="0.8"/>
+    <rect x="232" y="404" width="24" height="36" fill="var(--bg)"/>
+  </g>
+  <g class="bst-stratum" style="--i: 2">
+    <path d="M 0 400 H 1160 V 388 H 1144 V 376 H 1128 V 364 H 1112 V 356 H 0 Z" fill="var(--accent-dim)"/>
+    <path d="M 0 400 H 1160 V 388 H 1144 V 376 H 1128 V 364 H 1112 V 356 H 0 Z" fill="url(#bst-dac25)" opacity="0.8"/>
+  </g>
+  <g class="bst-stratum" style="--i: 3">
+    <path d="M 0 356 H 1016 V 344 H 1000 V 332 H 984 V 320 H 968 V 316 H 0 Z" fill="var(--warn-dim)"/>
+    <path d="M 0 356 H 1016 V 344 H 1000 V 332 H 984 V 320 H 968 V 316 H 0 Z" fill="url(#bst-dwa25)" opacity="0.8"/>
+    <rect x="560" y="320" width="32" height="32" fill="var(--bg)"/>
+    <rect x="128" y="320" width="16" height="32" fill="var(--bg)"/>
+  </g>
+  <g class="bst-stratum" style="--i: 4">
+    <path d="M 0 316 H 1120 V 304 H 1104 V 292 H 1088 V 280 H 0 Z" fill="var(--panel)"/>
+    <path d="M 0 316 H 1120 V 304 H 1104 V 292 H 1088 V 280 H 0 Z" fill="url(#bst-dvi50)" opacity="0.8"/>
+    <rect x="872" y="284" width="24" height="28" fill="var(--bg)"/>
+  </g>
+  <g class="bst-stratum" style="--i: 5">
+    <path d="M 0 280 H 952 V 264 H 936 V 248 H 0 Z" fill="var(--accent-dim)"/>
+    <path d="M 0 280 H 952 V 264 H 936 V 248 H 0 Z" fill="url(#bst-dac50)" opacity="0.8"/>
+  </g>
+  <g class="bst-stratum" style="--i: 6">
+    <path d="M 0 248 H 1064 V 236 H 1048 V 224 H 1032 V 220 H 0 Z" fill="var(--ok-dim)"/>
+    <path d="M 0 248 H 1064 V 236 H 1048 V 224 H 1032 V 220 H 0 Z" fill="url(#bst-dok25)" opacity="0.8"/>
+    <rect x="392" y="224" width="16" height="20" fill="var(--bg)"/>
+  </g>
+  <g class="bst-stratum" style="--i: 7">
+    <path d="M 0 220 H 880 V 208 H 864 V 196 H 0 Z" fill="var(--ok-dim)"/>
+    <path d="M 0 220 H 880 V 208 H 864 V 196 H 0 Z" fill="url(#bst-dok50)" opacity="0.8"/>
+  </g>
+
+  <!-- seams (version-matched boundaries; staircase-tailed draw-ins) -->
+  <path class="bst-seam" style="--i: 0" pathLength="1" d="M 0 444 H 1176 v 4 h 24"/>
+  <path class="bst-seam" style="--i: 1" pathLength="1" d="M 0 400 H 1080 v 4 h 24"/>
+  <path class="bst-seam" style="--i: 2" pathLength="1" d="M 0 356 H 1136 v 4 h 24"/>
+  <path class="bst-seam" style="--i: 3" pathLength="1" d="M 0 316 H 992 v 4 h 24"/>
+  <path class="bst-seam" style="--i: 4" pathLength="1" d="M 0 280 H 1096 v 4 h 24"/>
+  <path class="bst-seam" style="--i: 5" pathLength="1" d="M 0 248 H 928 v 4 h 24"/>
+  <path class="bst-seam" style="--i: 6" pathLength="1" d="M 0 220 H 1040 v 4 h 24"/>
+  <path class="bst-seam" style="--i: 7" pathLength="1" d="M 0 196 H 856 v 4 h 24"/>
+
+  <!-- RGB-split boot jitter at each stratum's leading edge -->
+  <g class="bst-split" style="--i: 0">
+    <rect class="bst-split-r" x="1156" y="460" width="24" height="24"/>
+    <rect class="bst-split-c" x="1164" y="460" width="24" height="24"/>
+  </g>
+  <g class="bst-split" style="--i: 1">
+    <rect class="bst-split-r" x="1060" y="408" width="24" height="24"/>
+    <rect class="bst-split-c" x="1068" y="408" width="24" height="24"/>
+  </g>
+  <g class="bst-split" style="--i: 2">
+    <rect class="bst-split-r" x="1116" y="364" width="24" height="24"/>
+    <rect class="bst-split-c" x="1124" y="364" width="24" height="24"/>
+  </g>
+  <g class="bst-split" style="--i: 3">
+    <rect class="bst-split-r" x="972" y="324" width="24" height="24"/>
+    <rect class="bst-split-c" x="980" y="324" width="24" height="24"/>
+  </g>
+  <g class="bst-split" style="--i: 4">
+    <rect class="bst-split-r" x="1076" y="284" width="24" height="24"/>
+    <rect class="bst-split-c" x="1084" y="284" width="24" height="24"/>
+  </g>
+  <g class="bst-split" style="--i: 5">
+    <rect class="bst-split-r" x="908" y="252" width="24" height="24"/>
+    <rect class="bst-split-c" x="916" y="252" width="24" height="24"/>
+  </g>
+  <g class="bst-split" style="--i: 6">
+    <rect class="bst-split-r" x="1020" y="224" width="24" height="20"/>
+    <rect class="bst-split-c" x="1028" y="224" width="24" height="20"/>
+  </g>
+  <g class="bst-split" style="--i: 7">
+    <rect class="bst-split-r" x="836" y="200" width="24" height="16"/>
+    <rect class="bst-split-c" x="844" y="200" width="24" height="16"/>
+  </g>
+
+  <!-- seam shimmer halo (ambient blink) -->
+  <rect class="bst-halo-px" x="516" y="204" width="336" height="24" fill="url(#bst-dok50)"/>
+
+  <!-- reboot flashes (full-frame, 1-frame checker pulses) -->
+  <rect class="bst-flash bst-flash-1" x="0" y="0" width="1200" height="500" fill="url(#bst-fl50)"/>
+  <rect class="bst-flash bst-flash-2" x="0" y="0" width="1200" height="500" fill="url(#bst-fl50)"/>
+
+  <!-- dependency comets dropping through the stack -->
+  <rect class="bst-comet bst-c1" x="-4" y="-4" width="8" height="8"/>
+  <rect class="bst-comet bst-c2" x="-4" y="-4" width="8" height="8"/>
+  <rect class="bst-comet bst-c3" x="-4" y="-4" width="8" height="8"/>
+
+  <!-- rolling scanline band (ambient) -->
+  <rect class="bst-roll" x="0" y="0" width="1200" height="40" fill="#f8fafc"/>
+
+  <!-- raster finish: interlaced scanlines + static grain -->
+  <rect class="bst-scan-a" x="0" y="0" width="1200" height="500" fill="url(#bst-scan)"/>
+  <rect class="bst-scan-b" x="0" y="1" width="1200" height="499" fill="url(#bst-scan)"/>
+  <rect x="0" y="0" width="1200" height="500" filter="url(#bst-grain)"/>
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 7000; // strata ~2.6s, flashes 2.6/4.4s, uncover 5.2s, comets end ~6.6s
+
+  // fg:begin hero-start v1
+  const root = document.currentScript.closest('.fg-diagram');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    root.classList.add('is-settled'); // final composition, no motion
+  } else {
+    let started = false;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!started) {
+        if (!e.isIntersecting) return;
+        started = true; // intro plays once per page load
+        root.classList.add('is-live');
+        setTimeout(() => root.classList.add('is-settled'), INTRO_MS);
+      } else {
+        root.classList.toggle('is-paused', !e.isIntersecting);
+      }
+    }), { threshold: 0.3 });
+    io.observe(root);
+  }
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

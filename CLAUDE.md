@@ -202,8 +202,10 @@ timeline cadence). Hero choreography additionally gets
 `var(--stagger)` (80ms stagger unit, `calc(var(--i) * var(--stagger))`
 with `style="--i: N"` per element), plus the raster frame-tick set:
 `var(--ease-frames)` (steps(10)), `var(--ease-frames-coarse)`
-(steps(4, jump-none)) and `var(--dur-tick)` (100ms — one "GIF frame";
-loops as `calc(var(--dur-tick) * N)` with `steps(N)`). The validator
+(steps(4, jump-none)), `var(--ease-frames-fine)` (steps(24, jump-none) —
+comet-grade sweeps), `var(--dur-tick)` (100ms — one "GIF frame";
+loops as `calc(var(--dur-tick) * N)` with `steps(N)`) and
+`var(--dur-flicker)` (800ms — the interlace-flicker floor). The validator
 rejects literal `cubic-bezier()` or hand-mixed dim hexes outside
 managed blocks.
 
@@ -237,7 +239,22 @@ Interaction patterns to reuse (see `shared/snippets.js`):
   `var(--dur-tick)`-based stepped loops, and texture from the RASTER
   KIT section of `shared/effects.css` (Bayer dither fills, scanlines,
   static grain, dithered blink halos instead of blur glows, staircase
-  lines instead of smooth beziers).
+  lines instead of smooth beziers). RASTER KIT v2 adds discrete
+  posterize (`feComponentTransfer type="discrete"` with
+  `color-interpolation-filters="sRGB"`), RGB-split chromatic aberration
+  (screened red/cyan duplicates inside an `isolation: isolate` group),
+  checkerboard dissolves (hard-cut dither-density chains instead of
+  opacity fades — plain alpha fades are the biggest "modern" tell),
+  band glitch (clip-path bands, transform-only stepped shear), interlace
+  flicker, a static pixelation filter chain, feMorphology slab strokes
+  and an `@property` stepped drive. Additional hard rules that travel
+  with v2: **filters only on static bounded subtrees** (a filter over
+  animating content re-rasterizes every frame); **interlace flicker
+  never exceeds 0.1 opacity delta and never cycles faster than
+  `var(--dur-flicker)`** (WCAG 2.3.1); SVG `<pattern>` fills over large
+  areas are a Chromium slow path — prefer a CSS
+  `repeating-conic-gradient` background on the container or a larger
+  scaled tile for full-panel dither.
 
 ## Embedding in the blog
 

@@ -41,6 +41,39 @@ The recipe (copy-sources in the RASTER KIT section of
 - `image-rendering: pixelated` does nothing for SVG shapes — don't
   cargo-cult it; the chunkiness comes from the grid and `crispEdges`.
 
+The v2 tier of the kit (same section of `shared/effects.css`, live in
+the sampler's bottom row):
+
+- **Discrete posterize** — `feComponentTransfer type="discrete"` snaps
+  gradients into hard indexed-color bands;
+  `color-interpolation-filters="sRGB"` is mandatory or the bands land
+  wrong. Filters go on **static** subtrees only — a filter over
+  animating content re-rasterizes every frame.
+- **RGB split** — red/cyan duplicates offset ±1 raster pixel with
+  `mix-blend-mode: screen` inside an `isolation: isolate` group; the
+  stepped jitter variant is intro-only.
+- **Checkerboard dissolve** — elements enter by hard-cutting through
+  dither densities (25 → 50 → 75 → solid) with `steps(1)`. **No plain
+  opacity fades in heroes** — smooth alpha is the biggest "modern web"
+  tell in a retro frame.
+- **Band glitch** — group copies clipped to horizontal bands, shearing
+  via held-frame stepped transforms. Transform only, never animate the
+  clip-path; gated off under reduced motion.
+- **Interlace flicker** — two offset scanline layers alternating with
+  `steps(2)`. Hard limits: opacity delta ≤ 0.1, cycle ≥
+  `var(--dur-flicker)` (800ms) — WCAG 2.3.1; reduced-motion gated.
+- **Static pixelation** — the feFlood→feTile→feMorphology chain
+  pixelates content you can't hand-grid (text, gradient blobs); static
+  subtrees only, explicit filter region for Safari.
+- Perf: SVG `<pattern>` fills over large areas are a Chromium slow
+  path — full-panel dither is cheaper as a CSS
+  `repeating-conic-gradient` background on the container.
+
+Watchlist (documented, deliberately not kit yet): scroll-driven
+`animation-timeline` + steps() flipbooks (Firefox stable still
+flagged), feImage/feDisplacementMap CRT warp (Safari feImage
+flakiness; animating it would break the static-filter rule).
+
 ## Palette semantics
 
 One palette, classic dark, defined in `shared/tokens.css` and stamped
