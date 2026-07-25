@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Mech Interp sandbox</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>The Mech Interp sandbox</h1>
+<p>Hover a boundary, container, or mount to inspect the Mech Interp sandbox: a long-running JupyterLab service on 127.0.0.1:8888 with the shared hardening floor, its own bridge network, and a read-write repo mount.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-interp-workbench">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-interp-workbench {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-hero-in: 900ms;
+  --stagger: 80ms;
+  --ease-frames: steps(10);
+  --ease-frames-coarse: steps(4, jump-none);
+  --dur-tick: 100ms;
+  --px-outline: #0b1020;
+  --px-steel-1: #232c44;
+  --px-steel-2: #3b4a5e;
+  --px-steel-3: #64748b;
+  --px-steel-4: #a7b0b8;
+  --px-amber-1: #92400e;
+  --px-amber-2: #f59e0b;
+  --px-amber-3: #fcd34d;
+  --px-green-1: #166534;
+  --px-green-2: #34d399;
+  --px-green-3: #a7f3d0;
+  --px-sky-1: #0369a1;
+  --px-sky-2: #38bdf8;
+  --px-sky-3: #bae6fd;
+  --px-dusk-1: #2b1b3d;
+  --px-dusk-2: #7c3a58;
+  --px-dusk-3: #e8a87c;
+  --px-violet-1: #3c2a6e;
+  --px-violet-2: #a78bfa;
+  --px-violet-3: #ddd6fe;
+  --px-hot-1: #7f1d1d;
+  --px-hot-2: #f87171;
+  --px-hot-3: #fdba74;
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-interp-workbench {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-interp-workbench svg { display: block; width: 100%; height: auto; }
+.fg-interp-workbench text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-interp-workbench {
+  padding: 16px 16px 12px;
+}
+
+/* --- diagram-specific styling ------------------------------------- */
+.fg-interp-workbench .ipw-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-interp-workbench .ipw-group:hover .ipw-box { fill: var(--accent-dim); stroke: var(--accent); }
+.fg-interp-workbench .ipw-group.ipw-ok:hover .ipw-box { fill: var(--ok-dim); stroke: var(--ok); }
+.fg-interp-workbench .ipw-group.ipw-warn:hover .ipw-box { fill: var(--warn-dim); stroke: var(--warn); }
+.fg-interp-workbench .ipw-group:hover .ipw-sub { fill: var(--text); }
+
+/* glow pattern: halo rects are blurred once, statically; only opacity animates */
+.fg-interp-workbench .ipw-halo {
+  filter: blur(6px); opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.fg-interp-workbench .ipw-group:hover .ipw-halo { opacity: 0.45; }
+.fg-interp-workbench .ipw-halo-acc { fill: var(--accent); }
+.fg-interp-workbench .ipw-halo-ok  { fill: var(--ok); }
+.fg-interp-workbench .ipw-halo-warn { fill: var(--warn); }
+.fg-interp-workbench .ipw-zone {
+  fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
+  transition: stroke 0.3s; cursor: pointer;
+}
+.fg-interp-workbench .ipw-group:hover .ipw-zone { stroke: var(--accent); }
+.fg-interp-workbench .ipw-wall {
+  stroke: var(--hot); stroke-width: 3; fill: none;
+}
+/* the localhost wall is the thesis boundary — the one ambient effect is a
+   slow hot sheen traveling along it (matches the inference topology) */
+.fg-interp-workbench .ipw-wall-sweep {
+  animation: fg-ipw-sweep 7s var(--ease) infinite;
+}
+@keyframes fg-ipw-sweep {
+  0%        { transform: translateX(-80px); opacity: 0; }
+  6%        { opacity: 0.6; }
+  38%       { transform: translateX(740px); opacity: 0.6; }
+  44%, 100% { transform: translateX(740px); opacity: 0; }
+}
+.fg-interp-workbench .ipw-blocked {
+  stroke: var(--hot); stroke-width: 2; fill: none; stroke-dasharray: 4 4;
+}
+.fg-interp-workbench .ipw-title { fill: var(--text); font-size: 13.5px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-interp-workbench .ipw-sub   { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; transition: fill 0.3s; }
+.fg-interp-workbench .ipw-label { fill: var(--muted); font-size: 12px; }
+.fg-interp-workbench .ipw-port  { fill: var(--ok); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-interp-workbench .ipw-deny  { fill: var(--hot); font-size: 11px; font-weight: 600; text-anchor: middle; }
+.fg-interp-workbench .ipw-flow {
+  stroke: var(--line); stroke-width: 2; fill: none;
+  stroke-dasharray: 5 4; animation: fg-ipw-flow 1.4s linear infinite;
+}
+@keyframes fg-ipw-flow { to { stroke-dashoffset: -18; } }
+.fg-interp-workbench .ipw-flow-ok { stroke: var(--ok); }
+/* mounts are static links: the attach is passive, not traffic */
+.fg-interp-workbench .ipw-link {
+  stroke: var(--line); stroke-width: 2; fill: none; stroke-dasharray: 5 4;
+}
+.fg-interp-workbench { --fg-cap-minh: 6.6em; }
+
+/* fg:begin caption-box v1 */
+.fg-interp-workbench .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
+  border-radius: 0 8px 8px 0;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
+}
+/* fg:end caption-box */
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-interp-workbench, .fg-interp-workbench * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .fg-interp-workbench .ipw-wall-sweep { display: none; }
+  .fg-interp-workbench .ipw-group:hover .ipw-halo { opacity: 0.45; } /* hover halo stays, without transition */
+}
+</style>
+
+<svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Mech Interp sandbox: JupyterLab binds to 127.0.0.1:8888 only, token-authenticated, with remote access over an SSH tunnel. The interp container keeps the shared hardening floor — cap_drop ALL, no-new-privileges, read-only rootfs, non-root — on its own interp-network bridge with one reserved GPU. Four mounts attach: the repository read-write at /workspace, a writable artifact tree at /mnt/ai-data/interp, models read-only, and a writable harvest seam into /mnt/ai-data/training.">
+  <defs>
+    <marker id="ipw-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+    <marker id="ipw-arrow-hot" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171"/>
+    </marker>
+    <linearGradient id="ipw-sweep-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0"   style="stop-color: var(--hot)" stop-opacity="0"/>
+      <stop offset="0.5" style="stop-color: var(--hot)" stop-opacity="0.5"/>
+      <stop offset="1"   style="stop-color: var(--hot)" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="ipw-sweep-clip"><rect x="20" y="40" width="720" height="8"/></clipPath>
+  </defs>
+
+  <!-- the outside world, walled off at loopback -->
+  <text class="ipw-label" x="20" y="30">rest of the network / internet</text>
+  <g class="ipw-group" data-info="The wall: 127.0.0.1:8888 — Jupyter is a shell on the machine, so its port never leaves loopback. JUPYTER_TOKEN is generated fresh per launch by make interp-up; remote access rides an SSH tunnel, never a wider bind.">
+    <line class="ipw-wall" x1="20" y1="44" x2="740" y2="44"/>
+    <g clip-path="url(#ipw-sweep-clip)">
+      <rect class="ipw-wall-sweep" x="20" y="40" width="60" height="8" fill="url(#ipw-sweep-grad)"/>
+    </g>
+    <path class="ipw-blocked" d="M 680 14 L 680 38" marker-end="url(#ipw-arrow-hot)"/>
+    <text class="ipw-deny" x="380" y="66">inbound blocked — JupyterLab binds to 127.0.0.1 only, token required</text>
+  </g>
+
+  <!-- host zone -->
+  <g class="ipw-group" data-info="Host (localhost) — the browser reaches JupyterLab through loopback only; nothing on the LAN can see the port. A remote laptop gets in by SSH-tunneling to the workstation, which keeps authentication on SSH keys.">
+    <rect class="ipw-zone" x="20" y="80" width="720" height="72" rx="10"/>
+  </g>
+  <text class="ipw-label" x="34" y="102">host · browser at 127.0.0.1:8888 · SSH tunnel from elsewhere</text>
+  <g class="ipw-group" data-info="JupyterLab — the Mech Interp entry point, started explicitly by make interp-up after preflight. A notebook kernel executes arbitrary code by design, which is exactly why the container around it keeps the full hardening floor.">
+    <rect class="ipw-halo ipw-halo-acc" x="290" y="104" width="180" height="40" rx="6"/>
+    <rect class="ipw-box" x="290" y="104" width="180" height="40" rx="6"/>
+    <text class="ipw-title" x="380" y="124">JupyterLab</text>
+    <text class="ipw-sub" x="380" y="138">127.0.0.1:8888 · token</text>
+  </g>
+
+  <path class="ipw-flow ipw-flow-ok" d="M 380 152 L 380 188" marker-end="url(#ipw-arrow-ok)"/>
+  <text class="ipw-port" x="404" y="176">:8888</text>
+
+  <!-- interp-network zone -->
+  <g class="ipw-group" data-info="interp-network — the Mech Interp container's own bridge. It never joins ai-network: the GPU inference stack and the Mech Interp session are never up at the same time, so there is nothing to be adjacent to.">
+    <rect class="ipw-zone" x="20" y="192" width="720" height="128" rx="10"/>
+  </g>
+  <text class="ipw-label" x="34" y="216">interp-network · own bridge · never joins ai-network</text>
+
+  <g class="ipw-group" data-info="interp container — the same floor as every service in the series: cap_drop ALL, no-new-privileges, read-only rootfs, non-root. Writable scratch is tmpfs only (/tmp, 8GB, exec flag for the CUDA and Triton JIT caches); 8GB shm feeds dataloader workers. restart: no — started explicitly, never on boot.">
+    <rect class="ipw-halo ipw-halo-acc" x="60" y="232" width="400" height="72" rx="8"/>
+    <rect class="ipw-box" x="60" y="232" width="400" height="72" rx="8"/>
+    <text class="ipw-title" x="260" y="256">Mech Interp container</text>
+    <text class="ipw-sub" x="260" y="274">cap_drop ALL · no-new-privileges · read_only · non-root</text>
+    <text class="ipw-sub" x="260" y="290">tmpfs /tmp 8G exec · shm 8g · restart: no</text>
+  </g>
+  <g class="ipw-group" data-info="RTX 5090 + preflight — one GPU consumer at a time. scripts/interp/preflight.sh refuses to start the session while llama-gpu or vllm-gpu is running (llama-cpu on its dedicated cores is permitted), and the check runs on the host before anything starts.">
+    <rect class="ipw-halo ipw-halo-acc" x="520" y="232" width="180" height="72" rx="8"/>
+    <rect class="ipw-box" x="520" y="232" width="180" height="72" rx="8"/>
+    <text class="ipw-title" x="610" y="256">RTX 5090</text>
+    <text class="ipw-sub" x="610" y="274">1 GPU reserved</text>
+    <text class="ipw-sub" x="610" y="290">preflight: sole consumer</text>
+  </g>
+  <path class="ipw-link" d="M 460 268 L 516 268"/>
+
+  <!-- mounts -->
+  <path class="ipw-link" d="M 105 348 L 105 308"/>
+  <path class="ipw-link" d="M 296 348 L 296 308"/>
+  <path class="ipw-link" d="M 482 348 L 460 296"/>
+  <path class="ipw-link" d="M 659 348 L 640 308"/>
+
+  <g class="ipw-group ipw-warn" data-info="Repository at /workspace, read-write — the biggest single loosening in the series: notebooks and code live in git, so the session edits the working tree directly. Accepted because the code is ours and a human drives every cell; recovery is git diff and git checkout.">
+    <rect class="ipw-halo ipw-halo-warn" x="20" y="352" width="170" height="56" rx="8"/>
+    <rect class="ipw-box" x="20" y="352" width="170" height="56" rx="8"/>
+    <text class="ipw-title" x="105" y="374">repo → /workspace</text>
+    <text class="ipw-sub" x="105" y="392">rw — notebooks, code</text>
+  </g>
+  <g class="ipw-group ipw-ok" data-info="/mnt/ai-data/interp — the writable artifact tree: activations, SAEs, probes, steering vectors, and the HF cache. Heavy outputs land on NVMe once and never in git.">
+    <rect class="ipw-halo ipw-halo-ok" x="206" y="352" width="180" height="56" rx="8"/>
+    <rect class="ipw-box" x="206" y="352" width="180" height="56" rx="8"/>
+    <text class="ipw-title" x="296" y="374">/mnt/ai-data/interp</text>
+    <text class="ipw-sub" x="296" y="392">rw — artifacts, HF cache</text>
+  </g>
+  <g class="ipw-group" data-info="/mnt/ai-data/models — served weights mount read-only, exactly as the inference services mount them. The Mech Interp session can read provenance of served GGUFs; it can never modify what inference serves.">
+    <rect class="ipw-halo ipw-halo-acc" x="402" y="352" width="160" height="56" rx="8"/>
+    <rect class="ipw-box" x="402" y="352" width="160" height="56" rx="8"/>
+    <text class="ipw-title" x="482" y="374">/mnt/ai-data/models</text>
+    <text class="ipw-sub" x="482" y="392">:ro — weights in</text>
+  </g>
+  <g class="ipw-group ipw-ok" data-info="/mnt/ai-data/training — the harvest seam: harvest jobs read organism checkpoints from the training tree and take the same run lock as training runs, so the two tiers never collide on the GPU or the files.">
+    <rect class="ipw-halo ipw-halo-ok" x="578" y="352" width="162" height="56" rx="8"/>
+    <rect class="ipw-box" x="578" y="352" width="162" height="56" rx="8"/>
+    <text class="ipw-title" x="659" y="374">/mnt/ai-data/training</text>
+    <text class="ipw-sub" x="659" y="392">rw — harvest seam</text>
+  </g>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover a boundary, container, or mount to see the control it carries.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+
+  // fg:begin hover-caption v1
+  const caption = root.querySelector('[data-fg="caption"]');
+  const captionDefault = caption.textContent;
+  root.querySelectorAll('[data-info]').forEach((el) => {
+    el.addEventListener('mouseenter', () => {
+      caption.textContent = el.getAttribute('data-info');
+      caption.classList.add('is-active');
+    });
+    el.addEventListener('mouseleave', () => {
+      caption.textContent = captionDefault;
+      caption.classList.remove('is-active');
+    });
+  });
+  // fg:end hover-caption
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

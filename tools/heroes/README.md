@@ -15,6 +15,7 @@ template pair in this directory, sharing common machinery from
 |---|---|---|
 | `diagrams/linux-ai-setup/workstation-night.html` | `workstation-night.py` | `wsn-template.html` |
 | `diagrams/linux-ai-setup/motherboard-city.html` | `motherboard-city.py` | `mbc-template.html` |
+| `diagrams/sandboxing/training-net.html` | `training-net.py` | `tnet-template.html` |
 
 ## Pipeline
 

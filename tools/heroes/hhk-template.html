@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hooded hacker</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Hooded hacker</h1>
+<p>Pixel-art hero: a hooded figure behind an open laptop, lit from below by the screen, with code rain falling in the background. The hood pops in dark, the eyes snap on, the screen wakes; then the eyes blink, the chest glow shifts, and the rain cycles forever.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-hooded-hacker">
+<style>
+/* fg:begin palette-classic v1 */
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+/* fg:end panel-base */
+.fg-hooded-hacker {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+.fg-hooded-hacker svg { shape-rendering: crispEdges; }
+
+/* fg:sync-exempt hhk-rain hhk-glow — grouping classes; their frame
+   variants (hhk-rain-N, hhk-glow-N) carry the rules */
+/* --- static scene defaults ------------------------------------------ */
+/* One large hooded figure behind a laptop, code rain behind. Intro:
+   hood pops in dark -> eyes snap on -> screen elements and chest glow
+   wake together. Ambient: eye blink, glow flipbook, rain cycle. */
+.fg-hooded-hacker .hhk-pop { opacity: 0; }
+.fg-hooded-hacker .hhk-eye { opacity: 0; }
+.fg-hooded-hacker .hhk-scr { opacity: 0; }
+.fg-hooded-hacker .hhk-glow-1,
+.fg-hooded-hacker .hhk-glow-2 { opacity: 0; }
+.fg-hooded-hacker .hhk-rain-1,
+.fg-hooded-hacker .hhk-rain-2,
+.fg-hooded-hacker .hhk-rain-3 { opacity: 0; }
+
+/* --- intro ----------------------------------------------------------- */
+.fg-hooded-hacker.is-live .hhk-pop {
+  animation: fg-hhk-pop 0.5s var(--ease-frames-coarse) both;
+}
+/* one-shot reveals: steps(1, jump-start) + delay (a jump-end at exactly
+   100% can be missed to float error) — eyes staggered, then the screen
+   wake lights the lid edge, logo, and chest glow together */
+.fg-hooded-hacker.is-live .hhk-eye {
+  animation: fg-hhk-on 0.1s steps(1, jump-start)
+    calc(1.1s + var(--i) * 0.15s) both;
+}
+.fg-hooded-hacker.is-live .hhk-scr,
+.fg-hooded-hacker.is-live .hhk-glow-1 {
+  animation: fg-hhk-on 0.1s steps(1, jump-start) 1.7s both;
+}
+
+@keyframes fg-hhk-pop { from { opacity: 0; transform: translateY(16px); }
+                        to   { opacity: 1; transform: none; } }
+@keyframes fg-hhk-on { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+/* --- settled state (complete final composition; the reduced-motion
+       rendering) ---------------------------------------------------- */
+.fg-hooded-hacker.is-settled .hhk-pop { opacity: 1; transform: none; }
+.fg-hooded-hacker.is-settled .hhk-eye { opacity: 1; }
+.fg-hooded-hacker.is-settled .hhk-scr { opacity: 1; }
+.fg-hooded-hacker.is-settled .hhk-glow-1 { opacity: 1; }
+.fg-hooded-hacker.is-settled .hhk-glow-2 { opacity: 0; }
+.fg-hooded-hacker.is-settled .hhk-rain-1 { opacity: 1; }
+.fg-hooded-hacker.is-settled .hhk-rain-2,
+.fg-hooded-hacker.is-settled .hhk-rain-3 { opacity: 0; }
+
+/* --- ambient loop (exactly 3: blink, glow flipbook, rain cycle) ----- */
+/* eyes: mostly on, brief periodic blink; offset clock via delay */
+.fg-hooded-hacker.is-settled .hhk-eye {
+  animation: fg-hhk-blink calc(var(--dur-tick) * 20) steps(1, jump-end)
+    calc(var(--dur-tick) * 7) infinite;
+}
+/* chest glow: two patterns alternating — the screen content changing */
+.fg-hooded-hacker.is-settled .hhk-glow-1 {
+  animation: fg-hhk-glow-f1 calc(var(--dur-tick) * 12) steps(1, jump-end) infinite;
+}
+.fg-hooded-hacker.is-settled .hhk-glow-2 {
+  animation: fg-hhk-glow-f2 calc(var(--dur-tick) * 12) steps(1, jump-end) infinite;
+}
+/* code rain: 3 frames, stream shifted per frame so it reads as falling */
+.fg-hooded-hacker.is-settled .hhk-rain-1 {
+  animation: fg-hhk-rain-f1 calc(var(--dur-tick) * 6) steps(1, jump-end) infinite;
+}
+.fg-hooded-hacker.is-settled .hhk-rain-2 {
+  animation: fg-hhk-rain-f2 calc(var(--dur-tick) * 6) steps(1, jump-end) infinite;
+}
+.fg-hooded-hacker.is-settled .hhk-rain-3 {
+  animation: fg-hhk-rain-f3 calc(var(--dur-tick) * 6) steps(1, jump-end) infinite;
+}
+.fg-hooded-hacker.is-paused .hhk-eye,
+.fg-hooded-hacker.is-paused .hhk-glow-1,
+.fg-hooded-hacker.is-paused .hhk-glow-2,
+.fg-hooded-hacker.is-paused .hhk-rain-1,
+.fg-hooded-hacker.is-paused .hhk-rain-2,
+.fg-hooded-hacker.is-paused .hhk-rain-3 { animation-play-state: paused; }
+
+@keyframes fg-hhk-blink { 0%, 84% { opacity: 1; } 85%, 89% { opacity: 0; }
+                          90%, 100% { opacity: 1; } }
+@keyframes fg-hhk-glow-f1 { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes fg-hhk-glow-f2 { 0%, 49% { opacity: 0; } 50%, 100% { opacity: 1; } }
+@keyframes fg-hhk-rain-f1 { 0%, 32% { opacity: 1; } 33%, 100% { opacity: 0; } }
+@keyframes fg-hhk-rain-f2 { 0%, 32% { opacity: 0; } 33%, 65% { opacity: 1; }
+                            66%, 100% { opacity: 0; } }
+@keyframes fg-hhk-rain-f3 { 0%, 65% { opacity: 0; } 66%, 100% { opacity: 1; } }
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Pixel-art animated hero: a hooded figure sits behind an open laptop, face in shadow except two glowing green eyes, the screen's light rimming the chest and the laptop's lid edge, while columns of green code rain fall in the dark behind. The hood appears first, the eyes snap on, the screen wakes; then the eyes blink, the screen glow shifts, and the rain falls in a loop.">
+@SPRITES@
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2200; // pop 0.5s, eyes 1.1-1.35s, screen wake 1.7s
+
+  // fg:begin hero-start v1
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
