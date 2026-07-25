@@ -498,5 +498,13 @@
     "post": "linux-ai-setup",
     "kind": "hero",
     "description": "Pure pixel-art hero (no raster effects): a robot at a desk presses the tower's power button and the monitor boots \u2014 POST rows, a boot logo with loading dots, then a desktop with a blinking cursor."
+  },
+  {
+    "id": "workstation-night",
+    "path": "diagrams/linux-ai-setup/workstation-night.html",
+    "title": "Workstation at night",
+    "post": "linux-ai-setup",
+    "kind": "hero",
+    "description": "Pixel-art night-scene hero: a dark room where the booting monitor is the only light source \u2014 its glow spills onto wall, desk, and floor in the color of each boot phase (flash, POST green, logo amber, desktop violet) while rain falls past a moonlit city skyline outside the window."
   }
 ]
