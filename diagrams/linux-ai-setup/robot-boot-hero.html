@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Robot boots Ubuntu — hero</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Robot boots Ubuntu — hero</h1>
+<p>Pure pixel-art hero, no raster effects: a robot at a desk presses the tower's power button and the monitor boots — POST rows, a boot logo, then a desktop — all hand-placed pixel rects and stepped frames.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-robot-boot-hero">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-robot-boot-hero {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-hero-in: 900ms;
+  --stagger: 80ms;
+  --ease-frames: steps(10);
+  --ease-frames-coarse: steps(4, jump-none);
+  --dur-tick: 100ms;
+  --ease-frames-fine: steps(24, jump-none);
+  --dur-flicker: 800ms;
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-robot-boot-hero {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-robot-boot-hero svg { display: block; width: 100%; height: auto; }
+.fg-robot-boot-hero text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-robot-boot-hero {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+.fg-robot-boot-hero svg { shape-rendering: crispEdges; }
+
+/* --- static scene defaults ------------------------------------------ */
+/* Clean-pixel experiment: every shape is a hand-placed 8-unit pixel
+   rect; no filters, patterns, or overlay textures anywhere. */
+.fg-robot-boot-hero .rbh-pop { opacity: 0; }
+.fg-robot-boot-hero .rbh-arm-ext { opacity: 0; }
+.fg-robot-boot-hero .rbh-led { opacity: 0; }
+.fg-robot-boot-hero .rbh-flash,
+.fg-robot-boot-hero .rbh-scene-post,
+.fg-robot-boot-hero .rbh-scene-logo,
+.fg-robot-boot-hero .rbh-scene-desktop { opacity: 0; }
+.fg-robot-boot-hero .rbh-post-row { opacity: 0; }
+.fg-robot-boot-hero .rbh-boot-dot { opacity: 0; }
+.fg-robot-boot-hero .rbh-fan-b { opacity: 0; }
+
+/* --- intro: master 7s stepped timeline on .is-live ------------------ */
+.fg-robot-boot-hero.is-live .rbh-pop {
+  animation: fg-rbh-pop 0.4s var(--ease-frames-coarse)
+    calc(var(--i) * calc(var(--stagger) * 2)) both;
+}
+.fg-robot-boot-hero.is-live .rbh-arm-rest {
+  animation: fg-rbh-arm-rest 7s steps(1, jump-end) both;
+}
+.fg-robot-boot-hero.is-live .rbh-arm-ext {
+  animation: fg-rbh-arm-ext 7s steps(1, jump-end) both;
+}
+.fg-robot-boot-hero.is-live .rbh-button {
+  animation: fg-rbh-press 7s steps(1, jump-end) both;
+}
+.fg-robot-boot-hero.is-live .rbh-led {
+  animation: fg-rbh-led-on 7s steps(1, jump-end) both;
+}
+.fg-robot-boot-hero.is-live .rbh-scene-off {
+  animation: fg-rbh-sc-off 7s steps(1, jump-end) both;
+}
+.fg-robot-boot-hero.is-live .rbh-flash {
+  animation: fg-rbh-sc-flash 7s steps(1, jump-end) both;
+}
+.fg-robot-boot-hero.is-live .rbh-scene-post {
+  animation: fg-rbh-sc-post 7s steps(1, jump-end) both;
+}
+.fg-robot-boot-hero.is-live .rbh-post-row {
+  animation: fg-rbh-on 0.1s steps(1, jump-end)
+    calc(2.5s + var(--i) * 0.3s) both;
+}
+.fg-robot-boot-hero.is-live .rbh-scene-logo {
+  animation: fg-rbh-sc-logo 7s steps(1, jump-end) both;
+}
+.fg-robot-boot-hero.is-live .rbh-boot-dot {
+  animation: fg-rbh-on 0.1s steps(1, jump-end)
+    calc(4.7s + var(--i) * 0.15s) both;
+}
+.fg-robot-boot-hero.is-live .rbh-scene-desktop {
+  animation: fg-rbh-sc-desktop 7s steps(1, jump-end) both;
+}
+.fg-robot-boot-hero.is-live .rbh-head {
+  animation: fg-rbh-nod 7s steps(1, jump-end) both;
+}
+.fg-robot-boot-hero.is-live .rbh-fan-a,
+.fg-robot-boot-hero.is-settled .rbh-fan-a {
+  animation: fg-rbh-fan-a calc(var(--dur-tick) * 4) steps(2, jump-none) 1.8s infinite;
+}
+.fg-robot-boot-hero.is-live .rbh-fan-b,
+.fg-robot-boot-hero.is-settled .rbh-fan-b {
+  animation: fg-rbh-fan-b calc(var(--dur-tick) * 4) steps(2, jump-none) 1.8s infinite;
+}
+
+@keyframes fg-rbh-pop { from { opacity: 0; transform: translateY(16px); }
+                        to   { opacity: 1; transform: none; } }
+@keyframes fg-rbh-on { to { opacity: 1; } }
+/* arm swap: press between 1.6s (23%) and 2.2s (31%) */
+@keyframes fg-rbh-arm-rest { 0%, 22% { opacity: 1; } 23%, 31% { opacity: 0; } 32%, 100% { opacity: 1; } }
+@keyframes fg-rbh-arm-ext  { 0%, 22% { opacity: 0; } 23%, 31% { opacity: 1; } 32%, 100% { opacity: 0; } }
+@keyframes fg-rbh-press    { 0%, 24% { transform: none; } 25%, 30% { transform: translateX(6px); } 31%, 100% { transform: none; } }
+@keyframes fg-rbh-led-on   { 0%, 25% { opacity: 0; } 26%, 100% { opacity: 1; } }
+/* screen flipbook: off -> flash (31-33%) -> post (33-65%) -> logo (65-77%) -> desktop */
+@keyframes fg-rbh-sc-off     { 0%, 30% { opacity: 1; } 31%, 100% { opacity: 0; } }
+@keyframes fg-rbh-sc-flash   { 0%, 30% { opacity: 0; } 31%, 33% { opacity: 1; } 34%, 100% { opacity: 0; } }
+@keyframes fg-rbh-sc-post    { 0%, 33% { opacity: 0; } 34%, 64% { opacity: 1; } 65%, 100% { opacity: 0; } }
+@keyframes fg-rbh-sc-logo    { 0%, 64% { opacity: 0; } 65%, 76% { opacity: 1; } 77%, 100% { opacity: 0; } }
+@keyframes fg-rbh-sc-desktop { 0%, 76% { opacity: 0; } 77%, 100% { opacity: 1; } }
+@keyframes fg-rbh-nod { 0%, 76% { transform: none; } 77%, 81% { transform: translateY(8px); } 82%, 100% { transform: none; } }
+@keyframes fg-rbh-fan-a { 50% { opacity: 0; } }
+@keyframes fg-rbh-fan-b { 50% { opacity: 1; } }
+
+/* --- settled state (complete final composition; the reduced-motion
+       rendering) ---------------------------------------------------- */
+.fg-robot-boot-hero.is-settled .rbh-pop { opacity: 1; transform: none; }
+.fg-robot-boot-hero.is-settled .rbh-arm-rest { opacity: 1; }
+.fg-robot-boot-hero.is-settled .rbh-arm-ext { opacity: 0; }
+.fg-robot-boot-hero.is-settled .rbh-led { opacity: 1; }
+.fg-robot-boot-hero.is-settled .rbh-scene-off,
+.fg-robot-boot-hero.is-settled .rbh-flash,
+.fg-robot-boot-hero.is-settled .rbh-scene-post,
+.fg-robot-boot-hero.is-settled .rbh-scene-logo { opacity: 0; }
+.fg-robot-boot-hero.is-settled .rbh-scene-desktop { opacity: 1; }
+.fg-robot-boot-hero.is-settled .rbh-post-row,
+.fg-robot-boot-hero.is-settled .rbh-boot-dot { opacity: 1; }
+.fg-robot-boot-hero.is-settled .rbh-fan-a { opacity: 1; }
+
+/* --- ambient loop (exactly 3: cursor, LED heartbeat, fan flip) ------ */
+.fg-robot-boot-hero.is-settled .rbh-cursor {
+  animation: fg-rbh-cursor calc(var(--dur-tick) * 10) steps(2, jump-none) infinite;
+}
+.fg-robot-boot-hero.is-settled .rbh-led {
+  animation: fg-rbh-heartbeat calc(var(--dur-tick) * 20) steps(1, jump-end) infinite;
+}
+.fg-robot-boot-hero.is-paused .rbh-cursor,
+.fg-robot-boot-hero.is-paused .rbh-led,
+.fg-robot-boot-hero.is-paused .rbh-fan-a,
+.fg-robot-boot-hero.is-paused .rbh-fan-b { animation-play-state: paused; }
+
+@keyframes fg-rbh-cursor { 50% { opacity: 0; } }
+@keyframes fg-rbh-heartbeat { 0%, 85% { opacity: 1; } 86%, 92% { opacity: 0.3; } 93%, 100% { opacity: 1; } }
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-robot-boot-hero, .fg-robot-boot-hero * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Pixel-art animated hero: a boxy robot sits at a desk, reaches over and presses the power button on a PC tower; the tower's light turns on, its fan starts spinning, and the monitor boots — a flash, rows of startup text, a boot logo with loading dots, then a desktop — after which the robot settles in, a cursor blinking on screen.">
+  <g class="rbh-pop" style="--i: 0">
+    <rect x="0" y="448" width="1200" height="8" fill="var(--panel-hover)"/>
+    <rect x="0" y="456" width="1200" height="48" fill="var(--panel)"/>
+  </g>
+  <g class="rbh-pop" style="--i: 1">
+    <rect x="608" y="208" width="416" height="16" fill="var(--panel-hover)"/>
+    <rect x="624" y="224" width="16" height="224" fill="var(--panel)"/>
+    <rect x="992" y="224" width="16" height="224" fill="var(--panel)"/>
+  </g>
+  <g class="rbh-pop" style="--i: 2">
+    <rect x="448" y="224" width="128" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="232" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="232" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="232" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="240" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="240" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="240" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="248" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="248" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="248" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="256" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="256" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="256" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="264" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="264" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="264" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="272" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="272" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="272" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="280" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="280" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="280" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="288" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="288" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="288" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="296" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="296" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="296" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="304" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="304" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="304" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="312" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="312" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="312" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="320" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="320" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="320" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="328" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="328" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="328" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="336" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="336" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="336" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="344" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="344" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="344" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="352" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="352" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="352" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="360" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="360" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="360" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="368" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="368" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="368" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="376" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="376" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="376" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="384" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="384" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="384" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="392" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="392" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="392" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="400" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="400" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="400" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="408" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="408" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="408" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="416" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="416" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="416" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="424" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="424" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="424" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="432" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="456" y="432" width="112" height="8" fill="var(--panel)"/>
+    <rect x="568" y="432" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="448" y="440" width="128" height="8" fill="var(--panel-hover)"/>
+    <rect x="488" y="296" width="48" height="8" fill="var(--panel-hover)"/>
+    <rect x="480" y="304" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="536" y="304" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="472" y="312" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="544" y="312" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="472" y="320" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="544" y="320" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="472" y="328" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="544" y="328" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="472" y="336" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="544" y="336" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="472" y="344" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="544" y="344" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="472" y="352" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="544" y="352" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="480" y="360" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="536" y="360" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="488" y="368" width="48" height="8" fill="var(--panel-hover)"/>
+    <g class="rbh-fan-a">
+      <rect x="504" y="312" width="16" height="48" fill="var(--muted)"/>
+      <rect x="488" y="328" width="48" height="16" fill="var(--muted)"/>
+    </g>
+    <g class="rbh-fan-b">
+      <rect x="488" y="312" width="8" height="8" fill="var(--muted)"/>
+      <rect x="528" y="312" width="8" height="8" fill="var(--muted)"/>
+      <rect x="488" y="352" width="8" height="8" fill="var(--muted)"/>
+      <rect x="528" y="352" width="8" height="8" fill="var(--muted)"/>
+      <rect x="496" y="320" width="8" height="8" fill="var(--muted)"/>
+      <rect x="520" y="320" width="8" height="8" fill="var(--muted)"/>
+      <rect x="496" y="344" width="8" height="8" fill="var(--muted)"/>
+      <rect x="520" y="344" width="8" height="8" fill="var(--muted)"/>
+      <rect x="504" y="328" width="8" height="8" fill="var(--muted)"/>
+      <rect x="512" y="328" width="8" height="8" fill="var(--muted)"/>
+      <rect x="504" y="336" width="8" height="8" fill="var(--muted)"/>
+      <rect x="512" y="336" width="8" height="8" fill="var(--muted)"/>
+      <rect x="504" y="328" width="16" height="16" fill="var(--muted)"/>
+    </g>
+    <rect x="472" y="400" width="80" height="8" fill="var(--panel-hover)"/>
+    <rect x="472" y="416" width="80" height="8" fill="var(--panel-hover)"/>
+    <rect class="rbh-button" x="440" y="264" width="8" height="16" fill="var(--text)"/>
+    <rect class="rbh-led" x="464" y="240" width="8" height="8" fill="var(--ok)"/>
+  </g>
+  <g class="rbh-pop" style="--i: 3">
+    <rect x="688" y="32" width="256" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="40" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="40" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="40" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="48" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="48" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="48" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="56" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="56" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="56" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="64" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="64" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="64" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="72" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="72" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="72" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="80" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="80" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="80" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="88" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="88" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="88" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="96" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="96" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="96" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="104" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="104" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="104" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="112" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="112" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="112" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="120" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="120" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="120" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="128" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="128" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="128" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="136" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="136" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="136" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="144" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="144" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="144" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="152" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="152" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="152" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="160" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="160" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="160" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="168" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="168" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="168" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="176" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="696" y="176" width="240" height="8" fill="var(--bg)"/>
+    <rect x="936" y="176" width="8" height="8" fill="var(--panel-hover)"/>
+    <rect x="688" y="184" width="256" height="8" fill="var(--panel-hover)"/>
+    <rect x="800" y="192" width="24" height="8" fill="var(--panel-hover)"/>
+    <rect x="768" y="200" width="88" height="8" fill="var(--panel-hover)"/>
+    <g class="rbh-scene-off">
+      <rect x="704" y="48" width="224" height="128" fill="var(--bg)"/>
+    </g>
+    <rect class="rbh-flash" x="704" y="48" width="224" height="128" fill="var(--text)"/>
+    <g class="rbh-scene-post">
+      <rect x="704" y="48" width="224" height="128" fill="var(--bg)"/>
+      <rect class="rbh-post-row" style="--i: 0" x="712" y="56" width="128" height="8" fill="var(--muted)"/>
+      <rect class="rbh-post-row" style="--i: 1" x="712" y="72" width="160" height="8" fill="var(--muted)"/>
+      <rect class="rbh-post-row" style="--i: 2" x="712" y="88" width="96" height="8" fill="var(--muted)"/>
+      <rect class="rbh-post-row" style="--i: 3" x="712" y="104" width="176" height="8" fill="var(--muted)"/>
+      <rect class="rbh-post-row" style="--i: 4" x="712" y="120" width="80" height="8" fill="var(--muted)"/>
+      <rect class="rbh-post-row" style="--i: 5" x="712" y="136" width="144" height="8" fill="var(--muted)"/>
+      <rect class="rbh-post-row" style="--i: 6" x="712" y="152" width="32" height="8" fill="var(--ok)"/>
+    </g>
+    <g class="rbh-scene-logo">
+      <rect x="704" y="48" width="224" height="128" fill="var(--violet-dim)"/>
+      <rect x="808" y="64" width="24" height="8" fill="var(--warn)"/>
+      <rect x="800" y="72" width="8" height="8" fill="var(--warn)"/>
+      <rect x="832" y="72" width="8" height="8" fill="var(--warn)"/>
+      <rect x="792" y="80" width="8" height="8" fill="var(--warn)"/>
+      <rect x="840" y="80" width="8" height="8" fill="var(--warn)"/>
+      <rect x="792" y="88" width="8" height="8" fill="var(--warn)"/>
+      <rect x="816" y="88" width="8" height="8" fill="var(--warn)"/>
+      <rect x="840" y="88" width="8" height="8" fill="var(--warn)"/>
+      <rect x="792" y="96" width="8" height="8" fill="var(--warn)"/>
+      <rect x="840" y="96" width="8" height="8" fill="var(--warn)"/>
+      <rect x="800" y="104" width="8" height="8" fill="var(--warn)"/>
+      <rect x="832" y="104" width="8" height="8" fill="var(--warn)"/>
+      <rect x="808" y="112" width="24" height="8" fill="var(--warn)"/>
+      <rect class="rbh-boot-dot" style="--i: 0" x="784" y="144" width="8" height="8" fill="var(--warn)"/>
+      <rect class="rbh-boot-dot" style="--i: 1" x="800" y="144" width="8" height="8" fill="var(--warn)"/>
+      <rect class="rbh-boot-dot" style="--i: 2" x="816" y="144" width="8" height="8" fill="var(--warn)"/>
+      <rect class="rbh-boot-dot" style="--i: 3" x="832" y="144" width="8" height="8" fill="var(--warn)"/>
+    </g>
+    <g class="rbh-scene-desktop">
+      <rect x="704" y="48" width="224" height="128" fill="var(--violet-dim)"/>
+      <rect x="704" y="168" width="224" height="8" fill="var(--accent-dim)"/>
+      <rect x="712" y="168" width="8" height="8" fill="var(--warn)"/>
+      <rect x="720" y="64" width="104" height="8" fill="var(--panel-hover)"/>
+      <rect x="720" y="72" width="104" height="8" fill="var(--bg)"/>
+      <rect x="720" y="80" width="8" height="8" fill="var(--bg)"/>
+      <rect x="728" y="80" width="40" height="8" fill="var(--muted)"/>
+      <rect x="768" y="80" width="56" height="8" fill="var(--bg)"/>
+      <rect x="720" y="88" width="8" height="8" fill="var(--bg)"/>
+      <rect x="728" y="88" width="64" height="8" fill="var(--muted)"/>
+      <rect x="792" y="88" width="32" height="8" fill="var(--bg)"/>
+      <rect x="720" y="96" width="8" height="8" fill="var(--bg)"/>
+      <rect x="728" y="96" width="24" height="8" fill="var(--muted)"/>
+      <rect x="752" y="96" width="72" height="8" fill="var(--bg)"/>
+      <rect x="720" y="104" width="104" height="8" fill="var(--bg)"/>
+      <rect class="rbh-cursor" x="728" y="104" width="8" height="8" fill="var(--ok)"/>
+      <rect x="840" y="80" width="72" height="8" fill="var(--panel-hover)"/>
+      <rect x="840" y="88" width="72" height="8" fill="var(--panel)"/>
+      <rect x="840" y="96" width="8" height="8" fill="var(--panel)"/>
+      <rect x="848" y="96" width="48" height="8" fill="var(--muted)"/>
+      <rect x="896" y="96" width="16" height="8" fill="var(--panel)"/>
+      <rect x="840" y="104" width="8" height="8" fill="var(--panel)"/>
+      <rect x="848" y="104" width="32" height="8" fill="var(--muted)"/>
+      <rect x="880" y="104" width="32" height="8" fill="var(--panel)"/>
+      <rect x="840" y="112" width="72" height="8" fill="var(--panel)"/>
+    </g>
+  </g>
+  <g class="rbh-pop" style="--i: 4">
+    <rect x="224" y="352" width="128" height="16" fill="var(--panel-hover)"/>
+    <rect x="272" y="368" width="24" height="80" fill="var(--panel)"/>
+    <rect x="232" y="192" width="80" height="8" fill="var(--muted)"/>
+    <rect x="224" y="200" width="8" height="8" fill="var(--muted)"/>
+    <rect x="232" y="200" width="80" height="8" fill="var(--panel-hover)"/>
+    <rect x="312" y="200" width="8" height="8" fill="var(--muted)"/>
+    <rect x="224" y="208" width="8" height="8" fill="var(--muted)"/>
+    <rect x="232" y="208" width="16" height="8" fill="var(--panel-hover)"/>
+    <rect x="248" y="208" width="48" height="8" fill="var(--panel)"/>
+    <rect x="296" y="208" width="16" height="8" fill="var(--panel-hover)"/>
+    <rect x="312" y="208" width="8" height="8" fill="var(--muted)"/>
+    <rect x="224" y="216" width="8" height="8" fill="var(--muted)"/>
+    <rect x="232" y="216" width="16" height="8" fill="var(--panel-hover)"/>
+    <rect x="248" y="216" width="8" height="8" fill="var(--panel)"/>
+    <rect x="256" y="216" width="16" height="8" fill="var(--ok)"/>
+    <rect x="272" y="216" width="24" height="8" fill="var(--panel)"/>
+    <rect x="296" y="216" width="16" height="8" fill="var(--panel-hover)"/>
+    <rect x="312" y="216" width="8" height="8" fill="var(--muted)"/>
+    <rect x="224" y="224" width="8" height="8" fill="var(--muted)"/>
+    <rect x="232" y="224" width="16" height="8" fill="var(--panel-hover)"/>
+    <rect x="248" y="224" width="48" height="8" fill="var(--panel)"/>
+    <rect x="296" y="224" width="16" height="8" fill="var(--panel-hover)"/>
+    <rect x="312" y="224" width="8" height="8" fill="var(--muted)"/>
+    <rect x="224" y="232" width="8" height="8" fill="var(--muted)"/>
+    <rect x="232" y="232" width="80" height="8" fill="var(--panel-hover)"/>
+    <rect x="312" y="232" width="8" height="8" fill="var(--muted)"/>
+    <rect x="224" y="240" width="8" height="8" fill="var(--muted)"/>
+    <rect x="232" y="240" width="80" height="8" fill="var(--panel-hover)"/>
+    <rect x="312" y="240" width="8" height="8" fill="var(--muted)"/>
+    <rect x="232" y="248" width="80" height="8" fill="var(--muted)"/>
+    <rect x="240" y="256" width="16" height="8" fill="var(--muted)"/>
+    <rect x="288" y="256" width="16" height="8" fill="var(--muted)"/>
+    <rect x="240" y="264" width="16" height="8" fill="var(--muted)"/>
+    <rect x="288" y="264" width="16" height="8" fill="var(--muted)"/>
+    <rect x="240" y="272" width="16" height="8" fill="var(--muted)"/>
+    <rect x="288" y="272" width="16" height="8" fill="var(--muted)"/>
+    <rect x="240" y="280" width="16" height="8" fill="var(--muted)"/>
+    <rect x="288" y="280" width="16" height="8" fill="var(--muted)"/>
+    <rect x="240" y="288" width="16" height="8" fill="var(--muted)"/>
+    <rect x="288" y="288" width="16" height="8" fill="var(--muted)"/>
+    <rect x="240" y="296" width="16" height="8" fill="var(--muted)"/>
+    <rect x="288" y="296" width="16" height="8" fill="var(--muted)"/>
+    <rect x="240" y="304" width="16" height="8" fill="var(--muted)"/>
+    <rect x="288" y="304" width="16" height="8" fill="var(--muted)"/>
+    <rect x="240" y="312" width="16" height="8" fill="var(--muted)"/>
+    <rect x="288" y="312" width="16" height="8" fill="var(--muted)"/>
+    <rect x="240" y="320" width="16" height="8" fill="var(--muted)"/>
+    <rect x="288" y="320" width="16" height="8" fill="var(--muted)"/>
+    <rect x="240" y="328" width="16" height="8" fill="var(--muted)"/>
+    <rect x="288" y="328" width="16" height="8" fill="var(--muted)"/>
+    <g class="rbh-head">
+      <rect x="264" y="128" width="16" height="8" fill="var(--accent)"/>
+      <rect x="264" y="136" width="16" height="8" fill="var(--muted)"/>
+      <rect x="232" y="144" width="80" height="8" fill="var(--muted)"/>
+      <rect x="224" y="152" width="8" height="8" fill="var(--muted)"/>
+      <rect x="232" y="152" width="80" height="8" fill="var(--panel-hover)"/>
+      <rect x="312" y="152" width="8" height="8" fill="var(--muted)"/>
+      <rect x="224" y="160" width="8" height="8" fill="var(--muted)"/>
+      <rect x="232" y="160" width="48" height="8" fill="var(--panel-hover)"/>
+      <rect x="280" y="160" width="16" height="8" fill="var(--accent)"/>
+      <rect x="296" y="160" width="16" height="8" fill="var(--panel-hover)"/>
+      <rect x="312" y="160" width="8" height="8" fill="var(--muted)"/>
+      <rect x="224" y="168" width="8" height="8" fill="var(--muted)"/>
+      <rect x="232" y="168" width="48" height="8" fill="var(--panel-hover)"/>
+      <rect x="280" y="168" width="16" height="8" fill="var(--accent)"/>
+      <rect x="296" y="168" width="16" height="8" fill="var(--panel-hover)"/>
+      <rect x="312" y="168" width="8" height="8" fill="var(--muted)"/>
+      <rect x="224" y="176" width="8" height="8" fill="var(--muted)"/>
+      <rect x="232" y="176" width="80" height="8" fill="var(--panel-hover)"/>
+      <rect x="312" y="176" width="8" height="8" fill="var(--muted)"/>
+      <rect x="232" y="184" width="80" height="8" fill="var(--muted)"/>
+    </g>
+    <g class="rbh-arm-rest">
+    <rect x="312" y="208" width="16" height="8" fill="var(--muted)"/>
+    <rect x="312" y="216" width="16" height="8" fill="var(--muted)"/>
+    <rect x="312" y="224" width="16" height="8" fill="var(--muted)"/>
+    <rect x="312" y="232" width="16" height="8" fill="var(--muted)"/>
+    <rect x="312" y="240" width="16" height="8" fill="var(--text)"/>
+    </g>
+    <g class="rbh-arm-ext">
+    <rect x="312" y="208" width="32" height="8" fill="var(--muted)"/>
+    <rect x="336" y="216" width="32" height="8" fill="var(--muted)"/>
+    <rect x="360" y="224" width="32" height="8" fill="var(--muted)"/>
+    <rect x="384" y="232" width="24" height="8" fill="var(--muted)"/>
+    <rect x="400" y="240" width="24" height="8" fill="var(--muted)"/>
+    <rect x="416" y="248" width="24" height="8" fill="var(--muted)"/>
+    <rect x="424" y="256" width="16" height="8" fill="var(--text)"/>
+    <rect x="424" y="264" width="16" height="8" fill="var(--text)"/>
+    </g>
+  </g>
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 7000; // press 1.6s, POST 2.3-4.5s, logo 4.5-5.4s, desktop 5.4s
+
+  // fg:begin hero-start v1
+  const root = document.currentScript.closest('.fg-diagram');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    root.classList.add('is-settled'); // final composition, no motion
+  } else {
+    let started = false;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!started) {
+        if (!e.isIntersecting) return;
+        started = true; // intro plays once per page load
+        root.classList.add('is-live');
+        setTimeout(() => root.classList.add('is-settled'), INTRO_MS);
+      } else {
+        root.classList.toggle('is-paused', !e.isIntersecting);
+      }
+    }), { threshold: 0.3 });
+    io.observe(root);
+  }
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
