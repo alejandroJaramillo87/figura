@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strange attractor — generative</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Strange attractor — generative</h1>
+<p>Style study: no scene is placed by hand. Halvorsen's attractor is integrated forward from three lines of differential equation, projected, and emitted as three depth-sorted paths. The orbit draws itself at the rate the system runs, settles onto the structure it converged to, and a point keeps running it afterwards.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-strange-attractor">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-strange-attractor {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-hero-in: 900ms;
+  --stagger: 80ms;
+  --ease-frames: steps(10);
+  --ease-frames-coarse: steps(4, jump-none);
+  --dur-tick: 100ms;
+  --px-outline: #0b1020;
+  --px-steel-1: #232c44;
+  --px-steel-2: #3b4a5e;
+  --px-steel-3: #64748b;
+  --px-steel-4: #a7b0b8;
+  --px-amber-1: #92400e;
+  --px-amber-2: #f59e0b;
+  --px-amber-3: #fcd34d;
+  --px-green-1: #166534;
+  --px-green-2: #34d399;
+  --px-green-3: #a7f3d0;
+  --px-sky-1: #0369a1;
+  --px-sky-2: #38bdf8;
+  --px-sky-3: #bae6fd;
+  --px-dusk-1: #2b1b3d;
+  --px-dusk-2: #7c3a58;
+  --px-dusk-3: #e8a87c;
+  --px-violet-1: #3c2a6e;
+  --px-violet-2: #a78bfa;
+  --px-violet-3: #ddd6fe;
+  --px-hot-1: #7f1d1d;
+  --px-hot-2: #f87171;
+  --px-hot-3: #fdba74;
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-strange-attractor {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-strange-attractor svg { display: block; width: 100%; height: auto; }
+.fg-strange-attractor text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-strange-attractor {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+/* Arbitrary-angle curves, like the isometric hero's polygon edges: they
+   want smoothing, not the pixel heroes' crispEdges snapping. */
+.fg-strange-attractor svg { shape-rendering: geometricPrecision; }
+
+/* --- static defaults ------------------------------------------------ */
+/* Generative style study. The picture is one trajectory cut into 150
+   chronological runs; --i is a run's place in time, and the depth class
+   is the stratum it passes through. Everything paintable lives here so
+   the generator emits only geometry. */
+.fg-strange-attractor .atr-run {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* pathLength="1" normalises the dash maths: one dash of length 1
+     covers a whole run, and pushing it a full length off hides it. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+/* Far strokes dim and fine, near strokes bright and heavy — the light
+   and dark massing that stops a projected tangle reading as a flat
+   scribble. Three strata against a ramp that has exactly three bands,
+   so no new tokens. */
+.fg-strange-attractor .atr-far  { --c: var(--px-sky-1); --w: 1.5; }
+.fg-strange-attractor .atr-mid  { --c: var(--px-sky-2); --w: 2.1; }
+.fg-strange-attractor .atr-near { --c: var(--px-sky-3); --w: 2.9; }
+
+/* --- intro: the trajectory integrating forward ----------------------- */
+/* linear, not an easing token, and this is the one place in the library
+   where that is the right call rather than a lapse: the draw rate is the
+   integration rate, so a curve that eased would misreport how the system
+   runs. Runs start 24ms apart and each takes 600ms, so they overlap into
+   one moving head: 149 * 24ms + 600ms = 4.18s. */
+.fg-strange-attractor.is-live .atr-run {
+  animation: fg-atr-trace 600ms linear calc(var(--i) * 24ms) both;
+}
+
+@keyframes fg-atr-trace { from { stroke-dashoffset: 1; }
+                          to   { stroke-dashoffset: 0; } }
+
+/* --- settled state (the attractor set; the reduced-motion rendering) --
+   The dashoffset must be restated here: the ambient rule below replaces
+   the intro animation, and with it the `both` fill that was holding the
+   curve drawn. */
+.fg-strange-attractor.is-settled .atr-run {
+  stroke-dashoffset: 0;
+  animation: fg-atr-pulse 9s linear calc(var(--i) * 60ms) infinite;
+}
+.fg-strange-attractor.is-paused .atr-run { animation-play-state: paused; }
+
+/* --- ambient loop ---------------------------------------------------- */
+/* The orbit keeps being traversed: a warm glimmer travels the runs in
+   the same chronological order the intro drew them, so the ambient state
+   is the same claim as the intro rather than a new one. 150 runs at 60ms
+   is exactly the 9s cycle, so the head laps seamlessly. One effect, and
+   only a handful of runs are lit at a time. */
+@keyframes fg-atr-pulse {
+  0%, 2%   { stroke: var(--warn); stroke-width: calc(var(--w) + 0.8); }
+  6%, 100% { stroke: var(--c); stroke-width: var(--w); }
+}
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-strange-attractor, .fg-strange-attractor * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Generative hero: a single computed trajectory looping thousands of times into a broad shell-like form that fills the frame — a steep wall of parallel curves on the left falling into a wide basin, and a tight spiral curling in on the right. The lines are shaded in three tones of blue by depth, pale and heavy where they pass near, dim and fine where they pass behind. The curve draws itself from one end to the other, then a small amber point runs the same path continuously.">
+  <path class="atr-run atr-far" style="--i: 0" pathLength="1" d="M 562,442 L 572,456 575,456 597,402 620,361 650,321 684,286 716,261 742,246 765,238 784,236 798,240 809,248 815,260 817,274 813,286 802,297 766,315"/>
+  <path class="atr-run atr-near" style="--i: 1" pathLength="1" d="M 766,315 L 643,377 605,390 569,397 530,398 490,392 448,380 405,362 357,336 311,304 271,270 240,237 214,203 200,174 194,154 193,136 199,120 210,107"/>
+  <path class="atr-run atr-far" style="--i: 2" pathLength="1" d="M 210,107 L 228,98 251,93 290,90 345,95 439,111 578,141 633,158 664,172 684,185 700,204 712,225 720,255 725,300 729,369 735,394 744,407 754,413"/>
+  <path class="atr-run atr-near" style="--i: 3" pathLength="1" d="M 754,413 L 768,414 789,410 816,396 843,376 865,352 879,329 885,308 886,290 882,275 873,261 859,249 840,239 816,233 782,230 745,233 698,242 639,261"/>
+  <path class="atr-run atr-mid" style="--i: 4" pathLength="1" d="M 639,261 L 509,314 465,327 430,332 400,331 368,324 338,311 313,294 294,276 285,261 285,252 289,246 299,244 320,248 353,261 401,288 474,339 533,380"/>
+  <path class="atr-run atr-far" style="--i: 5" pathLength="1" d="M 533,380 L 560,392 577,396 594,394 614,384 672,342 699,329 720,324 739,325 758,332 802,360 820,366 838,366 857,361 878,349 898,330 913,309 921,286"/>
+  <path class="atr-run atr-near" style="--i: 6" pathLength="1" d="M 921,286 L 924,266 920,245 912,228 899,213 881,199 857,188 829,180 789,175 745,176 699,182 646,195 589,215 520,246 400,306 362,323 360,328 367,338"/>
+  <path class="atr-run atr-far" style="--i: 7" pathLength="1" d="M 367,338 L 464,431 486,446 499,451 509,449 522,439 543,410 592,336 635,279 683,227 733,180 783,141 822,115 791,126 743,148 700,174 658,206 618,244"/>
+  <path class="atr-run atr-near" style="--i: 8" pathLength="1" d="M 618,244 L 574,295 519,363 495,386 476,397 457,403 436,402 412,396 381,381 344,355 309,322 283,291 269,267 262,248 263,235 268,228 278,223 295,222"/>
+  <path class="atr-run atr-far" style="--i: 9" pathLength="1" d="M 295,222 L 323,228 361,242 414,270 504,325 561,360 592,374 617,379 643,378 686,371 707,373 729,381 768,404 789,410 812,411 837,406 867,394 897,375"/>
+  <path class="atr-run atr-near" style="--i: 10" pathLength="1" d="M 897,375 L 925,352 948,326 966,299 976,274 983,248 984,226 981,204 973,182 960,161 942,140 917,122 887,106 852,93 814,84 773,78 716,76 661,79"/>
+  <path class="atr-run atr-mid" style="--i: 11" pathLength="1" d="M 661,79 L 597,88 542,102 498,118 466,135 448,149 436,164 429,179 427,198 431,223 444,257 485,337 548,450 556,458 560,456 589,392 616,347 648,305"/>
+  <path class="atr-run atr-mid" style="--i: 12" pathLength="1" d="M 648,305 L 683,268 721,236 751,217 777,205 796,202 809,204 814,209 816,217 810,230 793,249 651,362 616,384 585,397 553,404 521,404 483,398 443,386 397,365"/>
+  <path class="atr-run atr-mid" style="--i: 13" pathLength="1" d="M 397,365 L 351,337 307,305 268,270 238,238 213,203 200,175 194,156 194,138 200,122 212,110 230,101 254,96 292,94 347,99 428,113 560,143 619,160"/>
+  <path class="atr-run atr-mid" style="--i: 14" pathLength="1" d="M 619,160 L 653,174 678,190 696,208 709,228 719,258 726,302 734,368 740,391 749,403 760,410 775,411 796,407 822,393 848,374 869,351 883,329 890,308"/>
+  <path class="atr-run atr-near" style="--i: 15" pathLength="1" d="M 890,308 L 892,289 888,273 879,258 865,244 846,233 821,226 792,223 753,224 704,232 649,249 573,279 497,311 454,323 420,328 388,326 359,319 333,307"/>
+  <path class="atr-run atr-far" style="--i: 16" pathLength="1" d="M 333,307 L 310,290 297,275 294,266 296,261 305,258 322,261 354,275 401,303 484,365 526,394 548,403 564,405 580,401 598,389 662,330 692,308 719,295"/>
+  <path class="atr-run atr-mid" style="--i: 17" pathLength="1" d="M 719,295 L 741,290 760,292 778,299 803,319 822,333 836,336 849,334 861,325 869,313 872,298 869,283 861,271 847,261 828,253 799,249 764,250 720,258"/>
+  <path class="atr-run atr-near" style="--i: 18" pathLength="1" d="M 720,258 L 670,274 534,330 492,342 456,347 424,346 393,339 361,327 330,311 302,289 278,265 264,245 258,229 259,218 264,211 275,206 294,205 325,212"/>
+  <path class="atr-run atr-far" style="--i: 19" pathLength="1" d="M 325,212 L 368,228 426,257 516,311 585,353 622,370 662,381 694,390 720,404 750,422 771,428 796,429 825,423 858,410 893,390 924,366 951,339 972,312"/>
+  <path class="atr-run atr-near" style="--i: 20" pathLength="1" d="M 972,312 L 986,286 997,257 1001,234 1001,209 997,184 986,159 969,134 946,111 915,91 879,74 837,60 792,51 745,45 682,44 622,47 557,57 505,70"/>
+  <path class="atr-run atr-far" style="--i: 21" pathLength="1" d="M 505,70 L 474,82 452,95 439,109 433,120 432,135 437,156 452,188 535,322 575,397 604,460 608,433 620,403 638,372 663,341 690,316 716,300 738,293"/>
+  <path class="atr-run atr-near" style="--i: 22" pathLength="1" d="M 738,293 L 758,292 775,297 794,309 821,330 835,334 848,333 860,325 868,314 872,299 870,285 863,273 850,262 832,254 804,249 770,249 726,257 675,272"/>
+  <path class="atr-run atr-near" style="--i: 23" pathLength="1" d="M 675,272 L 589,308 530,332 488,343 452,347 420,345 388,338 357,326 326,308 298,286 275,262 262,242 258,226 260,217 266,209 278,206 298,206 330,214"/>
+  <path class="atr-run atr-far" style="--i: 24" pathLength="1" d="M 330,214 L 374,231 431,260 537,325 594,357 630,373 692,389 717,402 750,422 771,428 795,429 824,423 857,410 893,390 923,366 950,340 971,313 985,287"/>
+  <path class="atr-run atr-near" style="--i: 25" pathLength="1" d="M 985,287 L 996,258 1001,235 1001,211 997,185 987,160 970,136 947,113 917,92 881,75 839,61 794,52 747,46 684,44 624,47 559,57 507,70 475,81 453,94"/>
+  <path class="atr-run atr-far" style="--i: 26" pathLength="1" d="M 453,94 L 439,108 434,119 432,135 436,156 452,188 535,321 575,397 604,460 609,431 621,400 640,368 666,337 691,315 717,300 739,293 759,292 775,297"/>
+  <path class="atr-run atr-near" style="--i: 27" pathLength="1" d="M 775,297 L 795,309 821,329 835,334 848,332 860,325 868,313 871,299 869,285 861,273 849,262 830,255 802,250 768,250 725,258 674,274 579,314 525,334"/>
+  <path class="atr-run atr-mid" style="--i: 28" pathLength="1" d="M 525,334 L 484,345 447,348 416,345 384,337 352,323 321,305 294,282 272,258 260,237 257,222 260,213 268,206 281,203 303,205 336,214 381,232 446,266"/>
+  <path class="atr-run atr-mid" style="--i: 29" pathLength="1" d="M 446,266 L 587,351 626,369 693,390 721,407 748,423 768,430 792,431 821,425 853,413 888,394 923,368 950,342 971,314 989,282 999,252 1003,229 1002,204"/>
+  <path class="atr-run atr-near" style="--i: 30" pathLength="1" d="M 1002,204 L 996,178 985,153 966,128 941,105 909,85 871,69 828,56 782,47 734,42 671,42 612,46 548,55 498,69 469,81 449,94 439,104 434,115"/>
+  <path class="atr-run atr-far" style="--i: 31" pathLength="1" d="M 434,115 L 432,131 437,152 453,184 533,309 573,382 605,455 608,461 610,437 619,409 637,377 660,348 686,323 711,307 732,299 752,298 769,301 789,313"/>
+  <path class="atr-run atr-near" style="--i: 32" pathLength="1" d="M 789,313 L 819,334 834,339 847,338 862,331 872,319 879,303 880,287 876,273 865,259 848,248 824,240 795,237 756,239 713,247 658,265 521,322 479,335"/>
+  <path class="atr-run atr-mid" style="--i: 33" pathLength="1" d="M 479,335 L 443,340 412,339 383,333 350,320 319,302 294,280 278,260 272,245 274,235 279,229 291,227 314,230 347,241 397,266 466,310 547,363 578,379"/>
+  <path class="atr-run atr-far" style="--i: 34" pathLength="1" d="M 578,379 L 601,385 622,384 652,374 685,362 705,361 725,364 749,377 779,394 799,400 821,400 846,394 876,381 905,360 931,335 951,308 964,280 970,256"/>
+  <path class="atr-run atr-near" style="--i: 35" pathLength="1" d="M 970,256 L 971,230 968,210 960,190 948,171 930,153 908,137 880,123 849,112 814,104 763,98 711,98 660,103 601,114 549,128 507,145 474,162 450,179"/>
+  <path class="atr-run atr-far" style="--i: 36" pathLength="1" d="M 450,179 L 434,197 425,215 421,233 422,255 430,284 451,331 499,421 521,454 529,461 535,460 543,446 575,383 606,333 642,286 685,238 731,196 773,166"/>
+  <path class="atr-run atr-mid" style="--i: 37" pathLength="1" d="M 773,166 L 806,148 820,144 818,147 740,195 691,231 641,276 559,360 532,381 508,393 484,399 457,399 428,392 395,378 355,354 315,323 280,288 253,255 240,230"/>
+  <path class="atr-run atr-far" style="--i: 38" pathLength="1" d="M 240,230 L 233,212 233,196 236,186 243,178 254,173 273,169 305,172 351,183 408,203 491,241 587,292 641,325 673,350 701,381 731,416 748,429 767,436"/>
+  <path class="atr-run atr-near" style="--i: 39" pathLength="1" d="M 767,436 L 790,436 819,431 852,418 887,397 922,371 950,344 971,316 990,283 1000,253 1004,229 1003,204 998,178 986,152 967,128 942,105 910,84 872,68"/>
+  <path class="atr-run atr-mid" style="--i: 40" pathLength="1" d="M 872,68 L 828,55 782,46 734,41 670,40 611,44 547,54 497,67 468,79 448,91 438,102 433,113 432,128 438,149 455,181 533,303 572,374 605,446"/>
+  <path class="atr-run atr-far" style="--i: 41" pathLength="1" d="M 605,446 L 611,460 612,439 620,413 636,382 657,354 682,330 706,313 727,305 746,302 763,305 782,314 817,338 833,343 847,342 861,336 874,324 884,308"/>
+  <path class="atr-run atr-near" style="--i: 42" pathLength="1" d="M 884,308 L 888,290 885,275 877,259 865,247 848,238 820,230 787,227 750,230 704,239 652,256 568,291 501,319 459,330 425,334 396,332 364,325 336,311"/>
+  <path class="atr-run atr-far" style="--i: 43" pathLength="1" d="M 336,311 L 311,294 293,276 285,261 285,252 290,247 300,245 322,249 355,263 403,290 480,344 534,381 560,393 578,396 594,394 614,383 671,342 698,328"/>
+  <path class="atr-run atr-mid" style="--i: 44" pathLength="1" d="M 698,328 L 719,323 738,323 758,330 804,359 822,365 839,365 859,359 879,347 899,328 913,306 920,284 922,264 917,243 908,227 895,212 876,199 852,188"/>
+  <path class="atr-run atr-mid" style="--i: 45" pathLength="1" d="M 852,188 L 823,181 783,177 739,179 694,186 642,199 586,220 512,253 413,302 371,318 357,323 357,327 383,352 468,432 489,446 503,449 513,446 526,435"/>
+  <path class="atr-run atr-mid" style="--i: 46" pathLength="1" d="M 526,435 L 553,395 601,325 647,268 695,217 744,174 790,140 820,122 769,144 724,169 678,202 636,239 589,289 528,361 502,384 482,396 461,401 439,401"/>
+  <path class="atr-run atr-mid" style="--i: 47" pathLength="1" d="M 439,401 L 412,393 379,377 342,351 307,319 279,286 263,260 256,242 256,228 260,218 270,212 287,210 311,213 346,224 397,246 464,284 572,349 609,367"/>
+  <path class="atr-run atr-mid" style="--i: 48" pathLength="1" d="M 609,367 L 642,376 690,384 713,393 753,418 775,424 798,425 827,420 860,407 895,386 925,362 952,335 972,307 985,282 995,253 998,230 997,206 991,181"/>
+  <path class="atr-run atr-near" style="--i: 49" pathLength="1" d="M 991,181 L 980,157 962,133 937,111 907,92 870,76 828,64 784,56 737,51 676,51 618,55 555,65 505,79 474,91 453,105 439,119 432,134 431,150"/>
+  <path class="atr-run atr-far" style="--i: 50" pathLength="1" d="M 431,150 L 436,171 451,203 536,346 581,435 594,458 597,448 606,417 622,384 645,350 674,319 702,296 728,282 751,276 768,276 785,281 803,294 827,317 837,321"/>
+  <path class="atr-run atr-near" style="--i: 51" pathLength="1" d="M 837,321 L 844,318 847,311 846,302 838,292 822,284 798,281 767,282 727,291 672,311 579,350 537,362 498,367 462,366 423,358 388,346 350,327 312,301"/>
+  <path class="atr-run atr-mid" style="--i: 52" pathLength="1" d="M 312,301 L 276,270 249,240 233,214 226,194 225,181 228,170 236,161 247,155 269,151 296,151 337,159 399,177 483,210 571,251 624,280 658,305 683,330"/>
+  <path class="atr-run atr-mid" style="--i: 53" pathLength="1" d="M 683,330 L 709,366 734,403 750,419 767,427 785,430 810,427 841,417 873,400 906,377 936,350 961,319 978,289 987,261 991,239 991,216 987,193 977,169"/>
+  <path class="atr-run atr-near" style="--i: 54" pathLength="1" d="M 977,169 L 961,146 939,125 911,106 877,90 839,78 797,69 753,64 693,63 636,67 573,77 520,91 480,106 457,120 441,134 432,149 429,165 431,185"/>
+  <path class="atr-run atr-far" style="--i: 55" pathLength="1" d="M 431,185 L 439,211 465,262 541,396 572,454 577,456 581,447 597,406 618,367 646,330 678,296 708,270 738,252 761,244 780,242 795,246 807,254 815,267"/>
+  <path class="atr-run atr-near" style="--i: 56" pathLength="1" d="M 815,267 L 818,282 816,293 807,301 727,333 637,375 597,388 561,394 525,395 488,390 445,378 402,360 354,333 308,301 269,268 239,235 214,201 200,174"/>
+  <path class="atr-run atr-far" style="--i: 57" pathLength="1" d="M 200,174 L 195,154 196,136 202,121 214,109 232,101 256,96 294,94 349,99 441,116 569,146 626,163 658,177 682,194 699,213 710,234 720,263 727,310"/>
+  <path class="atr-run atr-near" style="--i: 58" pathLength="1" d="M 727,310 L 734,369 741,391 750,404 761,410 777,411 798,406 825,392 851,372 872,348 885,326 892,304 892,284 888,268 878,253 862,240 841,230 815,223"/>
+  <path class="atr-run atr-near" style="--i: 59" pathLength="1" d="M 815,223 L 779,221 738,224 689,235 633,253 494,310 452,322 418,327 386,325 358,318 330,305 309,289 298,275 296,267 300,262 310,261 331,267 364,283"/>
+  <path class="atr-run atr-far" style="--i: 60" pathLength="1" d="M 364,283 L 414,315 514,389 539,403 556,407 570,406 585,398 611,375 660,327 692,304 720,289 743,284 763,285 779,291 799,306 822,325 835,330 846,329"/>
+  <path class="atr-run atr-near" style="--i: 61" pathLength="1" d="M 846,329 L 855,321 860,310 860,297 854,285 842,275 824,267 800,263 766,265 723,273 668,292 558,338 517,350 481,355 449,355 416,350 382,340 348,323"/>
+  <path class="atr-run atr-mid" style="--i: 62" pathLength="1" d="M 348,323 L 314,301 283,274 261,248 248,227 243,212 243,198 247,190 255,184 270,180 296,180 329,187 381,205 448,235 542,285 636,342 675,370 710,405 732,426"/>
+  <path class="atr-run atr-mid" style="--i: 63" pathLength="1" d="M 732,426 L 750,435 770,439 796,438 827,430 862,414 899,391 931,365 959,336 980,307 995,279 1005,248 1008,223 1007,197 1001,171 988,144 968,119 940,95"/>
+  <path class="atr-run atr-mid" style="--i: 64" pathLength="1" d="M 940,95 L 906,75 865,58 820,45 772,36 722,32 657,31 598,35 535,45 487,58 460,69 443,82 436,92 433,103 434,119 443,141 471,183 533,272"/>
+  <path class="atr-run atr-far" style="--i: 65" pathLength="1" d="M 533,272 L 570,335 601,400 623,458 625,469 621,461 620,441 626,417 639,390 659,363 682,340 706,325 728,319 747,319 767,325 811,352 829,357 846,356"/>
+  <path class="atr-run atr-near" style="--i: 66" pathLength="1" d="M 846,356 L 864,349 882,336 897,319 907,298 911,278 909,260 902,242 887,225 866,211 838,200 804,195 766,194 718,199 669,211 615,229 541,261 454,301"/>
+  <path class="atr-run atr-far" style="--i: 67" pathLength="1" d="M 454,301 L 415,314 384,319 357,317 338,311 332,306 343,310 376,331 432,378 485,421 505,433 518,436 528,434 541,424 566,393 617,323 658,275 700,235"/>
+  <path class="atr-run atr-mid" style="--i: 68" pathLength="1" d="M 700,235 L 741,203 777,183 799,175 812,174 816,177 815,184 800,199 712,269 607,362 575,385 548,397 521,403 492,403 460,397 422,384 379,361 336,333"/>
+  <path class="atr-run atr-mid" style="--i: 69" pathLength="1" d="M 336,333 L 291,296 258,262 233,231 215,200 207,176 206,160 210,146 219,135 234,126 253,121 285,120 333,125 395,138 494,167 581,197 628,218 659,237"/>
+  <path class="atr-run atr-mid" style="--i: 70" pathLength="1" d="M 659,237 L 682,257 701,282 718,315 744,378 756,396 769,406 786,411 805,410 831,402 861,386 890,364 912,340 928,316 938,293 943,267 943,246 937,225"/>
+  <path class="atr-run atr-near" style="--i: 71" pathLength="1" d="M 937,225 L 925,204 906,185 881,169 849,157 813,149 772,145 719,147 667,155 607,170 547,192 492,218 448,245 419,268 403,289 395,305 394,322 399,342"/>
+  <path class="atr-run atr-far" style="--i: 72" pathLength="1" d="M 399,342 L 414,372 445,416 472,447 489,459 499,461 508,456 521,441 577,349 618,291 667,233 721,178 778,129 823,94 826,88 822,86 802,87 761,98"/>
+  <path class="atr-run atr-mid" style="--i: 73" pathLength="1" d="M 761,98 L 718,115 674,139 634,169 600,201 568,240 540,285 486,390 471,411 458,420 444,424 426,421 402,410 370,387 334,353 308,321 294,297 290,283"/>
+  <path class="atr-run atr-far" style="--i: 74" pathLength="1" d="M 290,283 L 292,274 298,270 311,269 332,274 365,290 415,321 511,390 536,403 554,407 568,405 584,396 614,368 660,324 693,299 719,285 742,278 763,278"/>
+  <path class="atr-run atr-near" style="--i: 75" pathLength="1" d="M 763,278 L 780,284 798,297 823,321 835,326 843,324 850,317 852,307 849,297 839,287 823,279 800,275 767,276 728,284 674,303 572,345 529,358 493,363 457,362"/>
+  <path class="atr-run atr-mid" style="--i: 76" pathLength="1" d="M 457,362 L 423,356 388,345 352,327 315,303 280,273 255,245 240,221 232,203 231,186 235,176 243,169 254,163 275,160 309,163 357,175 416,196 501,233"/>
+  <path class="atr-run atr-mid" style="--i: 77" pathLength="1" d="M 501,233 L 584,276 633,306 666,332 694,362 732,412 748,426 765,433 786,435 811,431 842,421 876,403 910,379 941,351 967,319 985,287 996,258 1000,235"/>
+  <path class="atr-run atr-near" style="--i: 78" pathLength="1" d="M 1000,235 L 1000,210 995,185 985,160 968,136 944,113 914,93 878,76 836,63 791,53 744,48 682,47 623,50 558,60 506,73 475,85 453,98 439,112"/>
+  <path class="atr-run atr-far" style="--i: 79" pathLength="1" d="M 439,112 L 433,123 431,139 435,160 450,191 536,332 578,412 600,459 608,426 621,395 642,362 667,333 693,311 717,296 739,288 759,287 776,291 796,303"/>
+  <path class="atr-run atr-near" style="--i: 80" pathLength="1" d="M 796,303 L 823,325 835,330 847,328 857,321 863,309 863,296 858,284 846,273 828,264 803,260 773,260 735,266 688,280 612,311 546,338 505,349 469,354"/>
+  <path class="atr-run atr-mid" style="--i: 81" pathLength="1" d="M 469,354 L 436,352 403,346 370,334 336,316 304,293 276,266 257,241 248,222 246,208 250,197 256,191 270,186 294,186 325,192 374,209 440,239 532,290"/>
+  <path class="atr-run atr-mid" style="--i: 82" pathLength="1" d="M 532,290 L 661,367 695,393 731,425 749,435 770,439 796,438 829,428 865,412 902,389 934,362 962,333 983,302 997,274 1006,243 1009,217 1007,191 999,164"/>
+  <path class="atr-run atr-near" style="--i: 83" pathLength="1" d="M 999,164 L 984,138 962,113 933,90 898,70 856,54 810,42 761,34 695,30 632,32 562,39 507,51 474,61 452,74 441,83 435,94 433,105 436,121"/>
+  <path class="atr-run atr-far" style="--i: 84" pathLength="1" d="M 436,121 L 445,142 477,190 533,270 570,333 602,399 624,458 626,470 622,463 621,444 625,421 637,395 656,368 678,345 702,329 723,321 743,319 761,324"/>
+  <path class="atr-run atr-near" style="--i: 85" pathLength="1" d="M 761,324 L 786,338 811,353 829,358 846,357 865,350 883,336 898,319 909,298 913,277 911,258 903,240 892,226 876,214 850,202 818,194 780,191 740,194"/>
+  <path class="atr-run atr-mid" style="--i: 86" pathLength="1" d="M 740,194 L 690,202 634,219 569,245 447,301 407,314 378,318 352,316 336,310 336,310 358,321 403,356 481,423 502,435 517,438 529,434 543,421 613,324"/>
+  <path class="atr-run atr-mid" style="--i: 87" pathLength="1" d="M 613,324 L 655,275 698,233 741,199 777,176 803,166 815,166 817,169 812,177 777,204 715,251 655,305 595,361 565,382 537,396 511,402 483,402 451,396 414,382"/>
+  <path class="atr-run atr-mid" style="--i: 88" pathLength="1" d="M 414,382 L 373,360 326,327 283,290 253,257 232,227 219,204 213,181 213,167 217,154 227,144 241,137 259,133 290,132 335,138 394,153 479,180 571,215"/>
+  <path class="atr-run atr-mid" style="--i: 89" pathLength="1" d="M 571,215 L 622,239 655,261 680,284 700,310 725,356 744,390 758,406 773,415 791,418 813,415 843,405 873,388 902,365 928,338 947,310 959,283 964,259"/>
+  <path class="atr-run atr-near" style="--i: 90" pathLength="1" d="M 964,259 L 964,234 960,215 952,196 940,177 923,160 901,145 874,132 844,122 798,113 749,110 700,112 639,120 585,133 529,151 486,172 454,192 436,209"/>
+  <path class="atr-run atr-far" style="--i: 91" pathLength="1" d="M 436,209 L 424,226 417,246 416,265 420,292 435,331 468,394 499,444 513,460 520,462 526,459 539,437 573,373 610,317 651,266 699,214 748,171 793,138"/>
+  <path class="atr-run atr-mid" style="--i: 92" pathLength="1" d="M 793,138 L 822,121 776,139 731,162 689,190 645,226 604,269 523,364 498,386 478,397 457,401 435,400 408,392 375,375 339,349 305,317 278,285 263,259"/>
+  <path class="atr-run atr-far" style="--i: 93" pathLength="1" d="M 263,259 L 258,242 258,228 264,220 274,215 292,214 322,219 363,234 419,262 507,315 574,355 607,370 636,376 690,380 711,387 759,415 780,421 804,421"/>
+  <path class="atr-run atr-near" style="--i: 94" pathLength="1" d="M 804,421 L 831,416 865,402 896,383 926,359 951,332 971,305 984,279 992,251 995,228 993,204 987,180 975,156 956,134 931,113 900,95 864,80 823,68"/>
+  <path class="atr-run atr-mid" style="--i: 95" pathLength="1" d="M 823,68 L 779,61 719,57 659,58 604,64 544,76 498,90 470,103 450,117 437,131 431,147 430,163 435,184 451,221 539,372 582,456 585,457 602,410"/>
+  <path class="atr-run atr-far" style="--i: 96" pathLength="1" d="M 602,410 L 620,375 644,341 672,310 700,286 728,269 751,260 770,258 785,261 799,269 813,283 827,308 801,304 772,307 733,317 668,344 605,370 566,380"/>
+  <path class="atr-run atr-near" style="--i: 97" pathLength="1" d="M 566,380 L 528,385 490,383 453,375 412,361 366,339 324,312 281,277 246,242 223,210 210,185 205,167 205,151 210,137 220,126 236,118 257,114 291,113"/>
+  <path class="atr-run atr-far" style="--i: 98" pathLength="1" d="M 291,113 L 341,119 416,135 523,165 598,191 638,209 667,228 689,249 705,272 720,306 743,372 753,392 766,403 780,409 798,409 822,403 849,389 875,370"/>
+  <path class="atr-run atr-near" style="--i: 99" pathLength="1" d="M 875,370 L 898,347 916,321 926,296 931,273 930,254 924,235 913,217 897,200 874,186 847,175 814,168 769,165 721,168 673,176 618,191 561,212 495,243"/>
+  <path class="atr-run atr-far" style="--i: 100" pathLength="1" d="M 495,243 L 419,286 384,311 374,322 373,332 380,346 414,387 462,435 484,451 496,455 507,453 518,443 543,405 588,335 633,276 683,221 736,170 787,129 823,102"/>
+  <path class="atr-run atr-mid" style="--i: 101" pathLength="1" d="M 823,102 L 824,99 811,100 773,111 728,130 687,153 648,182 610,218 575,259 537,314 498,375 478,396 462,407 445,411 426,410 402,401 370,381 335,351"/>
+  <path class="atr-run atr-far" style="--i: 102" pathLength="1" d="M 335,351 L 306,319 288,294 281,275 280,263 284,255 294,251 311,252 338,260 379,280 436,317 524,378 552,391 571,396 588,394 606,386 672,337 700,323"/>
+  <path class="atr-run atr-mid" style="--i: 103" pathLength="1" d="M 700,323 L 722,317 742,318 762,325 806,354 823,360 840,360 859,354 878,343 895,325 907,304 913,283 913,264 907,246 898,231 884,218 866,207 836,196"/>
+  <path class="atr-run atr-mid" style="--i: 104" pathLength="1" d="M 836,196 L 801,191 762,190 720,195 670,206 615,224 546,253 448,299 408,313 377,318 351,316 343,314 376,335 434,385 481,425 502,437 515,439 527,435"/>
+  <path class="atr-run atr-far" style="--i: 105" pathLength="1" d="M 527,435 L 542,422 613,323 655,273 698,230 742,195 779,172 805,161 816,160 818,162 813,170 719,238 666,284 588,359 558,381 533,394 507,401 479,401"/>
+  <path class="atr-run atr-mid" style="--i: 106" pathLength="1" d="M 479,401 L 448,396 413,383 373,361 328,330 287,294 253,257 233,228 222,206 217,185 217,171 222,159 232,150 246,144 271,140 302,142 346,150 412,169"/>
+  <path class="atr-run atr-mid" style="--i: 107" pathLength="1" d="M 412,169 L 500,200 583,236 628,260 658,281 683,305 705,336 738,393 754,410 769,419 787,423 809,421 839,412 870,396 901,374 928,348 950,319 966,291"/>
+  <path class="atr-run atr-near" style="--i: 108" pathLength="1" d="M 966,291 L 974,266 977,239 976,218 970,197 959,176 944,156 922,138 896,122 864,109 829,99 791,92 737,89 683,90 619,99 563,112 516,127 480,144"/>
+  <path class="atr-run atr-far" style="--i: 109" pathLength="1" d="M 480,144 L 454,162 436,180 427,198 423,216 425,240 435,271 461,326 523,438 537,457 543,459 548,454 580,388 608,342 644,294 684,251 727,213 760,190"/>
+  <path class="atr-run atr-mid" style="--i: 110" pathLength="1" d="M 760,190 L 791,174 811,170 817,171 817,176 808,187 716,257 650,315 597,363 567,384 540,396 513,402 484,401 451,395 414,381 371,358 329,329 291,296"/>
+  <path class="atr-run atr-mid" style="--i: 111" pathLength="1" d="M 291,296 L 259,263 235,234 218,203 211,181 210,165 214,152 223,141 237,133 256,129 286,127 332,133 392,147 479,173 574,208 625,232 655,251 678,271"/>
+  <path class="atr-run atr-mid" style="--i: 112" pathLength="1" d="M 678,271 L 697,295 716,329 742,383 756,400 770,411 787,415 808,414 836,405 864,390 896,367 920,342 938,315 950,290 956,268 957,244 953,220 945,202 933,185"/>
+  <path class="atr-run atr-near" style="--i: 113" pathLength="1" d="M 933,185 L 917,169 896,155 872,143 843,134 801,126 755,123 707,124 650,132 597,145 541,164 497,184 463,204 439,223 423,242 414,260 410,280 412,303"/>
+  <path class="atr-run atr-far" style="--i: 114" pathLength="1" d="M 412,303 L 421,333 444,380 476,432 496,456 506,462 513,462 521,454 575,359 613,305 657,250 709,196 760,151 824,103 824,101 810,102 772,113 727,133"/>
+  <path class="atr-run atr-mid" style="--i: 115" pathLength="1" d="M 727,133 L 686,157 648,185 609,221 575,262 533,323 497,376 479,395 462,406 445,410 425,409 400,399 370,380 334,350 304,318 287,292 279,273 279,260"/>
+  <path class="atr-run atr-far" style="--i: 116" pathLength="1" d="M 279,260 L 284,253 293,249 311,250 339,259 381,280 439,316 524,375 552,390 571,394 588,393 607,386 674,338 702,325 723,321 742,322 761,330 805,358"/>
+  <path class="atr-run atr-near" style="--i: 117" pathLength="1" d="M 805,358 L 823,364 841,363 860,357 880,345 899,326 912,304 919,282 919,262 914,242 904,227 890,212 871,200 846,190 810,183 770,181 726,184 674,195"/>
+  <path class="atr-run atr-far" style="--i: 118" pathLength="1" d="M 674,195 L 615,213 550,240 423,301 384,315 351,321 355,327 417,381 473,431 493,444 505,447 516,444 529,432 561,386 607,319 653,264 701,215 748,175"/>
+  <path class="atr-run atr-mid" style="--i: 119" pathLength="1" d="M 748,175 L 792,145 821,131 748,169 700,202 654,241 607,288 541,360 514,383 491,395 469,400 444,399 418,392 384,377 348,352 309,319 279,287 258,257"/>
+  <path class="atr-run atr-far" style="--i: 120" pathLength="1" d="M 258,257 L 248,237 245,218 247,206 253,199 265,193 283,192 311,195 351,206 408,230 488,272 640,358 683,384 735,425 755,434 776,437 803,434 834,425"/>
+  <path class="atr-run atr-near" style="--i: 121" pathLength="1" d="M 834,425 L 871,408 909,383 941,355 968,323 988,292 1000,262 1006,239 1007,213 1004,187 995,161 979,135 957,110 927,88 890,69 848,54 801,43 753,36"/>
+  <path class="atr-run atr-mid" style="--i: 122" pathLength="1" d="M 753,36 L 687,33 625,35 558,43 504,55 472,67 451,79 440,89 434,100 433,111 435,127 448,153 490,216 539,290 575,354 606,422 621,464 620,467"/>
+  <path class="atr-run atr-far" style="--i: 123" pathLength="1" d="M 620,467 L 618,453 620,431 629,405 647,375 668,350 692,331 714,319 733,314 750,315 770,322 812,349 829,354 846,353 863,346 880,334 893,318 903,298"/>
+  <path class="atr-run atr-near" style="--i: 124" pathLength="1" d="M 903,298 L 906,278 903,261 895,244 881,229 860,216 833,207 801,202 764,202 718,208 664,221 606,242 464,305 427,317 395,321 368,320 343,313 326,303 320,296"/>
+  <path class="atr-run atr-far" style="--i: 125" pathLength="1" d="M 320,296 L 322,293 335,296 365,312 413,347 491,412 514,425 528,428 540,425 554,415 579,385 631,320 669,279 706,247 742,223 769,211 790,206 804,208"/>
+  <path class="atr-run atr-near" style="--i: 126" pathLength="1" d="M 804,208 L 812,214 814,222 811,234 799,251 767,279 658,364 622,386 591,398 560,405 528,405 491,400 452,388 407,369 360,342 315,311 276,277 239,238"/>
+  <path class="atr-run atr-far" style="--i: 127" pathLength="1" d="M 239,238 L 213,203 198,175 193,154 192,136 198,120 209,107 227,97 251,92 289,89 345,94 440,109 579,139 634,156 665,170 684,183 699,199 711,219"/>
+  <path class="atr-run atr-mid" style="--i: 128" pathLength="1" d="M 711,219 L 719,245 724,287 728,370 734,395 741,408 751,414 765,416 785,411 813,398 840,378 862,355 876,332 883,312 884,295 880,277 871,263 858,251"/>
+  <path class="atr-run atr-near" style="--i: 129" pathLength="1" d="M 858,251 L 839,242 811,235 777,233 740,236 694,246 637,265 513,316 470,328 433,333 403,332 374,326 343,314 316,297 295,278 283,261 281,251 284,243"/>
+  <path class="atr-run atr-far" style="--i: 130" pathLength="1" d="M 284,243 L 292,240 309,240 336,249 379,270 439,307 534,373 562,387 582,392 599,391 619,383 676,347 701,337 722,335 741,339 764,350 796,371 815,376"/>
+  <path class="atr-run atr-near" style="--i: 131" pathLength="1" d="M 815,376 L 833,377 854,372 877,360 901,341 920,318 933,294 939,272 940,252 936,232 926,212 911,194 889,178 861,165 827,156 790,151 739,151 687,157"/>
+  <path class="atr-run atr-mid" style="--i: 132" pathLength="1" d="M 687,157 L 637,168 583,185 529,208 475,236 434,264 408,287 396,304 390,319 391,335 399,356 421,390 455,433 478,453 491,460 501,459 512,451 531,423"/>
+  <path class="atr-run atr-mid" style="--i: 133" pathLength="1" d="M 531,423 L 579,345 622,286 671,227 726,173 782,125 822,93 826,87 824,84 810,84 773,91 731,106 687,128 651,152 613,184 583,217 555,255 528,304"/>
+  <path class="atr-run atr-mid" style="--i: 134" pathLength="1" d="M 528,304 L 486,392 471,412 458,422 443,426 426,423 403,412 370,388 334,354 309,323 295,299 291,285 293,276 299,272 311,271 335,277 368,293 418,325"/>
+  <path class="atr-run atr-far" style="--i: 135" pathLength="1" d="M 418,325 L 508,391 534,404 551,408 565,406 581,397 608,372 657,324 691,298 717,283 742,275 760,273 778,278 794,288 826,319 835,322 842,320 845,313"/>
+  <path class="atr-run atr-near" style="--i: 136" pathLength="1" d="M 845,313 L 844,304 835,294 820,286 796,283 766,285 727,293 673,313 581,351 539,363 501,368 465,367 426,360 390,347 353,328 314,303 277,271 250,240"/>
+  <path class="atr-run atr-far" style="--i: 137" pathLength="1" d="M 250,240 L 233,214 225,194 224,181 226,169 233,160 244,153 259,149 286,148 325,153 378,167 450,192 541,231 603,262 644,288 671,311 695,339 736,402 752,418"/>
+  <path class="atr-run atr-near" style="--i: 138" pathLength="1" d="M 752,418 L 767,425 786,428 811,426 842,416 874,398 907,375 936,347 960,317 976,287 985,259 988,238 988,215 983,192 972,169 956,147 934,126 905,108"/>
+  <path class="atr-run atr-mid" style="--i: 139" pathLength="1" d="M 905,108 L 872,93 834,82 792,74 735,69 677,70 622,75 561,87 512,101 475,118 454,131 439,146 431,161 428,177 429,197 439,227 467,281 562,452"/>
+  <path class="atr-run atr-far" style="--i: 140" pathLength="1" d="M 562,452 L 568,457 572,453 591,405 615,363 645,321 680,284 714,256 741,238 766,228 786,225 800,228 810,235 815,245 815,257 809,271 795,286 753,314"/>
+  <path class="atr-run atr-near" style="--i: 141" pathLength="1" d="M 753,314 L 660,371 620,389 585,399 550,402 514,400 472,391 428,375 383,353 332,321 286,284 247,246 219,211 202,182 194,161 191,142 194,125 203,110"/>
+  <path class="atr-run atr-far" style="--i: 142" pathLength="1" d="M 203,110 L 218,99 240,92 266,88 308,88 366,94 483,115 594,139 640,153 670,168 688,182 702,197 712,218 720,248 723,294 725,373 730,397 737,409"/>
+  <path class="atr-run atr-near" style="--i: 143" pathLength="1" d="M 737,409 L 747,416 761,418 783,413 810,399 838,379 859,356 873,334 880,314 881,297 877,280 869,267 856,255 839,246 811,239 779,237 737,241 692,251"/>
+  <path class="atr-run atr-mid" style="--i: 144" pathLength="1" d="M 692,251 L 636,270 519,318 476,330 439,335 409,335 379,329 346,316 317,298 294,278 280,259 276,246 279,237 287,233 302,233 330,240 370,257 423,288"/>
+  <path class="atr-run atr-far" style="--i: 145" pathLength="1" d="M 423,288 L 541,368 572,383 593,388 611,387 635,378 680,356 703,350 723,351 744,359 785,384 805,390 827,390 852,384 877,372 904,352 928,328 945,301"/>
+  <path class="atr-run atr-near" style="--i: 146" pathLength="1" d="M 945,301 L 955,275 959,253 957,229 953,211 944,194 930,177 913,161 891,148 864,137 824,126 779,120 732,119 673,125 617,136 558,154 510,174 473,194"/>
+  <path class="atr-run atr-far" style="--i: 147" pathLength="1" d="M 473,194 L 446,214 428,234 418,252 413,270 413,291 420,320 438,362 470,419 493,451 505,462 512,463 520,457 537,429 573,364 609,311 652,256 703,202"/>
+  <path class="atr-run atr-mid" style="--i: 148" pathLength="1" d="M 703,202 L 755,156 824,104 824,102 807,104 766,117 721,138 681,163 643,192 606,228 569,273 499,374 480,394 463,405 445,409 427,408 402,399 371,381"/>
+  <path class="atr-run atr-far" style="--i: 149" pathLength="1" d="M 371,381 L 338,353 307,321 286,291 278,272 278,259 282,251 292,247 310,248 338,257 380,277 439,314 529,375 556,389 575,393 592,392 611,384 659,351"/>
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 4400; // 4.2s trace, then the point arrives
+
+  // fg:begin hero-start v1
+  const root = document.currentScript.closest('.fg-diagram');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    root.classList.add('is-settled'); // final composition, no motion
+  } else {
+    let started = false;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!started) {
+        if (!e.isIntersecting) return;
+        started = true; // intro plays once per page load
+        root.classList.add('is-live');
+        setTimeout(() => root.classList.add('is-settled'), INTRO_MS);
+      } else {
+        root.classList.toggle('is-paused', !e.isIntersecting);
+      }
+    }), { threshold: 0.3 });
+    io.observe(root);
+  }
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

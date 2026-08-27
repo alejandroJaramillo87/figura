@@ -146,15 +146,21 @@ worth naming explicitly:
 
 A treatment whose native motion is *derivation* or *process* will strain
 against that split, because for those the "ambient" state is the whole
-point and the intro is arbitrary. Worth watching when line-art and
-generative get built.
+point and the intro is arbitrary.
+
+Building the generative piece settled that for one case, in its favour.
+An attractor gets a non-arbitrary reading for all three states — the
+intro is the trajectory integrating forward, `.is-settled` is the
+attractor set it converged onto, and the ambient loop is the orbit still
+being traversed. Where a process treatment *can* map its lifecycle like
+that, the split stops being a tax. Still worth watching for line-art.
 
 ---
 
 ## 5. The five treatments
 
-Status is explicit because three of these do not exist yet. Nothing
-below except pixel art and isometric vector describes shipped
+Status is explicit because two of these do not exist yet. Nothing below
+except pixel art, isometric vector and generative describes shipped
 capability.
 
 ### Pixel art — **shipped, house style**
@@ -272,7 +278,7 @@ draw-in pattern already exists in `shared/effects.css`
 (`stroke-dashoffset`, with its reduced-motion fallback). The work is
 authoring geometry, not building a pipeline.
 
-### Generative / algorithmic — **proposed**
+### Generative / algorithmic — **portfolio, one piece, unadopted**
 
 **Grain** the particle, agent or cell — but the real unit is **the
 field, not the object** · **register** rigorous, cool, contemporary ·
@@ -299,10 +305,28 @@ explain" rule exists to prevent.
 Drive the field from a curve that actually belongs to the topic. Then it
 is not wallpaper.
 
-**Build cost** — **lowest.** Pure math to SVG paths: no asset pipeline,
-no ASCII maps, no mesh, small output, and natively animatable in CSS. It
-is also the only treatment where **one generator plus a per-piece seed
-yields a whole coherent family** — the cheapest route to visual range.
+**Build cost** — **lowest, and it held up.** `strange-attractor` is 39 KB
+from a 49-line generator: pure math to SVG paths, no asset pipeline, no
+ASCII maps, no mesh, and no new tokens. It is also the only treatment
+where **one generator plus a different entry in `genlib.SYSTEMS` yields
+a whole coherent family** — the cheapest route to visual range.
+
+Two things cost more than the estimate did, and both are now in
+`tools/heroes/README.md`:
+
+- **An SVG dash pattern restarts at every subpath.** The obvious
+  structure — one path per depth band — makes each path ~100 disjoint
+  runs, and `stroke-dashoffset` then fills them in parallel from
+  arbitrary offsets instead of tracing anything. The fix is to cut the
+  trajectory into *chronological* runs, one subpath per element, and
+  colour each by the depth stratum it sits in. That buys a real
+  draw-in, `--i` chronology, and the depth read at once, but it is 150
+  elements rather than 3.
+- **These attractors do not fit a 12:5 frame.** The widest orientation
+  of any system in `SYSTEMS`, found by searching a lattice of rotations,
+  projects 1.85:1 against the frame's 2.4:1. The view has to be searched
+  rather than eyeballed, and the form fitted to height so it runs to the
+  edges.
 
 ---
 
@@ -345,6 +369,7 @@ Measured, for calibration when scoping a new piece.
 | `brain-chip` | pixel | 24 KB | 198 rects | 155 lines |
 | `workstation-iso` | isometric | 26 KB | **151 polys** | **144 lines** |
 | `hooded-hacker` | pixel | 36 KB | 361 rects | 123 lines |
+| `strange-attractor` | generative | 39 KB | 150 paths | **49 lines** |
 | `motherboard-city` | pixel | 64 KB | 656 rects | 268 lines |
 | `workstation-night` | pixel | 75 KB | 813 rects | 341 lines |
 | `training-net` | pixel | 228 KB | 2,940 rects | 196 lines |
@@ -355,6 +380,11 @@ Two readings worth keeping:
   nearly 3,000 rects — an order of magnitude past the others. Scene
   density in pixel art costs output size linearly and there is no
   mechanism to amortize it.
+- **The generative generator is the shortest in the library**, at 49
+  lines against pixel art's 123–341, and it is the only one where
+  scene complexity does not come out of the author's hands: raising the
+  run count or swapping the ODE changes the picture completely without
+  changing the generator's length.
 - **`workstation-iso` is the A/B.** Same subject as
   `workstation-night`, one third the output, 151 shapes against 813, and
   a shorter generator — because `prism()` collapses a desk top to 3
@@ -364,40 +394,54 @@ Two readings worth keeping:
 
 ## 8. Build order for the showcase
 
-Recommended sequencing for the three unbuilt treatments, weighing cost
-against how much range each adds:
+Sequencing for the unbuilt treatments, weighing cost against how much
+range each adds.
 
-1. **Generative** — cheapest to build and the furthest from anything in
-   the library today, so it adds the most range per unit of effort. It
-   is also the only candidate that produces a *family* cheaply, which is
-   the thing the showcase most needs to demonstrate and cannot
-   demonstrate with one-off pieces.
-2. **Line-art** — also cheap, and draw-in already exists. Second because
-   it needs the discipline caveat resolved first (see §9), or the piece
-   risks reading as a diagram rather than a hero.
+1. ~~**Generative**~~ — **built** (`strange-attractor`). It was picked
+   first for being the cheapest and the furthest from anything else in
+   the library, and both held: 39 KB from the shortest generator here.
+   Of the four generative forms considered — attractors, flow fields,
+   reaction–diffusion, Voronoi — attractors won on three counts. Their
+   motion *is* the algorithm rather than a presentation device; they are
+   the cheapest by element count (flow fields want 200–600 streamlines);
+   and they are the literal family case, since swapping the ODE changes
+   the picture completely. Two were ruled out on grounds worth keeping:
+   **Voronoi collides with low-poly** (flat polygons shaded by distance
+   is what that treatment promises, and a showcase whose thesis is that
+   treatments differ should not ship two that look alike), and
+   **reaction–diffusion needs numpy**, which would be the repo's first
+   Python dependency. If the topographic contour look is wanted later,
+   Chladni nodal lines give it from a closed-form function.
+2. **Line-art** — cheap, and draw-in already exists. Next, but it needs
+   the discipline caveat resolved first (see §9), or the piece risks
+   reading as a diagram rather than a hero.
 3. **Low-poly** — a real toolchain investment plus a probable token
-   change spanning both repos. Decide only after the first two land, and
-   only if the range they cover turns out to have a hole shaped like
+   change spanning both repos. Decide only after line-art lands, and
+   only if the range covered turns out to have a hole shaped like
    terrain and monumentality.
 
 ---
 
 ## 9. Open questions
 
-Recorded, not resolved. Both need answering before the next piece.
+**The explanation wall — still open.** CLAUDE.md says heroes are
+abstract art — no labels, no literal diagram anatomy. The schematic
+treatments (line-art especially, isometric to a degree) pull hard
+against that, because their whole power is holding a structural
+reading. Does the wall hold, or do schematic treatments get to be
+semi-explanatory? Answering "the wall holds" is a real constraint on
+what line-art may depict, and line-art is next, so this is the one to
+settle first. Generative did not test it: an attractor has no labels
+and no diagram anatomy either way.
 
-**The explanation wall.** CLAUDE.md says heroes are abstract art — no
-labels, no literal diagram anatomy. The schematic treatments
-(line-art especially, isometric to a degree) pull hard against that,
-because their whole power is holding a structural reading. Does the wall
-hold, or do schematic treatments get to be semi-explanatory? Answering
-"the wall holds" is a real constraint on what line-art may depict.
-
-**Showcase framing.** `workstation-iso` is a **same-subject A/B**: it
-re-does an existing pixel hero so the treatment is the only variable.
-That proves *comparability*. The alternative is **best-case-per-style**:
-give each treatment the subject it is strongest at, which proves
-*range*. These are different showcases and the next piece has to pick
-one. The heuristic in §6 argues for best-case — the whole point is that
-treatments are not interchangeable — but the A/B is the more honest
-comparison. Pick deliberately.
+**Showcase framing — settled by force.** The question was whether the
+showcase is a same-subject A/B (what `workstation-iso` does, re-doing a
+pixel hero so treatment is the only variable) or best-case-per-style.
+Generative decided it: there is no generative rendering of "a
+workstation at night" that is not absurd, so the A/B was simply
+unavailable. The page is therefore **one controlled comparison plus a
+range demonstration** — `workstation-iso` against `workstation-night`
+proves the treatments are comparable, and every piece after it takes
+the subject its treatment is strongest at. That is a better page than
+either pure framing, and it is the standing rule for line-art and
+low-poly.

@@ -15,7 +15,7 @@ const F = require('./lib/fragment');
 const heroesDir = path.join(F.REPO_ROOT, 'tools', 'heroes');
 // Shared machinery, not scenes: these are imported by generators and
 // must never be executed as one.
-const LIBS = new Set(['herolib.py', 'isolib.py']);
+const LIBS = new Set(['herolib.py', 'isolib.py', 'genlib.py']);
 const generators = fs.readdirSync(heroesDir)
   .filter((f) => f.endsWith('.py') && !LIBS.has(f))
   .sort();

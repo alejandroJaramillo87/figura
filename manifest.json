@@ -530,5 +530,13 @@
     "post": "showcase",
     "kind": "hero",
     "description": "Art-style study for the hero portfolio: the workstation-night scene rebuilt as isometric vector — flat-shaded polygons on a 3D voxel lattice instead of pixel sprites, shaded top/right/left from the existing --px-* ramps. The room assembles back to front on a depth-staggered wave, the monitor wakes and washes light over desk and floor, then the screen cycles between a desktop and a terminal."
+  },
+  {
+    "id": "strange-attractor",
+    "path": "diagrams/showcase/strange-attractor.html",
+    "title": "Strange attractor — generative",
+    "post": "showcase",
+    "kind": "hero",
+    "description": "Art-style study for the hero portfolio: Halvorsen's attractor integrated in Python and emitted as chronological path runs, so CSS draws the orbit at the rate the system runs."
   }
 ]

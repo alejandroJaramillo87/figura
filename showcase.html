@@ -77,9 +77,14 @@ code { background: #e8e8e8; padding: 1px 5px; border-radius: 4px; font-size: 0.8
       body: 'Three properties make this cheap. Only three faces of a box are ever visible, so the rest is culled before it is emitted. Painter’s order for lattice boxes is exactly <strong>x + y + z</strong> ascending — no depth sort, no BSP. And a box shows exactly three tones while every <code>--px-*</code> ramp has exactly three bands, so top/right/left shading is correct with no lighting math. <strong>Against the pixel original: 2.9× smaller, 5.4× fewer elements, and a generator less than half as long</strong> (75 KB / 813 rects / 341 lines). It also drops the pixel heroes’ 150-multiple width constraint entirely — polygons scale cleanly at any width, so it needs no <code>1050px</code> snapping.',
     },
     {
+      id: 'strange-attractor',
       name: 'Generative / algorithmic',
-      tagline: 'Attractors, flow fields, reaction–diffusion contours, Voronoi — computed in Python, emitted as static paths, animated by CSS.',
-      body: 'Highest art-per-byte of the four, and the only one where <strong>the generator is the art</strong>: you tune parameters rather than place pixels. A strange attractor traced with <code>stroke-dashoffset</code> draw-in is ~30 KB and thematically exact for a post about optimisation or latent space. The risk is that generative work defaults to screensaver — the algorithm has to be picked for the post, never from a catalogue.',
+      tagline: 'Halvorsen’s attractor, integrated in Python and emitted as static paths. Nothing is placed by hand: the picture is a consequence of three lines of differential equation and a choice of viewpoint.',
+      facts: [
+        ['File', '39 KB'], ['Elements', '150 paths'],
+        ['Generator', '49 lines'], ['New tokens', 'none'],
+      ],
+      body: 'The only style here where <strong>the generator is the art</strong> — you tune parameters rather than place pixels, and one generator plus a different entry in <code>SYSTEMS</code> yields a completely different image. It is also the one whose motion means something on its own: the draw-in runs <code>linear</code> because the draw rate <em>is</em> the integration rate, so the intro is the trajectory going forward in time and the settled state is the attractor it converged onto. <strong>The structure is forced by SVG, not chosen:</strong> a dash pattern restarts at every subpath, so grouping the curve by depth would have given three paths of ~100 disjoint runs each and no trace at all. Cutting it into 150 <em>chronological</em> runs — one subpath apiece, coloured by the depth stratum they sit in — is what buys both a real draw-in and a depth read. The standing risk is that generative work defaults to screensaver; the discipline is to pick the algorithm for the subject, never from a catalogue.',
     },
     {
       name: 'Line-art / plotter',

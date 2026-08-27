@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strange attractor — generative</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Strange attractor — generative</h1>
+<p>Style study: no scene is placed by hand. Halvorsen's attractor is integrated forward from three lines of differential equation, projected, and emitted as three depth-sorted paths. The orbit draws itself at the rate the system runs, settles onto the structure it converged to, and a point keeps running it afterwards.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-strange-attractor">
+<style>
+/* fg:begin palette-classic v1 */
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+/* fg:end panel-base */
+.fg-strange-attractor {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+/* Arbitrary-angle curves, like the isometric hero's polygon edges: they
+   want smoothing, not the pixel heroes' crispEdges snapping. */
+.fg-strange-attractor svg { shape-rendering: geometricPrecision; }
+
+/* --- static defaults ------------------------------------------------ */
+/* Generative style study. The picture is one trajectory cut into 150
+   chronological runs; --i is a run's place in time, and the depth class
+   is the stratum it passes through. Everything paintable lives here so
+   the generator emits only geometry. */
+.fg-strange-attractor .atr-run {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* pathLength="1" normalises the dash maths: one dash of length 1
+     covers a whole run, and pushing it a full length off hides it. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+/* Far strokes dim and fine, near strokes bright and heavy — the light
+   and dark massing that stops a projected tangle reading as a flat
+   scribble. Three strata against a ramp that has exactly three bands,
+   so no new tokens. */
+.fg-strange-attractor .atr-far  { --c: var(--px-sky-1); --w: 1.5; }
+.fg-strange-attractor .atr-mid  { --c: var(--px-sky-2); --w: 2.1; }
+.fg-strange-attractor .atr-near { --c: var(--px-sky-3); --w: 2.9; }
+
+/* --- intro: the trajectory integrating forward ----------------------- */
+/* linear, not an easing token, and this is the one place in the library
+   where that is the right call rather than a lapse: the draw rate is the
+   integration rate, so a curve that eased would misreport how the system
+   runs. Runs start 24ms apart and each takes 600ms, so they overlap into
+   one moving head: 149 * 24ms + 600ms = 4.18s. */
+.fg-strange-attractor.is-live .atr-run {
+  animation: fg-atr-trace 600ms linear calc(var(--i) * 24ms) both;
+}
+
+@keyframes fg-atr-trace { from { stroke-dashoffset: 1; }
+                          to   { stroke-dashoffset: 0; } }
+
+/* --- settled state (the attractor set; the reduced-motion rendering) --
+   The dashoffset must be restated here: the ambient rule below replaces
+   the intro animation, and with it the `both` fill that was holding the
+   curve drawn. */
+.fg-strange-attractor.is-settled .atr-run {
+  stroke-dashoffset: 0;
+  animation: fg-atr-pulse 9s linear calc(var(--i) * 60ms) infinite;
+}
+.fg-strange-attractor.is-paused .atr-run { animation-play-state: paused; }
+
+/* --- ambient loop ---------------------------------------------------- */
+/* The orbit keeps being traversed: a warm glimmer travels the runs in
+   the same chronological order the intro drew them, so the ambient state
+   is the same claim as the intro rather than a new one. 150 runs at 60ms
+   is exactly the 9s cycle, so the head laps seamlessly. One effect, and
+   only a handful of runs are lit at a time. */
+@keyframes fg-atr-pulse {
+  0%, 2%   { stroke: var(--warn); stroke-width: calc(var(--w) + 0.8); }
+  6%, 100% { stroke: var(--c); stroke-width: var(--w); }
+}
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Generative hero: a single computed trajectory looping thousands of times into a broad shell-like form that fills the frame — a steep wall of parallel curves on the left falling into a wide basin, and a tight spiral curling in on the right. The lines are shaded in three tones of blue by depth, pale and heavy where they pass near, dim and fine where they pass behind. The curve draws itself from one end to the other, then a small amber point runs the same path continuously.">
+@SPRITES@
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 4400; // 4.2s trace, then the point arrives
+
+  // fg:begin hero-start v1
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

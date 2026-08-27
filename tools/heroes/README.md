@@ -8,7 +8,8 @@ template pair in this directory, sharing common machinery from
   class hooks. Imports everything from `herolib` (never copy helpers or
   extend `COL` locally).
 
-`herolib.py` and `isolib.py` are shared machinery, not scenes:
+`herolib.py`, `isolib.py` and `genlib.py` are shared machinery, not
+scenes:
 `scripts/heroes.js` skips them by name (`LIBS`). A new shared module must
 be added to that set or `npm run heroes` will try to run it as a
 generator.
@@ -22,6 +23,7 @@ generator.
 | `diagrams/linux-ai-setup/motherboard-city.html` | `motherboard-city.py` | `mbc-template.html` |
 | `diagrams/sandboxing/training-net.html` | `training-net.py` | `tnet-template.html` |
 | `diagrams/showcase/workstation-iso.html` | `workstation-iso.py` | `wiso-template.html` |
+| `diagrams/showcase/strange-attractor.html` | `strange-attractor.py` | `atr-template.html` |
 
 This file is the mechanical pipeline. For *which* art treatment a new
 hero should use — and what each candidate style costs to build — see
@@ -132,6 +134,58 @@ the **anti-diagonal**: screen-horizontal is `u = x - z` and
 screen-vertical is `v = x + z`, so spreading props over `u` costs nothing
 vertically. Solve the framing numerically (`isolib.extent()`) and let the
 floor and walls bleed off the edges.
+
+## Generative heroes (`genlib.py`)
+
+A third hero art style, also portfolio-only (`showcase.html`,
+`post: "showcase"`). Same deal as the isometric style: `kind: hero`, the
+lifecycle contract and validator rules are style-neutral, and the
+pixel-art rules above are prose. Reference: `strange-attractor.py` +
+`atr-template.html`.
+
+Nothing is placed by hand. A dynamical system from `SYSTEMS` is
+integrated, projected, decimated and emitted as `<path>` runs; CSS draws
+them. `SYSTEMS` is canonical the way `herolib.COL` and `isolib.RAMP`
+are: a new attractor is added there, never redefined in a generator.
+Everything is stdlib — this style does not introduce the repo's first
+Python dependency, and should not.
+
+- **One subpath per element, always.** An SVG dash pattern restarts at
+  every subpath, so `stroke-dashoffset` on a path made of many runs does
+  not trace it — it fills each run in parallel from an arbitrary offset,
+  and a `stroke-dasharray` "point" becomes one point *per run*. This is
+  the single biggest trap in the style; both bugs look like a working
+  animation until you step the frames.
+- **Cut chronologically, colour by depth.** `runs()` slices the
+  trajectory into equal spans of *time*, each tagged with the depth
+  stratum it passes through. That gives one subpath per element (so the
+  draw-in is a real trace), `--i` carrying chronology to CSS, and a
+  three-tone depth read from one `--px-*` ramp — three strata against
+  three bands, so **no new tokens** and the closed set stays closed.
+- Coordinates round to whole viewBox units in `path_d()`; float noise is
+  the biggest cause of bloated output. Decimation tolerance is in
+  viewBox units — 0.8 is imperceptible at hero width and ~15% smaller
+  than 0.6.
+- `decimate()` is iterative on purpose: a recursive Ramer–Douglas–Peucker
+  blows Python's recursion limit on a 20k-point trajectory.
+- Templates use `shape-rendering: geometricPrecision`, not `crispEdges`.
+
+Choreography. The intro draws the runs in order via
+`animation-delay: calc(var(--i) * <unit>)`, and it runs `linear` rather
+than an easing token — the draw rate is the integration rate, so an
+eased curve would misreport how the system runs. The `.is-settled` rule
+has to restate `stroke-dashoffset: 0`: it replaces the intro animation,
+and with it the `both` fill that was holding the curve drawn. Keep the
+class set to the run class plus one per stratum and vary `--i` inline,
+or `hero-sync` drifts on every regeneration.
+
+Composition. These attractors are all roughly isotropic — the widest
+orientation of any system in `SYSTEMS` projects about 1.85:1 against a
+2.4:1 frame — so the view is searched, not eyeballed: rotate over a
+lattice of angles and take the widest projection, then `fit='height'` to
+run the form to the edges. `project()` has no stretch mode on purpose;
+distorting a mathematical object to fit a frame is a lie about its
+shape.
 
 ## Sync enforcement
 
