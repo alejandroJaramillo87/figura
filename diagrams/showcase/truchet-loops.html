@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Truchet loops — generative</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Truchet loops — generative</h1>
+<p>A grid of tiles, each flipping a coin between two arc pairings. The
+   loops are nobody's decision.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-truchet-loops">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-truchet-loops {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-hero-in: 900ms;
+  --stagger: 80ms;
+  --ease-frames: steps(10);
+  --ease-frames-coarse: steps(4, jump-none);
+  --dur-tick: 100ms;
+  --px-outline: #0b1020;
+  --px-steel-1: #232c44;
+  --px-steel-2: #3b4a5e;
+  --px-steel-3: #64748b;
+  --px-steel-4: #a7b0b8;
+  --px-amber-1: #92400e;
+  --px-amber-2: #f59e0b;
+  --px-amber-3: #fcd34d;
+  --px-green-1: #166534;
+  --px-green-2: #34d399;
+  --px-green-3: #a7f3d0;
+  --px-sky-1: #0369a1;
+  --px-sky-2: #38bdf8;
+  --px-sky-3: #bae6fd;
+  --px-dusk-1: #2b1b3d;
+  --px-dusk-2: #7c3a58;
+  --px-dusk-3: #e8a87c;
+  --px-violet-1: #3c2a6e;
+  --px-violet-2: #a78bfa;
+  --px-violet-3: #ddd6fe;
+  --px-hot-1: #7f1d1d;
+  --px-hot-2: #f87171;
+  --px-hot-3: #fdba74;
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-truchet-loops {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-truchet-loops svg { display: block; width: 100%; height: auto; }
+.fg-truchet-loops text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-truchet-loops {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+/* Arcs, not pixels — the same call the isometric hero makes. */
+.fg-truchet-loops svg { shape-rendering: geometricPrecision; }
+
+.fg-truchet-loops .trl-run,
+.fg-truchet-loops .trl-flip-a,
+.fg-truchet-loops .trl-flip-b {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+/* Strata by loop size, from one --px-* ramp's three bands. Weight rises
+   with the band so the giant loop reads as the subject and the mass of
+   two-arc rings stays a field: at 1.5:1 against the panel the bottom
+   band is a haze on its own, and the extra width is what keeps it
+   present rather than invisible. */
+.fg-truchet-loops .trl-small { --c: var(--px-violet-1); --w: 2; }
+.fg-truchet-loops .trl-mid   { --c: var(--px-violet-2); --w: 2.2; }
+.fg-truchet-loops .trl-large { --c: var(--px-violet-3); --w: 4; }
+.fg-truchet-loops .trl-flip-a,
+.fg-truchet-loops .trl-flip-b { --c: var(--px-violet-1); --w: 2; }
+
+/* Intro: one hard cut per component on the frame-tick clock, ordered
+   smallest to largest. Not a draw-in — the attractor already owns
+   tracing, and what wants showing here is not a path through time but a
+   distribution: rings pepper in, the middle fills, and the one loop that
+   crosses the frame lands last. steps(1, jump-start) plus a delay is the
+   house one-shot reveal; a jump-end can be missed at exactly 100%. */
+@keyframes fg-trl-in { from { opacity: 0; } to { opacity: 1; } }
+.fg-truchet-loops.is-live .trl-run {
+  animation: fg-trl-in var(--dur-tick) steps(1, jump-start)
+             calc(var(--i) * 32ms) both;
+}
+/* The giant loop waits a beat past the rest of its stagger, so the field
+   finishes assembling before the one component that crosses it arrives.
+   Longhand after the shorthand above, and it must stay after. */
+.fg-truchet-loops.is-live .trl-large {
+  animation-delay: calc(var(--i) * 32ms + 350ms);
+}
+
+/* Settled: the complete field. `animation: none` is load-bearing — the
+   intro rule still matches once .is-settled joins .is-live, and its
+   `both` fill would otherwise keep holding the elements. */
+.fg-truchet-loops.is-settled .trl-run,
+.fg-truchet-loops.is-settled .trl-large { opacity: 1; animation: none; }
+
+/* Ambient: the four cells left out of the tiling keep re-rolling. The
+   rule is still a coin flip, and these are the cells that have not come
+   up yet. steps(2, jump-none) makes a true square wave — the two
+   orientations are exact complements, so exactly one is showing at every
+   instant, pause included.
+
+   Rolling from .is-live rather than from settle, because otherwise both
+   orientations paint at once through the whole intro (a four-pointed
+   star) and then pop apart when the ambient takes over. Both selectors
+   are needed: .is-live covers the run of the piece, .is-settled is what
+   reduced motion gets on its own. */
+@keyframes fg-trl-roll-a { from { opacity: 1; } to { opacity: 0; } }
+@keyframes fg-trl-roll-b { from { opacity: 0; } to { opacity: 1; } }
+.fg-truchet-loops.is-live .trl-flip-a,
+.fg-truchet-loops.is-live .trl-flip-b,
+.fg-truchet-loops.is-settled .trl-flip-a,
+.fg-truchet-loops.is-settled .trl-flip-b {
+  opacity: 1;
+  animation: fg-trl-roll-a 2.4s steps(2, jump-none)
+             calc(var(--i) * 570ms) infinite;
+}
+.fg-truchet-loops.is-live .trl-flip-b,
+.fg-truchet-loops.is-settled .trl-flip-b { animation-name: fg-trl-roll-b; }
+.fg-truchet-loops.is-paused .trl-flip-a,
+.fg-truchet-loops.is-paused .trl-flip-b { animation-play-state: paused; }
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-truchet-loops, .fg-truchet-loops * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+
+/* With the roll killed, both orientations of an undecided cell would
+   paint at once. Show one. */
+@media (prefers-reduced-motion: reduce) {
+  .fg-truchet-loops .trl-flip-b { opacity: 0; }
+}
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Abstract hero: a wide grid of quarter-circle arcs in
+     violet. Each cell joins its arcs one of two ways at random, and the
+     arcs chain across cells into closed loops — mostly tiny rings, with
+     one pale loop wandering across most of the frame. Four cells are
+     left flickering between their two pairings.">
+  <path class="trl-flip-a" style="--i: 0" d="M275,300 A25 25 0 0 1 250,325 M275,350 A25 25 0 0 1 300,325"/>
+  <path class="trl-flip-b" style="--i: 0" d="M275,300 A25 25 0 0 0 300,325 M275,350 A25 25 0 0 0 250,325"/>
+  <path class="trl-flip-a" style="--i: 1" d="M525,100 A25 25 0 0 1 500,125 M525,150 A25 25 0 0 1 550,125"/>
+  <path class="trl-flip-b" style="--i: 1" d="M525,100 A25 25 0 0 0 550,125 M525,150 A25 25 0 0 0 500,125"/>
+  <path class="trl-flip-a" style="--i: 2" d="M775,350 A25 25 0 0 1 750,375 M775,400 A25 25 0 0 1 800,375"/>
+  <path class="trl-flip-b" style="--i: 2" d="M775,350 A25 25 0 0 0 800,375 M775,400 A25 25 0 0 0 750,375"/>
+  <path class="trl-flip-a" style="--i: 3" d="M975,150 A25 25 0 0 1 950,175 M975,200 A25 25 0 0 1 1000,175"/>
+  <path class="trl-flip-b" style="--i: 3" d="M975,150 A25 25 0 0 0 1000,175 M975,200 A25 25 0 0 0 950,175"/>
+  <path class="trl-run trl-small" style="--i: 4" d="M25,0 A25 25 0 0 1 0,25"/>
+  <path class="trl-run trl-small" style="--i: 5" d="M25,500 A25 25 0 0 0 0,475"/>
+  <path class="trl-run trl-small" style="--i: 6" d="M125,0 A25 25 0 0 0 150,25 A25 25 0 0 0 175,0"/>
+  <path class="trl-run trl-small" style="--i: 7" d="M375,0 A25 25 0 0 0 400,25 A25 25 0 0 0 425,0"/>
+  <path class="trl-run trl-small" style="--i: 8" d="M525,0 A25 25 0 0 0 550,25 A25 25 0 0 0 575,0"/>
+  <path class="trl-run trl-small" style="--i: 9" d="M675,0 A25 25 0 0 0 700,25 A25 25 0 0 0 725,0"/>
+  <path class="trl-run trl-small" style="--i: 10" d="M825,0 A25 25 0 0 0 850,25 A25 25 0 0 0 875,0"/>
+  <path class="trl-run trl-small" style="--i: 11" d="M975,0 A25 25 0 0 0 1000,25 A25 25 0 0 0 1025,0"/>
+  <path class="trl-run trl-small" style="--i: 12" d="M1200,25 A25 25 0 0 0 1175,50 A25 25 0 0 0 1200,75"/>
+  <path class="trl-run trl-small" style="--i: 13" d="M0,125 A25 25 0 0 1 25,150 A25 25 0 0 1 0,175"/>
+  <path class="trl-run trl-small" style="--i: 14" d="M1200,225 A25 25 0 0 0 1175,250 A25 25 0 0 0 1200,275"/>
+  <path class="trl-run trl-small" style="--i: 15" d="M0,275 A25 25 0 0 1 25,300 A25 25 0 0 1 0,325"/>
+  <path class="trl-run trl-small" style="--i: 16" d="M0,375 A25 25 0 0 1 25,400 A25 25 0 0 1 0,425"/>
+  <path class="trl-run trl-small" style="--i: 17" d="M175,500 A25 25 0 0 1 200,475 A25 25 0 0 1 225,500"/>
+  <path class="trl-run trl-small" style="--i: 18" d="M275,500 A25 25 0 0 1 300,475 A25 25 0 0 1 325,500"/>
+  <path class="trl-run trl-small" style="--i: 19" d="M425,500 A25 25 0 0 1 450,475 A25 25 0 0 1 475,500"/>
+  <path class="trl-run trl-small" style="--i: 20" d="M525,500 A25 25 0 0 1 550,475 A25 25 0 0 1 575,500"/>
+  <path class="trl-run trl-small" style="--i: 21" d="M625,500 A25 25 0 0 1 650,475 A25 25 0 0 1 675,500"/>
+  <path class="trl-run trl-small" style="--i: 22" d="M775,500 A25 25 0 0 1 800,475 A25 25 0 0 1 825,500"/>
+  <path class="trl-run trl-small" style="--i: 23" d="M875,500 A25 25 0 0 1 900,475 A25 25 0 0 1 925,500"/>
+  <path class="trl-run trl-small" style="--i: 24" d="M1075,500 A25 25 0 0 1 1100,475 A25 25 0 0 1 1125,500"/>
+  <path class="trl-run trl-small" style="--i: 25" d="M550,125 A25 25 0 0 1 575,150 A25 25 0 0 1 550,175 A25 25 0 0 1 525,150"/>
+  <path class="trl-run trl-small" style="--i: 26" d="M300,325 A25 25 0 0 1 325,350 A25 25 0 0 1 300,375 A25 25 0 0 1 275,350"/>
+  <path class="trl-run trl-small" style="--i: 27" d="M725,50 A25 25 0 0 1 750,25 A25 25 0 0 1 775,50 A25 25 0 0 1 750,75 A25 25 0 0 1 725,50"/>
+  <path class="trl-run trl-small" style="--i: 28" d="M75,100 A25 25 0 0 1 100,75 A25 25 0 0 1 125,100 A25 25 0 0 1 100,125 A25 25 0 0 1 75,100"/>
+  <path class="trl-run trl-small" style="--i: 29" d="M825,100 A25 25 0 0 1 850,75 A25 25 0 0 1 875,100 A25 25 0 0 1 850,125 A25 25 0 0 1 825,100"/>
+  <path class="trl-run trl-small" style="--i: 30" d="M925,100 A25 25 0 0 1 950,75 A25 25 0 0 1 975,100 A25 25 0 0 1 950,125 A25 25 0 0 1 925,100"/>
+  <path class="trl-run trl-small" style="--i: 31" d="M1075,100 A25 25 0 0 1 1100,75 A25 25 0 0 1 1125,100 A25 25 0 0 1 1100,125 A25 25 0 0 1 1075,100"/>
+  <path class="trl-run trl-small" style="--i: 32" d="M675,150 A25 25 0 0 1 700,125 A25 25 0 0 1 725,150 A25 25 0 0 1 700,175 A25 25 0 0 1 675,150"/>
+  <path class="trl-run trl-small" style="--i: 33" d="M625,200 A25 25 0 0 1 650,175 A25 25 0 0 1 675,200 A25 25 0 0 1 650,225 A25 25 0 0 1 625,200"/>
+  <path class="trl-run trl-small" style="--i: 34" d="M725,200 A25 25 0 0 1 750,175 A25 25 0 0 1 775,200 A25 25 0 0 1 750,225 A25 25 0 0 1 725,200"/>
+  <path class="trl-run trl-small" style="--i: 35" d="M675,250 A25 25 0 0 1 700,225 A25 25 0 0 1 725,250 A25 25 0 0 1 700,275 A25 25 0 0 1 675,250"/>
+  <path class="trl-run trl-small" style="--i: 36" d="M775,250 A25 25 0 0 1 800,225 A25 25 0 0 1 825,250 A25 25 0 0 1 800,275 A25 25 0 0 1 775,250"/>
+  <path class="trl-run trl-small" style="--i: 37" d="M425,350 A25 25 0 0 1 450,325 A25 25 0 0 1 475,350 A25 25 0 0 1 450,375 A25 25 0 0 1 425,350"/>
+  <path class="trl-run trl-small" style="--i: 38" d="M975,350 A25 25 0 0 1 1000,325 A25 25 0 0 1 1025,350 A25 25 0 0 1 1000,375 A25 25 0 0 1 975,350"/>
+  <path class="trl-run trl-small" style="--i: 39" d="M625,400 A25 25 0 0 1 650,375 A25 25 0 0 1 675,400 A25 25 0 0 1 650,425 A25 25 0 0 1 625,400"/>
+  <path class="trl-run trl-small" style="--i: 40" d="M125,450 A25 25 0 0 1 150,425 A25 25 0 0 1 175,450 A25 25 0 0 1 150,475 A25 25 0 0 1 125,450"/>
+  <path class="trl-run trl-small" style="--i: 41" d="M225,450 A25 25 0 0 1 250,425 A25 25 0 0 1 275,450 A25 25 0 0 1 250,475 A25 25 0 0 1 225,450"/>
+  <path class="trl-run trl-small" style="--i: 42" d="M475,450 A25 25 0 0 1 500,425 A25 25 0 0 1 525,450 A25 25 0 0 1 500,475 A25 25 0 0 1 475,450"/>
+  <path class="trl-run trl-mid" style="--i: 43" d="M275,0 A25 25 0 0 0 300,25 A25 25 0 0 1 325,50 A25 25 0 0 0 350,75 A25 25 0 0 0 375,50 A25 25 0 0 0 350,25 A25 25 0 0 1 325,0"/>
+  <path class="trl-run trl-mid" style="--i: 44" d="M1075,0 A25 25 0 0 1 1050,25 A25 25 0 0 0 1025,50 A25 25 0 0 0 1050,75 A25 25 0 0 0 1075,50 A25 25 0 0 1 1100,25 A25 25 0 0 0 1125,0"/>
+  <path class="trl-run trl-mid" style="--i: 45" d="M1200,375 A25 25 0 0 1 1175,350 A25 25 0 0 0 1150,325 A25 25 0 0 0 1125,350 A25 25 0 0 0 1150,375 A25 25 0 0 1 1175,400 A25 25 0 0 0 1200,425"/>
+  <path class="trl-run trl-mid" style="--i: 46" d="M975,500 A25 25 0 0 1 1000,475 A25 25 0 0 0 1025,450 A25 25 0 0 1 1050,425 A25 25 0 0 1 1075,450 A25 25 0 0 1 1050,475 A25 25 0 0 0 1025,500"/>
+  <path class="trl-run trl-mid" style="--i: 47" d="M975,150 A25 25 0 0 1 1000,125 A25 25 0 0 1 1025,150 A25 25 0 0 0 1050,175 A25 25 0 0 1 1075,200 A25 25 0 0 1 1050,225 A25 25 0 0 1 1025,200 A25 25 0 0 0 1000,175"/>
+  <path class="trl-run trl-mid" style="--i: 48" d="M750,375 A25 25 0 0 0 725,400 A25 25 0 0 1 700,425 A25 25 0 0 0 675,450 A25 25 0 0 0 700,475 A25 25 0 0 0 725,450 A25 25 0 0 1 750,425 A25 25 0 0 0 775,400"/>
+  <path class="trl-run trl-mid" style="--i: 49" d="M125,150 A25 25 0 0 1 150,125 A25 25 0 0 1 175,150 A25 25 0 0 1 150,175 A25 25 0 0 0 125,200 A25 25 0 0 1 100,225 A25 25 0 0 1 75,200 A25 25 0 0 1 100,175 A25 25 0 0 0 125,150"/>
+  <path class="trl-run trl-mid" style="--i: 50" d="M75,300 A25 25 0 0 1 100,275 A25 25 0 0 1 125,300 A25 25 0 0 1 100,325 A25 25 0 0 0 75,350 A25 25 0 0 1 50,375 A25 25 0 0 1 25,350 A25 25 0 0 1 50,325 A25 25 0 0 0 75,300"/>
+  <path class="trl-run trl-mid" style="--i: 51" d="M475,300 A25 25 0 0 1 500,275 A25 25 0 0 1 525,300 A25 25 0 0 0 550,325 A25 25 0 0 1 575,350 A25 25 0 0 1 550,375 A25 25 0 0 1 525,350 A25 25 0 0 0 500,325 A25 25 0 0 1 475,300"/>
+  <path class="trl-run trl-mid" style="--i: 52" d="M475,0 A25 25 0 0 1 450,25 A25 25 0 0 0 425,50 A25 25 0 0 0 450,75 A25 25 0 0 0 475,50 A25 25 0 0 1 500,25 A25 25 0 0 1 525,50 A25 25 0 0 1 500,75 A25 25 0 0 0 475,100 A25 25 0 0 0 500,125"/>
+  <path class="trl-run trl-mid" style="--i: 53" d="M1175,0 A25 25 0 0 1 1150,25 A25 25 0 0 0 1125,50 A25 25 0 0 0 1150,75 A25 25 0 0 1 1175,100 A25 25 0 0 1 1150,125 A25 25 0 0 0 1125,150 A25 25 0 0 0 1150,175 A25 25 0 0 0 1175,150 A25 25 0 0 1 1200,125"/>
+  <path class="trl-run trl-mid" style="--i: 54" d="M0,75 A25 25 0 0 1 25,100 A25 25 0 0 0 50,125 A25 25 0 0 1 75,150 A25 25 0 0 1 50,175 A25 25 0 0 0 25,200 A25 25 0 0 0 50,225 A25 25 0 0 1 75,250 A25 25 0 0 1 50,275 A25 25 0 0 1 25,250 A25 25 0 0 0 0,225"/>
+  <path class="trl-run trl-mid" style="--i: 55" d="M1200,175 A25 25 0 0 0 1175,200 A25 25 0 0 1 1150,225 A25 25 0 0 0 1125,250 A25 25 0 0 1 1100,275 A25 25 0 0 0 1075,300 A25 25 0 0 0 1100,325 A25 25 0 0 0 1125,300 A25 25 0 0 1 1150,275 A25 25 0 0 1 1175,300 A25 25 0 0 0 1200,325"/>
+  <path class="trl-run trl-mid" style="--i: 56" d="M775,0 A25 25 0 0 0 800,25 A25 25 0 0 1 825,50 A25 25 0 0 1 800,75 A25 25 0 0 0 775,100 A25 25 0 0 0 800,125 A25 25 0 0 1 825,150 A25 25 0 0 0 850,175 A25 25 0 0 0 875,150 A25 25 0 0 1 900,125 A25 25 0 0 1 925,150 A25 25 0 0 0 950,175"/>
+  <path class="trl-run trl-mid" style="--i: 57" d="M625,0 A25 25 0 0 0 650,25 A25 25 0 0 1 675,50 A25 25 0 0 1 650,75 A25 25 0 0 1 625,50 A25 25 0 0 0 600,25 A25 25 0 0 0 575,50 A25 25 0 0 0 600,75 A25 25 0 0 1 625,100 A25 25 0 0 1 600,125 A25 25 0 0 1 575,100 A25 25 0 0 0 550,75 A25 25 0 0 0 525,100"/>
+  <path class="trl-run trl-mid" style="--i: 58" d="M75,500 A25 25 0 0 0 50,475 A25 25 0 0 1 25,450 A25 25 0 0 1 50,425 A25 25 0 0 0 75,400 A25 25 0 0 1 100,375 A25 25 0 0 0 125,350 A25 25 0 0 1 150,325 A25 25 0 0 1 175,350 A25 25 0 0 1 150,375 A25 25 0 0 0 125,400 A25 25 0 0 1 100,425 A25 25 0 0 0 75,450 A25 25 0 0 0 100,475 A25 25 0 0 1 125,500"/>
+  <path class="trl-run trl-mid" style="--i: 59" d="M800,375 A25 25 0 0 0 825,350 A25 25 0 0 1 850,325 A25 25 0 0 1 875,350 A25 25 0 0 0 900,375 A25 25 0 0 1 925,400 A25 25 0 0 1 900,425 A25 25 0 0 0 875,450 A25 25 0 0 1 850,475 A25 25 0 0 1 825,450 A25 25 0 0 1 850,425 A25 25 0 0 0 875,400 A25 25 0 0 0 850,375 A25 25 0 0 0 825,400 A25 25 0 0 1 800,425 A25 25 0 0 0 775,450 A25 25 0 0 1 750,475 A25 25 0 0 0 725,500"/>
+  <path class="trl-run trl-mid" style="--i: 60" d="M925,0 A25 25 0 0 1 900,25 A25 25 0 0 0 875,50 A25 25 0 0 0 900,75 A25 25 0 0 0 925,50 A25 25 0 0 1 950,25 A25 25 0 0 1 975,50 A25 25 0 0 0 1000,75 A25 25 0 0 1 1025,100 A25 25 0 0 0 1050,125 A25 25 0 0 1 1075,150 A25 25 0 0 0 1100,175 A25 25 0 0 1 1125,200 A25 25 0 0 1 1100,225 A25 25 0 0 0 1075,250 A25 25 0 0 1 1050,275 A25 25 0 0 0 1025,300 A25 25 0 0 0 1050,325 A25 25 0 0 1 1075,350 A25 25 0 0 0 1100,375 A25 25 0 0 1 1125,400 A25 25 0 0 0 1150,425 A25 25 0 0 1 1175,450 A25 25 0 0 0 1200,475"/>
+  <path class="trl-run trl-mid" style="--i: 61" d="M775,350 A25 25 0 0 1 800,325 A25 25 0 0 0 825,300 A25 25 0 0 1 850,275 A25 25 0 0 1 875,300 A25 25 0 0 0 900,325 A25 25 0 0 0 925,300 A25 25 0 0 1 950,275 A25 25 0 0 1 975,300 A25 25 0 0 1 950,325 A25 25 0 0 0 925,350 A25 25 0 0 0 950,375 A25 25 0 0 1 975,400 A25 25 0 0 1 950,425 A25 25 0 0 0 925,450 A25 25 0 0 0 950,475 A25 25 0 0 0 975,450 A25 25 0 0 1 1000,425 A25 25 0 0 0 1025,400 A25 25 0 0 1 1050,375 A25 25 0 0 1 1075,400 A25 25 0 0 0 1100,425 A25 25 0 0 1 1125,450 A25 25 0 0 0 1150,475 A25 25 0 0 1 1175,500"/>
+  <path class="trl-run trl-mid" style="--i: 62" d="M250,325 A25 25 0 0 1 225,300 A25 25 0 0 0 200,275 A25 25 0 0 1 175,250 A25 25 0 0 1 200,225 A25 25 0 0 0 225,200 A25 25 0 0 0 200,175 A25 25 0 0 0 175,200 A25 25 0 0 1 150,225 A25 25 0 0 0 125,250 A25 25 0 0 0 150,275 A25 25 0 0 1 175,300 A25 25 0 0 0 200,325 A25 25 0 0 1 225,350 A25 25 0 0 1 200,375 A25 25 0 0 0 175,400 A25 25 0 0 0 200,425 A25 25 0 0 0 225,400 A25 25 0 0 1 250,375 A25 25 0 0 1 275,400 A25 25 0 0 0 300,425 A25 25 0 0 1 325,450 A25 25 0 0 0 350,475 A25 25 0 0 0 375,450 A25 25 0 0 1 400,425 A25 25 0 0 1 425,450 A25 25 0 0 1 400,475 A25 25 0 0 0 375,500"/>
+  <path class="trl-run trl-mid" style="--i: 63" d="M75,0 A25 25 0 0 1 50,25 A25 25 0 0 0 25,50 A25 25 0 0 0 50,75 A25 25 0 0 0 75,50 A25 25 0 0 1 100,25 A25 25 0 0 1 125,50 A25 25 0 0 0 150,75 A25 25 0 0 0 175,50 A25 25 0 0 1 200,25 A25 25 0 0 1 225,50 A25 25 0 0 1 200,75 A25 25 0 0 0 175,100 A25 25 0 0 0 200,125 A25 25 0 0 0 225,100 A25 25 0 0 1 250,75 A25 25 0 0 1 275,100 A25 25 0 0 0 300,125 A25 25 0 0 1 325,150 A25 25 0 0 0 350,175 A25 25 0 0 1 375,200 A25 25 0 0 0 400,225 A25 25 0 0 0 425,200 A25 25 0 0 0 400,175 A25 25 0 0 1 375,150 A25 25 0 0 1 400,125 A25 25 0 0 1 425,150 A25 25 0 0 0 450,175 A25 25 0 0 0 475,150 A25 25 0 0 0 450,125 A25 25 0 0 1 425,100 A25 25 0 0 0 400,75 A25 25 0 0 0 375,100 A25 25 0 0 1 350,125 A25 25 0 0 1 325,100 A25 25 0 0 0 300,75 A25 25 0 0 1 275,50 A25 25 0 0 0 250,25 A25 25 0 0 1 225,0"/>
+  <path class="trl-run trl-large" style="--i: 64" d="M975,200 A25 25 0 0 0 1000,225 A25 25 0 0 1 1025,250 A25 25 0 0 1 1000,275 A25 25 0 0 1 975,250 A25 25 0 0 0 950,225 A25 25 0 0 0 925,250 A25 25 0 0 1 900,275 A25 25 0 0 1 875,250 A25 25 0 0 1 900,225 A25 25 0 0 0 925,200 A25 25 0 0 0 900,175 A25 25 0 0 0 875,200 A25 25 0 0 1 850,225 A25 25 0 0 1 825,200 A25 25 0 0 0 800,175 A25 25 0 0 1 775,150 A25 25 0 0 0 750,125 A25 25 0 0 1 725,100 A25 25 0 0 0 700,75 A25 25 0 0 0 675,100 A25 25 0 0 1 650,125 A25 25 0 0 0 625,150 A25 25 0 0 1 600,175 A25 25 0 0 0 575,200 A25 25 0 0 1 550,225 A25 25 0 0 0 525,250 A25 25 0 0 0 550,275 A25 25 0 0 1 575,300 A25 25 0 0 0 600,325 A25 25 0 0 0 625,300 A25 25 0 0 0 600,275 A25 25 0 0 1 575,250 A25 25 0 0 1 600,225 A25 25 0 0 1 625,250 A25 25 0 0 0 650,275 A25 25 0 0 1 675,300 A25 25 0 0 0 700,325 A25 25 0 0 0 725,300 A25 25 0 0 1 750,275 A25 25 0 0 1 775,300 A25 25 0 0 1 750,325 A25 25 0 0 0 725,350 A25 25 0 0 1 700,375 A25 25 0 0 1 675,350 A25 25 0 0 0 650,325 A25 25 0 0 0 625,350 A25 25 0 0 1 600,375 A25 25 0 0 0 575,400 A25 25 0 0 0 600,425 A25 25 0 0 1 625,450 A25 25 0 0 1 600,475 A25 25 0 0 1 575,450 A25 25 0 0 0 550,425 A25 25 0 0 1 525,400 A25 25 0 0 0 500,375 A25 25 0 0 0 475,400 A25 25 0 0 1 450,425 A25 25 0 0 1 425,400 A25 25 0 0 0 400,375 A25 25 0 0 0 375,400 A25 25 0 0 1 350,425 A25 25 0 0 1 325,400 A25 25 0 0 1 350,375 A25 25 0 0 0 375,350 A25 25 0 0 1 400,325 A25 25 0 0 0 425,300 A25 25 0 0 1 450,275 A25 25 0 0 0 475,250 A25 25 0 0 1 500,225 A25 25 0 0 0 525,200 A25 25 0 0 0 500,175 A25 25 0 0 0 475,200 A25 25 0 0 1 450,225 A25 25 0 0 0 425,250 A25 25 0 0 1 400,275 A25 25 0 0 1 375,250 A25 25 0 0 0 350,225 A25 25 0 0 0 325,250 A25 25 0 0 0 350,275 A25 25 0 0 1 375,300 A25 25 0 0 1 350,325 A25 25 0 0 1 325,300 A25 25 0 0 0 300,275 A25 25 0 0 1 275,250 A25 25 0 0 1 300,225 A25 25 0 0 0 325,200 A25 25 0 0 0 300,175 A25 25 0 0 1 275,150 A25 25 0 0 0 250,125 A25 25 0 0 0 225,150 A25 25 0 0 0 250,175 A25 25 0 0 1 275,200 A25 25 0 0 1 250,225 A25 25 0 0 0 225,250 A25 25 0 0 0 250,275 A25 25 0 0 1 275,300"/>
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2900; // 65 elements * 32ms + the giant's extra beat
+
+  // fg:begin hero-start v1
+  const root = document.currentScript.closest('.fg-diagram');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    root.classList.add('is-settled'); // final composition, no motion
+  } else {
+    let started = false;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!started) {
+        if (!e.isIntersecting) return;
+        started = true; // intro plays once per page load
+        root.classList.add('is-live');
+        setTimeout(() => root.classList.add('is-settled'), INTRO_MS);
+      } else {
+        root.classList.toggle('is-paused', !e.isIntersecting);
+      }
+    }), { threshold: 0.3 });
+    io.observe(root);
+  }
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

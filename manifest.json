@@ -538,5 +538,13 @@
     "post": "showcase",
     "kind": "hero",
     "description": "Art-style study for the hero portfolio: Halvorsen's attractor integrated in Python and emitted as chronological path runs, so CSS draws the orbit at the rate the system runs."
+  },
+  {
+    "id": "truchet-loops",
+    "path": "diagrams/showcase/truchet-loops.html",
+    "title": "Truchet loops — generative",
+    "post": "showcase",
+    "kind": "hero",
+    "description": "Generative hero study: a random Truchet tiling whose arcs chain into loops nobody designed, shaded by loop size."
   }
 ]

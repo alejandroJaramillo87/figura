@@ -24,6 +24,7 @@ generator.
 | `diagrams/sandboxing/training-net.html` | `training-net.py` | `tnet-template.html` |
 | `diagrams/showcase/workstation-iso.html` | `workstation-iso.py` | `wiso-template.html` |
 | `diagrams/showcase/strange-attractor.html` | `strange-attractor.py` | `atr-template.html` |
+| `diagrams/showcase/truchet-loops.html` | `truchet-loops.py` | `trl-template.html` |
 
 This file is the mechanical pipeline. For *which* art treatment a new
 hero should use — and what each candidate style costs to build — see
@@ -143,12 +144,22 @@ lifecycle contract and validator rules are style-neutral, and the
 pixel-art rules above are prose. Reference: `strange-attractor.py` +
 `atr-template.html`.
 
-Nothing is placed by hand. A dynamical system from `SYSTEMS` is
-integrated, projected, decimated and emitted as `<path>` runs; CSS draws
-them. `SYSTEMS` is canonical the way `herolib.COL` and `isolib.RAMP`
-are: a new attractor is added there, never redefined in a generator.
-Everything is stdlib — this style does not introduce the repo's first
-Python dependency, and should not.
+Nothing is placed by hand: a rule runs and its output is emitted as
+`<path>` elements that CSS draws. Two families live in `genlib` —
+**attractors** (continuous, deterministic: integrate, project, decimate,
+cut into runs) and **tilings** (discrete, stochastic: fire a rule per
+cell and chain whatever connects). `SYSTEMS` is canonical the way
+`herolib.COL` and `isolib.RAMP` are: a new attractor is added there,
+never redefined in a generator. Everything is stdlib — this style does
+not introduce the repo's first Python dependency, and should not.
+
+**Randomness goes through a seeded `random.Random`, never the module-level
+`random` functions.** `npm run heroes` regenerates the whole library on
+every run, so a generator that is not reproducible churns the working
+tree every time anyone touches an unrelated hero — and `build --check`
+diffs the result in CI. Prefer `.randrange()` / `.random()` over
+`.choice()` / `.shuffle()`, whose implementations have moved between
+Python versions. Verify by regenerating twice and diffing.
 
 - **One subpath per element, always.** An SVG dash pattern restarts at
   every subpath, so `stroke-dashoffset` on a path made of many runs does
@@ -186,6 +197,48 @@ lattice of angles and take the widest projection, then `fit='height'` to
 run the form to the edges. `project()` has no stretch mode on purpose;
 distorting a mathematical object to fit a frame is a lie about its
 shape.
+
+### Tilings
+
+`truchet_arcs()` rolls one orientation per cell and emits the arcs;
+`chain()` walks them into components; `arc_d()` writes one as a subpath.
+Reference: `truchet-loops.py` + `trl-template.html`.
+
+- **`chain()` is a walk, not a union-find.** Every edge midpoint is
+  shared by at most two cells, so every node has degree ≤ 2. Take the
+  open runs first, from the degree-1 nodes at the field boundary; what
+  is left is closed loops.
+- **Cells passed to `skip` are still rolled**, then dropped, so changing
+  the skip set does not reshuffle the rest of the field. Their edge
+  midpoints become loose ends — which is what you want if the cells are
+  meant to read as undecided, as `truchet-loops` uses them for its
+  ambient.
+- **Cut strata on the measured distribution, not on terciles.** Loop
+  sizes are heavy-tailed: at `truchet-loops`' seed they run
+  … 24, 27, 38, 96. Equal-count terciles put a third of the ink in the
+  top band and the piece rendered as mostly highlight; cutting in the
+  real gap leaves the giant loop alone up there at 20% against a 56%
+  body and a 23% haze. Print the distribution before choosing.
+- The bottom band of a `--px-*` ramp is not equally legible across
+  ramps. `--px-violet-1` sits at about 1.5:1 on the panel against
+  `--px-sky-1`'s 3.06:1, so a field drawn in it needs a little extra
+  stroke width to stay present rather than vanishing.
+
+Choreography. A tiling's reveal is **not** a draw-in — the attractor
+already owns tracing, and a component is one element, so it cannot wave
+in spatially anyway. `truchet-loops` hard-cuts one component per tick
+ordered smallest-first, which assembles the size distribution rather
+than a path, and holds the largest back an extra beat so the field
+finishes with a visible hole where it will land. Anything that animates
+under `.is-live` needs a matching `.is-settled` rule, the size classes
+included — the validator will tell you.
+
+Composition. Unlike the attractors there is nothing to search: pick a
+grid that divides the frame (24×10 cells of 50 units fills 1200×500
+exactly). The seed picks *which* picture, not whether there is one —
+every seed tried gave a giant component carrying 10–28% of the ink — so
+choose it for where that component runs, and verify the giant survives
+the `skip` cells, which can split it.
 
 ## Sync enforcement
 

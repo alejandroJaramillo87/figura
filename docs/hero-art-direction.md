@@ -278,7 +278,7 @@ draw-in pattern already exists in `shared/effects.css`
 (`stroke-dashoffset`, with its reduced-motion fallback). The work is
 authoring geometry, not building a pipeline.
 
-### Generative / algorithmic — **portfolio, one piece, unadopted**
+### Generative / algorithmic — **portfolio, two pieces, unadopted**
 
 **Grain** the particle, agent or cell — but the real unit is **the
 field, not the object** · **register** rigorous, cool, contemporary ·
@@ -305,13 +305,27 @@ explain" rule exists to prevent.
 Drive the field from a curve that actually belongs to the topic. Then it
 is not wallpaper.
 
-**Build cost** — **lowest, and it held up.** `strange-attractor` is 39 KB
-from a 49-line generator: pure math to SVG paths, no asset pipeline, no
-ASCII maps, no mesh, and no new tokens. It is also the only treatment
-where **one generator plus a different entry in `genlib.SYSTEMS` yields
-a whole coherent family** — the cheapest route to visual range.
+**Build cost** — **lowest, and it held up twice.** `strange-attractor`
+is 39 KB from a 49-line generator and `truchet-loops` 22 KB from 63
+lines: pure rules to SVG paths, no asset pipeline, no ASCII maps, no
+mesh, and no new tokens for either. The family claim is now evidenced
+rather than asserted — the second piece reused `genlib` wholesale and
+cost one generator and one template, which is why the showcase stacks
+both under a single section. **Range is nearly free once the module
+exists**, and it is real range: the two look nothing alike.
 
-Two things cost more than the estimate did, and both are now in
+**What the second piece bought that the first could not.** The attractor
+is deterministic chaos and convergence; it never touched **emergence**,
+which this section calls the treatment's single best subject. A random
+Truchet tiling is the clean case — one coin flip per cell, and the
+loops that chain out of it have a heavy-tailed size distribution nobody
+put there. The two also divide the treatment's motion vocabulary
+between them: the attractor's reveal is a trace, because its parameter
+is time; the tiling's is a staggered hard cut ordered by loop size,
+because what it has to show is a distribution. A second trace piece
+would have been a different image making the same argument.
+
+Four things cost more than the estimates did, and all are now in
 `tools/heroes/README.md`:
 
 - **An SVG dash pattern restarts at every subpath.** The obvious
@@ -326,7 +340,18 @@ Two things cost more than the estimate did, and both are now in
   of any system in `SYSTEMS`, found by searching a lattice of rotations,
   projects 1.85:1 against the frame's 2.4:1. The view has to be searched
   rather than eyeballed, and the form fitted to height so it runs to the
-  edges.
+  edges. (A tiling has the opposite problem, which is to say none: pick
+  a grid that divides the frame and composition is settled.)
+- **Stochastic output needs a determinism rule.** Everything before this
+  treatment was reproducible for free. A tiling is not, and
+  `npm run heroes` regenerates the whole library on every run, so all
+  randomness has to go through a seeded `random.Random` or the working
+  tree churns whenever anyone touches an unrelated hero.
+- **Strata cut on terciles put a third of the ink in the top band**, and
+  the first render of `truchet-loops` came out reading as mostly
+  highlight rather than as a field with one bright object in it. Loop
+  sizes are heavy-tailed; the cut belongs in the real gap in the
+  distribution, which has to be measured before it can be chosen.
 
 ---
 
@@ -369,6 +394,7 @@ Measured, for calibration when scoping a new piece.
 | `brain-chip` | pixel | 24 KB | 198 rects | 155 lines |
 | `workstation-iso` | isometric | 26 KB | **151 polys** | **144 lines** |
 | `hooded-hacker` | pixel | 36 KB | 361 rects | 123 lines |
+| `truchet-loops` | generative | **22 KB** | 69 paths | 63 lines |
 | `strange-attractor` | generative | 39 KB | 150 paths | **49 lines** |
 | `motherboard-city` | pixel | 64 KB | 656 rects | 268 lines |
 | `workstation-night` | pixel | 75 KB | 813 rects | 341 lines |
@@ -380,11 +406,16 @@ Two readings worth keeping:
   nearly 3,000 rects — an order of magnitude past the others. Scene
   density in pixel art costs output size linearly and there is no
   mechanism to amortize it.
-- **The generative generator is the shortest in the library**, at 49
-  lines against pixel art's 123–341, and it is the only one where
-  scene complexity does not come out of the author's hands: raising the
-  run count or swapping the ODE changes the picture completely without
-  changing the generator's length.
+- **The generative generators are the shortest in the library**, at 49
+  and 63 lines against pixel art's 123–341, and it is the only treatment
+  where scene complexity does not come out of the author's hands:
+  raising the run count or swapping the algorithm changes the picture
+  completely without changing the generator's length.
+- **The second piece in a treatment is far cheaper than the first.**
+  `truchet-loops` is the smallest hero in the library at 22 KB, and its
+  63-line generator sits on machinery `strange-attractor` had already
+  paid for — the marginal cost of range, once a module exists, is one
+  generator and one template.
 - **`workstation-iso` is the A/B.** Same subject as
   `workstation-night`, one third the output, 151 shapes against 813, and
   a shorter generator — because `prism()` collapses a desk top to 3
@@ -412,6 +443,22 @@ range each adds.
    **reaction–diffusion needs numpy**, which would be the repo's first
    Python dependency. If the topographic contour look is wanted later,
    Chladni nodal lines give it from a closed-form function.
+
+   A second piece followed, `truchet-loops`, for two reasons that are
+   worth separating from the first pick. It covers **emergence**, which
+   §5 names as the treatment's best subject and which an attractor does
+   not touch; and it is the evidence for the family claim that made
+   generative go first at all — 22 KB from a 63-line generator, reusing
+   `genlib` whole. Of the forms considered for it, harmonograph was the
+   cheapest and was passed over precisely because it is *mechanically*
+   the attractor again (a decimated polyline traced by
+   `stroke-dashoffset`); a second trace piece would have made the same
+   argument with a different picture. Flow fields were passed over as
+   the heaviest and most iconographically loaded, and diffusion-limited
+   growth because it reads in the same organic register as the
+   attractor and its random walks are slow in pure Python. Still in the
+   pool for later: Chladni nodal lines, Truchet's discrete cousins
+   (Wang tiles), percolation at threshold, and space colonization.
 2. **Line-art** — cheap, and draw-in already exists. Next, but it needs
    the discipline caveat resolved first (see §9), or the piece risks
    reading as a diagram rather than a hero.

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Truchet loops — generative</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Truchet loops — generative</h1>
+<p>A grid of tiles, each flipping a coin between two arc pairings. The
+   loops are nobody's decision.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-truchet-loops">
+<style>
+/* fg:begin palette-classic v1 */
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+/* fg:end panel-base */
+.fg-truchet-loops {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+/* Arcs, not pixels — the same call the isometric hero makes. */
+.fg-truchet-loops svg { shape-rendering: geometricPrecision; }
+
+.fg-truchet-loops .trl-run,
+.fg-truchet-loops .trl-flip-a,
+.fg-truchet-loops .trl-flip-b {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+/* Strata by loop size, from one --px-* ramp's three bands. Weight rises
+   with the band so the giant loop reads as the subject and the mass of
+   two-arc rings stays a field: at 1.5:1 against the panel the bottom
+   band is a haze on its own, and the extra width is what keeps it
+   present rather than invisible. */
+.fg-truchet-loops .trl-small { --c: var(--px-violet-1); --w: 2; }
+.fg-truchet-loops .trl-mid   { --c: var(--px-violet-2); --w: 2.2; }
+.fg-truchet-loops .trl-large { --c: var(--px-violet-3); --w: 4; }
+.fg-truchet-loops .trl-flip-a,
+.fg-truchet-loops .trl-flip-b { --c: var(--px-violet-1); --w: 2; }
+
+/* Intro: one hard cut per component on the frame-tick clock, ordered
+   smallest to largest. Not a draw-in — the attractor already owns
+   tracing, and what wants showing here is not a path through time but a
+   distribution: rings pepper in, the middle fills, and the one loop that
+   crosses the frame lands last. steps(1, jump-start) plus a delay is the
+   house one-shot reveal; a jump-end can be missed at exactly 100%. */
+@keyframes fg-trl-in { from { opacity: 0; } to { opacity: 1; } }
+.fg-truchet-loops.is-live .trl-run {
+  animation: fg-trl-in var(--dur-tick) steps(1, jump-start)
+             calc(var(--i) * 32ms) both;
+}
+/* The giant loop waits a beat past the rest of its stagger, so the field
+   finishes assembling before the one component that crosses it arrives.
+   Longhand after the shorthand above, and it must stay after. */
+.fg-truchet-loops.is-live .trl-large {
+  animation-delay: calc(var(--i) * 32ms + 350ms);
+}
+
+/* Settled: the complete field. `animation: none` is load-bearing — the
+   intro rule still matches once .is-settled joins .is-live, and its
+   `both` fill would otherwise keep holding the elements. */
+.fg-truchet-loops.is-settled .trl-run,
+.fg-truchet-loops.is-settled .trl-large { opacity: 1; animation: none; }
+
+/* Ambient: the four cells left out of the tiling keep re-rolling. The
+   rule is still a coin flip, and these are the cells that have not come
+   up yet. steps(2, jump-none) makes a true square wave — the two
+   orientations are exact complements, so exactly one is showing at every
+   instant, pause included.
+
+   Rolling from .is-live rather than from settle, because otherwise both
+   orientations paint at once through the whole intro (a four-pointed
+   star) and then pop apart when the ambient takes over. Both selectors
+   are needed: .is-live covers the run of the piece, .is-settled is what
+   reduced motion gets on its own. */
+@keyframes fg-trl-roll-a { from { opacity: 1; } to { opacity: 0; } }
+@keyframes fg-trl-roll-b { from { opacity: 0; } to { opacity: 1; } }
+.fg-truchet-loops.is-live .trl-flip-a,
+.fg-truchet-loops.is-live .trl-flip-b,
+.fg-truchet-loops.is-settled .trl-flip-a,
+.fg-truchet-loops.is-settled .trl-flip-b {
+  opacity: 1;
+  animation: fg-trl-roll-a 2.4s steps(2, jump-none)
+             calc(var(--i) * 570ms) infinite;
+}
+.fg-truchet-loops.is-live .trl-flip-b,
+.fg-truchet-loops.is-settled .trl-flip-b { animation-name: fg-trl-roll-b; }
+.fg-truchet-loops.is-paused .trl-flip-a,
+.fg-truchet-loops.is-paused .trl-flip-b { animation-play-state: paused; }
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+
+/* With the roll killed, both orientations of an undecided cell would
+   paint at once. Show one. */
+@media (prefers-reduced-motion: reduce) {
+  .fg-truchet-loops .trl-flip-b { opacity: 0; }
+}
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Abstract hero: a wide grid of quarter-circle arcs in
+     violet. Each cell joins its arcs one of two ways at random, and the
+     arcs chain across cells into closed loops — mostly tiny rings, with
+     one pale loop wandering across most of the frame. Four cells are
+     left flickering between their two pairings.">
+@SPRITES@
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2900; // 65 elements * 32ms + the giant's extra beat
+
+  // fg:begin hero-start v1
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

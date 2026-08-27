@@ -2,8 +2,14 @@
 
 The third hero art style, alongside herolib (pixel art) and isolib
 (isometric vector). Where those place marks by hand, this one computes
-them: a dynamical system is integrated forward, projected to the plane
-and emitted as a handful of <path> elements that CSS then draws.
+them and emits the result as <path> elements that CSS then draws.
+
+Two families live here. Attractors are continuous and deterministic: a
+dynamical system is integrated forward, projected and cut into runs.
+Tilings are discrete and stochastic: a rule fires per cell and the
+structure is whatever chains together. They share the emission end —
+one component per element, one subpath per component — because that is
+what makes a CSS reveal possible at all.
 
 SYSTEMS below is canonical the way herolib.COL and isolib.RAMP are: a
 new attractor is added here, never redefined in a generator. Everything
@@ -17,6 +23,7 @@ projected tangle acquires light/dark massing instead of reading as one
 flat scribble.
 """
 import math
+import random
 
 # Attractor ODEs. Each entry is (deriv, start, dt, steps) tuned so the
 # orbit has settled onto the attractor and covered it evenly. `deriv`
@@ -192,4 +199,125 @@ def path_d(subpaths):
             continue
         pts = [f'{int(round(x))},{int(round(y))}' for x, y in sub]
         out.append('M ' + pts[0] + ' L ' + ' '.join(pts[1:]))
+    return ' '.join(out)
+
+
+# --- Tilings -------------------------------------------------------------
+#
+# The second family in this module. Where the attractors above are
+# continuous and deterministic, these are discrete and stochastic, so they
+# come with an invariant the ODEs did not need:
+#
+#   ALL RANDOMNESS GOES THROUGH A SEEDED random.Random, NEVER THE MODULE
+#   FUNCTIONS.
+#
+# `npm run heroes` regenerates the whole library on every run and the
+# validator diffs the result, so a generator that is not reproducible
+# churns the working tree every time anyone touches an unrelated hero.
+# Prefer .randrange()/.random() over .choice()/.shuffle(): those two have
+# changed implementation across Python versions, the former have not.
+
+
+def rng(seed):
+    """The only sanctioned source of randomness in a generator."""
+    return random.Random(seed)
+
+
+def node_xy(key, tile):
+    """Screen position of an edge midpoint. 'h' keys are the top edge of
+    tile (i, j), 'v' keys its left edge."""
+    kind, i, j = key
+    return (((i + 0.5) * tile, j * tile) if kind == 'h'
+            else (i * tile, (j + 0.5) * tile))
+
+
+def tile_arcs(c, r, o, tile):
+    """The two arcs of one Smith-Truchet tile in orientation o.
+
+    Each arc is (node_a, node_b, cx, cy) and joins the midpoints of two
+    adjacent edges, centred on the corner between them with radius
+    tile/2. Orientation 0 pairs NW and SE, orientation 1 pairs NE and SW.
+    Either way both arcs land on edge midpoints, so neighbouring tiles
+    always connect -- that is the whole mechanism.
+    """
+    N, S = ('h', c, r), ('h', c, r + 1)
+    W, E = ('v', c, r), ('v', c + 1, r)
+    if o == 0:
+        return [(N, W, c * tile, r * tile),
+                (S, E, (c + 1) * tile, (r + 1) * tile)]
+    return [(N, E, (c + 1) * tile, r * tile),
+            (S, W, c * tile, (r + 1) * tile)]
+
+
+def truchet_arcs(cols, rows, rnd, tile, skip=()):
+    """Roll an orientation for every tile; emit arcs for the ones kept.
+
+    Tiles in `skip` are rolled anyway and then dropped, so changing the
+    skip set does not reshuffle the rest of the field. Their four edge
+    midpoints become loose ends, which is what a generator wants when it
+    means to leave some cells visibly undecided.
+    """
+    skip = set(skip)
+    tiles, arcs = {}, []
+    for r in range(rows):
+        for c in range(cols):
+            tiles[(c, r)] = rnd.randrange(2)
+            if (c, r) not in skip:
+                arcs += tile_arcs(c, r, tiles[(c, r)], tile)
+    return tiles, arcs
+
+
+def chain(arcs):
+    """Walk an arc graph into components, each an ordered arc sequence.
+
+    Every edge midpoint is shared by at most two tiles, so every node has
+    degree <= 2 and this is a plain walk -- no union-find, no depth sort.
+    Open runs are taken first, from the degree-1 nodes at the field
+    boundary (and around any skipped tile); whatever is left is closed
+    loops. That the loops exist at all is the point of the piece: nothing
+    chose them, they fall out of one coin flip per tile.
+
+    One component per <path> and one subpath per component, for the same
+    reason `runs()` above cuts chronologically -- see its docstring.
+    """
+    adj = {}
+    for i, (a, b, _cx, _cy) in enumerate(arcs):
+        adj.setdefault(a, []).append(i)
+        adj.setdefault(b, []).append(i)
+    used, out = set(), []
+
+    def walk(start):
+        seq, cur = [], start
+        while True:
+            nxt = [i for i in adj[cur] if i not in used]
+            if not nxt:
+                return seq
+            used.add(nxt[0])
+            a, b, cx, cy = arcs[nxt[0]]
+            end = b if a == cur else a
+            seq.append((cur, end, cx, cy))
+            cur = end
+
+    for s in [n for n in adj if len(adj[n]) == 1] + list(adj):
+        while any(i not in used for i in adj[s]):
+            seq = walk(s)
+            if seq:
+                out.append(seq)
+    return out
+
+
+def arc_d(component, tile, radius):
+    """One continuous subpath for a chained component.
+
+    Every arc is a quarter circle, so large-arc is always 0; the sweep
+    flag comes from the sign of (P-C) x (Q-C). SVG's y axis points down,
+    so a positive cross product is the clockwise (sweep=1) direction.
+    """
+    x0, y0 = node_xy(component[0][0], tile)
+    out = [f'M{round(x0)},{round(y0)}']
+    for a, b, cx, cy in component:
+        ax, ay = node_xy(a, tile)
+        bx, by = node_xy(b, tile)
+        sweep = 1 if (ax - cx) * (by - cy) - (ay - cy) * (bx - cx) > 0 else 0
+        out.append(f'A{radius} {radius} 0 0 {sweep} {round(bx)},{round(by)}')
     return ' '.join(out)
