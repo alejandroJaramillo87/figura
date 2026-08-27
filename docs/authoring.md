@@ -19,6 +19,12 @@ start from the template closest to the primary interaction.
 
 ## Hero pixel-art style
 
+Pixel art is the house treatment, and this section is how to execute
+it. *Whether* pixel art is the right treatment for a given hero is a
+separate question — see
+[hero-art-direction.md](hero-art-direction.md), which covers the other
+candidate styles and how to choose between them.
+
 Heroes deliberately break from the crisp vector look of the other
 kinds: they are hand-placed pixel sprites — plain `<rect>`s on a
 coarse cell grid (8 viewBox units per cell reads well at column

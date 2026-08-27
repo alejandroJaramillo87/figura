@@ -17,6 +17,10 @@ lives in the repo root's [CLAUDE.md](../CLAUDE.md).
 - [authoring.md](authoring.md) — the visual language: palette
   semantics, the effects catalog, interaction kinds, accessibility and
   motion rules, and taste guidelines.
+- [hero-art-direction.md](hero-art-direction.md) — choosing an art
+  *treatment* for a hero: the vocabulary, why a style fits a subject or
+  fails it, the five candidate treatments and what each costs to build
+  here. Judgment, not enforcement.
 
 See also the repo root: [README.md](../README.md) (quick start) and
 [CLAUDE.md](../CLAUDE.md) (the generation contract).

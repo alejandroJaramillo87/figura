@@ -23,6 +23,10 @@ generator.
 | `diagrams/sandboxing/training-net.html` | `training-net.py` | `tnet-template.html` |
 | `diagrams/showcase/workstation-iso.html` | `workstation-iso.py` | `wiso-template.html` |
 
+This file is the mechanical pipeline. For *which* art treatment a new
+hero should use — and what each candidate style costs to build — see
+[docs/hero-art-direction.md](../../docs/hero-art-direction.md).
+
 ## Pipeline
 
 1. Scaffold a new hero pair (also creates the diagram file and the
