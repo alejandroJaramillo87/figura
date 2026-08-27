@@ -522,5 +522,13 @@
     "post": "sandboxing-training",
     "kind": "hero",
     "description": "Pixel-art hero for the training sandboxing post: a four-layer feedforward neural network — sky input nodes, two steel hidden layers, green output nodes — joined by stepped pixel wires. An amber activation pulse sweeps forward and a sky gradient pulse sweeps back — one training step on repeat, with glints twinkling on the node rims."
+  },
+  {
+    "id": "workstation-iso",
+    "path": "diagrams/showcase/workstation-iso.html",
+    "title": "Workstation at night — isometric vector",
+    "post": "showcase",
+    "kind": "hero",
+    "description": "Art-style study for the hero portfolio: the workstation-night scene rebuilt as isometric vector — flat-shaded polygons on a 3D voxel lattice instead of pixel sprites, shaded top/right/left from the existing --px-* ramps. The room assembles back to front on a depth-staggered wave, the monitor wakes and washes light over desk and floor, then the screen cycles between a desktop and a terminal."
   }
 ]

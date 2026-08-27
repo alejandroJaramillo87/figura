@@ -7,6 +7,11 @@ template pair in this directory, sharing common machinery from
 - `<name>.py` — the scene: ASCII pixel maps, sprite geometry, animation
   class hooks. Imports everything from `herolib` (never copy helpers or
   extend `COL` locally).
+
+`herolib.py` and `isolib.py` are shared machinery, not scenes:
+`scripts/heroes.js` skips them by name (`LIBS`). A new shared module must
+be added to that set or `npm run heroes` will try to run it as a
+generator.
 - `<abbr>-template.html` — the choreography: keyframes, lifecycle state
   CSS, aria-label, `INTRO_MS`. Managed sentinel blocks ship empty and
   are expanded by `scripts/build.js`.
@@ -16,6 +21,7 @@ template pair in this directory, sharing common machinery from
 | `diagrams/linux-ai-setup/workstation-night.html` | `workstation-night.py` | `wsn-template.html` |
 | `diagrams/linux-ai-setup/motherboard-city.html` | `motherboard-city.py` | `mbc-template.html` |
 | `diagrams/sandboxing/training-net.html` | `training-net.py` | `tnet-template.html` |
+| `diagrams/showcase/workstation-iso.html` | `workstation-iso.py` | `wiso-template.html` |
 
 ## Pipeline
 
@@ -72,6 +78,56 @@ last interval's start value equals the settled value. Motion is
 frame-quantized via `var(--ease-frames)` / `var(--ease-frames-coarse)`
 and `var(--dur-tick)`-based `steps(N)` flipbook loops. Full contract:
 CLAUDE.md (hero section).
+
+## Isometric-vector heroes (`isolib.py`)
+
+A second hero art style, kept in the portfolio (`showcase.html`,
+`post: "showcase"` in the manifest) rather than adopted for any post yet.
+It ships under the existing `kind: hero` — the lifecycle contract,
+managed blocks and validator rules are all style-neutral, and the
+pixel-art rules above (`crispEdges`, no `rx`, no opacity fades, 8-unit
+cells) are prose, not enforcement. Reference: `workstation-iso.py` +
+`wiso-template.html`, the workstation-night scene rebuilt in the style.
+
+Volumes on a 3D lattice, projected to flat-shaded polygons:
+
+- 1 cell = `isolib.S` viewBox units (a generator may raise it to scale a
+  scene; `workstation-iso` uses 17). y is up.
+- **Two primitives, and picking the right one is the whole size story.**
+  `prism()` is 3 polygons for a box of any size — use it for anything
+  regular (desk, wall, tower, floor). `voxels()` + `iso()` culls face by
+  face against neighbours, for detail clusters whose shape genuinely
+  varies cell by cell. A desk top voxelized is 220 polygons; as a prism
+  it is 3.
+- Only three faces are ever visible (+y top, +x down-right, +z
+  down-left), and `RAMP` maps a character to that triple — top
+  highlight, right mid, left shadow. Every `--px-*` ramp already has
+  exactly three bands, so **no new tokens are needed** and the closed set
+  stays closed. `RAMP` is canonical the way `herolib.COL` is: new
+  characters map to existing ramps or are not added.
+- Painter's order for lattice boxes is `x + y + z` ascending — `iso()`
+  sorts for you, but `prism()` output is emitted in call order, so a
+  generator composes back to front itself.
+- Seams between adjacent same-colour faces are closed geometrically
+  (`isolib.INFLATE` overscales each face about its centroid), never with
+  strokes. Templates use `shape-rendering: geometricPrecision`, not
+  `crispEdges`.
+- Lit surfaces take a flat `tone=` override instead of a ramp: light
+  reads flat, not faceted.
+
+Choreography. Prisms join the intro wave via `--i` taken from the box's
+centre depth (`x + z`), so the scene assembles back to front; `iso()`
+takes `wave_base=` so a voxel cluster staggers on that same clock rather
+than its own local minimum. Keep the class set small and fixed — vary
+`--i` through the inline `style`, never by minting classes — or
+`hero-sync` will drift on every regeneration.
+
+Composition. An isometric floor always projects 1.73:1, so a footprint
+wide enough to fill a 2.4:1 hero is far too tall. Lay scenes out along
+the **anti-diagonal**: screen-horizontal is `u = x - z` and
+screen-vertical is `v = x + z`, so spreading props over `u` costs nothing
+vertically. Solve the framing numerically (`isolib.extent()`) and let the
+floor and walls bleed off the edges.
 
 ## Sync enforcement
 

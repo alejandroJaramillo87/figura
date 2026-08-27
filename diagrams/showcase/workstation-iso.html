@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workstation at night — isometric vector</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Workstation at night — isometric vector</h1>
+<p>Style study: the workstation-night scene rebuilt as isometric vector — flat-shaded polygons on a 3D lattice instead of pixel sprites. The room assembles back to front on a depth-staggered wave, the monitor wakes, and its light washes the desk and floor while the screen cycles between a desktop and a terminal.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-workstation-iso">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-workstation-iso {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-hero-in: 900ms;
+  --stagger: 80ms;
+  --ease-frames: steps(10);
+  --ease-frames-coarse: steps(4, jump-none);
+  --dur-tick: 100ms;
+  --px-outline: #0b1020;
+  --px-steel-1: #232c44;
+  --px-steel-2: #3b4a5e;
+  --px-steel-3: #64748b;
+  --px-steel-4: #a7b0b8;
+  --px-amber-1: #92400e;
+  --px-amber-2: #f59e0b;
+  --px-amber-3: #fcd34d;
+  --px-green-1: #166534;
+  --px-green-2: #34d399;
+  --px-green-3: #a7f3d0;
+  --px-sky-1: #0369a1;
+  --px-sky-2: #38bdf8;
+  --px-sky-3: #bae6fd;
+  --px-dusk-1: #2b1b3d;
+  --px-dusk-2: #7c3a58;
+  --px-dusk-3: #e8a87c;
+  --px-violet-1: #3c2a6e;
+  --px-violet-2: #a78bfa;
+  --px-violet-3: #ddd6fe;
+  --px-hot-1: #7f1d1d;
+  --px-hot-2: #f87171;
+  --px-hot-3: #fdba74;
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-workstation-iso {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-workstation-iso svg { display: block; width: 100%; height: auto; }
+.fg-workstation-iso text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-workstation-iso {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+/* The vector counterpart of the pixel heroes' crispEdges: these are
+   arbitrary-angle polygon edges, so they want smoothing, not snapping.
+   Seams between same-colour faces are closed geometrically in isolib
+   (INFLATE), not with strokes. */
+.fg-workstation-iso svg { shape-rendering: geometricPrecision; }
+
+/* --- static scene defaults ------------------------------------------ */
+/* Isometric-vector style study. Intro: the scene assembles back to front
+   on a depth wave (--i is the box's x+z), then the monitor wakes and
+   spills light onto the desk and floor. Ambient: the screen cycles
+   between desktop violet and terminal green, its spill in lockstep, and
+   the tower LED blinks. */
+.fg-workstation-iso .wiso-band {
+  opacity: 0;
+  transform: translateY(26px);
+}
+.fg-workstation-iso .wiso-scr,
+.fg-workstation-iso .wiso-spill,
+.fg-workstation-iso .wiso-led { opacity: 0; }
+
+/* --- intro ----------------------------------------------------------- */
+/* Depth wave: --stagger is 80ms and the scene is ~30 cells deep, so the
+   raw unit would run 2.4s on its own. A quarter of it lands the whole
+   assembly under 1.5s. */
+.fg-workstation-iso.is-live .wiso-band {
+  animation: fg-wiso-rise var(--dur-hero-in) var(--ease-overshoot)
+    calc(var(--i) * var(--stagger) / 4) both;
+}
+/* the monitor wakes once the furniture has landed */
+.fg-workstation-iso.is-live .wiso-scr-1,
+.fg-workstation-iso.is-live .wiso-spill-1 {
+  animation: fg-wiso-wake 0.5s var(--ease-out) 1.5s both;
+}
+.fg-workstation-iso.is-live .wiso-led {
+  animation: fg-wiso-on 0.1s steps(1, jump-start) 1.75s both;
+}
+
+@keyframes fg-wiso-rise { from { opacity: 0; transform: translateY(26px); }
+                          to   { opacity: 1; transform: none; } }
+@keyframes fg-wiso-wake { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fg-wiso-on { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+/* --- settled state (complete final composition; the reduced-motion
+       rendering) ---------------------------------------------------- */
+.fg-workstation-iso.is-settled .wiso-band {
+  opacity: 1;
+  transform: none;
+}
+.fg-workstation-iso.is-settled .wiso-scr-1 { opacity: 1; }
+.fg-workstation-iso.is-settled .wiso-scr-2 { opacity: 0; }
+.fg-workstation-iso.is-settled .wiso-spill-1 { opacity: 1; }
+.fg-workstation-iso.is-settled .wiso-spill-2 { opacity: 0; }
+.fg-workstation-iso.is-settled .wiso-led { opacity: 1; }
+
+/* --- ambient loop ---------------------------------------------------- */
+/* Screen content changes and its spill follows in lockstep — one effect
+   in two places, so it counts once against the concurrency budget. The
+   desktop holds most of the cycle; the terminal is a short interlude. */
+.fg-workstation-iso.is-settled .wiso-scr-1,
+.fg-workstation-iso.is-settled .wiso-spill-1 {
+  animation: fg-wiso-cut-a calc(var(--dur-tick) * 72) steps(1, jump-end) infinite;
+}
+.fg-workstation-iso.is-settled .wiso-scr-2,
+.fg-workstation-iso.is-settled .wiso-spill-2 {
+  animation: fg-wiso-cut-b calc(var(--dur-tick) * 72) steps(1, jump-end) infinite;
+}
+.fg-workstation-iso.is-settled .wiso-led {
+  animation: fg-wiso-blink calc(var(--dur-tick) * 26) steps(1, jump-end)
+    calc(var(--dur-tick) * 5) infinite;
+}
+.fg-workstation-iso.is-paused .wiso-scr-1,
+.fg-workstation-iso.is-paused .wiso-scr-2,
+.fg-workstation-iso.is-paused .wiso-spill-1,
+.fg-workstation-iso.is-paused .wiso-spill-2,
+.fg-workstation-iso.is-paused .wiso-led { animation-play-state: paused; }
+
+@keyframes fg-wiso-cut-a { 0%, 61% { opacity: 1; } 62%, 100% { opacity: 0; } }
+@keyframes fg-wiso-cut-b { 0%, 61% { opacity: 0; } 62%, 100% { opacity: 1; } }
+@keyframes fg-wiso-blink { 0%, 88% { opacity: 1; } 89%, 94% { opacity: 0.25; }
+                           95%, 100% { opacity: 1; } }
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-workstation-iso, .fg-workstation-iso * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Isometric vector hero: a night workstation seen in three-quarter view. A desk carries a monitor, keyboard, mouse and mug; a tower stands beside it with a green power light, an office chair is pushed back, a potted plant sits against the left wall and stacked crates against the right. A window in the back wall shows a dusk sky over a city skyline with a moon. The scene assembles back to front, the monitor wakes and washes violet light across the desk and floor, then its screen cycles between a desktop and a green terminal while the tower light blinks.">
+    <g class="wiso-band" style="--i: 0">
+      <polygon fill="var(--px-steel-1)" points="614.7,-739.4 2109,123.3 614.7,986 -879.6,123.3"/>
+    </g>
+    <g class="wiso-band" style="--i: 1">
+      <polygon fill="var(--px-outline)" points="609.4,-256.1 1326.7,158.1 1326.7,468.7 609.4,54.5"/>
+      <polygon fill="var(--px-steel-1)" points="627.2,-264 1344.5,150.1 1326.5,160.4 609.3,-253.7"/>
+    </g>
+    <g class="wiso-band" style="--i: 1">
+      <polygon fill="var(--px-outline)" points="620,-256.1 -97.3,158.1 -97.3,468.7 620,54.5"/>
+      <polygon fill="var(--px-steel-1)" points="602.2,-264 620.1,-253.7 -97.1,160.4 -115.1,150.1"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-dusk-1)" points="834.2,-67.1 1013.5,36.4 1013.5,167.5 834.2,64"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-dusk-2)" points="840.9,7.9 1008.3,104.5 1008.3,152.8 840.9,56.2"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-dusk-3)" points="841.7,46 1009,142.6 1009,152.1 841.7,55.5"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-sky-3)" points="964.2,30 982.2,40.3 982.2,61.1 964.2,50.7"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-outline)" points="843.2,25 865.6,37.9 865.6,69 843.2,56"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-outline)" points="865.3,24.1 878.8,31.8 878.8,76.7 865.3,68.9"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-outline)" points="878.5,52.2 899.4,64.3 899.4,88.5 878.5,76.4"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-outline)" points="902.1,52.1 918.5,61.6 918.5,99.6 902.1,90.1"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-outline)" points="918.2,71.7 942.2,85.5 942.2,113.2 918.2,99.3"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-outline)" points="944.8,66.5 959.8,75.2 959.8,123.5 944.8,114.8"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-outline)" points="959.5,97.3 978.9,108.5 978.9,134.4 959.5,123.2"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-outline)" points="978.7,94.6 992.1,102.4 992.1,142.1 978.7,134.3"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-outline)" points="991.9,112.5 1015.8,126.3 1015.8,155.7 991.9,141.9"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-steel-2)" points="926.8,-17.1 932,-14.1 932,117.1 926.8,114"/>
+    </g>
+    <g class="wiso-band" style="--i: 2">
+      <polygon fill="var(--px-steel-2)" points="837.2,-5.9 1016.5,97.7 1016.5,103.7 837.2,0.2"/>
+    </g>
+    <g class="wiso-band" style="--i: 3">
+      <polygon fill="var(--px-steel-1)" points="828.2,59.5 1019.5,170 1019.5,176.9 828.2,66.4"/>
+      <polygon fill="var(--px-steel-3)" points="833.4,56.6 1024.7,167 1019.5,170 828.2,59.6"/>
+      <polygon fill="var(--px-steel-2)" points="1023.3,166.2 1018.1,169.2 1018.1,176.1 1023.3,173.1"/>
+    </g>
+    <g class="wiso-band" style="--i: 3">
+      <polygon fill="var(--px-steel-1)" points="828.2,-76.5 1019.5,34 1019.5,40.9 828.2,-69.6"/>
+      <polygon fill="var(--px-steel-3)" points="833.4,-79.4 1024.7,31 1019.5,34 828.2,-76.4"/>
+      <polygon fill="var(--px-steel-2)" points="1023.3,30.2 1018.1,33.2 1018.1,40.1 1023.3,37.1"/>
+    </g>
+    <g class="wiso-band" style="--i: 3">
+      <polygon fill="var(--px-steel-1)" points="829.6,-76.7 835.6,-73.2 835.6,71.7 829.6,68.2"/>
+      <polygon fill="var(--px-steel-3)" points="834.8,-78.6 840.8,-75.2 835.5,-72.2 829.6,-75.6"/>
+      <polygon fill="var(--px-steel-2)" points="840.7,-76.3 835.5,-73.2 835.5,71.7 840.7,68.7"/>
+    </g>
+    <g class="wiso-band" style="--i: 3">
+      <polygon fill="var(--px-steel-1)" points="1012.2,28.7 1018.1,32.2 1018.1,177.1 1012.2,173.6"/>
+      <polygon fill="var(--px-steel-3)" points="1017.4,26.8 1023.3,30.2 1018.1,33.2 1012.1,29.8"/>
+      <polygon fill="var(--px-steel-2)" points="1023.3,29.1 1018.1,32.2 1018.1,177.1 1023.3,174.1"/>
+    </g>
+    <g class="wiso-spill wiso-spill-1">
+      <polygon fill="var(--violet-dim)" points="436.9,324.4 735.7,496.9 593.8,578.9 294.9,406.4"/>
+    </g>
+    <g class="wiso-spill wiso-spill-2">
+      <polygon fill="var(--ok-dim)" points="436.9,324.2 735.7,496.8 593.8,578.7 294.9,406.2"/>
+    </g>
+    <g class="wiso-spill wiso-spill-1">
+      <polygon fill="var(--px-violet-1)" points="543.3,300.5 782.4,438.6 647.9,516.2 408.8,378.2"/>
+    </g>
+    <g class="wiso-spill wiso-spill-2">
+      <polygon fill="var(--px-green-1)" points="543.3,300.4 782.4,438.4 647.9,516.1 408.8,378"/>
+    </g>
+    <g class="wiso-spill wiso-spill-1">
+      <polygon fill="var(--px-violet-1)" points="617.2,288.6 796.5,392.2 677,461.2 497.7,357.6"/>
+    </g>
+    <g class="wiso-spill wiso-spill-2">
+      <polygon fill="var(--px-green-1)" points="617.2,288.5 796.5,392 677,461 497.7,357.5"/>
+    </g>
+    <g class="wiso-band" style="--i: 14">
+      <polygon fill="var(--px-steel-3)" points="158.3,267.4 203.1,293.3 158.3,319.2 113.5,293.3"/>
+      <polygon fill="var(--px-steel-2)" points="202.8,292.7 158,318.6 158,373.8 202.8,347.9"/>
+      <polygon fill="var(--px-steel-1)" points="113.8,292.7 158.6,318.6 158.6,373.8 113.8,347.9"/>
+    </g>
+    <g class="wiso-band" style="--i: 14">
+      <polygon fill="var(--px-steel-4)" points="158.3,257.2 209.1,286.5 158.3,315.8 107.5,286.5"/>
+      <polygon fill="var(--px-steel-3)" points="208.7,286.2 157.9,315.6 157.9,322.5 208.7,293.1"/>
+      <polygon fill="var(--px-steel-2)" points="107.9,286.2 158.7,315.6 158.7,322.5 107.9,293.1"/>
+    </g>
+  <g class="wiso-band" style="--i: 12">
+    <polygon fill="var(--px-green-2)" points="187.7,250.7 202.7,259.3 187.7,267.9 172.8,259.3"/>
+    <polygon fill="var(--px-green-1)" points="202.6,259.1 187.6,267.7 187.6,285 202.6,276.4"/>
+    <polygon fill="var(--px-green-2)" points="128.9,250.7 143.8,259.3 128.9,267.9 113.9,259.3"/>
+    <polygon fill="var(--px-outline)" points="114,259.1 129,267.7 129,285 114,276.4"/>
+    <polygon fill="var(--px-green-2)" points="173,225.2 188,233.8 173,242.4 158.1,233.8"/>
+    <polygon fill="var(--px-green-1)" points="187.9,233.6 172.9,242.2 172.9,259.5 187.9,250.9"/>
+    <polygon fill="var(--px-green-2)" points="143.6,225.2 158.5,233.8 143.6,242.4 128.6,233.8"/>
+    <polygon fill="var(--px-outline)" points="128.7,233.6 143.7,242.2 143.7,259.5 128.7,250.9"/>
+  </g>
+  <g class="wiso-band" style="--i: 13">
+    <polygon fill="var(--px-green-1)" points="202.6,276.1 187.6,284.7 187.6,302 202.6,293.4"/>
+    <polygon fill="var(--px-green-2)" points="128.9,267.7 143.8,276.3 128.9,284.9 113.9,276.3"/>
+    <polygon fill="var(--px-outline)" points="114,276.1 129,284.7 129,302 114,293.4"/>
+    <polygon fill="var(--px-green-2)" points="143.6,242.2 158.5,250.8 143.6,259.4 128.6,250.8"/>
+    <polygon fill="var(--px-outline)" points="128.7,250.6 143.7,259.2 143.7,276.5 128.7,267.9"/>
+    <polygon fill="var(--px-green-2)" points="158.3,216.7 173.2,225.3 158.3,233.9 143.4,225.3"/>
+    <polygon fill="var(--px-outline)" points="143.5,225.1 158.4,233.7 158.4,251 143.5,242.4"/>
+  </g>
+  <g class="wiso-band" style="--i: 14">
+    <polygon fill="var(--px-green-2)" points="173,276.2 188,284.8 173,293.4 158.1,284.8"/>
+    <polygon fill="var(--px-green-1)" points="187.9,284.6 172.9,293.2 172.9,310.5 187.9,301.9"/>
+    <polygon fill="var(--px-outline)" points="158.2,284.6 173.1,293.2 173.1,310.5 158.2,301.9"/>
+    <polygon fill="var(--px-green-1)" points="158.4,284.6 143.5,293.2 143.5,310.5 158.4,301.9"/>
+    <polygon fill="var(--px-outline)" points="128.7,284.6 143.7,293.2 143.7,310.5 128.7,301.9"/>
+    <polygon fill="var(--px-green-2)" points="187.7,250.7 202.7,259.3 187.7,267.9 172.8,259.3"/>
+    <polygon fill="var(--px-green-1)" points="202.6,259.1 187.6,267.7 187.6,285 202.6,276.4"/>
+    <polygon fill="var(--px-outline)" points="172.9,259.1 187.9,267.7 187.9,285 172.9,276.4"/>
+    <polygon fill="var(--px-green-2)" points="158.3,250.7 173.2,259.3 158.3,267.9 143.4,259.3"/>
+    <polygon fill="var(--px-green-1)" points="173.1,259.1 158.2,267.7 158.2,285 173.1,276.4"/>
+    <polygon fill="var(--px-green-3)" points="173,225.2 188,233.8 173,242.4 158.1,233.8"/>
+    <polygon fill="var(--px-green-2)" points="187.9,233.6 172.9,242.2 172.9,259.5 187.9,250.9"/>
+    <polygon fill="var(--px-green-1)" points="158.2,233.6 173.1,242.2 173.1,259.5 158.2,250.9"/>
+  </g>
+  <g class="wiso-band" style="--i: 16">
+    <polygon fill="var(--px-green-2)" points="143.6,259.2 158.5,267.8 143.6,276.4 128.6,267.8"/>
+    <polygon fill="var(--px-green-1)" points="158.4,267.6 143.5,276.2 143.5,293.5 158.4,284.9"/>
+    <polygon fill="var(--px-outline)" points="128.7,267.6 143.7,276.2 143.7,293.5 128.7,284.9"/>
+  </g>
+    <g class="wiso-band" style="--i: 20">
+      <polygon fill="var(--px-steel-3)" points="1074,303 1136.8,339.2 1074,375.4 1011.3,339.2"/>
+      <polygon fill="var(--px-steel-2)" points="1136.3,338.5 1073.6,374.7 1073.6,433.4 1136.3,397.2"/>
+      <polygon fill="var(--px-steel-1)" points="1011.7,338.5 1074.5,374.7 1074.5,433.4 1011.7,397.2"/>
+    </g>
+    <g class="wiso-band" style="--i: 20">
+      <polygon fill="var(--px-steel-2)" points="1074,269.1 1118.9,295 1074,320.9 1029.2,295"/>
+      <polygon fill="var(--px-steel-1)" points="1118.5,294.5 1073.7,320.4 1073.7,365.2 1118.5,339.3"/>
+      <polygon fill="var(--px-outline)" points="1029.5,294.5 1074.4,320.4 1074.4,365.2 1029.5,339.3"/>
+    </g>
+    <g class="wiso-band" style="--i: 25">
+      <polygon fill="var(--px-steel-2)" points="1121.2,381.3 1163,405.5 1121.2,429.7 1079.3,405.5"/>
+      <polygon fill="var(--px-steel-1)" points="1162.7,405.1 1120.8,429.2 1120.8,463.7 1162.7,439.6"/>
+      <polygon fill="var(--px-outline)" points="1079.6,405.1 1121.5,429.2 1121.5,463.7 1079.6,439.6"/>
+    </g>
+    <g class="wiso-band" style="--i: 20">
+      <polygon fill="var(--px-steel-4)" points="873.9,214.6 927.7,245.7 864.9,281.9 811.1,250.8"/>
+      <polygon fill="var(--px-steel-3)" points="927.3,244.4 864.5,280.6 864.5,425.5 927.3,389.3"/>
+      <polygon fill="var(--px-steel-2)" points="811.6,249.5 865.4,280.6 865.4,425.5 811.6,394.4"/>
+    </g>
+    <g class="wiso-band" style="--i: 21">
+      <polygon fill="var(--px-outline)" points="922,347.9 871.2,377.2 871.2,384.1 922,354.8"/>
+    </g>
+    <g class="wiso-band" style="--i: 21">
+      <polygon fill="var(--px-outline)" points="922,334.3 871.2,363.6 871.2,370.5 922,341.2"/>
+    </g>
+    <g class="wiso-band" style="--i: 21">
+      <polygon fill="var(--px-outline)" points="922,320.7 871.2,350 871.2,356.9 922,327.6"/>
+    </g>
+    <g class="wiso-band" style="--i: 21">
+      <polygon fill="var(--px-outline)" points="922,307.1 871.2,336.4 871.2,343.3 922,314"/>
+    </g>
+    <g class="wiso-led">
+      <polygon fill="var(--px-green-2)" points="916,268.2 908.5,272.5 908.5,281.2 916,276.8"/>
+    </g>
+    <g class="wiso-band" style="--i: 4">
+      <polygon fill="var(--px-steel-3)" points="632.4,153.8 642.8,159.8 632.4,165.9 621.9,159.8"/>
+      <polygon fill="var(--px-steel-2)" points="642.7,159 632.3,165.1 632.3,268.6 642.7,262.6"/>
+      <polygon fill="var(--px-steel-1)" points="622,159 632.4,165.1 632.4,268.6 622,262.6"/>
+    </g>
+    <g class="wiso-band" style="--i: 16">
+      <polygon fill="var(--px-steel-3)" points="809,255.8 819.5,261.8 809,267.9 798.6,261.8"/>
+      <polygon fill="var(--px-steel-2)" points="819.4,261 809,267.1 809,370.6 819.4,364.6"/>
+      <polygon fill="var(--px-steel-1)" points="798.7,261 809.1,267.1 809.1,370.6 798.7,364.6"/>
+    </g>
+    <g class="wiso-band" style="--i: 11">
+      <polygon fill="var(--px-steel-3)" points="532.3,211.6 542.7,217.7 532.3,223.7 521.8,217.7"/>
+      <polygon fill="var(--px-steel-2)" points="542.6,216.8 532.2,222.9 532.2,326.4 542.6,320.4"/>
+      <polygon fill="var(--px-steel-1)" points="521.9,216.8 532.3,222.9 532.3,326.4 521.9,320.4"/>
+    </g>
+    <g class="wiso-band" style="--i: 23">
+      <polygon fill="var(--px-steel-3)" points="708.9,313.6 719.4,319.6 708.9,325.7 698.5,319.6"/>
+      <polygon fill="var(--px-steel-2)" points="719.3,318.8 708.8,324.9 708.8,428.4 719.3,422.4"/>
+      <polygon fill="var(--px-steel-1)" points="698.5,318.8 709,324.9 709,428.4 698.5,422.4"/>
+    </g>
+    <g class="wiso-band" style="--i: 14">
+      <polygon fill="var(--px-steel-4)" points="631.8,135.5 833.5,252 711,322.7 509.2,206.3"/>
+      <polygon fill="var(--px-steel-3)" points="832,251.1 709.5,321.8 709.5,332.1 832,261.4"/>
+      <polygon fill="var(--px-steel-2)" points="510.2,205.7 711.9,322.1 711.9,332.5 510.2,216"/>
+    </g>
+    <g class="wiso-spill wiso-spill-1">
+      <polygon fill="var(--px-violet-1)" points="620,169.1 775.4,258.8 697.7,303.6 542.3,213.9"/>
+    </g>
+    <g class="wiso-spill wiso-spill-2">
+      <polygon fill="var(--px-green-1)" points="620,168.9 775.4,258.6 697.7,303.5 542.3,213.7"/>
+    </g>
+    <g class="wiso-band" style="--i: 13">
+      <polygon fill="var(--px-steel-3)" points="694,190.1 747.8,221.1 715,240.1 661.2,209.1"/>
+      <polygon fill="var(--px-steel-2)" points="747.4,220.9 714.6,239.8 714.6,245.9 747.4,226.9"/>
+      <polygon fill="var(--px-steel-1)" points="661.4,208.9 715.2,239.9 715.2,246 661.4,214.9"/>
+    </g>
+    <g class="wiso-band" style="--i: 13">
+      <polygon fill="var(--px-steel-3)" points="703,179.3 720.9,189.6 709,196.5 691,186.2"/>
+      <polygon fill="var(--px-steel-2)" points="720.8,189.3 708.8,196.2 708.8,223.9 720.8,217"/>
+      <polygon fill="var(--px-steel-1)" points="691.1,185.9 709.1,196.3 709.1,223.9 691.1,213.5"/>
+    </g>
+    <g class="wiso-band" style="--i: 12">
+      <polygon fill="var(--px-steel-4)" points="659.4,36.8 796.9,116.2 783.5,123.9 646,44.6"/>
+      <polygon fill="var(--px-steel-3)" points="795.9,114.8 782.4,122.6 782.4,229.5 795.9,221.8"/>
+      <polygon fill="var(--px-steel-2)" points="646.1,43.7 783.6,123.1 783.6,230.1 646.1,150.7"/>
+    </g>
+    <g class="wiso-scr wiso-scr-1">
+      <polygon fill="var(--px-violet-1)" points="650.6,54.9 776.1,127.4 776.1,220.6 650.6,148.1"/>
+    </g>
+    <g class="wiso-scr wiso-scr-1">
+      <polygon fill="var(--px-violet-2)" points="657.8,70.7 708.6,100 708.6,120.7 657.8,91.4"/>
+    </g>
+    <g class="wiso-scr wiso-scr-1">
+      <polygon fill="var(--px-violet-3)" points="657.5,101 741.2,149.3 741.2,189 657.5,140.7"/>
+    </g>
+    <g class="wiso-scr wiso-scr-2">
+      <polygon fill="var(--px-green-1)" points="649.1,55.8 774.6,128.2 774.6,221.4 649.1,149"/>
+    </g>
+    <g class="wiso-scr wiso-scr-2">
+      <polygon fill="var(--px-green-2)" points="656,77.8 751.6,133 751.6,196.9 656,141.6"/>
+    </g>
+    <g class="wiso-scr wiso-scr-2">
+      <polygon fill="var(--px-green-3)" points="656.4,70 689.3,89 689.3,97.6 656.4,78.6"/>
+    </g>
+    <g class="wiso-band" style="--i: 14">
+      <polygon fill="var(--px-steel-3)" points="626,191.6 721.7,246.8 688.8,265.8 593.1,210.6"/>
+      <polygon fill="var(--px-steel-2)" points="720.9,246.4 688.1,265.3 688.1,271.4 720.9,252.4"/>
+      <polygon fill="var(--px-steel-1)" points="593.4,210.4 689,265.6 689,271.7 593.4,216.4"/>
+    </g>
+    <g class="wiso-band" style="--i: 20">
+      <polygon fill="var(--px-steel-3)" points="732.5,263.4 746,271.2 726.5,282.4 713.1,274.6"/>
+      <polygon fill="var(--px-steel-2)" points="745.9,271.1 726.4,282.3 726.4,288.3 745.9,277.1"/>
+      <polygon fill="var(--px-steel-1)" points="713.2,274.5 726.7,282.3 726.7,288.3 713.2,280.5"/>
+    </g>
+    <g class="wiso-band" style="--i: 9">
+      <polygon fill="var(--px-amber-3)" points="582.3,153.7 601.7,165 582.3,176.2 562.9,165"/>
+      <polygon fill="var(--px-amber-2)" points="601.6,164.7 582.2,175.9 582.2,201.8 601.6,190.6"/>
+      <polygon fill="var(--px-amber-1)" points="563,164.7 582.5,175.9 582.5,201.8 563,190.6"/>
+    </g>
+    <g class="wiso-band" style="--i: 10">
+      <polygon fill="var(--px-amber-3)" points="597.1,172.5 603,176 592.6,182 586.6,178.6"/>
+      <polygon fill="var(--px-amber-2)" points="603,175.9 592.5,181.9 592.5,194 603,187.9"/>
+      <polygon fill="var(--px-amber-1)" points="586.7,178.4 592.7,181.9 592.7,194 586.7,190.5"/>
+    </g>
+    <g class="wiso-band" style="--i: 24">
+      <polygon fill="var(--px-steel-2)" points="437.6,393.2 515.3,438.1 501.8,445.8 424.1,401"/>
+      <polygon fill="var(--px-steel-1)" points="514.7,437.7 501.2,445.4 501.2,454.1 514.7,446.3"/>
+      <polygon fill="var(--px-outline)" points="424.2,400.9 501.9,445.7 501.9,454.3 424.2,409.5"/>
+    </g>
+    <g class="wiso-band" style="--i: 24">
+      <polygon fill="var(--px-steel-2)" points="494.3,394.9 512.3,405.3 446.5,443.3 428.6,432.9"/>
+      <polygon fill="var(--px-steel-1)" points="512.1,405.2 446.4,443.1 446.4,451.7 512.1,413.8"/>
+      <polygon fill="var(--px-outline)" points="429.1,432.6 447,442.9 447,451.5 429.1,441.2"/>
+    </g>
+    <g class="wiso-band" style="--i: 24">
+      <polygon fill="var(--px-steel-3)" points="467.5,354.3 485.4,364.7 467.5,375.1 449.5,364.7"/>
+      <polygon fill="var(--px-steel-2)" points="485.3,364.2 467.3,374.6 467.3,431.5 485.3,421.1"/>
+      <polygon fill="var(--px-steel-1)" points="449.7,364.2 467.6,374.6 467.6,431.5 449.7,421.1"/>
+    </g>
+    <g class="wiso-band" style="--i: 24">
+      <polygon fill="var(--px-steel-4)" points="464.4,313.1 539.2,356.3 476.4,392.5 401.7,349.3"/>
+      <polygon fill="var(--px-steel-3)" points="538.6,355.8 475.8,392.1 475.8,404.2 538.6,367.9"/>
+      <polygon fill="var(--px-steel-2)" points="402.1,349 476.9,392.1 476.9,404.2 402.1,361.1"/>
+    </g>
+    <g class="wiso-band" style="--i: 26">
+      <polygon fill="var(--px-steel-4)" points="408.1,269.1 482.8,312.3 470.9,319.2 396.2,276"/>
+      <polygon fill="var(--px-steel-3)" points="482.3,311.4 470.3,318.3 470.3,395.9 482.3,389"/>
+      <polygon fill="var(--px-steel-2)" points="396.3,275.4 471,318.5 471,396.2 396.3,353.1"/>
+    </g>
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2100; // depth wave to ~1.5s, monitor wake 1.5-2.0s
+
+  // fg:begin hero-start v1
+  const root = document.currentScript.closest('.fg-diagram');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    root.classList.add('is-settled'); // final composition, no motion
+  } else {
+    let started = false;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!started) {
+        if (!e.isIntersecting) return;
+        started = true; // intro plays once per page load
+        root.classList.add('is-live');
+        setTimeout(() => root.classList.add('is-settled'), INTRO_MS);
+      } else {
+        root.classList.toggle('is-paused', !e.isIntersecting);
+      }
+    }), { threshold: 0.3 });
+    io.observe(root);
+  }
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

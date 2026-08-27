@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>figura — hero art-style portfolio</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 2rem 1rem 5rem;
+  background: #f5f5f5; color: #333;
+  font-family: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+header, .style, .note { max-width: 1100px; margin-left: auto; margin-right: auto; }
+header { margin-bottom: 2.5rem; }
+h1 { font-size: 1.4rem; margin: 0 0 0.4rem; }
+header p { color: #666; margin: 0 0 0.5rem; font-size: 0.95rem; max-width: 760px; }
+.style { margin-bottom: 3.5rem; }
+.style h2 { font-size: 1.15rem; margin: 0 0 0.15rem; }
+.style .tagline { color: #666; font-size: 0.9rem; margin: 0 0 1rem; max-width: 760px; }
+.status { display: inline-block; font-size: 0.7rem; text-transform: uppercase;
+  letter-spacing: 0.06em; padding: 2px 7px; border-radius: 999px;
+  vertical-align: 3px; margin-left: 0.5rem; font-weight: 600; }
+.status--built { background: #dcfce7; color: #166534; }
+.status--todo { background: #e8e8e8; color: #777; }
+.facts { display: flex; flex-wrap: wrap; gap: 0 2rem; list-style: none;
+  padding: 0; margin: 1rem 0 0; font-size: 0.82rem; color: #555; }
+.facts b { color: #222; font-weight: 600; }
+.body { color: #555; font-size: 0.88rem; line-height: 1.6; margin: 0.9rem 0 0;
+  max-width: 760px; }
+.body strong { color: #222; }
+.placeholder {
+  border: 1px dashed #bbb; border-radius: 12px; background: #ececec;
+  aspect-ratio: 1200 / 500; display: flex; align-items: center;
+  justify-content: center; color: #999; font-size: 0.9rem;
+}
+.note { color: #777; font-size: 0.82rem; border-top: 1px solid #ddd;
+  padding-top: 1rem; }
+.error { color: #b91c1c; font-size: 0.9rem; }
+code { background: #e8e8e8; padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<header>
+  <h1>figura — hero art-style portfolio</h1>
+  <p>Candidate art styles for post heroes, so a style can be chosen by
+     looking rather than by imagining. Each entry is a real hero built
+     under the real contract — scoped CSS, palette tokens, the
+     <code>is-live</code> / <code>is-settled</code> / <code>is-paused</code>
+     lifecycle, and a complete settled composition for reduced motion.</p>
+  <p>Serve over HTTP (<code>python3 -m http.server</code>) — the manifest
+     fetch fails over <code>file://</code>. Heroes only autoplay their
+     intro once they scroll into view.</p>
+</header>
+<main id="portfolio"></main>
+<p class="note">
+  Adding a style: build the hero as <code>kind: hero</code> with
+  <code>post: "showcase"</code> in <code>manifest.json</code>, then add an
+  entry to <code>STYLES</code> in this page. Nothing else is wired to it.
+</p>
+<script>
+(async () => {
+  const main = document.getElementById('portfolio');
+
+  // Style commentary lives here, not in the manifest — the manifest
+  // describes diagrams, this page argues about styles. `id` matches the
+  // manifest id; entries with no id are styles not yet built.
+  const STYLES = [
+    {
+      id: 'workstation-iso',
+      name: 'Isometric vector',
+      tagline: 'Flat-shaded polygons on a 3D voxel lattice. The same scene as the pixel-art workstation-night hero, so this is a direct A/B with style as the only variable.',
+      facts: [
+        ['File', '26 KB'], ['Elements', '151 polygons'],
+        ['Generator', '144 lines'], ['New tokens', 'none'],
+      ],
+      body: 'Three properties make this cheap. Only three faces of a box are ever visible, so the rest is culled before it is emitted. Painter’s order for lattice boxes is exactly <strong>x + y + z</strong> ascending — no depth sort, no BSP. And a box shows exactly three tones while every <code>--px-*</code> ramp has exactly three bands, so top/right/left shading is correct with no lighting math. <strong>Against the pixel original: 2.9× smaller, 5.4× fewer elements, and a generator less than half as long</strong> (75 KB / 813 rects / 341 lines). It also drops the pixel heroes’ 150-multiple width constraint entirely — polygons scale cleanly at any width, so it needs no <code>1050px</code> snapping.',
+    },
+    {
+      name: 'Generative / algorithmic',
+      tagline: 'Attractors, flow fields, reaction–diffusion contours, Voronoi — computed in Python, emitted as static paths, animated by CSS.',
+      body: 'Highest art-per-byte of the four, and the only one where <strong>the generator is the art</strong>: you tune parameters rather than place pixels. A strange attractor traced with <code>stroke-dashoffset</code> draw-in is ~30 KB and thematically exact for a post about optimisation or latent space. The risk is that generative work defaults to screensaver — the algorithm has to be picked for the post, never from a catalogue.',
+    },
+    {
+      name: 'Line-art / plotter',
+      tagline: 'Uniform stroke weight, no fills, shading by hatch density. Pen plotter, patent drawing, engraving.',
+      body: 'Smallest files of any option (10–30 KB) and the cleanest fit to the contract — no fills means no ramp tokens at all, and the settled state is just <code>dashoffset: 0</code>. Draw-in is native and is probably the most satisfying intro effect available here. The catch is authorial, not technical: unlike generative work this does not come from a parameter sweep, so it needs actual drawings or projected geometry to hatch.',
+    },
+    {
+      name: 'Flat-shaded low-poly',
+      tagline: 'Faceted 3D forms, each polygon a flat fill from a shading band. The biggest visual departure from pixel art.',
+      body: 'The most work of the four. Needs a real depth sort (painter’s algorithm breaks on self-intersecting geometry), geometric seam handling, and <strong>5–6 shading bands where the steel ramp has 4</strong> — the first style that would actually require opening the closed <code>--px-*</code> set. Isometric already approximates much of what it offers, so it is the last one worth trying.',
+    },
+  ];
+
+  const EMBED_RE = /<!-- fg:embed-start -->([\s\S]*?)<!-- fg:embed-end -->/;
+
+  async function embed(container, path) {
+    const html = await (await fetch(path)).text();
+    const m = html.match(EMBED_RE);
+    if (!m) throw new Error('no embed markers in ' + path);
+    // Insert markup, then re-create scripts so they execute (innerHTML won't run them).
+    const holder = document.createElement('div');
+    holder.innerHTML = m[1];
+    holder.querySelectorAll('script').forEach((old) => {
+      const s = document.createElement('script');
+      s.textContent = old.textContent;
+      old.replaceWith(s);
+    });
+    container.appendChild(holder);
+  }
+
+  let byId = new Map();
+  try {
+    const manifest = await (await fetch('manifest.json')).json();
+    byId = new Map(manifest.filter((d) => d.post === 'showcase').map((d) => [d.id, d]));
+  } catch (e) {
+    main.innerHTML = '<p class="error">Could not load manifest.json — serve this page over HTTP.</p>';
+    return;
+  }
+
+  for (const style of STYLES) {
+    const entry = byId.get(style.id);
+    const section = document.createElement('section');
+    section.className = 'style';
+    section.innerHTML =
+      '<h2></h2><p class="tagline"></p><div class="slot"></div>' +
+      '<ul class="facts"></ul><p class="body"></p>';
+    const h2 = section.querySelector('h2');
+    h2.textContent = style.name;
+    const badge = document.createElement('span');
+    badge.className = 'status status--' + (entry ? 'built' : 'todo');
+    badge.textContent = entry ? 'built' : 'not built yet';
+    h2.appendChild(badge);
+    section.querySelector('.tagline').textContent = style.tagline;
+    section.querySelector('.body').innerHTML = style.body;
+    for (const [k, v] of style.facts || []) {
+      const li = document.createElement('li');
+      li.innerHTML = '<b></b> ';
+      li.querySelector('b').textContent = v;
+      li.append(k.toLowerCase());
+      section.querySelector('.facts').appendChild(li);
+    }
+    main.appendChild(section);
+
+    const slot = section.querySelector('.slot');
+    if (!entry) {
+      slot.innerHTML = '<div class="placeholder"></div>';
+      slot.querySelector('.placeholder').textContent = style.name + ' — no hero built yet';
+      continue;
+    }
+    try {
+      await embed(slot, entry.path);
+    } catch (e) {
+      const err = document.createElement('p');
+      err.className = 'error';
+      err.textContent = 'Failed to embed: ' + e.message;
+      slot.appendChild(err);
+    }
+  }
+})();
+</script>
+</body>
+</html>

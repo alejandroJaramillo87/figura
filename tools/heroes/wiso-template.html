@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workstation at night — isometric vector</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Workstation at night — isometric vector</h1>
+<p>Style study: the workstation-night scene rebuilt as isometric vector — flat-shaded polygons on a 3D lattice instead of pixel sprites. The room assembles back to front on a depth-staggered wave, the monitor wakes, and its light washes the desk and floor while the screen cycles between a desktop and a terminal.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-workstation-iso">
+<style>
+/* fg:begin palette-classic v1 */
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+/* fg:end panel-base */
+.fg-workstation-iso {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+/* The vector counterpart of the pixel heroes' crispEdges: these are
+   arbitrary-angle polygon edges, so they want smoothing, not snapping.
+   Seams between same-colour faces are closed geometrically in isolib
+   (INFLATE), not with strokes. */
+.fg-workstation-iso svg { shape-rendering: geometricPrecision; }
+
+/* --- static scene defaults ------------------------------------------ */
+/* Isometric-vector style study. Intro: the scene assembles back to front
+   on a depth wave (--i is the box's x+z), then the monitor wakes and
+   spills light onto the desk and floor. Ambient: the screen cycles
+   between desktop violet and terminal green, its spill in lockstep, and
+   the tower LED blinks. */
+.fg-workstation-iso .wiso-band {
+  opacity: 0;
+  transform: translateY(26px);
+}
+.fg-workstation-iso .wiso-scr,
+.fg-workstation-iso .wiso-spill,
+.fg-workstation-iso .wiso-led { opacity: 0; }
+
+/* --- intro ----------------------------------------------------------- */
+/* Depth wave: --stagger is 80ms and the scene is ~30 cells deep, so the
+   raw unit would run 2.4s on its own. A quarter of it lands the whole
+   assembly under 1.5s. */
+.fg-workstation-iso.is-live .wiso-band {
+  animation: fg-wiso-rise var(--dur-hero-in) var(--ease-overshoot)
+    calc(var(--i) * var(--stagger) / 4) both;
+}
+/* the monitor wakes once the furniture has landed */
+.fg-workstation-iso.is-live .wiso-scr-1,
+.fg-workstation-iso.is-live .wiso-spill-1 {
+  animation: fg-wiso-wake 0.5s var(--ease-out) 1.5s both;
+}
+.fg-workstation-iso.is-live .wiso-led {
+  animation: fg-wiso-on 0.1s steps(1, jump-start) 1.75s both;
+}
+
+@keyframes fg-wiso-rise { from { opacity: 0; transform: translateY(26px); }
+                          to   { opacity: 1; transform: none; } }
+@keyframes fg-wiso-wake { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fg-wiso-on { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+/* --- settled state (complete final composition; the reduced-motion
+       rendering) ---------------------------------------------------- */
+.fg-workstation-iso.is-settled .wiso-band {
+  opacity: 1;
+  transform: none;
+}
+.fg-workstation-iso.is-settled .wiso-scr-1 { opacity: 1; }
+.fg-workstation-iso.is-settled .wiso-scr-2 { opacity: 0; }
+.fg-workstation-iso.is-settled .wiso-spill-1 { opacity: 1; }
+.fg-workstation-iso.is-settled .wiso-spill-2 { opacity: 0; }
+.fg-workstation-iso.is-settled .wiso-led { opacity: 1; }
+
+/* --- ambient loop ---------------------------------------------------- */
+/* Screen content changes and its spill follows in lockstep — one effect
+   in two places, so it counts once against the concurrency budget. The
+   desktop holds most of the cycle; the terminal is a short interlude. */
+.fg-workstation-iso.is-settled .wiso-scr-1,
+.fg-workstation-iso.is-settled .wiso-spill-1 {
+  animation: fg-wiso-cut-a calc(var(--dur-tick) * 72) steps(1, jump-end) infinite;
+}
+.fg-workstation-iso.is-settled .wiso-scr-2,
+.fg-workstation-iso.is-settled .wiso-spill-2 {
+  animation: fg-wiso-cut-b calc(var(--dur-tick) * 72) steps(1, jump-end) infinite;
+}
+.fg-workstation-iso.is-settled .wiso-led {
+  animation: fg-wiso-blink calc(var(--dur-tick) * 26) steps(1, jump-end)
+    calc(var(--dur-tick) * 5) infinite;
+}
+.fg-workstation-iso.is-paused .wiso-scr-1,
+.fg-workstation-iso.is-paused .wiso-scr-2,
+.fg-workstation-iso.is-paused .wiso-spill-1,
+.fg-workstation-iso.is-paused .wiso-spill-2,
+.fg-workstation-iso.is-paused .wiso-led { animation-play-state: paused; }
+
+@keyframes fg-wiso-cut-a { 0%, 61% { opacity: 1; } 62%, 100% { opacity: 0; } }
+@keyframes fg-wiso-cut-b { 0%, 61% { opacity: 0; } 62%, 100% { opacity: 1; } }
+@keyframes fg-wiso-blink { 0%, 88% { opacity: 1; } 89%, 94% { opacity: 0.25; }
+                           95%, 100% { opacity: 1; } }
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Isometric vector hero: a night workstation seen in three-quarter view. A desk carries a monitor, keyboard, mouse and mug; a tower stands beside it with a green power light, an office chair is pushed back, a potted plant sits against the left wall and stacked crates against the right. A window in the back wall shows a dusk sky over a city skyline with a moon. The scene assembles back to front, the monitor wakes and washes violet light across the desk and floor, then its screen cycles between a desktop and a green terminal while the tower light blinks.">
+@SPRITES@
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2100; // depth wave to ~1.5s, monitor wake 1.5-2.0s
+
+  // fg:begin hero-start v1
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

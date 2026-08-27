@@ -86,4 +86,5 @@ def emit(template, out_relpath, sprites):
     out_path = os.path.join(DIAGRAMS, out_relpath)
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     open(out_path, 'w').write(tpl.replace('@SPRITES@', sprites))
-    print(f'rects: {sprites.count("<rect")}')
+    counts = [(n, sprites.count(f'<{n[:-1]}')) for n in ('rects', 'polys')]
+    print(', '.join(f'{n}: {c}' for n, c in counts if c))

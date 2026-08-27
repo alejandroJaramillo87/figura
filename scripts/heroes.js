@@ -13,8 +13,11 @@ const { execFileSync } = require('child_process');
 const F = require('./lib/fragment');
 
 const heroesDir = path.join(F.REPO_ROOT, 'tools', 'heroes');
+// Shared machinery, not scenes: these are imported by generators and
+// must never be executed as one.
+const LIBS = new Set(['herolib.py', 'isolib.py']);
 const generators = fs.readdirSync(heroesDir)
-  .filter((f) => f.endsWith('.py') && f !== 'herolib.py')
+  .filter((f) => f.endsWith('.py') && !LIBS.has(f))
   .sort();
 
 for (const g of generators) {

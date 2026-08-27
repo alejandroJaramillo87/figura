@@ -231,7 +231,15 @@ Interaction patterns to reuse (see `shared/snippets.js`):
   Heroes are **abstract art**, not diagrams: inspired by the post's
   material but evocative rather than explanatory — no labels, no
   literal diagram anatomy; the "effects must explain" rule applies to
-  diagrams, not heroes. Their look is **clean pixel art**: hand-placed
+  diagrams, not heroes. Every hero shipped in a post is **clean pixel
+  art** — that is the house style, described below. A second style,
+  **isometric vector** (flat-shaded polygons on a 3D lattice via
+  `tools/heroes/isolib.py`), exists in the art-style portfolio
+  (`showcase.html`, `post: "showcase"` in the manifest) and is not yet
+  adopted for any post; see `tools/heroes/README.md` for its contract.
+  Both ship under `kind: hero`: the lifecycle, managed blocks and every
+  validator rule are style-neutral, and the pixel rules in this
+  paragraph are prose, not enforcement. The pixel-art look: hand-placed
   `<rect>` sprites on a coarse cell grid (8 viewBox units per cell)
   with `shape-rendering: crispEdges` (no `rx`), shaded with the
   `--px-*` sprite ramp tokens (shadows cool, highlights warm,
