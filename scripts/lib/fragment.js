@@ -135,9 +135,7 @@ function loadManifest() {
 }
 
 module.exports = {
-  REPO_ROOT, DIAGRAMS_DIR, RUNTIME_DIR, MANIFEST_PATH,
-  EMBED_START, EMBED_END, PALETTE_PREFIX,
+  REPO_ROOT, DIAGRAMS_DIR, MANIFEST_PATH,
   listDiagramFiles, relPath, splitEmbed, rootClass,
-  findBlocks, renderBlock, beginMarker, endMarker,
-  renderPalette, canonicalBody, loadManifest,
+  findBlocks, renderBlock, canonicalBody, loadManifest,
 };
