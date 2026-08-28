@@ -554,5 +554,13 @@
     "post": "showcase",
     "kind": "hero",
     "description": "Generative hero study, and a direct A/B against the pixel-art training-net hero: the same four-layer network restated as seven sampled columns of nodes joined by 503 edges drawn from a Gaussian falloff on distance, so the connection rule shows up as tone. It assembles one column at a time, then loops a training step \u2014 an amber wavefront of activation crossing forward over the edges, a pale blue pulse running backward across the nodes."
+  },
+  {
+    "id": "coarse-grain",
+    "path": "diagrams/showcase/coarse-grain.html",
+    "title": "Coarse grain \u2014 isometric",
+    "post": "showcase",
+    "kind": "hero",
+    "description": "Isometric art-style study: memory as a plain of small pages, tiled two ways. A field of 4KB tiles in steel, a scatter of them standing proud and running hot, and four reserved huge pages claimed out of the pool up front \u2014 explicit hugetlbfs, so the coarse region is territory rather than a promotion. The plain assembles back to front, then a wave of pressure travels the depth axis while the reserved block holds completely still."
   }
 ]

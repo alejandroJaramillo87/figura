@@ -397,10 +397,12 @@ Measured, for calibration when scoping a new piece.
 | `truchet-loops` | generative | **22 KB** | 69 paths | 63 lines |
 | `strange-attractor` | generative | 39 KB | 150 paths | **49 lines** |
 | `motherboard-city` | pixel | 64 KB | 656 rects | 268 lines |
+| `stochastic-net` | generative | 73 KB | 503 paths + 140 nodes | 54 lines |
 | `workstation-night` | pixel | 75 KB | 813 rects | 341 lines |
+| `coarse-grain` | isometric | 83 KB | 557 polys | 70 lines |
 | `training-net` | pixel | 228 KB | 2,940 rects | 196 lines |
 
-Two readings worth keeping:
+Readings worth keeping:
 
 - **Pixel art has a complexity ceiling.** `training-net` is 228 KB and
   nearly 3,000 rects — an order of magnitude past the others. Scene
@@ -420,6 +422,12 @@ Two readings worth keeping:
   `workstation-night`, one third the output, 151 shapes against 813, and
   a shorter generator — because `prism()` collapses a desk top to 3
   polygons where voxels would need hundreds. Style was the only variable.
+- **Element count, not treatment, sets file size.** The two heaviest
+  non-pixel pieces (`coarse-grain` at 83 KB, `stochastic-net` at 73 KB)
+  are dense *by choice* — a 455-cell field and a 503-edge graph — and
+  their generators are still 70 and 54 lines. Neither treatment got more
+  expensive; the pictures got denser. Scope a new piece by the number of
+  marks it needs, not by the style it is in.
 
 ---
 

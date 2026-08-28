@@ -26,6 +26,7 @@ generator.
 | `diagrams/showcase/strange-attractor.html` | `strange-attractor.py` | `atr-template.html` |
 | `diagrams/showcase/truchet-loops.html` | `truchet-loops.py` | `trl-template.html` |
 | `diagrams/showcase/stochastic-net.html` | `stochastic-net.py` | `snet-template.html` |
+| `diagrams/showcase/coarse-grain.html` | `coarse-grain.py` | `cgr-template.html` |
 
 This file is the mechanical pipeline. For *which* art treatment a new
 hero should use — and what each candidate style costs to build — see

@@ -73,20 +73,31 @@ code { background: #e8e8e8; padding: 1px 5px; border-radius: 4px; font-size: 0.8
   // describes diagrams, this page argues about styles. One section is one
   // *treatment*; `pieces` are the heroes built in it, each `id` matching a
   // manifest id. A style with no pieces is one not built yet. Generative
-  // carries two, which is the page's only evidence for the claim that it
+  // carries three, which is the page's only evidence for the claim that it
   // yields a family cheaply — see docs/hero-art-direction.md §5.
   const STYLES = [
     {
       name: 'Isometric vector',
-      tagline: 'Flat-shaded polygons on a 3D voxel lattice. The same scene as the pixel-art workstation-night hero, so this is a direct A/B with style as the only variable.',
-      pieces: [{
-        id: 'workstation-iso',
-        facts: [
-          ['File', '26 KB'], ['Elements', '151 polygons'],
-          ['Generator', '144 lines'], ['New tokens', 'none'],
-        ],
-      }],
-      body: 'Three properties make this cheap. Only three faces of a box are ever visible, so the rest is culled before it is emitted. Painter’s order for lattice boxes is exactly <strong>x + y + z</strong> ascending — no depth sort, no BSP. And a box shows exactly three tones while every <code>--px-*</code> ramp has exactly three bands, so top/right/left shading is correct with no lighting math. <strong>Against the pixel original: 2.9× smaller, 5.4× fewer elements, and a generator less than half as long</strong> (75 KB / 813 rects / 341 lines). It also drops the pixel heroes’ 150-multiple width constraint entirely — polygons scale cleanly at any width, so it needs no <code>1050px</code> snapping.',
+      tagline: 'Flat-shaded polygons on a 3D voxel lattice. One piece re-does a pixel hero as a direct A/B; the other takes the subject the treatment is strongest at.',
+      pieces: [
+        {
+          id: 'workstation-iso',
+          note: '<b>Workstation at night — the controlled comparison.</b> The same scene as the pixel-art hero of the same name, so treatment is the only variable between them.',
+          facts: [
+            ['File', '26 KB'], ['Elements', '151 polygons'],
+            ['Generator', '144 lines'], ['New tokens', 'none'],
+          ],
+        },
+        {
+          id: 'coarse-grain',
+          note: '<b>Coarse grain — the treatment on its own best subject.</b> Memory as a plain of pages: a field of small ones in steel, and four reserved huge pages standing proud of it. The projection is what makes this work — a page grid drawn flat would be hard to tell from the attention-matrix and KV-cache figures the library already has, while a lattice at 30° shares no marks with them. It is also the first hero keyed to the <code>--px-hot</code> ramp, which had exactly one accent use in the whole library.',
+          facts: [
+            ['File', '83 KB'], ['Elements', '557 polygons'],
+            ['Generator', '70 lines'], ['New tokens', 'none'],
+          ],
+        },
+      ],
+      body: 'Three properties make this cheap. Only three faces of a box are ever visible, so the rest is culled before it is emitted. Painter’s order for lattice boxes is exactly <strong>x + y + z</strong> ascending — no depth sort, no BSP. And a box shows exactly three tones while every <code>--px-*</code> ramp has exactly three bands, so top/right/left shading is correct with no lighting math. <strong>Against the pixel original: 2.9× smaller, 5.4× fewer elements, and a generator less than half as long</strong> (75 KB / 813 rects / 341 lines). It also drops the pixel heroes’ 150-multiple width constraint entirely — polygons scale cleanly at any width, so it needs no <code>1050px</code> snapping. <strong>The second piece is where the treatment argues for itself</strong> rather than against pixel art: §5 lists “memory hierarchy as stacked floors, cache as shelves filling” among what isometric carries well, and <code>coarse-grain</code> is that. The same <code>prism()</code> draws a 2MB page and a 4KB page for identical cost — 3 polygons at any size — and a flat surface needs only its top face, one polygon per tile, which is the whole reason a 455-cell field is affordable.',
     },
     {
       name: 'Generative / algorithmic',

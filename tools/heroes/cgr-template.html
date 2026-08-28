@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Coarse grain — isometric</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Coarse grain — isometric</h1>
+<p>Style study: memory as an isometric plain, tiled two ways. A field of small
+   pages running hot, and four reserved huge pages standing proud of it —
+   claimed out of a pool up front, not promoted in place.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-coarse-grain">
+<style>
+/* fg:begin palette-classic v1 */
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+/* fg:end panel-base */
+.fg-coarse-grain {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+/* Arbitrary-angle polygon edges want smoothing, not the pixel heroes'
+   crispEdges snapping. */
+.fg-coarse-grain svg { shape-rendering: geometricPrecision; }
+
+/* --- static defaults ------------------------------------------------
+   The generator emits only geometry: a class and --i. Face colours come
+   from isolib's RAMP as fill attributes, so there is nothing to paint
+   here -- this template is choreography only.
+
+   --i is depth along the isometric axis (x + z), normalised to 0. It
+   drives the back-to-front intro and the settled ripple, which is why
+   no element needs a class of its own. Transforms need fill-box or SVG
+   originates them at the user-space origin, not the shape. */
+.fg-coarse-grain .cgr-fine,
+.fg-coarse-grain .cgr-hot,
+.fg-coarse-grain .cgr-slab {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* --- intro: the plain assembles back to front ----------------------- */
+/* Painter's order on this lattice is x + y + z ascending, so staggering
+   on --i means the scene builds in the order it is drawn -- the far
+   corner first, the near edge last. */
+.fg-coarse-grain.is-live .cgr-fine,
+.fg-coarse-grain.is-live .cgr-hot,
+.fg-coarse-grain.is-live .cgr-slab {
+  animation: fg-cgr-rise var(--dur-hero-in) var(--ease-out)
+             calc(var(--i) * 45ms) both;
+}
+@keyframes fg-cgr-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* --- settled (the whole plain; the reduced-motion rendering) ---------
+   is-live is never removed, so these rules have to both outrank the
+   intro (equal specificity, so they come after it) and restate its end
+   values -- replacing the animation drops the `both` fill that was
+   holding everything up. */
+/* The floor itself does not move. Lifting a tiled surface opens a seam
+   wherever a cell leaves, and at 455 cells that reads as the floor
+   coming apart rather than as a ripple -- so the ambient motion rides
+   only on the cells that already stand proud of it. */
+.fg-coarse-grain.is-settled .cgr-fine {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+.fg-coarse-grain.is-settled .cgr-hot {
+  opacity: 1;
+  animation: fg-cgr-flare 6s linear calc(var(--i) * 95ms) infinite;
+}
+/* The reserved block does not move, and that is the whole point: the
+   small-page field churns around it while the huge pages sit still. */
+.fg-coarse-grain.is-settled .cgr-slab {
+  opacity: 1;
+  transform: none;
+  animation: none;
+}
+.fg-coarse-grain.is-paused .cgr-hot { animation-play-state: paused; }
+
+/* --- ambient loop ---------------------------------------------------- */
+/* One wave, travelling the depth axis on the same --i the intro used,
+   so the ambient state restates the intro's claim rather than making a
+   new one: the small pages dim and lift as it passes, pressure moving
+   through the field. Everything else -- the floor, and the four
+   reserved pages -- holds absolutely still, which is the contrast the
+   piece is about. */
+@keyframes fg-cgr-flare {
+  0%, 4%    { opacity: 1;    transform: none; }
+  9%        { opacity: 0.35; transform: translateY(-4px); }
+  17%, 100% { opacity: 1;    transform: none; }
+}
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Isometric hero: a wide plain of small square tiles seen
+     from above at an angle, running off every edge of the frame. Most
+     tiles are steel grey in two or three close tones; a scatter of them
+     are orange and stand slightly proud of the surface, and a few sit
+     dark like gaps in the floor. Left of centre, four large pale green
+     slabs stand clearly above the plain in a two-by-two block, each one
+     the size of nine small tiles, with a narrow channel between them.
+     The plain assembles from the far corner forward, then a slow wave
+     travels across it: the orange tiles dim and lift as it passes and
+     settle again behind it, while the floor and the four green slabs
+     stay completely still.">
+@SPRITES@
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2100; // 25 depth bands at 45ms, then the last one lands
+
+  // fg:begin hero-start v1
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
