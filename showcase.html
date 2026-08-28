@@ -108,8 +108,16 @@ code { background: #e8e8e8; padding: 1px 5px; border-radius: 4px; font-size: 0.8
             ['Generator', '63 lines'], ['New tokens', 'none'],
           ],
         },
+        {
+          id: 'stochastic-net',
+          note: '<b>Stochastic net \u2014 the same subject as a pixel hero.</b> A restatement of <code>training-net</code>, which places fourteen nodes by hand. This places none: seven columns are sampled and every edge is drawn from a Gaussian falloff on distance, so what you are looking at is a weight distribution rather than a wiring diagram \u2014 and the falloff is visible as tone, because near connections are painted bright and far ones fade out. Same hues and same forward/backward step as the original, so treatment is the only variable.',
+          facts: [
+            ['File', '73 KB'], ['Elements', '503 paths + 140 nodes'],
+            ['Generator', '54 lines'], ['New tokens', 'none'],
+          ],
+        },
       ],
-      body: 'The only style here where <strong>the generator is the art</strong> \u2014 you tune parameters rather than place marks, and the two pieces above differ by an algorithm, not by a drawing. That is the treatment\u2019s real argument: <strong>range is nearly free once the module exists</strong>, and the tiling cost 22 KB from a 63-line generator on machinery the attractor had already paid for. It is also the one style whose motion means something unaided \u2014 the attractor draws <code>linear</code> because the draw rate <em>is</em> the integration rate, and the tiling hard-cuts because what it has to show is a distribution, not a path. <strong>Structure is forced by SVG, not chosen:</strong> a dash pattern restarts at every subpath, so anything that wants a CSS reveal has to be emitted one component per element \u2014 which is why the attractor is cut chronologically and the tiling is cut by connected loop. The standing risk is that generative work defaults to screensaver; the discipline is to pick the algorithm for the subject, never from a catalogue.',
+      body: 'The only style here where <strong>the generator is the art</strong> \u2014 you tune parameters rather than place marks, and the three pieces above differ by an algorithm, not by a drawing. That is the treatment\u2019s real argument: <strong>range is nearly free once the module exists</strong> \u2014 the tiling cost 22 KB from a 63-line generator on machinery the attractor had already paid for, and the net added a third family to the same module for 54 lines of generator. The net is also the page\u2019s <strong>second controlled comparison</strong>: like <code>workstation-iso</code> against <code>workstation-night</code>, it re-does an existing pixel hero with treatment as the only variable, and it is the one subject where that A/B and this style\u2019s best case are the same picture. It is also the one style whose motion means something unaided \u2014 the attractor draws <code>linear</code> because the draw rate <em>is</em> the integration rate, and the tiling hard-cuts because what it has to show is a distribution, not a path. <strong>Structure is forced by SVG, not chosen:</strong> a dash pattern restarts at every subpath, so anything that wants a CSS reveal has to be emitted one component per element \u2014 which is why the attractor is cut chronologically and the tiling is cut by connected loop. The standing risk is that generative work defaults to screensaver; the discipline is to pick the algorithm for the subject, never from a catalogue.',
     },
     {
       name: 'Line-art / plotter',

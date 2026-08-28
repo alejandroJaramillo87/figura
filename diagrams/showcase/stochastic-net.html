@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stochastic net — generative</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Stochastic net — generative</h1>
+<p>Style study, and a direct A/B against the pixel-art <code>training-net</code> hero: same subject, same forward and backward sweep, same hues. Nothing here is placed by hand — seven layers of nodes are sampled and the 503 edges between them are drawn from a Gaussian falloff on distance, so the network is a sampled weight distribution rather than a drawing.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-stochastic-net">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-stochastic-net {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --dur-step: 700ms;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-hero-in: 900ms;
+  --stagger: 80ms;
+  --ease-frames: steps(10);
+  --ease-frames-coarse: steps(4, jump-none);
+  --dur-tick: 100ms;
+  --px-outline: #0b1020;
+  --px-steel-1: #232c44;
+  --px-steel-2: #3b4a5e;
+  --px-steel-3: #64748b;
+  --px-steel-4: #a7b0b8;
+  --px-amber-1: #92400e;
+  --px-amber-2: #f59e0b;
+  --px-amber-3: #fcd34d;
+  --px-green-1: #166534;
+  --px-green-2: #34d399;
+  --px-green-3: #a7f3d0;
+  --px-sky-1: #0369a1;
+  --px-sky-2: #38bdf8;
+  --px-sky-3: #bae6fd;
+  --px-dusk-1: #2b1b3d;
+  --px-dusk-2: #7c3a58;
+  --px-dusk-3: #e8a87c;
+  --px-violet-1: #3c2a6e;
+  --px-violet-2: #a78bfa;
+  --px-violet-3: #ddd6fe;
+  --px-hot-1: #7f1d1d;
+  --px-hot-2: #f87171;
+  --px-hot-3: #fdba74;
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-stochastic-net {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-stochastic-net svg { display: block; width: 100%; height: auto; }
+.fg-stochastic-net text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-stochastic-net {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+/* Arbitrary-angle edges want smoothing, not the pixel heroes' snapping. */
+.fg-stochastic-net svg { shape-rendering: geometricPrecision; }
+
+/* --- static defaults ------------------------------------------------ */
+/* The generator emits only geometry: a class, --i, and the coordinates.
+   For an edge --i is the gap it spans; for a node it is the layer it
+   sits in. That one variable drives the intro stagger and both ambient
+   sweeps, which is why no element needs a class of its own. */
+
+/* The edge field stays deliberately dim. At 426 of them anything
+   brighter turns the frame into a hairball -- the nodes carry the read
+   and the edges are the texture they sit in. */
+.fg-stochastic-net .snet-edge {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  /* pathLength="1" normalises the dash maths: one dash of length 1
+     covers a whole edge, and pushing it a full length off hides it. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+/* Sky in, steel through the middle, green out -- the pixel original's
+   assignment, kept exactly so that treatment is the only variable
+   between the two pieces. */
+/* Three bands by how far an edge reaches, which is the kernel made
+   visible: the tight local weave is what you read, the wide reaches
+   fall back into haze. Steel has four bands and this uses three of
+   them, so no new tokens. */
+.fg-stochastic-net .snet-e-tight { --c: var(--px-steel-3); --w: 1.25; }
+.fg-stochastic-net .snet-e-mid   { --c: var(--px-steel-2); --w: 1; }
+.fg-stochastic-net .snet-e-wide  { --c: var(--px-steel-1); --w: 0.85; }
+
+/* The panel-coloured stroke is a knockout, not an outline: it punches
+   the weave out from behind each node so the units sit above the field
+   instead of dissolving into it. */
+.fg-stochastic-net .snet-node {
+  fill: var(--c);
+  stroke: var(--bg);
+  stroke-width: 2;
+  opacity: 0;
+}
+.fg-stochastic-net .snet-in     { --c: var(--px-sky-2); }
+.fg-stochastic-net .snet-hidden { --c: var(--px-steel-3); }
+.fg-stochastic-net .snet-out    { --c: var(--px-green-2); }
+
+/* --- intro: the net arrives by running once -------------------------- */
+/* A layer lands, then the edges leaving it draw themselves toward the
+   next one, 300ms per layer. So the assembly is a forward pass: the
+   piece builds itself by doing the thing it depicts, rather than by
+   fading in. Edges trace linear -- a signal crossing a wire has no
+   reason to ease. */
+.fg-stochastic-net.is-live .snet-node {
+  animation: fg-snet-arrive 320ms var(--ease-out) calc(var(--i) * 300ms) both;
+}
+.fg-stochastic-net.is-live .snet-edge {
+  animation: fg-snet-trace 340ms linear calc(var(--i) * 300ms + 140ms) both;
+}
+
+@keyframes fg-snet-arrive { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fg-snet-trace  { from { stroke-dashoffset: 1; }
+                            to   { stroke-dashoffset: 0; } }
+
+/* --- settled state (the whole net; the reduced-motion rendering) ------
+   is-live is never removed, so these rules must both outrank the intro
+   (equal specificity, so they come after it) and restate its end values:
+   replacing the animation drops the `both` fill that was holding the
+   nodes visible and the edges drawn. */
+.fg-stochastic-net.is-settled .snet-edge {
+  stroke-dashoffset: 0;
+  animation: fg-snet-forward 6s linear calc(var(--j) * 4ms) infinite;
+}
+.fg-stochastic-net.is-settled .snet-node {
+  opacity: 1;
+  animation: fg-snet-back 6s linear calc((6 - var(--i)) * 300ms + 3s) infinite;
+}
+.fg-stochastic-net.is-paused .snet-edge,
+.fg-stochastic-net.is-paused .snet-node { animation-play-state: paused; }
+
+/* --- ambient loop: one training step, repeating ---------------------- */
+/* Two sweeps on one 6s cycle. Activation runs forward along the wires,
+   then a gradient lands backward on the units -- which is the pixel
+   original's motion, restated.
+
+   They coexist because they touch different elements: forward drives
+   stroke on the edges, backward drives fill on the nodes. Two
+   animations competing for one property would resolve by list order and
+   one of them would simply not appear. */
+/* Narrow, and staggered per edge by --j rather than per gap by --i:
+   ~500 edges at 4ms apart make the amber a wavefront about two seconds
+   wide crossing the frame, where a per-gap stagger flashed ninety edges
+   at once and read as a block. No width bump -- at this density
+   thickening reads as glare rather than as brightness. */
+@keyframes fg-snet-forward {
+  0%, 1%   { stroke: var(--px-amber-2); }
+  4%, 100% { stroke: var(--c); }
+}
+@keyframes fg-snet-back {
+  0%, 1%   { fill: var(--px-sky-3); }
+  6%, 100% { fill: var(--c); }
+}
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-stochastic-net, .fg-stochastic-net * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Generative hero: a neural network of about a hundred and
+     forty small dots in seven scattered columns, joined by five hundred
+     faint steel lines. The columns swell from a narrow group at the
+     left to a tall bank a third of the way across, then taper away to
+     the right, so the whole mass reads as a long lens floating on the
+     dark panel. The dots are sky blue at the input, steel grey through
+     the middle, and green at the output; the lines are brightest where
+     they connect near neighbours and fade to almost nothing where they
+     reach far, which is the connection rule showing up as tone. The
+     network assembles one column at a time from left to right, then
+     repeats a training step: a narrow amber wavefront of activation
+     travels forward across the lines, and a pale blue pulse runs
+     backward across the dots.">
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 2" pathLength="1" d="M 26,183 L 216,131"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 6" pathLength="1" d="M 26,183 L 224,212"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 13" pathLength="1" d="M 26,183 L 238,169"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 12" pathLength="1" d="M 26,183 L 238,183"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 17" pathLength="1" d="M 33,198 L 238,169"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 24" pathLength="1" d="M 33,198 L 246,217"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 9" pathLength="1" d="M 33,198 L 224,212"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 1" pathLength="1" d="M 33,198 L 208,233"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 7" pathLength="1" d="M 47,208 L 208,233"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 35" pathLength="1" d="M 47,208 L 251,249"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 28" pathLength="1" d="M 47,208 L 246,150"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 16" pathLength="1" d="M 47,208 L 224,212"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 0" pathLength="1" d="M 15,231 L 216,131"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 5" pathLength="1" d="M 15,231 L 233,262"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 3" pathLength="1" d="M 15,231 L 231,311"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 15" pathLength="1" d="M 15,231 L 251,249"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 10" pathLength="1" d="M 27,240 L 233,262"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 18" pathLength="1" d="M 27,240 L 246,150"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 11" pathLength="1" d="M 27,240 L 236,326"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 4" pathLength="1" d="M 27,240 L 219,294"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 39" pathLength="1" d="M 66,257 L 245,369"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 31" pathLength="1" d="M 66,257 L 227,277"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 19" pathLength="1" d="M 66,257 L 208,233"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 27" pathLength="1" d="M 66,257 L 221,196"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 14" pathLength="1" d="M 57,272 L 208,233"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 37" pathLength="1" d="M 57,272 L 246,217"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 36" pathLength="1" d="M 57,272 L 245,369"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 38" pathLength="1" d="M 57,272 L 251,249"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 21" pathLength="1" d="M 47,284 L 227,277"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 30" pathLength="1" d="M 47,284 L 245,369"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 34" pathLength="1" d="M 47,284 L 248,379"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 32" pathLength="1" d="M 47,284 L 246,217"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 20" pathLength="1" d="M 47,307 L 227,277"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 33" pathLength="1" d="M 47,307 L 248,379"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 8" pathLength="1" d="M 47,307 L 208,233"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 29" pathLength="1" d="M 47,307 L 245,340"/>
+  <path class="snet-edge snet-e-wide" style="--i: 0; --j: 23" pathLength="1" d="M 41,320 L 238,389"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 22" pathLength="1" d="M 41,320 L 236,346"/>
+  <path class="snet-edge snet-e-mid" style="--i: 0; --j: 26" pathLength="1" d="M 41,320 L 245,369"/>
+  <path class="snet-edge snet-e-tight" style="--i: 0; --j: 25" pathLength="1" d="M 41,320 L 245,340"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 110" pathLength="1" d="M 236,103 L 433,171"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 109" pathLength="1" d="M 236,103 L 433,119"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 88" pathLength="1" d="M 236,103 L 419,133"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 64" pathLength="1" d="M 236,103 L 403,113"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 59" pathLength="1" d="M 240,123 L 392,85"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 116" pathLength="1" d="M 240,123 L 433,119"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 95" pathLength="1" d="M 240,123 L 419,133"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 102" pathLength="1" d="M 240,123 L 425,150"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 45" pathLength="1" d="M 216,131 L 403,113"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 69" pathLength="1" d="M 216,131 L 425,150"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 79" pathLength="1" d="M 216,131 L 433,171"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 56" pathLength="1" d="M 216,131 L 414,185"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 94" pathLength="1" d="M 246,150 L 414,185"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 119" pathLength="1" d="M 246,150 L 432,73"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 112" pathLength="1" d="M 246,150 L 425,150"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 101" pathLength="1" d="M 246,150 L 419,233"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 70" pathLength="1" d="M 238,169 L 404,269"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 57" pathLength="1" d="M 238,169 L 392,85"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 93" pathLength="1" d="M 238,169 L 419,133"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 53" pathLength="1" d="M 238,169 L 390,254"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 113" pathLength="1" d="M 238,183 L 433,171"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 91" pathLength="1" d="M 238,183 L 419,233"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 80" pathLength="1" d="M 238,183 L 414,185"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 62" pathLength="1" d="M 238,183 L 398,221"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 66" pathLength="1" d="M 221,196 L 419,203"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 44" pathLength="1" d="M 221,196 L 398,221"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 60" pathLength="1" d="M 221,196 L 414,185"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 51" pathLength="1" d="M 221,196 L 403,190"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 48" pathLength="1" d="M 224,212 L 398,221"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 72" pathLength="1" d="M 224,212 L 419,133"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 92" pathLength="1" d="M 224,212 L 433,171"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 41" pathLength="1" d="M 224,212 L 390,254"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 65" pathLength="1" d="M 246,217 L 392,85"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 77" pathLength="1" d="M 246,217 L 403,113"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 90" pathLength="1" d="M 246,217 L 409,92"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 104" pathLength="1" d="M 246,217 L 419,233"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 54" pathLength="1" d="M 208,233 L 421,307"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 43" pathLength="1" d="M 208,233 L 410,350"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 50" pathLength="1" d="M 208,233 L 416,385"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 47" pathLength="1" d="M 208,233 L 414,185"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 111" pathLength="1" d="M 251,249 L 419,133"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 67" pathLength="1" d="M 251,249 L 390,254"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 123" pathLength="1" d="M 251,249 L 434,277"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 106" pathLength="1" d="M 251,249 L 416,321"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 105" pathLength="1" d="M 233,262 L 434,277"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 63" pathLength="1" d="M 233,262 L 404,269"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 71" pathLength="1" d="M 233,262 L 410,350"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 86" pathLength="1" d="M 233,262 L 421,307"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 76" pathLength="1" d="M 227,277 L 421,307"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 97" pathLength="1" d="M 227,277 L 434,277"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 103" pathLength="1" d="M 227,277 L 438,376"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 42" pathLength="1" d="M 227,277 L 390,254"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 49" pathLength="1" d="M 219,294 L 404,269"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 55" pathLength="1" d="M 219,294 L 410,350"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 40" pathLength="1" d="M 219,294 L 390,254"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 58" pathLength="1" d="M 219,294 L 411,292"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 75" pathLength="1" d="M 231,311 L 416,321"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 81" pathLength="1" d="M 231,311 L 421,307"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 46" pathLength="1" d="M 231,311 L 388,419"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 68" pathLength="1" d="M 231,311 L 410,350"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 84" pathLength="1" d="M 236,326 L 416,321"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 115" pathLength="1" d="M 236,326 L 436,334"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 52" pathLength="1" d="M 236,326 L 390,254"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 82" pathLength="1" d="M 236,326 L 416,385"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 108" pathLength="1" d="M 245,340 L 423,459"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 87" pathLength="1" d="M 245,340 L 409,405"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 89" pathLength="1" d="M 245,340 L 410,350"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 99" pathLength="1" d="M 245,340 L 416,321"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 114" pathLength="1" d="M 236,346 L 436,334"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 117" pathLength="1" d="M 236,346 L 438,376"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 83" pathLength="1" d="M 236,346 L 416,321"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 61" pathLength="1" d="M 236,346 L 400,360"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 98" pathLength="1" d="M 245,369 L 416,385"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 73" pathLength="1" d="M 245,369 L 400,360"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 120" pathLength="1" d="M 245,369 L 436,334"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 121" pathLength="1" d="M 245,369 L 438,376"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 100" pathLength="1" d="M 248,379 L 416,385"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 74" pathLength="1" d="M 248,379 L 400,360"/>
+  <path class="snet-edge snet-e-mid" style="--i: 1; --j: 122" pathLength="1" d="M 248,379 L 436,334"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 107" pathLength="1" d="M 248,379 L 420,446"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 118" pathLength="1" d="M 238,389 L 438,376"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 96" pathLength="1" d="M 238,389 L 423,459"/>
+  <path class="snet-edge snet-e-wide" style="--i: 1; --j: 78" pathLength="1" d="M 238,389 L 411,292"/>
+  <path class="snet-edge snet-e-tight" style="--i: 1; --j: 85" pathLength="1" d="M 238,389 L 416,385"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 240" pathLength="1" d="M 431,41 L 611,56"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 202" pathLength="1" d="M 431,41 L 593,139"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 161" pathLength="1" d="M 431,41 L 575,63"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 229" pathLength="1" d="M 431,41 L 605,108"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 175" pathLength="1" d="M 402,50 L 609,86"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 181" pathLength="1" d="M 402,50 L 611,56"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 139" pathLength="1" d="M 402,50 L 590,151"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 125" pathLength="1" d="M 402,50 L 575,63"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 239" pathLength="1" d="M 432,73 L 609,86"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 205" pathLength="1" d="M 432,73 L 593,122"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 235" pathLength="1" d="M 432,73 L 605,108"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 228" pathLength="1" d="M 432,73 L 604,182"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 133" pathLength="1" d="M 392,85 L 593,139"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 154" pathLength="1" d="M 392,85 L 611,56"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 126" pathLength="1" d="M 392,85 L 587,95"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 132" pathLength="1" d="M 392,85 L 593,122"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 199" pathLength="1" d="M 409,92 L 614,161"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 191" pathLength="1" d="M 409,92 L 609,86"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 145" pathLength="1" d="M 409,92 L 587,95"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 130" pathLength="1" d="M 409,92 L 575,63"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 165" pathLength="1" d="M 403,113 L 605,108"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 146" pathLength="1" d="M 403,113 L 593,139"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 137" pathLength="1" d="M 403,113 L 587,95"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 140" pathLength="1" d="M 403,113 L 590,151"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 211" pathLength="1" d="M 433,119 L 593,139"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 232" pathLength="1" d="M 433,119 L 604,182"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 237" pathLength="1" d="M 433,119 L 605,108"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 241" pathLength="1" d="M 433,119 L 616,205"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 173" pathLength="1" d="M 419,133 L 590,191"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 171" pathLength="1" d="M 419,133 L 590,151"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 204" pathLength="1" d="M 419,133 L 605,108"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 217" pathLength="1" d="M 419,133 L 611,56"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 189" pathLength="1" d="M 425,150 L 593,122"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 215" pathLength="1" d="M 425,150 L 605,108"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 225" pathLength="1" d="M 425,150 L 610,232"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 169" pathLength="1" d="M 425,150 L 584,221"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 203" pathLength="1" d="M 433,171 L 591,248"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 200" pathLength="1" d="M 433,171 L 590,191"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 242" pathLength="1" d="M 433,171 L 616,205"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 236" pathLength="1" d="M 433,171 L 604,182"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 188" pathLength="1" d="M 414,185 L 604,182"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 213" pathLength="1" d="M 414,185 L 614,161"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 160" pathLength="1" d="M 414,185 L 591,248"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 148" pathLength="1" d="M 414,185 L 584,221"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 163" pathLength="1" d="M 403,190 L 604,182"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 138" pathLength="1" d="M 403,190 L 587,95"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 179" pathLength="1" d="M 403,190 L 609,86"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 147" pathLength="1" d="M 403,190 L 593,122"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 170" pathLength="1" d="M 419,203 L 590,191"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 223" pathLength="1" d="M 419,203 L 616,205"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 172" pathLength="1" d="M 419,203 L 591,248"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 201" pathLength="1" d="M 419,203 L 605,108"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 183" pathLength="1" d="M 398,221 L 617,263"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 152" pathLength="1" d="M 398,221 L 604,182"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 166" pathLength="1" d="M 398,221 L 610,232"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 182" pathLength="1" d="M 398,221 L 616,205"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 174" pathLength="1" d="M 419,233 L 591,248"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 233" pathLength="1" d="M 419,233 L 617,263"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 155" pathLength="1" d="M 419,233 L 584,221"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 226" pathLength="1" d="M 419,233 L 616,352"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 141" pathLength="1" d="M 390,254 L 604,182"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 127" pathLength="1" d="M 390,254 L 590,191"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 124" pathLength="1" d="M 390,254 L 584,221"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 167" pathLength="1" d="M 390,254 L 618,275"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 193" pathLength="1" d="M 404,269 L 616,205"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 196" pathLength="1" d="M 404,269 L 617,263"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 144" pathLength="1" d="M 404,269 L 592,294"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 135" pathLength="1" d="M 404,269 L 584,221"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 194" pathLength="1" d="M 434,277 L 586,316"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 190" pathLength="1" d="M 434,277 L 584,221"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 206" pathLength="1" d="M 434,277 L 591,248"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 243" pathLength="1" d="M 434,277 L 617,263"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 212" pathLength="1" d="M 411,292 L 616,352"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 216" pathLength="1" d="M 411,292 L 618,275"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 143" pathLength="1" d="M 411,292 L 584,221"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 180" pathLength="1" d="M 411,292 L 602,331"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 198" pathLength="1" d="M 421,307 L 602,331"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 162" pathLength="1" d="M 421,307 L 586,316"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 178" pathLength="1" d="M 421,307 L 592,294"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 176" pathLength="1" d="M 421,307 L 591,248"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 221" pathLength="1" d="M 416,321 L 616,378"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 224" pathLength="1" d="M 416,321 L 618,275"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 234" pathLength="1" d="M 416,321 L 620,306"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 220" pathLength="1" d="M 416,321 L 616,389"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 187" pathLength="1" d="M 436,334 L 581,402"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 195" pathLength="1" d="M 436,334 L 584,360"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 244" pathLength="1" d="M 436,334 L 616,389"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 197" pathLength="1" d="M 436,334 L 586,316"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 209" pathLength="1" d="M 410,350 L 616,352"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 142" pathLength="1" d="M 410,350 L 584,360"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 210" pathLength="1" d="M 410,350 L 616,378"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 214" pathLength="1" d="M 410,350 L 618,275"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 153" pathLength="1" d="M 400,360 L 602,331"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 184" pathLength="1" d="M 400,360 L 616,378"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 134" pathLength="1" d="M 400,360 L 586,316"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 129" pathLength="1" d="M 400,360 L 581,402"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 218" pathLength="1" d="M 438,376 L 592,432"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 247" pathLength="1" d="M 438,376 L 618,275"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 246" pathLength="1" d="M 438,376 L 616,378"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 245" pathLength="1" d="M 438,376 L 616,352"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 219" pathLength="1" d="M 416,385 L 615,416"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 222" pathLength="1" d="M 416,385 L 617,263"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 149" pathLength="1" d="M 416,385 L 584,360"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 164" pathLength="1" d="M 416,385 L 592,294"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 136" pathLength="1" d="M 409,405 L 581,402"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 207" pathLength="1" d="M 409,405 L 616,352"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 150" pathLength="1" d="M 409,405 L 592,432"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 208" pathLength="1" d="M 409,405 L 616,378"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 157" pathLength="1" d="M 388,419 L 615,416"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 159" pathLength="1" d="M 388,419 L 616,352"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 131" pathLength="1" d="M 388,419 L 596,446"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 128" pathLength="1" d="M 388,419 L 592,432"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 186" pathLength="1" d="M 420,428 L 596,446"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 231" pathLength="1" d="M 420,428 L 616,389"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 158" pathLength="1" d="M 420,428 L 584,360"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 151" pathLength="1" d="M 420,428 L 581,402"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 227" pathLength="1" d="M 420,446 L 615,416"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 185" pathLength="1" d="M 420,446 L 596,446"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 230" pathLength="1" d="M 420,446 L 616,378"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 177" pathLength="1" d="M 420,446 L 592,432"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 238" pathLength="1" d="M 423,459 L 615,416"/>
+  <path class="snet-edge snet-e-tight" style="--i: 2; --j: 192" pathLength="1" d="M 423,459 L 596,446"/>
+  <path class="snet-edge snet-e-mid" style="--i: 2; --j: 156" pathLength="1" d="M 423,459 L 581,402"/>
+  <path class="snet-edge snet-e-wide" style="--i: 2; --j: 168" pathLength="1" d="M 423,459 L 586,316"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 265" pathLength="1" d="M 611,56 L 761,113"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 344" pathLength="1" d="M 611,56 L 809,91"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 253" pathLength="1" d="M 575,63 L 783,141"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 285" pathLength="1" d="M 575,63 L 809,91"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 248" pathLength="1" d="M 575,63 L 761,113"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 325" pathLength="1" d="M 609,86 L 795,179"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 342" pathLength="1" d="M 609,86 L 809,148"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 339" pathLength="1" d="M 609,86 L 809,91"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 338" pathLength="1" d="M 609,86 L 806,127"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 304" pathLength="1" d="M 587,95 L 806,127"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 309" pathLength="1" d="M 587,95 L 809,91"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 290" pathLength="1" d="M 587,95 L 799,168"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 249" pathLength="1" d="M 587,95 L 761,113"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 319" pathLength="1" d="M 605,108 L 795,179"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 324" pathLength="1" d="M 605,108 L 799,168"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 335" pathLength="1" d="M 605,108 L 809,91"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 328" pathLength="1" d="M 605,108 L 803,231"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 322" pathLength="1" d="M 593,122 L 809,148"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 317" pathLength="1" d="M 593,122 L 806,127"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 302" pathLength="1" d="M 593,122 L 799,168"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 295" pathLength="1" d="M 593,122 L 795,179"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 310" pathLength="1" d="M 593,139 L 803,231"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 320" pathLength="1" d="M 593,139 L 807,279"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 274" pathLength="1" d="M 593,139 L 783,141"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 251" pathLength="1" d="M 593,139 L 761,113"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 297" pathLength="1" d="M 590,151 L 799,168"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 250" pathLength="1" d="M 590,151 L 761,113"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 303" pathLength="1" d="M 590,151 L 803,231"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 266" pathLength="1" d="M 590,151 L 783,141"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 293" pathLength="1" d="M 614,161 L 772,203"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 346" pathLength="1" d="M 614,161 L 809,91"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 332" pathLength="1" d="M 614,161 L 795,179"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 270" pathLength="1" d="M 614,161 L 761,113"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 306" pathLength="1" d="M 604,182 L 791,219"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 279" pathLength="1" d="M 604,182 L 776,192"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 273" pathLength="1" d="M 604,182 L 772,203"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 327" pathLength="1" d="M 604,182 L 803,231"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 268" pathLength="1" d="M 590,191 L 783,141"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 311" pathLength="1" d="M 590,191 L 808,252"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 261" pathLength="1" d="M 590,191 L 776,192"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 283" pathLength="1" d="M 590,191 L 791,219"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 275" pathLength="1" d="M 616,205 L 761,295"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 337" pathLength="1" d="M 616,205 L 799,168"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 349" pathLength="1" d="M 616,205 L 809,268"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 348" pathLength="1" d="M 616,205 L 808,252"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 263" pathLength="1" d="M 584,221 L 783,141"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 254" pathLength="1" d="M 584,221 L 776,192"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 278" pathLength="1" d="M 584,221 L 795,179"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 291" pathLength="1" d="M 584,221 L 803,231"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 341" pathLength="1" d="M 610,232 L 808,252"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 334" pathLength="1" d="M 610,232 L 803,231"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 343" pathLength="1" d="M 610,232 L 809,268"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 340" pathLength="1" d="M 610,232 L 807,279"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 305" pathLength="1" d="M 591,248 L 803,231"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 314" pathLength="1" d="M 591,248 L 808,252"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 284" pathLength="1" d="M 591,248 L 792,348"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 318" pathLength="1" d="M 591,248 L 809,268"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 331" pathLength="1" d="M 617,263 L 791,219"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 345" pathLength="1" d="M 617,263 L 803,231"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 352" pathLength="1" d="M 617,263 L 809,268"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 350" pathLength="1" d="M 617,263 L 807,279"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 280" pathLength="1" d="M 618,275 L 761,295"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 351" pathLength="1" d="M 618,275 L 807,279"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 353" pathLength="1" d="M 618,275 L 808,252"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 354" pathLength="1" d="M 618,275 L 809,268"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 316" pathLength="1" d="M 592,294 L 808,252"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 315" pathLength="1" d="M 592,294 L 807,279"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 259" pathLength="1" d="M 592,294 L 774,367"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 292" pathLength="1" d="M 592,294 L 795,321"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 357" pathLength="1" d="M 620,306 L 809,268"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 356" pathLength="1" d="M 620,306 L 808,252"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 336" pathLength="1" d="M 620,306 L 795,321"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 355" pathLength="1" d="M 620,306 L 807,279"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 282" pathLength="1" d="M 586,316 L 795,179"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 277" pathLength="1" d="M 586,316 L 792,348"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 258" pathLength="1" d="M 586,316 L 779,389"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 269" pathLength="1" d="M 586,316 L 788,409"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 271" pathLength="1" d="M 602,331 L 774,367"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 301" pathLength="1" d="M 602,331 L 788,409"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 286" pathLength="1" d="M 602,331 L 782,339"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 294" pathLength="1" d="M 602,331 L 785,380"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 333" pathLength="1" d="M 616,352 L 795,321"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 347" pathLength="1" d="M 616,352 L 807,279"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 330" pathLength="1" d="M 616,352 L 792,348"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 289" pathLength="1" d="M 616,352 L 770,305"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 264" pathLength="1" d="M 584,360 L 785,380"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 256" pathLength="1" d="M 584,360 L 779,389"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 252" pathLength="1" d="M 584,360 L 774,367"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 272" pathLength="1" d="M 584,360 L 792,348"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 308" pathLength="1" d="M 616,378 L 779,389"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 313" pathLength="1" d="M 616,378 L 782,339"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 300" pathLength="1" d="M 616,378 L 774,367"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 326" pathLength="1" d="M 616,378 L 788,409"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 299" pathLength="1" d="M 616,389 L 774,367"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 312" pathLength="1" d="M 616,389 L 782,339"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 307" pathLength="1" d="M 616,389 L 779,389"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 329" pathLength="1" d="M 616,389 L 792,348"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 255" pathLength="1" d="M 581,402 L 779,389"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 262" pathLength="1" d="M 581,402 L 785,380"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 257" pathLength="1" d="M 581,402 L 782,339"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 267" pathLength="1" d="M 581,402 L 792,348"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 321" pathLength="1" d="M 615,416 L 785,380"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 323" pathLength="1" d="M 615,416 L 788,409"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 298" pathLength="1" d="M 615,416 L 774,367"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 276" pathLength="1" d="M 592,432 L 785,380"/>
+  <path class="snet-edge snet-e-tight" style="--i: 3; --j: 281" pathLength="1" d="M 592,432 L 788,409"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 260" pathLength="1" d="M 592,432 L 774,367"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 288" pathLength="1" d="M 592,432 L 792,348"/>
+  <path class="snet-edge snet-e-wide" style="--i: 3; --j: 296" pathLength="1" d="M 596,446 L 792,348"/>
+  <path class="snet-edge snet-e-mid" style="--i: 3; --j: 287" pathLength="1" d="M 596,446 L 788,409"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 433" pathLength="1" d="M 809,91 L 980,189"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 411" pathLength="1" d="M 809,91 L 956,145"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 442" pathLength="1" d="M 809,91 L 990,165"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 358" pathLength="1" d="M 761,113 L 950,197"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 359" pathLength="1" d="M 761,113 L 956,145"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 391" pathLength="1" d="M 761,113 L 990,165"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 396" pathLength="1" d="M 761,113 L 995,159"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 438" pathLength="1" d="M 806,127 L 988,238"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 432" pathLength="1" d="M 806,127 L 980,189"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 444" pathLength="1" d="M 806,127 L 995,159"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 441" pathLength="1" d="M 806,127 L 990,165"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 373" pathLength="1" d="M 783,141 L 950,197"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 406" pathLength="1" d="M 783,141 L 980,189"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 426" pathLength="1" d="M 783,141 L 995,159"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 422" pathLength="1" d="M 783,141 L 990,165"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 434" pathLength="1" d="M 809,148 L 980,189"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 443" pathLength="1" d="M 809,148 L 990,165"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 419" pathLength="1" d="M 809,148 L 961,214"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 413" pathLength="1" d="M 809,148 L 956,145"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 412" pathLength="1" d="M 799,168 L 966,331"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 436" pathLength="1" d="M 799,168 L 990,165"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 427" pathLength="1" d="M 799,168 L 980,189"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 403" pathLength="1" d="M 799,168 L 961,214"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 410" pathLength="1" d="M 795,179 L 969,228"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 398" pathLength="1" d="M 795,179 L 961,214"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 384" pathLength="1" d="M 795,179 L 950,253"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 431" pathLength="1" d="M 795,179 L 990,165"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 367" pathLength="1" d="M 776,192 L 952,301"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 372" pathLength="1" d="M 776,192 L 957,357"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 369" pathLength="1" d="M 776,192 L 954,267"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 395" pathLength="1" d="M 776,192 L 980,189"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 374" pathLength="1" d="M 772,203 L 961,214"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 393" pathLength="1" d="M 772,203 L 980,189"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 363" pathLength="1" d="M 772,203 L 950,253"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 368" pathLength="1" d="M 772,203 L 956,145"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 380" pathLength="1" d="M 791,219 L 950,197"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 429" pathLength="1" d="M 791,219 L 990,165"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 421" pathLength="1" d="M 791,219 L 980,189"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 435" pathLength="1" d="M 791,219 L 998,290"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 428" pathLength="1" d="M 803,231 L 978,342"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 408" pathLength="1" d="M 803,231 L 961,214"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 430" pathLength="1" d="M 803,231 L 980,189"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 394" pathLength="1" d="M 803,231 L 952,301"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 400" pathLength="1" d="M 808,252 L 950,253"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 424" pathLength="1" d="M 808,252 L 969,228"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 401" pathLength="1" d="M 808,252 L 952,301"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 404" pathLength="1" d="M 808,252 L 954,267"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 440" pathLength="1" d="M 809,268 L 988,238"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 414" pathLength="1" d="M 809,268 L 957,357"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 418" pathLength="1" d="M 809,268 L 961,214"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 425" pathLength="1" d="M 809,268 L 969,228"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 445" pathLength="1" d="M 807,279 L 998,290"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 423" pathLength="1" d="M 807,279 L 969,228"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 439" pathLength="1" d="M 807,279 L 988,238"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 416" pathLength="1" d="M 807,279 L 961,214"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 366" pathLength="1" d="M 761,295 L 966,331"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 388" pathLength="1" d="M 761,295 L 988,238"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 364" pathLength="1" d="M 761,295 L 964,313"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 378" pathLength="1" d="M 761,295 L 978,342"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 360" pathLength="1" d="M 770,305 L 950,197"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 375" pathLength="1" d="M 770,305 L 966,331"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 362" pathLength="1" d="M 770,305 L 952,301"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 361" pathLength="1" d="M 770,305 L 950,253"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 387" pathLength="1" d="M 795,321 L 954,267"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 383" pathLength="1" d="M 795,321 L 950,253"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 409" pathLength="1" d="M 795,321 L 969,228"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 437" pathLength="1" d="M 795,321 L 998,290"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 402" pathLength="1" d="M 782,339 L 978,342"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 417" pathLength="1" d="M 782,339 L 988,238"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 386" pathLength="1" d="M 782,339 L 966,331"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 379" pathLength="1" d="M 782,339 L 957,357"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 420" pathLength="1" d="M 792,348 L 978,342"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 405" pathLength="1" d="M 792,348 L 969,228"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 397" pathLength="1" d="M 792,348 L 964,313"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 390" pathLength="1" d="M 792,348 L 957,357"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 392" pathLength="1" d="M 774,367 L 978,342"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 371" pathLength="1" d="M 774,367 L 957,357"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 365" pathLength="1" d="M 774,367 L 952,301"/>
+  <path class="snet-edge snet-e-tight" style="--i: 4; --j: 382" pathLength="1" d="M 785,380 L 957,357"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 389" pathLength="1" d="M 785,380 L 964,313"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 377" pathLength="1" d="M 785,380 L 952,301"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 407" pathLength="1" d="M 785,380 L 978,342"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 376" pathLength="1" d="M 779,389 L 957,357"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 381" pathLength="1" d="M 779,389 L 964,313"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 399" pathLength="1" d="M 779,389 L 978,342"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 370" pathLength="1" d="M 779,389 L 952,301"/>
+  <path class="snet-edge snet-e-wide" style="--i: 4; --j: 415" pathLength="1" d="M 788,409 L 978,342"/>
+  <path class="snet-edge snet-e-mid" style="--i: 4; --j: 385" pathLength="1" d="M 788,409 L 957,357"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 449" pathLength="1" d="M 956,145 L 1140,183"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 484" pathLength="1" d="M 995,159 L 1140,183"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 501" pathLength="1" d="M 995,159 L 1171,196"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 481" pathLength="1" d="M 995,159 L 1138,209"/>
+  <path class="snet-edge snet-e-wide" style="--i: 5; --j: 494" pathLength="1" d="M 995,159 L 1156,271"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 499" pathLength="1" d="M 990,165 L 1171,196"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 478" pathLength="1" d="M 990,165 L 1140,183"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 461" pathLength="1" d="M 980,189 L 1138,209"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 463" pathLength="1" d="M 980,189 L 1140,183"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 482" pathLength="1" d="M 980,189 L 1153,229"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 492" pathLength="1" d="M 980,189 L 1171,196"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 446" pathLength="1" d="M 950,197 L 1140,183"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 465" pathLength="1" d="M 950,197 L 1171,196"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 473" pathLength="1" d="M 950,197 L 1176,259"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 471" pathLength="1" d="M 950,197 L 1175,241"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 450" pathLength="1" d="M 961,214 L 1138,209"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 479" pathLength="1" d="M 961,214 L 1171,196"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 486" pathLength="1" d="M 961,214 L 1175,241"/>
+  <path class="snet-edge snet-e-wide" style="--i: 5; --j: 464" pathLength="1" d="M 961,214 L 1160,290"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 456" pathLength="1" d="M 969,228 L 1140,183"/>
+  <path class="snet-edge snet-e-wide" style="--i: 5; --j: 475" pathLength="1" d="M 969,228 L 1158,315"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 468" pathLength="1" d="M 969,228 L 1153,229"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 488" pathLength="1" d="M 969,228 L 1171,196"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 489" pathLength="1" d="M 988,238 L 1153,229"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 491" pathLength="1" d="M 988,238 L 1156,271"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 498" pathLength="1" d="M 988,238 L 1171,196"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 500" pathLength="1" d="M 988,238 L 1176,259"/>
+  <path class="snet-edge snet-e-wide" style="--i: 5; --j: 447" pathLength="1" d="M 950,253 L 1140,183"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 452" pathLength="1" d="M 950,253 L 1156,305"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 455" pathLength="1" d="M 950,253 L 1158,315"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 453" pathLength="1" d="M 950,253 L 1156,271"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 476" pathLength="1" d="M 954,267 L 1175,241"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 477" pathLength="1" d="M 954,267 L 1176,259"/>
+  <path class="snet-edge snet-e-wide" style="--i: 5; --j: 472" pathLength="1" d="M 954,267 L 1171,196"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 448" pathLength="1" d="M 954,267 L 1138,209"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 497" pathLength="1" d="M 998,290 L 1156,271"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 493" pathLength="1" d="M 998,290 L 1153,229"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 496" pathLength="1" d="M 998,290 L 1156,305"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 502" pathLength="1" d="M 998,290 L 1176,259"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 457" pathLength="1" d="M 952,301 L 1158,315"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 458" pathLength="1" d="M 952,301 L 1160,290"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 474" pathLength="1" d="M 952,301 L 1175,241"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 454" pathLength="1" d="M 952,301 L 1156,305"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 469" pathLength="1" d="M 964,313 L 1160,290"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 462" pathLength="1" d="M 964,313 L 1156,271"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 487" pathLength="1" d="M 964,313 L 1176,259"/>
+  <path class="snet-edge snet-e-wide" style="--i: 5; --j: 451" pathLength="1" d="M 964,313 L 1138,209"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 467" pathLength="1" d="M 966,331 L 1156,271"/>
+  <path class="snet-edge snet-e-wide" style="--i: 5; --j: 490" pathLength="1" d="M 966,331 L 1176,259"/>
+  <path class="snet-edge snet-e-tight" style="--i: 5; --j: 470" pathLength="1" d="M 966,331 L 1158,315"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 466" pathLength="1" d="M 966,331 L 1156,305"/>
+  <path class="snet-edge snet-e-wide" style="--i: 5; --j: 495" pathLength="1" d="M 978,342 L 1175,241"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 485" pathLength="1" d="M 978,342 L 1158,315"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 483" pathLength="1" d="M 978,342 L 1156,305"/>
+  <path class="snet-edge snet-e-wide" style="--i: 5; --j: 459" pathLength="1" d="M 957,357 L 1156,271"/>
+  <path class="snet-edge snet-e-mid" style="--i: 5; --j: 460" pathLength="1" d="M 957,357 L 1158,315"/>
+  <path class="snet-edge snet-e-wide" style="--i: 5; --j: 480" pathLength="1" d="M 957,357 L 1176,259"/>
+  <circle class="snet-node snet-in" style="--i: 0" cx="26.4" cy="182.7" r="5.0"/>
+  <circle class="snet-node snet-in" style="--i: 0" cx="33.2" cy="198.4" r="5.0"/>
+  <circle class="snet-node snet-in" style="--i: 0" cx="46.5" cy="207.7" r="5.0"/>
+  <circle class="snet-node snet-in" style="--i: 0" cx="14.7" cy="231.1" r="5.0"/>
+  <circle class="snet-node snet-in" style="--i: 0" cx="27.5" cy="239.6" r="5.0"/>
+  <circle class="snet-node snet-in" style="--i: 0" cx="65.8" cy="257.2" r="5.0"/>
+  <circle class="snet-node snet-in" style="--i: 0" cx="57.5" cy="272.3" r="5.0"/>
+  <circle class="snet-node snet-in" style="--i: 0" cx="47.2" cy="283.8" r="5.0"/>
+  <circle class="snet-node snet-in" style="--i: 0" cx="47.0" cy="306.7" r="5.0"/>
+  <circle class="snet-node snet-in" style="--i: 0" cx="41.2" cy="320.4" r="5.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="235.6" cy="103.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="240.1" cy="122.9" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="216.3" cy="131.4" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="245.7" cy="150.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="238.0" cy="168.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="237.8" cy="183.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="221.2" cy="196.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="223.8" cy="211.8" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="246.4" cy="217.4" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="207.7" cy="232.9" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="250.9" cy="249.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="233.3" cy="262.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="227.0" cy="277.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="218.9" cy="293.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="231.0" cy="311.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="236.1" cy="325.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="245.2" cy="340.4" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="235.6" cy="346.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="245.4" cy="368.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="247.7" cy="378.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 1" cx="237.8" cy="389.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="430.6" cy="40.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="402.2" cy="49.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="431.7" cy="72.9" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="391.9" cy="85.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="408.7" cy="92.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="402.6" cy="112.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="432.7" cy="119.4" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="419.3" cy="133.4" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="424.7" cy="150.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="433.1" cy="170.8" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="413.6" cy="185.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="403.4" cy="189.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="418.5" cy="203.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="397.6" cy="221.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="419.1" cy="232.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="389.5" cy="253.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="403.7" cy="268.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="434.0" cy="276.8" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="411.3" cy="292.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="420.8" cy="307.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="416.4" cy="321.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="436.2" cy="334.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="409.8" cy="350.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="399.7" cy="360.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="438.2" cy="376.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="415.9" cy="385.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="408.9" cy="404.8" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="388.4" cy="419.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="420.2" cy="427.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="420.0" cy="445.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 2" cx="422.7" cy="458.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="610.8" cy="56.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="575.2" cy="63.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="609.2" cy="86.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="587.1" cy="95.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="604.8" cy="107.9" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="592.9" cy="121.8" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="593.2" cy="138.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="589.6" cy="150.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="614.2" cy="161.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="603.6" cy="182.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="590.1" cy="191.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="615.8" cy="205.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="583.7" cy="221.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="610.3" cy="231.9" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="590.7" cy="248.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="617.3" cy="263.4" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="618.5" cy="274.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="591.5" cy="293.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="620.0" cy="305.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="585.7" cy="316.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="601.5" cy="331.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="616.0" cy="351.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="583.5" cy="360.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="616.0" cy="377.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="615.9" cy="388.8" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="580.7" cy="402.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="615.3" cy="416.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="592.0" cy="431.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 3" cx="595.8" cy="445.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="808.5" cy="90.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="760.9" cy="112.9" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="806.4" cy="127.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="783.3" cy="141.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="808.9" cy="148.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="799.4" cy="168.4" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="795.1" cy="179.4" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="775.7" cy="191.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="772.5" cy="203.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="791.3" cy="219.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="802.8" cy="231.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="807.7" cy="252.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="808.7" cy="268.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="807.4" cy="279.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="761.4" cy="295.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="769.6" cy="304.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="795.1" cy="321.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="782.2" cy="339.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="792.5" cy="347.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="773.8" cy="367.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="785.5" cy="380.4" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="779.0" cy="388.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 4" cx="788.5" cy="409.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="956.2" cy="144.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="995.3" cy="159.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="990.2" cy="165.4" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="980.0" cy="188.7" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="949.9" cy="197.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="961.3" cy="214.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="969.3" cy="228.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="987.7" cy="237.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="950.2" cy="253.3" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="953.8" cy="267.2" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="998.0" cy="289.8" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="951.8" cy="300.6" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="963.8" cy="313.1" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="965.6" cy="331.0" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="977.8" cy="342.5" r="4.0"/>
+  <circle class="snet-node snet-hidden" style="--i: 5" cx="957.3" cy="356.6" r="4.0"/>
+  <circle class="snet-node snet-out" style="--i: 6" cx="1140.4" cy="182.9" r="5.5"/>
+  <circle class="snet-node snet-out" style="--i: 6" cx="1171.2" cy="196.0" r="5.5"/>
+  <circle class="snet-node snet-out" style="--i: 6" cx="1138.2" cy="208.9" r="5.5"/>
+  <circle class="snet-node snet-out" style="--i: 6" cx="1153.4" cy="228.6" r="5.5"/>
+  <circle class="snet-node snet-out" style="--i: 6" cx="1174.7" cy="241.2" r="5.5"/>
+  <circle class="snet-node snet-out" style="--i: 6" cx="1175.7" cy="258.9" r="5.5"/>
+  <circle class="snet-node snet-out" style="--i: 6" cx="1156.4" cy="271.2" r="5.5"/>
+  <circle class="snet-node snet-out" style="--i: 6" cx="1159.8" cy="289.8" r="5.5"/>
+  <circle class="snet-node snet-out" style="--i: 6" cx="1155.9" cy="304.8" r="5.5"/>
+  <circle class="snet-node snet-out" style="--i: 6" cx="1158.0" cy="315.0" r="5.5"/>
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2200; // 6 * 300ms of layers, then the last one lands
+
+  // fg:begin hero-start v1
+  const root = document.currentScript.closest('.fg-diagram');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduced) {
+    root.classList.add('is-settled'); // final composition, no motion
+  } else {
+    let started = false;
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!started) {
+        if (!e.isIntersecting) return;
+        started = true; // intro plays once per page load
+        root.classList.add('is-live');
+        setTimeout(() => root.classList.add('is-settled'), INTRO_MS);
+      } else {
+        root.classList.toggle('is-paused', !e.isIntersecting);
+      }
+    }), { threshold: 0.3 });
+    io.observe(root);
+  }
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

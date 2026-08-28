@@ -321,3 +321,77 @@ def arc_d(component, tile, radius):
         sweep = 1 if (ax - cx) * (by - cy) - (ay - cy) * (bx - cx) > 0 else 0
         out.append(f'A{radius} {radius} 0 0 {sweep} {round(bx)},{round(by)}')
     return ' '.join(out)
+
+
+# --- Layered graphs ------------------------------------------------------
+#
+# The third family. Attractors are continuous and deterministic, tilings
+# discrete and stochastic; this one is stochastic and layered, and it
+# exists to draw a network nobody placed.
+#
+# The point of sampling a net rather than drawing one is scale. A dozen
+# hand-placed nodes joined by wires is diagram anatomy, and CLAUDE.md
+# keeps that out of heroes. A hundred-odd sampled nodes under a falloff
+# kernel is a texture that still reads as a network: too many to label,
+# so it cannot explain anything, which is exactly what a hero wants.
+#
+# The same randomness invariant as the tilings applies -- everything goes
+# through a seeded random.Random, or `npm run heroes` churns the tree.
+
+
+def layers(counts, rnd, w=1200, h=500, pad=60, jitter=0.36, xjit=0.0):
+    """Node positions for a feedforward stack, one list per layer.
+
+    Layers sit at evenly spaced x. Within a layer the nodes spread over a
+    band whose height is proportional to that layer's share of the widest
+    one, so a tapering `counts` tapers the silhouette. Both axes are then
+    jittered -- y by a fraction of the local spacing, x by `xjit` viewBox
+    units -- which is what stops the columns reading as a ruled grid
+    without stopping them reading as layers.
+    """
+    out, n, widest = [], len(counts), max(counts)
+    for li, count in enumerate(counts):
+        cx = pad + (w - 2 * pad) * (li / (n - 1) if n > 1 else 0.5)
+        span = (h - 2 * pad) * (count / widest)
+        step = span / max(count - 1, 1)
+        top = (h - span) / 2
+        col = []
+        for k in range(count):
+            x = cx + rnd.uniform(-xjit, xjit)
+            y = top + k * step + rnd.uniform(-jitter, jitter) * step
+            col.append((x, y))
+        out.append(col)
+    return out
+
+
+def layer_edges(cols, rnd, sigma=52.0, kmax=4):
+    """Edges between adjacent layers, sampled from a distance kernel.
+
+    Each node offers an edge to every node in the next layer with
+    probability exp(-dy^2 / 2 sigma^2). That Gaussian falloff is the
+    whole art: what gets emitted is a sampled weight distribution rather
+    than a drawn graph, so near connections dominate and the rare long
+    one survives as a highlight.
+
+    Two corrections keep the field readable. A node that draws no
+    candidate is given its nearest forward neighbour, so nothing is
+    stranded; and the accepted set is capped at kmax by a random key
+    rather than by distance, which bounds density without quietly
+    re-biasing the distribution back towards short edges.
+
+    Returns (gap_index, (x0, y0), (x1, y1)) per edge.
+    """
+    out = []
+    for li in range(len(cols) - 1):
+        for x0, y0 in cols[li]:
+            cand = []
+            for x1, y1 in cols[li + 1]:
+                dy = y1 - y0
+                if rnd.random() < math.exp(-(dy * dy) / (2 * sigma * sigma)):
+                    cand.append((rnd.random(), (x1, y1)))
+            if not cand:
+                cand = [(0.0, min(cols[li + 1], key=lambda q: abs(q[1] - y0)))]
+            cand.sort(key=lambda t: t[0])
+            for _k, q in cand[:kmax]:
+                out.append((li, (x0, y0), q))
+    return out

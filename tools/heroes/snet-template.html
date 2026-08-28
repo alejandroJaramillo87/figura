@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stochastic net — generative</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Stochastic net — generative</h1>
+<p>Style study, and a direct A/B against the pixel-art <code>training-net</code> hero: same subject, same forward and backward sweep, same hues. Nothing here is placed by hand — seven layers of nodes are sampled and the 503 edges between them are drawn from a Gaussian falloff on distance, so the network is a sampled weight distribution rather than a drawing.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-stochastic-net">
+<style>
+/* fg:begin palette-classic v1 */
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+/* fg:end panel-base */
+.fg-stochastic-net {
+  padding: 0; /* heroes are full-bleed inside the panel */
+  overflow: hidden;
+}
+/* Arbitrary-angle edges want smoothing, not the pixel heroes' snapping. */
+.fg-stochastic-net svg { shape-rendering: geometricPrecision; }
+
+/* --- static defaults ------------------------------------------------ */
+/* The generator emits only geometry: a class, --i, and the coordinates.
+   For an edge --i is the gap it spans; for a node it is the layer it
+   sits in. That one variable drives the intro stagger and both ambient
+   sweeps, which is why no element needs a class of its own. */
+
+/* The edge field stays deliberately dim. At 426 of them anything
+   brighter turns the frame into a hairball -- the nodes carry the read
+   and the edges are the texture they sit in. */
+.fg-stochastic-net .snet-edge {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: var(--w);
+  stroke-linecap: round;
+  /* pathLength="1" normalises the dash maths: one dash of length 1
+     covers a whole edge, and pushing it a full length off hides it. */
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+/* Sky in, steel through the middle, green out -- the pixel original's
+   assignment, kept exactly so that treatment is the only variable
+   between the two pieces. */
+/* Three bands by how far an edge reaches, which is the kernel made
+   visible: the tight local weave is what you read, the wide reaches
+   fall back into haze. Steel has four bands and this uses three of
+   them, so no new tokens. */
+.fg-stochastic-net .snet-e-tight { --c: var(--px-steel-3); --w: 1.25; }
+.fg-stochastic-net .snet-e-mid   { --c: var(--px-steel-2); --w: 1; }
+.fg-stochastic-net .snet-e-wide  { --c: var(--px-steel-1); --w: 0.85; }
+
+/* The panel-coloured stroke is a knockout, not an outline: it punches
+   the weave out from behind each node so the units sit above the field
+   instead of dissolving into it. */
+.fg-stochastic-net .snet-node {
+  fill: var(--c);
+  stroke: var(--bg);
+  stroke-width: 2;
+  opacity: 0;
+}
+.fg-stochastic-net .snet-in     { --c: var(--px-sky-2); }
+.fg-stochastic-net .snet-hidden { --c: var(--px-steel-3); }
+.fg-stochastic-net .snet-out    { --c: var(--px-green-2); }
+
+/* --- intro: the net arrives by running once -------------------------- */
+/* A layer lands, then the edges leaving it draw themselves toward the
+   next one, 300ms per layer. So the assembly is a forward pass: the
+   piece builds itself by doing the thing it depicts, rather than by
+   fading in. Edges trace linear -- a signal crossing a wire has no
+   reason to ease. */
+.fg-stochastic-net.is-live .snet-node {
+  animation: fg-snet-arrive 320ms var(--ease-out) calc(var(--i) * 300ms) both;
+}
+.fg-stochastic-net.is-live .snet-edge {
+  animation: fg-snet-trace 340ms linear calc(var(--i) * 300ms + 140ms) both;
+}
+
+@keyframes fg-snet-arrive { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fg-snet-trace  { from { stroke-dashoffset: 1; }
+                            to   { stroke-dashoffset: 0; } }
+
+/* --- settled state (the whole net; the reduced-motion rendering) ------
+   is-live is never removed, so these rules must both outrank the intro
+   (equal specificity, so they come after it) and restate its end values:
+   replacing the animation drops the `both` fill that was holding the
+   nodes visible and the edges drawn. */
+.fg-stochastic-net.is-settled .snet-edge {
+  stroke-dashoffset: 0;
+  animation: fg-snet-forward 6s linear calc(var(--j) * 4ms) infinite;
+}
+.fg-stochastic-net.is-settled .snet-node {
+  opacity: 1;
+  animation: fg-snet-back 6s linear calc((6 - var(--i)) * 300ms + 3s) infinite;
+}
+.fg-stochastic-net.is-paused .snet-edge,
+.fg-stochastic-net.is-paused .snet-node { animation-play-state: paused; }
+
+/* --- ambient loop: one training step, repeating ---------------------- */
+/* Two sweeps on one 6s cycle. Activation runs forward along the wires,
+   then a gradient lands backward on the units -- which is the pixel
+   original's motion, restated.
+
+   They coexist because they touch different elements: forward drives
+   stroke on the edges, backward drives fill on the nodes. Two
+   animations competing for one property would resolve by list order and
+   one of them would simply not appear. */
+/* Narrow, and staggered per edge by --j rather than per gap by --i:
+   ~500 edges at 4ms apart make the amber a wavefront about two seconds
+   wide crossing the frame, where a per-gap stagger flashed ninety edges
+   at once and read as a block. No width bump -- at this density
+   thickening reads as glare rather than as brightness. */
+@keyframes fg-snet-forward {
+  0%, 1%   { stroke: var(--px-amber-2); }
+  4%, 100% { stroke: var(--c); }
+}
+@keyframes fg-snet-back {
+  0%, 1%   { fill: var(--px-sky-3); }
+  6%, 100% { fill: var(--c); }
+}
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="Generative hero: a neural network of about a hundred and
+     forty small dots in seven scattered columns, joined by five hundred
+     faint steel lines. The columns swell from a narrow group at the
+     left to a tall bank a third of the way across, then taper away to
+     the right, so the whole mass reads as a long lens floating on the
+     dark panel. The dots are sky blue at the input, steel grey through
+     the middle, and green at the output; the lines are brightest where
+     they connect near neighbours and fade to almost nothing where they
+     reach far, which is the connection rule showing up as tone. The
+     network assembles one column at a time from left to right, then
+     repeats a training step: a narrow amber wavefront of activation
+     travels forward across the lines, and a pale blue pulse runs
+     backward across the dots.">
+@SPRITES@
+</svg>
+
+<script>
+(() => {
+  const INTRO_MS = 2200; // 6 * 300ms of layers, then the last one lands
+
+  // fg:begin hero-start v1
+  // fg:end hero-start
+})();
+</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
