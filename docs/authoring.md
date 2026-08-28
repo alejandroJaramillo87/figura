@@ -12,65 +12,9 @@ swatch and effect is `diagrams/effects-sampler/effects-sampler.html`.
 | **step-timeline** | a process unfolds over discrete steps: loops, cache fills, pipelines | prev/play/next controls drive `is-step-N` root classes; autoplays when ~30% visible, pauses off-screen |
 | **hover-inspect** | an architecture/block diagram where parts need explanation | blocks carry `data-info`; hovering fills the `.fg-caption` box |
 | **ambient** | continuous flow with no natural steps | looping CSS animation (e.g. dashed-line `stroke-dashoffset` flow) |
-| **hero** | a cinematic wide-aspect post hero — abstract art inspired by the post, sets a mood rather than explains | no controls; intro choreography fires once at ~30% visibility (`is-live`), settles after `INTRO_MS` (`is-settled`), then a quiet ambient loop that pauses off-screen (`is-paused`) |
 
 Kinds compose — a step timeline can also have hover captions — but
 start from the template closest to the primary interaction.
-
-## Hero pixel-art style
-
-Heroes deliberately break from the crisp vector look of the other
-kinds: they are hand-placed pixel sprites — plain `<rect>`s on a
-coarse cell grid (8 viewBox units per cell reads well at column
-width), animated only with `steps()` flipbook keyframes. No filters,
-no `<pattern>` fills, no overlay textures: the retro look comes
-entirely from the grid, the ramps, and frame-quantized motion.
-
-- **Pixel grid** — snap every coordinate to the cell grid, set
-  `shape-rendering: crispEdges` on the `<svg>`, and drop all `rx`
-  rounding. (`image-rendering: pixelated` does nothing for SVG shapes
-  — don't cargo-cult it.)
-- **Frame-quantized motion** — entrances use `var(--ease-frames)` or
-  `var(--ease-frames-coarse)`; ambient loops tick as
-  `calc(var(--dur-tick) * N)` with a matching `steps(N)`. Nothing
-  glides; everything jumps between frames. **No plain opacity fades**
-  — reveals hard-cut with `steps(1)`; smooth alpha is the biggest
-  "modern web" tell in a retro frame.
-- **Abstract, not labeled** — heroes evoke the post's subject without
-  diagram anatomy: no axis labels, no captions inside the art.
-
-The craft rules that make sprites read as art rather than programmer
-boxes:
-
-- **Sprite ramps, not flat fills** — every material gets 3–4 shades
-  from the `--px-*` ramp tokens in `shared/tokens.css`, hue-shifted:
-  shadows lean cool (blue-violet), highlights lean warm. One
-  consistent light source (top-left) across the whole scene.
-- **Selective outlines** — silhouettes carry a `--px-outline`
-  (dark blue-violet, not black) edge; interior detail uses the
-  ramp's shadow shade instead.
-- **Grounding** — contact shadows under everything that touches the
-  floor, and set dressing (shelf, poster, floor dither) so the scene
-  reads as a place, not sprites on a void.
-- **Animation principles at low frame counts** — anticipation before
-  an action, a frame of overshoot after it, 2–4-frame sprite-swap
-  flipbooks (discrete opacity groups on one `steps(1, jump-end)`
-  master timeline) instead of tweens.
-
-Reference implementations:
-`diagrams/linux-ai-setup/workstation-night.html` and
-`diagrams/linux-ai-setup/motherboard-city.html` — both generated from
-ASCII pixel maps by the scripts in `tools/heroes/` (horizontal
-same-color runs merged into single rects). Edit the generator, not
-the diagram file; see `tools/heroes/README.md` for the pipeline.
-
-A hardened timing rule that travels with the flipbooks: a one-shot
-`steps(1, jump-end)` animation can freeze at its pre-jump value —
-the finished animation's clamped time can land a float epsilon before
-the 100% boundary. One-shot reveals therefore use
-`steps(1, jump-start)` plus a delay (the delay supplies the off
-period), and multi-stutter keyframes use paired hold percentages so
-the last interval's start value equals the settled value.
 
 ## Palette semantics
 
@@ -92,9 +36,9 @@ between diagrams:
   hand-mixed hex — the validator rejects the known hand-mixed values.
 
 Typography and shape come with the blocks: system font stack (never
-fetch webfonts), 12px panel radius, 6px block radius, `var(--ease)`
-easing, `var(--dur-fast)` (0.45s) state transitions, `var(--dur-step)`
-(700ms) timeline cadence.
+fetch webfonts), 12px panel radius, `var(--ease)` easing and
+`var(--dur-fast)` (0.45s) state transitions. Timeline cadence is per
+diagram, set by the `STEP_MS` const above the `timeline-core` block.
 
 ## Effects
 
@@ -123,7 +67,7 @@ checked in review even where the validator can't see them):
 
 ### Taste
 
-- One hero effect per step; at most ~3 elements animating at once.
+- One lead effect per step; at most ~3 elements animating at once.
 - Every effect must explain something — a comet shows direction, a
   glow shows activation, a ripple shows an in-place update. Decoration
   for its own sake reads as noise on a technical blog.

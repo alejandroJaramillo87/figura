@@ -43,7 +43,7 @@ diagram — from colliding.
 
 ```
 diagrams/<post-slug>/<name>.html   the diagrams (one dir per blog post)
-templates/                         scaffolds: step-timeline, hover-inspect, ambient, hero
+templates/                         scaffolds: step-timeline, hover-inspect, ambient
 shared/
   tokens.css                       palette source of truth (classic dark)
   runtime/                         canonical managed-block sources
@@ -54,7 +54,7 @@ scripts/
   new-diagram.js                   scaffolder
   build.js                         managed-block expander / drift checker
   validate.js                      contract linter
-  lib/fragment.js                  shared parsing helpers used by all three
+  lib/fragment.js                  shared parsing helpers used by the three CLIs
 manifest.json                      diagram index
 index.html                         gallery
 ```
@@ -63,7 +63,7 @@ index.html                         gallery
 
 Every diagram needs the same boilerplate: palette variables, panel
 styling, control-bar styling, the step-timeline state machine, and so
-on. Rather than hand-copying it (and watching 68 copies drift), the
+on. Rather than hand-copying it (and watching 69 copies drift), the
 canonical source of each piece lives once under `shared/runtime/`, and
 `scripts/build.js` stamps it into every fragment between sentinel
 comments:
@@ -108,7 +108,7 @@ Properties of the system:
   runtime file), run `build.js`, and every diagram picks it up.
 - **Customization goes through hooks, not edits.** Blocks expose CSS
   hook variables (`--fg-ctl-accent`, `--fg-cap-accent`,
-  `--fg-cap-minh`) that a diagram sets *outside* the sentinels;
+  `--fg-cap-minh`) that a diagram may set *outside* the sentinels;
   anything else diagram-specific also lives outside the blocks.
 
 `shared/snippets.js` documents the JS patterns for humans; the
@@ -148,10 +148,13 @@ A flat array indexing every diagram:
   "path": "diagrams/inference-loop/kv-cache-fill.html",
   "title": "KV cache fill during decode",
   "post": "inference-loop",
+  "kind": "step-timeline",
   "description": "…" }
 ```
 
-The validator enforces: all five fields present, ids and paths unique,
+`kind` is optional (`step-timeline`, `hover-inspect` or `ambient`);
+the scaffolder always writes it, but most existing entries predate it.
+The validator enforces: all five required fields present, ids and paths unique,
 `id` equal to the filename stem, every `path` existing on disk, and no
 diagram on disk missing from the manifest. `post` names the blog post
 the diagram belongs to; entries for not-yet-published posts use

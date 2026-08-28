@@ -476,51 +476,11 @@
     "description": "Four named head tendencies (induction the only found circuit) beside a dashed majority of unnamed heads."
   },
   {
-    "id": "workstation-night",
-    "path": "diagrams/linux-ai-setup/workstation-night.html",
-    "title": "Workstation at night",
-    "post": "linux-ai-setup",
-    "kind": "hero",
-    "description": "Pixel-art night-scene hero: a dark room where the booting monitor is the only light source — its glow spills onto wall, desk, and floor in the color of each boot phase (flash, POST green, logo amber, desktop violet) while rain falls past a moonlit city skyline outside the window."
-  },
-  {
-    "id": "motherboard-city",
-    "path": "diagrams/linux-ai-setup/motherboard-city.html",
-    "title": "Motherboard city at dusk",
-    "post": "linux-ai-setup",
-    "kind": "hero",
-    "description": "Pixel-art aerial hero: a motherboard as a city at dusk — CPU heatsink downtown, four identical RAM tower blocks, a VRM industrial quarter and a coin-cell stadium under a banded plum-to-peach sky with a setting sun. Power-on plays as the city waking: a substation flash, light racing down trace-road streets, then districts flickering on one by one; headlights travel the foreground avenue after settle."
-  },
-  {
-    "id": "hooded-hacker",
-    "path": "diagrams/sandboxing/hooded-hacker.html",
-    "title": "Hooded hacker",
-    "post": "sandboxing",
-    "kind": "hero",
-    "description": "Pixel-art hero for the sandboxing series opener: a hooded figure behind an open laptop, lit from below by the screen, with code rain falling in the background. Intro wakes the eyes and screen; ambient loop blinks, shifts the screen glow, and cycles the rain."
-  },
-  {
-    "id": "brain-chip",
-    "path": "diagrams/sandboxing/brain-chip.html",
-    "title": "Brain chip",
-    "post": "sandboxing-inference",
-    "kind": "hero",
-    "description": "Pixel-art hero for the inference sandboxing post: a chip package holding a pixel brain — the sealed mind of a fixed-function appliance. A green trace loops out of one pin and back into its neighbor while a hot inbound attempt bursts against the package wall; intro boots the brain hemisphere by hemisphere, ambient loop sparkles synapses and circulates loopback packets."
-  },
-  {
     "id": "interp-workbench",
     "path": "diagrams/sandboxing/interp-workbench.html",
     "title": "The Mech Interp sandbox",
     "post": "sandboxing-interp",
     "kind": "hover-inspect",
     "description": "Hover-inspect map of the Mech Interp sandbox: JupyterLab on 127.0.0.1:8888 with a per-launch token, the shared hardening floor on an isolated bridge, one reserved GPU behind a preflight check, and four mounts including the read-write repo at /workspace."
-  },
-  {
-    "id": "training-net",
-    "path": "diagrams/sandboxing/training-net.html",
-    "title": "Training net",
-    "post": "sandboxing-training",
-    "kind": "hero",
-    "description": "Pixel-art hero for the training sandboxing post: a four-layer feedforward neural network — sky input nodes, two steel hidden layers, green output nodes — joined by stepped pixel wires. An amber activation pulse sweeps forward and a sky gradient pulse sweeps back — one training step on repeat, with glints twinkling on the node rims."
   }
 ]

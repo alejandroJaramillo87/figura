@@ -20,8 +20,8 @@ The blog's Hugo shortcode `layouts/shortcodes/diagram.html` inlines a
 diagram at **build time** — no iframe, no runtime fetch:
 
 1. A post writes `{{</* diagram name="<post-slug>/<name>" */>}}`.
-2. Hugo reads `static/diagrams/diagrams/<name>.html` (i.e. a file in
-   this repo's `diagrams/` tree).
+2. Hugo reads `static/diagrams/diagrams/<post-slug>/<name>.html`
+   (i.e. a file in this repo's `diagrams/` tree).
 3. It extracts the region between `<!-- fg:embed-start -->` and
    `<!-- fg:embed-end -->` — everything outside the markers (preview
    chrome, `preview.css` link, page title) is discarded.
