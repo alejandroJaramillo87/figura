@@ -4,7 +4,8 @@
 
 - Node.js >= 18. That's it — the tooling is zero-dependency, so there
   is no `npm install` step (`package.json` has no dependencies).
-- Python 3 (optional) for serving the gallery locally.
+- Python 3 (optional) for serving the gallery locally
+  (`python3 -m http.server`). Nothing in the tooling needs it.
 
 ## Creating a diagram
 
@@ -12,7 +13,7 @@ Scaffold with the CLI (`npm run new -- …` or directly):
 
 ```bash
 node scripts/new-diagram.js <post-slug>/<kebab-name> \
-  --kind step-timeline|hover-inspect|ambient|hero \
+  --kind step-timeline|hover-inspect|ambient \
   --abbr <2-6 char prefix> --title "Human-readable title"
 ```
 
@@ -34,7 +35,8 @@ existing diagrams of the same kind first.
 - **Never edit inside `fg:begin … / fg:end …` sentinel blocks.** They
   are owned by `scripts/build.js`; hand edits are reverted by the next
   `build` run and fail `--check` until then. Tune via the hook
-  variables (`--fg-ctl-accent`, `--fg-cap-accent`, `--fg-cap-minh`) or
+  variables (`--fg-ctl-accent`, `--fg-cap-accent`, `--fg-cap-minh` —
+  hooks the blocks expose, whether or not any diagram sets them) or
   add rules outside the blocks.
 - **Palette and shared-boilerplate changes** go in `shared/tokens.css`
   or `shared/runtime/`, then propagate repo-wide:
@@ -71,7 +73,9 @@ fragment; `role="img"` + `aria-label` on every `<svg>`; scripts
 resolve their root via `document.currentScript.closest`, avoid
 `getElementById`/`DOMContentLoaded`, and parse cleanly.
 
-Per repo: manifest entries have all five fields, unique ids/paths,
+Per repo: manifest entries have all five required fields (`id`,
+`path`, `title`, `post`, `description`) plus an optional `kind`
+(`step-timeline`, `hover-inspect` or `ambient`), unique ids/paths,
 `id` == filename stem, every path exists, and no diagram is missing
 from the manifest.
 

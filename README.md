@@ -34,7 +34,7 @@ generation contract.
 ```
 CLAUDE.md        generation contract (conventions, palette, patterns)
 index.html       gallery — every diagram inlined, first one twice (collision check)
-manifest.json    diagram index {id, path, title, post, description}
+manifest.json    diagram index {id, path, title, post, description, kind?}
 shared/
   tokens.css     palette source of truth: classic dark, shared with the
                  blog's tokens (build.js derives the per-diagram palette blocks)
@@ -54,7 +54,7 @@ scripts/
                  palette generation) used by all three scripts
 docs/            project documentation (architecture, blog integration,
                  development, authoring)
-templates/       step-timeline, hover-inspect, ambient, hero scaffolds
+templates/       step-timeline, hover-inspect, ambient scaffolds
 diagrams/<post-slug>/<kebab-name>.html
 ```
 

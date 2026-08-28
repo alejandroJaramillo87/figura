@@ -18,7 +18,7 @@
  *     prefers-reduced-motion. Every SMIL-driven element must be gated
  *     off with CSS under the reduced-motion media query.
  *
- * Taste guidance: one hero effect per step, at most ~3 animated things
+ * Taste guidance: one lead effect per step, at most ~3 animated things
  * concurrently. Effects explain — a comet shows direction, a glow shows
  * activation, a ripple shows an in-place update. Decoration for its own
  * sake reads as noise on a technical blog.
