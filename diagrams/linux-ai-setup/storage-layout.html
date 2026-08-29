@@ -119,7 +119,7 @@
 </style>
 
 <svg viewBox="0 0 560 470" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Dual-SSD storage layout: a 1TB OS drive holding the root filesystem and home directory, and a separate 2TB data drive mounted at /mnt/ai-data holding models, datasets, caches, and workspace, with framework cache directories symlinked from home onto the data drive.">
+     aria-label="Dual-SSD storage layout: a 1TB OS drive holding the root filesystem and home directory, and a separate 2TB data drive mounted at /mnt/ai-data holding models, training data, interpretability captures, caches and logs, with framework cache directories symlinked from home onto the data drive.">
 
   <!-- OS drive -->
   <rect class="stl-drive" x="20" y="30" width="240" height="180" rx="10"/>
@@ -145,32 +145,32 @@
   <text class="stl-drive-label" x="316" y="56">Data SSD — 990 Pro</text>
   <text class="stl-drive-sub"   x="316" y="74">Samsung · 2TB NVMe · /mnt/ai-data</text>
 
-  <g class="stl-group" data-info="All model weights in one tree on the faster 990 Pro — sequential reads here gate model load times. models/gguf for llama.cpp quantizations, models/hf for Hugging Face safetensors. Formatted with huge_file and mounted noatime so multi-gigabyte reads skip access-time writes.">
+  <g class="stl-group" data-info="All model weights in one tree on the faster 990 Pro — sequential reads here gate model load times. models/gguf for llama.cpp quantizations, models/hf for Hugging Face safetensors, plus trained and checkpoint output. Formatted with huge_file and mounted noatime so multi-gigabyte reads skip access-time writes.">
     <rect class="stl-halo" x="316" y="90" width="208" height="60" rx="6" fill="var(--ok)"/>
     <rect class="stl-block stl-models" x="316" y="90" width="208" height="60" rx="6"/>
     <text class="stl-title stl-t-models" x="420" y="114">models/</text>
-    <text class="stl-sub stl-t-models"   x="420" y="132">gguf · hf · embeddings</text>
+    <text class="stl-sub stl-t-models"   x="420" y="132">gguf · hf · trained</text>
   </g>
 
-  <g class="stl-group" data-info="Training and evaluation data, kept separate from model weights so either can be pruned independently.">
+  <g class="stl-group" data-info="Datasets, pre-tokenized shards, tokenizers and run output, kept separate from model weights so either can be pruned independently.">
     <rect class="stl-halo" x="316" y="160" width="208" height="52" rx="6" fill="var(--warn)"/>
     <rect class="stl-block stl-data" x="316" y="160" width="208" height="52" rx="6"/>
-    <text class="stl-title stl-t-data" x="420" y="182">datasets/</text>
-    <text class="stl-sub stl-t-data"   x="420" y="199">training · eval corpora</text>
+    <text class="stl-title stl-t-data" x="420" y="182">training/</text>
+    <text class="stl-sub stl-t-data"   x="420" y="199">datasets · shards · runs</text>
   </g>
 
-  <g class="stl-group" data-sym data-info="Download caches for Hugging Face, torch, and other tools. This is the symlink target from home: delete-safe, re-downloadable, and off the OS drive.">
+  <g class="stl-group" data-sym data-info="Download caches for Hugging Face, torch, pip and uv. This is the symlink target from home: delete-safe, re-downloadable, and off the OS drive.">
     <rect class="stl-halo" x="316" y="222" width="208" height="52" rx="6" fill="var(--violet)"/>
     <rect class="stl-block stl-cache" x="316" y="222" width="208" height="52" rx="6"/>
     <text class="stl-title stl-t-cache" x="420" y="244">cache/</text>
-    <text class="stl-sub stl-t-cache"   x="420" y="261">hf · torch · tool caches</text>
+    <text class="stl-sub stl-t-cache"   x="420" y="261">huggingface · torch · pip · uv</text>
   </g>
 
-  <g class="stl-group" data-info="Scratch space for experiments plus service logs — anything large and disposable that should never compete with the OS drive for space.">
+  <g class="stl-group" data-info="Activation captures, SAEs and probes from interpretability runs, alongside benchmark output and per-service logs — large, regenerable, and never competing with the OS drive for space.">
     <rect class="stl-halo" x="316" y="284" width="208" height="52" rx="6" fill="var(--warn)"/>
     <rect class="stl-block stl-data" x="316" y="284" width="208" height="52" rx="6"/>
-    <text class="stl-title stl-t-data" x="420" y="306">workspace/ · logs/</text>
-    <text class="stl-sub stl-t-data"   x="420" y="323">experiments · service logs</text>
+    <text class="stl-title stl-t-data" x="420" y="306">interp/ · benchmarks/</text>
+    <text class="stl-sub stl-t-data"   x="420" y="323">captures · results · logs/</text>
   </g>
 
   <!-- symlink connector; also the comet route -->

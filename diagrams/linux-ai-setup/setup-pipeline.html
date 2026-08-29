@@ -8,7 +8,7 @@
 </head>
 <body>
 <h1>The OS setup pipeline, in order</h1>
-<p>Step through the eight-stage setup order, top to bottom: each stage lights up with the script that automates it, a comet carries the flow to the next stage, and reboot points flash.</p>
+<p>Step through the eight-stage setup order, top to bottom: each stage lights up with the script that automates it, a comet carries the flow to the next stage, and the driver stage flags its reboot.</p>
 
 <!-- fg:embed-start -->
 <div class="fg-diagram fg-setup-pipeline">
@@ -148,7 +148,7 @@
 </style>
 
 <svg viewBox="0 0 720 900" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="Eight-stage setup pipeline, top to bottom: install Ubuntu, configure user and terminal, harden security, provision the data SSD, install the NVIDIA driver with a reboot, install the CUDA toolkit with a reboot, install cuDNN, and install Docker with the NVIDIA Container Toolkit.">
+     aria-label="Eight-stage setup pipeline, top to bottom: install Ubuntu, configure user and terminal, harden security, provision the data SSD, install the NVIDIA driver with a reboot, install the CUDA toolkit which needs only a new shell, install cuDNN, and install Docker with the NVIDIA Container Toolkit.">
   <defs>
     <marker id="sup-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
@@ -222,7 +222,7 @@
     <text class="sup-num" x="190" y="622">6</text>
     <text class="sup-title" x="360" y="610">CUDA Toolkit</text>
     <text class="sup-script" x="360" y="632">setup_cuda.sh</text>
-    <text class="sup-reboot" x="536" y="622">⟳ reboot</text>
+    <text class="sup-reboot" x="536" y="622">new shell</text>
   </g>
   <g class="sup-stage sup-s7">
     <rect class="sup-halo" x="200" y="690" width="320" height="72" rx="8" fill="var(--accent)"/>
@@ -295,10 +295,10 @@
     'Press play or step through the setup order.',
     ['Ubuntu 24.04', 'Clean LTS install on the OS SSD. BIOS/UEFI settings come first; everything after this stage is scripted.'],
     ['User & terminal', 'Sudo and device groups (docker, video, render), then zsh, Tilix, and build tools. Also runs the first full apt upgrade.'],
-    ['Security', 'UFW firewall for the AI service ports, Fail2Ban, unattended upgrades, auditd, kernel hardening, and raised ulimits (memlock, file descriptors).'],
-    ['Data SSD', 'Formats and mounts the second NVMe at /mnt/ai-data with noatime, creates the models/datasets/cache tree, and symlinks framework caches. Supports --dry-run.'],
-    ['NVIDIA driver', 'Purges old drivers and installs the pinned driver, then enables persistence mode and sets the power limit. Requires a reboot to load the new kernel modules.'],
-    ['CUDA Toolkit', 'Installs the toolkit and wires PATH and LD_LIBRARY_PATH into the shell profile. Reboots to settle the environment.'],
+    ['Security', 'Default-deny UFW allowing only SSH and the Docker bridge — services bind loopback, so no inference port is opened. Plus Fail2Ban, unattended upgrades, auditd, kernel hardening, and raised ulimits (memlock, file descriptors).'],
+    ['Data SSD', 'Formats and mounts the second NVMe at /mnt/ai-data with noatime, creates the models, training, interp, benchmarks, logs and cache tree, and symlinks framework caches. Supports --dry-run.'],
+    ['NVIDIA driver', 'Purges old drivers and installs the pinned nvidia-driver-580-server-open. Requires a reboot to load the new kernel modules; persistence mode and the power limit are set separately.'],
+    ['CUDA Toolkit', 'Installs the toolkit and appends PATH and LD_LIBRARY_PATH entries to ~/.zshrc. No reboot: a new shell is enough to pick up nvcc.'],
     ['cuDNN', 'Detects the installed CUDA major version from nvcc and installs the matching cudnn9 package. No reboot needed.'],
     ['Docker + toolkit', 'Docker CE, Compose, and the NVIDIA Container Toolkit — containers now see the GPU via the host driver. Setup complete: verify with nvidia-smi and a CUDA container.'],
   ];
