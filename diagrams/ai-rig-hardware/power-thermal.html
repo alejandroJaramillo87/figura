@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Power and heat under sustained load</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Power and heat under sustained load</h1>
+<p>The power budget accumulating from idle to both compute paths running at once, and where the heat that comes with it has to go.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-power-thermal">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-power-thermal {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-power-thermal {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-power-thermal svg { display: block; width: 100%; height: auto; }
+.fg-power-thermal text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-power-thermal {
+  padding: 16px 16px 12px;
+}
+
+/* --- static styling ------------------------------------------------ */
+.fg-power-thermal .arht-heading { fill: var(--text); font-size: 13px; font-weight: 600; }
+.fg-power-thermal .arht-note    { fill: var(--muted); font-size: 11.5px; }
+.fg-power-thermal .arht-mono    { fill: var(--muted); font-size: 11px; font-family: var(--mono); }
+
+/* the PSU rail: full width is 1200W, so every segment reads against capacity */
+.fg-power-thermal .arht-rail { fill: none; stroke: var(--border); stroke-width: 2; }
+.fg-power-thermal .arht-seg {
+  transform: scaleX(0); transform-box: fill-box; transform-origin: left center;
+  transition: transform 0.7s var(--ease);
+}
+.fg-power-thermal .arht-seg-base { fill: var(--violet); }
+.fg-power-thermal .arht-seg-gpu  { fill: var(--accent); }
+.fg-power-thermal .arht-seg-cpu  { fill: var(--warn); }
+.fg-power-thermal .arht-seg-head { fill: var(--ok); opacity: 0.28; }
+
+.fg-power-thermal .arht-label { opacity: 0; transition: opacity var(--dur-fast) var(--ease); }
+.fg-power-thermal .arht-label text { fill: var(--muted); font-size: 11.5px; }
+.fg-power-thermal .arht-label .arht-watts { fill: var(--text); font-weight: 600; }
+
+.fg-power-thermal .arht-tick { stroke: var(--line); stroke-width: 1; }
+
+/* the case, always visible; the airflow only appears once the heat exists */
+.fg-power-thermal .arht-case { fill: none; stroke: var(--border); stroke-width: 2; }
+.fg-power-thermal .arht-part { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
+.fg-power-thermal .arht-part-text { fill: var(--muted); font-size: 11px; text-anchor: middle; }
+.fg-power-thermal .arht-fan { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; }
+.fg-power-thermal .arht-fan-in  { stroke: var(--ok); }
+.fg-power-thermal .arht-fan-out { stroke: var(--hot); }
+
+/* glow: a pre-blurred duplicate, only its opacity animates */
+.fg-power-thermal .arht-halo { filter: blur(8px); opacity: 0; transition: opacity 0.6s var(--ease); }
+
+.fg-power-thermal .arht-air {
+  fill: none; stroke: var(--line); stroke-width: 1.5; opacity: 0;
+  stroke-dasharray: 4 5; transition: opacity var(--dur-fast) var(--ease);
+}
+.fg-power-thermal .arht-comet { opacity: 0; }
+.fg-power-thermal .arht-comet circle { fill: var(--ok); }
+
+/* --- step states ---------------------------------------------------- */
+.fg-power-thermal.is-step-1 .arht-seg-base,
+.fg-power-thermal.is-step-2 .arht-seg-base,
+.fg-power-thermal.is-step-3 .arht-seg-base,
+.fg-power-thermal.is-step-4 .arht-seg-base,
+.fg-power-thermal.is-step-5 .arht-seg-base,
+.fg-power-thermal.is-step-2 .arht-seg-gpu,
+.fg-power-thermal.is-step-3 .arht-seg-gpu,
+.fg-power-thermal.is-step-4 .arht-seg-gpu,
+.fg-power-thermal.is-step-5 .arht-seg-gpu,
+.fg-power-thermal.is-step-3 .arht-seg-cpu,
+.fg-power-thermal.is-step-4 .arht-seg-cpu,
+.fg-power-thermal.is-step-5 .arht-seg-cpu,
+.fg-power-thermal.is-step-4 .arht-seg-head,
+.fg-power-thermal.is-step-5 .arht-seg-head { transform: scaleX(1); }
+
+.fg-power-thermal.is-step-1 .arht-label-base,
+.fg-power-thermal.is-step-2 .arht-label-base,
+.fg-power-thermal.is-step-3 .arht-label-base,
+.fg-power-thermal.is-step-4 .arht-label-base,
+.fg-power-thermal.is-step-5 .arht-label-base,
+.fg-power-thermal.is-step-2 .arht-label-gpu,
+.fg-power-thermal.is-step-3 .arht-label-gpu,
+.fg-power-thermal.is-step-4 .arht-label-gpu,
+.fg-power-thermal.is-step-5 .arht-label-gpu,
+.fg-power-thermal.is-step-3 .arht-label-cpu,
+.fg-power-thermal.is-step-4 .arht-label-cpu,
+.fg-power-thermal.is-step-5 .arht-label-cpu,
+.fg-power-thermal.is-step-4 .arht-label-total,
+.fg-power-thermal.is-step-5 .arht-label-total { opacity: 1; }
+
+.fg-power-thermal.is-step-2 .arht-halo-gpu,
+.fg-power-thermal.is-step-3 .arht-halo-gpu,
+.fg-power-thermal.is-step-4 .arht-halo-gpu,
+.fg-power-thermal.is-step-5 .arht-halo-gpu,
+.fg-power-thermal.is-step-3 .arht-halo-cpu,
+.fg-power-thermal.is-step-4 .arht-halo-cpu,
+.fg-power-thermal.is-step-5 .arht-halo-cpu { opacity: 0.5; }
+
+.fg-power-thermal.is-step-5 .arht-air { opacity: 0.8; }
+.fg-power-thermal.is-step-5 .arht-comet { opacity: 1; }
+
+.fg-power-thermal .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* sized for the longest step caption at column width: stepping never reflows the page */
+  color: var(--muted); font-size: 13px; min-height: 5.2em;
+  transition: color 0.3s;
+}
+.fg-power-thermal .fg-caption.is-active { color: var(--text); }
+.fg-power-thermal .fg-caption strong { color: var(--accent); font-weight: 600; }
+
+/* fg:begin controls-bar v1 */
+.fg-power-thermal .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-power-thermal .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-power-thermal .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
+.fg-power-thermal .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+/* fg:end controls-bar */
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-power-thermal, .fg-power-thermal * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  /* SMIL ignores the media query, so the comets are gated off in CSS */
+  .fg-power-thermal .arht-comet { display: none; }
+}
+</style>
+
+<svg viewBox="0 0 720 540" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A five-step power and thermal budget. A bar scaled to the 1200W power supply fills in stages: about 55W of board, drives and fans at idle, then 575W for the RTX 5090, then 170W for the Ryzen 9950X, reaching roughly 800W with both compute paths loaded and about 400W of headroom left. The final step shows the case airflow: three front intake fans, three top and one rear exhaust fan carrying the heat out.">
+  <defs>
+    <marker id="arht-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <text class="arht-heading" x="40" y="34">Sustained draw against a 1200W supply</text>
+
+  <!-- rail: 60 → 660 px spans 0 → 1200W, so 1W = 0.5px -->
+  <rect class="arht-rail" x="60" y="52" width="600" height="40" rx="6"/>
+  <rect class="arht-seg arht-seg-base" x="61" y="53" width="27" height="38"/>
+  <rect class="arht-seg arht-seg-gpu"  x="88" y="53" width="288" height="38"/>
+  <rect class="arht-seg arht-seg-cpu"  x="376" y="53" width="85" height="38"/>
+  <rect class="arht-seg arht-seg-head" x="461" y="53" width="198" height="38"/>
+
+  <line class="arht-tick" x1="461" y1="46" x2="461" y2="98"/>
+  <line class="arht-tick" x1="660" y1="46" x2="660" y2="98"/>
+  <text class="arht-mono" x="664" y="72">1200W</text>
+
+  <g class="arht-label arht-label-base">
+    <text x="60" y="118">board, drives, ten fans <tspan class="arht-watts">~55W</tspan></text>
+  </g>
+  <g class="arht-label arht-label-gpu">
+    <text x="160" y="140">RTX 5090 under load <tspan class="arht-watts">575W</tspan></text>
+  </g>
+  <g class="arht-label arht-label-cpu">
+    <text x="300" y="162">9950X under load <tspan class="arht-watts">170W</tspan></text>
+  </g>
+  <g class="arht-label arht-label-total">
+    <text x="466" y="118"><tspan class="arht-watts">~800W</tspan> drawn · ~400W headroom</text>
+  </g>
+
+  <!-- the box itself: parts always visible, airflow revealed at the last step -->
+  <rect class="arht-case" x="150" y="250" width="420" height="210" rx="8"/>
+
+  <rect class="arht-halo arht-halo-cpu" x="250" y="292" width="120" height="56" rx="6" fill="var(--warn)"/>
+  <rect class="arht-part" x="250" y="292" width="120" height="56" rx="6"/>
+  <text class="arht-part-text" x="310" y="316">9950X + 270W</text>
+  <text class="arht-part-text" x="310" y="332">air cooler</text>
+
+  <rect class="arht-halo arht-halo-gpu" x="210" y="384" width="250" height="48" rx="6" fill="var(--accent)"/>
+  <rect class="arht-part" x="210" y="384" width="250" height="48" rx="6"/>
+  <text class="arht-part-text" x="335" y="413">RTX 5090, triple-fan open air</text>
+
+  <circle class="arht-fan arht-fan-in" cx="150" cy="292" r="15"/>
+  <circle class="arht-fan arht-fan-in" cx="150" cy="355" r="15"/>
+  <circle class="arht-fan arht-fan-in" cx="150" cy="418" r="15"/>
+  <text class="arht-mono" x="52" y="359">3 intake</text>
+
+  <circle class="arht-fan arht-fan-out" cx="270" cy="250" r="15"/>
+  <circle class="arht-fan arht-fan-out" cx="350" cy="250" r="15"/>
+  <circle class="arht-fan arht-fan-out" cx="430" cy="250" r="15"/>
+  <text class="arht-mono" x="452" y="236">3 top exhaust</text>
+
+  <circle class="arht-fan arht-fan-out" cx="570" cy="292" r="15"/>
+  <text class="arht-mono" x="590" y="296">rear</text>
+
+  <path id="arht-route-1" class="arht-air" d="M 166 292 C 200 288, 232 284, 266 234" marker-end="url(#arht-arrow)"/>
+  <path id="arht-route-2" class="arht-air" d="M 166 355 C 300 372, 420 356, 430 234" marker-end="url(#arht-arrow)"/>
+  <path id="arht-route-3" class="arht-air" d="M 166 418 C 300 462, 470 442, 552 302" marker-end="url(#arht-arrow)"/>
+
+  <g class="arht-comet arht-comet-1">
+    <circle r="5"><animateMotion class="arht-head" id="arht-c1-head" begin="indefinite" dur="1s" fill="freeze"><mpath href="#arht-route-1"/></animateMotion></circle>
+    <circle r="3.5" opacity="0.45"><animateMotion begin="arht-c1-head.begin+0.08s" dur="1s" fill="freeze"><mpath href="#arht-route-1"/></animateMotion></circle>
+    <circle r="2.5" opacity="0.22"><animateMotion begin="arht-c1-head.begin+0.15s" dur="1s" fill="freeze"><mpath href="#arht-route-1"/></animateMotion></circle>
+  </g>
+  <g class="arht-comet arht-comet-2">
+    <circle r="5"><animateMotion class="arht-head" id="arht-c2-head" begin="indefinite" dur="1s" fill="freeze"><mpath href="#arht-route-2"/></animateMotion></circle>
+    <circle r="3.5" opacity="0.45"><animateMotion begin="arht-c2-head.begin+0.08s" dur="1s" fill="freeze"><mpath href="#arht-route-2"/></animateMotion></circle>
+    <circle r="2.5" opacity="0.22"><animateMotion begin="arht-c2-head.begin+0.15s" dur="1s" fill="freeze"><mpath href="#arht-route-2"/></animateMotion></circle>
+  </g>
+  <g class="arht-comet arht-comet-3">
+    <circle r="5"><animateMotion class="arht-head" id="arht-c3-head" begin="indefinite" dur="1.2s" fill="freeze"><mpath href="#arht-route-3"/></animateMotion></circle>
+    <circle r="3.5" opacity="0.45"><animateMotion begin="arht-c3-head.begin+0.08s" dur="1.2s" fill="freeze"><mpath href="#arht-route-3"/></animateMotion></circle>
+    <circle r="2.5" opacity="0.22"><animateMotion begin="arht-c3-head.begin+0.15s" dur="1.2s" fill="freeze"><mpath href="#arht-route-3"/></animateMotion></circle>
+  </g>
+
+  <text class="arht-mono" x="150" y="482">mid-tower, positive pressure</text>
+  <text class="arht-note" x="360" y="512" text-anchor="middle">both compute paths run at once, so the two loads add rather than alternate</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Five steps: idle, GPU load, CPU load, the total against supply capacity, and where the heat leaves.</div>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const TOTAL = 5, STEP_MS = 3000;
+
+  // fg:begin timeline-core v1
+  let step = 0, timer = null;
+  function apply() {
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); root.classList.add('is-playing'); } },
+    pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
+  };
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  const counter = btn('counter');
+  function sync() {
+    if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // fg:end timeline-core
+
+  const CAPTIONS = [
+    'Five steps: idle, GPU load, CPU load, the total against supply capacity, and where the heat leaves.',
+    ['Idle floor', 'Two NVMe drives, the board, and ten case fans draw roughly 55W before any model is loaded. Small, but it never goes away.'],
+    ['GPU under load', 'The RTX 5090 adds up to 575W on its own — more than two thirds of the eventual total, from one card.'],
+    ['CPU under load at the same time', 'The 9950X adds another 170W. Because the machine is built to run GPU and CPU inference concurrently, these loads add rather than alternate: sizing for the larger one alone is the mistake.'],
+    ['Roughly 800W, against 1200W', 'That leaves around 400W of headroom. The margin is not vanity — transient GPU spikes are far shorter than a supply’s rated response, and a supply run near its ceiling runs hot and loud for years.'],
+    ['Where the heat goes', 'Three front intake fans against three top and one rear exhaust keeps the case at positive pressure, so air enters through filters instead of every seam. The CPU cooler is rated for 270W against a 170W part: the headroom is spent on staying quiet at a sustained load, not on a benchmark run.'],
+  ];
+
+  root.addEventListener('fg:step', (e) => {
+    const s = e.detail.step;
+    // fire the airflow comets only on the forward advance into the thermal step
+    if (!reduced && s === 5) {
+      root.querySelectorAll('.arht-head').forEach((a) => {
+        if (a.beginElement) a.beginElement();
+      });
+    }
+    const c = CAPTIONS[s];
+    caption.innerHTML = '';
+    if (typeof c === 'string') {
+      caption.textContent = c;
+      caption.classList.remove('is-active');
+      return;
+    }
+    const strong = document.createElement('strong');
+    strong.textContent = s + '. ' + c[0];
+    caption.appendChild(strong);
+    caption.appendChild(document.createTextNode(' — ' + c[1]));
+    caption.classList.add('is-active');
+  });
+
+  // fg:begin timeline-start v1
+  apply();
+  if (reduced) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+  // fg:end timeline-start
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
