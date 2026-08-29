@@ -482,5 +482,29 @@
     "post": "sandboxing-interp",
     "kind": "hover-inspect",
     "description": "Hover-inspect map of the Mech Interp sandbox: JupyterLab on 127.0.0.1:8888 with a per-launch token, the shared hardening floor on an isolated bridge, one reserved GPU behind a preflight check, and four mounts including the read-write repo at /workspace."
+  },
+  {
+    "id": "component-overview",
+    "path": "diagrams/ai-rig-hardware/component-overview.html",
+    "title": "What the box is sized for",
+    "post": "ai-rig-hardware",
+    "kind": "hover-inspect",
+    "description": "CPU, GPU, RAM and the two NVMe drives laid out on the board, each labelled with the workload limit it sets. Hover-to-inspect, with the seams that carry the bandwidth pulsing on hover."
+  },
+  {
+    "id": "pcie-lane-budget",
+    "path": "diagrams/ai-rig-hardware/pcie-lane-budget.html",
+    "title": "PCIe lanes are a zero-sum budget",
+    "post": "ai-rig-hardware",
+    "kind": "hover-inspect",
+    "description": "Where the CPU's PCIe lanes go: x16 to the RTX 5090, x4 CPU-direct to the data drive, x4 to the chipset, and two M.2 slots left empty on purpose. Lane width drawn to scale; hover-to-inspect."
+  },
+  {
+    "id": "power-thermal",
+    "path": "diagrams/ai-rig-hardware/power-thermal.html",
+    "title": "Power and heat under sustained load",
+    "post": "ai-rig-hardware",
+    "kind": "step-timeline",
+    "description": "A five-step build-up from the idle floor to roughly 800W with both compute paths loaded, against a 1200W supply, ending with the case airflow that carries the heat out."
   }
 ]

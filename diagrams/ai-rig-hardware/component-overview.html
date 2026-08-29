@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What the box is sized for</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>What the box is sized for</h1>
+<p>The four resources that bound what an AI workstation can run. Hover a component to see the spec and the constraint that chose it.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-component-overview">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-component-overview {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-component-overview {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-component-overview svg { display: block; width: 100%; height: auto; }
+.fg-component-overview text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-component-overview {
+  padding: 16px;
+}
+
+.fg-component-overview .arhc-board {
+  fill: none; stroke: var(--border); stroke-width: 2;
+  stroke-dasharray: 6 5;
+}
+.fg-component-overview .arhc-board-label { fill: var(--muted); font-size: 11px; font-family: var(--mono); }
+
+.fg-component-overview .arhc-block {
+  fill: var(--panel); stroke: var(--border); stroke-width: 2;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-component-overview .arhc-group { transition: transform var(--dur-fast) var(--ease); }
+.fg-component-overview .arhc-group:hover { transform: translateY(-2px); }
+.fg-component-overview .arhc-group:hover .arhc-block { fill: var(--panel-hover); }
+
+/* hover glow: pre-blurred halo behind the block, tinted to its stroke */
+.fg-component-overview .arhc-halo { filter: blur(9px); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.fg-component-overview .arhc-group:hover .arhc-halo { opacity: 0.4; }
+
+.fg-component-overview .arhc-cpu { stroke: var(--warn); }
+.fg-component-overview .arhc-ram { stroke: var(--violet); }
+.fg-component-overview .arhc-gpu { stroke: var(--accent); }
+.fg-component-overview .arhc-ssd { stroke: var(--ok); }
+
+.fg-component-overview .arhc-title  { fill: var(--text); font-size: 16px; font-weight: 600; pointer-events: none; }
+.fg-component-overview .arhc-sub    { fill: var(--muted); font-size: 12px; pointer-events: none; }
+.fg-component-overview .arhc-tag    { fill: var(--muted); font-size: 11px; font-family: var(--mono); pointer-events: none; }
+.fg-component-overview .arhc-bound  { fill: var(--text); font-size: 11.5px; font-weight: 600; pointer-events: none; }
+
+/* inner detail: DIMM sticks and M.2 slots drawn inside their blocks */
+.fg-component-overview .arhc-stick { fill: var(--bg); stroke: var(--violet); stroke-width: 1.5; pointer-events: none; }
+.fg-component-overview .arhc-m2    { fill: var(--bg); stroke: var(--ok); stroke-width: 1.5; pointer-events: none; }
+.fg-component-overview .arhc-die   { fill: none; stroke: var(--warn); stroke-width: 1.5; opacity: 0.5; pointer-events: none; }
+.fg-component-overview .arhc-vram  { fill: var(--bg); stroke: var(--accent); stroke-width: 1.5; opacity: 0.7; pointer-events: none; }
+
+/* interconnects between components, with a seam dot marking each interface */
+.fg-component-overview .arhc-link { stroke: var(--line); stroke-width: 2; fill: none; }
+.fg-component-overview .arhc-link-label { fill: var(--muted); font-size: 11px; font-family: var(--mono); }
+.fg-component-overview .arhc-seam-dot { fill: var(--line); }
+.fg-component-overview .arhc-ripple {
+  fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0;
+  transform-box: fill-box; transform-origin: center;
+}
+/* the seams touching a hovered component pulse: this is where the bandwidth is spent */
+.fg-component-overview.is-hover-1 .arhc-seam-ddr .arhc-ripple,
+.fg-component-overview.is-hover-2 .arhc-seam-ddr .arhc-ripple,
+.fg-component-overview.is-hover-1 .arhc-seam-pcie .arhc-ripple,
+.fg-component-overview.is-hover-3 .arhc-seam-pcie .arhc-ripple,
+.fg-component-overview.is-hover-1 .arhc-seam-m2 .arhc-ripple,
+.fg-component-overview.is-hover-4 .arhc-seam-m2 .arhc-ripple {
+  animation: fg-arhc-ripple 1.5s var(--ease) infinite;
+}
+@keyframes fg-arhc-ripple {
+  0%   { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+.fg-component-overview .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 6.4em;
+  transition: color 0.3s;
+}
+.fg-component-overview .fg-caption.is-active { color: var(--text); }
+.fg-component-overview .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-component-overview .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-component-overview, .fg-component-overview * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .fg-component-overview.is-hover-1 .arhc-seam-ddr .arhc-ripple,
+  .fg-component-overview.is-hover-2 .arhc-seam-ddr .arhc-ripple,
+  .fg-component-overview.is-hover-1 .arhc-seam-pcie .arhc-ripple,
+  .fg-component-overview.is-hover-3 .arhc-seam-pcie .arhc-ripple,
+  .fg-component-overview.is-hover-1 .arhc-seam-m2 .arhc-ripple,
+  .fg-component-overview.is-hover-4 .arhc-seam-m2 .arhc-ripple { opacity: 0.3; transform: scale(1.6); }
+}
+</style>
+
+<svg viewBox="0 0 720 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The four resources of the AI workstation laid out on the motherboard: the Ryzen 9 9950X CPU and its 128GB of DDR5-6000 memory on top, the RTX 5090 with 32GB of VRAM below them over a PCIe 5.0 x16 link, and two NVMe drives on M.2 slots. Each component is labelled with the workload limit it sets.">
+  <rect class="arhc-board" x="30" y="24" width="660" height="422" rx="10"/>
+  <text class="arhc-board-label" x="44" y="44">X870E · AM5</text>
+
+  <!-- CPU ↔ RAM: the DDR5 seam -->
+  <path class="arhc-link" d="M 300 148 L 356 148"/>
+  <text class="arhc-link-label" x="308" y="140">DDR5</text>
+  <g class="arhc-seam arhc-seam-ddr">
+    <circle class="arhc-ripple" cx="328" cy="148" r="8"/>
+    <circle class="arhc-seam-dot" cx="328" cy="148" r="3"/>
+  </g>
+
+  <!-- CPU → GPU: the PCIe seam -->
+  <path class="arhc-link" d="M 175 232 L 175 292"/>
+  <text class="arhc-link-label" x="185" y="268">PCIe 5.0 x16</text>
+  <g class="arhc-seam arhc-seam-pcie">
+    <circle class="arhc-ripple" cx="175" cy="262" r="8"/>
+    <circle class="arhc-seam-dot" cx="175" cy="262" r="3"/>
+  </g>
+
+  <!-- CPU → NVMe: the M.2 seam -->
+  <path class="arhc-link" d="M 545 232 L 545 292"/>
+  <text class="arhc-link-label" x="555" y="268">M.2 x4</text>
+  <g class="arhc-seam arhc-seam-m2">
+    <circle class="arhc-ripple" cx="545" cy="262" r="8"/>
+    <circle class="arhc-seam-dot" cx="545" cy="262" r="3"/>
+  </g>
+
+  <g class="arhc-group" data-info="16 Zen 5 cores and 32 threads at 170W. The core count sets how many small models can be served from RAM at once, and how fast a dataset preprocesses while the GPU is busy. It is also the part that has to keep a 32GB GPU fed without becoming the bottleneck. Verify: lscpu | grep -E 'Model name|CPU\(s\)'">
+    <rect class="arhc-halo" x="60" y="64" width="240" height="168" rx="10" fill="var(--warn)"/>
+    <rect class="arhc-block arhc-cpu" x="60" y="64" width="240" height="168" rx="10"/>
+    <rect class="arhc-die" x="100" y="102" width="22" height="22" rx="3"/>
+    <rect class="arhc-die" x="136" y="102" width="22" height="22" rx="3"/>
+    <rect class="arhc-die" x="172" y="102" width="22" height="22" rx="3"/>
+    <rect class="arhc-die" x="208" y="102" width="22" height="22" rx="3"/>
+    <rect class="arhc-die" x="100" y="134" width="22" height="22" rx="3"/>
+    <rect class="arhc-die" x="136" y="134" width="22" height="22" rx="3"/>
+    <rect class="arhc-die" x="172" y="134" width="22" height="22" rx="3"/>
+    <rect class="arhc-die" x="208" y="134" width="22" height="22" rx="3"/>
+    <text class="arhc-title" x="96" y="192">Ryzen 9 9950X</text>
+    <text class="arhc-sub"   x="96" y="211">16 cores / 32 threads · Zen 5</text>
+    <text class="arhc-bound" x="96" y="88">bounds: CPU-side throughput</text>
+  </g>
+
+  <g class="arhc-group" data-info="128GB of DDR5-6000 as two 64GB modules. System RAM bounds three different things at once: how many models can be resident for CPU inference, how large an activation capture an interpretability sweep can hold, and how much dataset can be staged for a training run. It is the cheapest headroom on the machine and the hardest to add later. Verify: sudo dmidecode --type 17 | grep -E 'Size|Speed'">
+    <rect class="arhc-halo" x="356" y="64" width="304" height="168" rx="10" fill="var(--violet)"/>
+    <rect class="arhc-block arhc-ram" x="356" y="64" width="304" height="168" rx="10"/>
+    <rect class="arhc-stick" x="392" y="100" width="30" height="60" rx="3"/>
+    <rect class="arhc-stick" x="432" y="100" width="30" height="60" rx="3"/>
+    <text class="arhc-title" x="392" y="192">128GB DDR5-6000</text>
+    <text class="arhc-sub"   x="392" y="211">2 × 64GB in A2/B2 · dual channel</text>
+    <text class="arhc-bound" x="392" y="88">bounds: what fits outside VRAM</text>
+  </g>
+
+  <g class="arhc-group" data-info="32GB of GDDR7 at 896 GB/s. VRAM is the hardest ceiling in the machine: it decides which model sits resident for low-latency inference, and whether a fine-tune fits once optimizer states and activations are added on top of the weights. Everything else can be worked around; running out of VRAM cannot. Verify: nvidia-smi --query-gpu=name,memory.total --format=csv">
+    <rect class="arhc-halo" x="60" y="292" width="400" height="118" rx="10" fill="var(--accent)"/>
+    <rect class="arhc-block arhc-gpu" x="60" y="292" width="400" height="118" rx="10"/>
+    <text class="arhc-title" x="92" y="342">RTX 5090</text>
+    <text class="arhc-sub"   x="92" y="362">32GB GDDR7 · 896 GB/s · sm_120</text>
+    <text class="arhc-tag"   x="92" y="382">575W under load</text>
+    <text class="arhc-bound" x="92" y="318">bounds: what fits resident on the GPU</text>
+    <rect class="arhc-vram" x="332" y="330" width="30" height="18" rx="3"/>
+    <rect class="arhc-vram" x="370" y="330" width="30" height="18" rx="3"/>
+    <rect class="arhc-vram" x="408" y="330" width="30" height="18" rx="3"/>
+    <rect class="arhc-vram" x="332" y="362" width="30" height="18" rx="3"/>
+    <rect class="arhc-vram" x="370" y="362" width="30" height="18" rx="3"/>
+    <rect class="arhc-vram" x="408" y="362" width="30" height="18" rx="3"/>
+  </g>
+
+  <g class="arhc-group" data-info="Two NVMe drives with one job each: a 1TB OS drive and a 2TB drive mounted at /mnt/ai-data holding models, datasets and caches. Sequential read gates how long a model takes to reach memory, which is felt on every container restart. The split means an OS reinstall never touches the weights. Verify: lsblk -o NAME,SIZE,MODEL,MOUNTPOINT">
+    <rect class="arhc-halo" x="490" y="292" width="170" height="118" rx="10" fill="var(--ok)"/>
+    <rect class="arhc-block arhc-ssd" x="490" y="292" width="170" height="118" rx="10"/>
+    <rect class="arhc-m2" x="516" y="318" width="118" height="16" rx="3"/>
+    <rect class="arhc-m2" x="516" y="342" width="118" height="16" rx="3"/>
+    <text class="arhc-title" x="516" y="382">2 × NVMe</text>
+    <text class="arhc-sub"   x="516" y="400">OS 1TB · data 2TB</text>
+  </g>
+
+  <text class="arhc-board-label" x="360" y="474" text-anchor="middle">inference, interpretability and training each press on a different one of these</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover a component to see the spec and the limit it sets.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover a component to see the spec and the limit it sets.';
+  root.querySelectorAll('.arhc-group[data-info]').forEach((g, idx) => {
+    g.addEventListener('mouseenter', () => {
+      root.classList.add('is-hover-' + (idx + 1));
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = g.querySelector('.arhc-title').textContent;
+      caption.appendChild(strong);
+      const info = g.getAttribute('data-info');
+      // render a trailing "Verify: <cmd>" as inline code
+      const m = info.match(/^(.*?)(?:\s*Verify(?:\s[^:]*)?:\s*(.+))?$/s);
+      caption.appendChild(document.createTextNode(' — ' + (m[1] || info)));
+      if (m[2]) {
+        caption.appendChild(document.createTextNode(' Verify: '));
+        const code = document.createElement('code');
+        code.textContent = m[2];
+        caption.appendChild(code);
+      }
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      root.classList.remove('is-hover-' + (idx + 1));
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

@@ -176,7 +176,7 @@
     <text class="gss-sub"   x="280" y="250">nvcc · runtime · cuBLAS · sm_120</text>
   </g>
 
-  <g class="gss-group" data-info="The driver bridges user space and silicon: kernel modules (nvidia, nvidia-uvm, nvidia-modeset, nvidia-drm) plus user-space libraries like libcuda.so. Persistence mode keeps it initialized between runs; the power limit caps the card at 600W. Verify: nvidia-smi">
+  <g class="gss-group" data-info="The driver bridges user space and silicon: kernel modules (nvidia, nvidia-uvm, nvidia-modeset, nvidia-drm) plus user-space libraries like libcuda.so. Persistence mode and a 600W power limit are set separately after install, not by the driver script; dependency_check.sh asserts both. Verify: nvidia-smi">
     <rect class="gss-halo" x="110" y="296" width="340" height="72" rx="8" fill="var(--accent)"/>
     <rect class="gss-block gss-driver" x="110" y="296" width="340" height="72" rx="8"/>
     <text class="gss-title" x="280" y="324">NVIDIA driver 580</text>

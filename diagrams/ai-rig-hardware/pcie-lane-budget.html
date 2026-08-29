@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PCIe lanes are a zero-sum budget</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>PCIe lanes are a zero-sum budget</h1>
+<p>Where the CPU's lanes go, and what the two deliberately empty M.2 slots are protecting. Lane width is drawn to scale; hover any device to see what it costs.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-pcie-lane-budget">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-pcie-lane-budget {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-pcie-lane-budget {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-pcie-lane-budget svg { display: block; width: 100%; height: auto; }
+.fg-pcie-lane-budget text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-pcie-lane-budget {
+  padding: 16px;
+}
+
+.fg-pcie-lane-budget .arhp-block {
+  fill: var(--panel); stroke: var(--border); stroke-width: 2;
+  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+}
+.fg-pcie-lane-budget .arhp-group { transition: transform var(--dur-fast) var(--ease); }
+.fg-pcie-lane-budget .arhp-group:hover { transform: translateY(-2px); }
+.fg-pcie-lane-budget .arhp-group:hover .arhp-block { fill: var(--panel-hover); }
+
+.fg-pcie-lane-budget .arhp-halo { filter: blur(9px); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.fg-pcie-lane-budget .arhp-group:hover .arhp-halo { opacity: 0.4; }
+
+.fg-pcie-lane-budget .arhp-gpu { stroke: var(--accent); }
+.fg-pcie-lane-budget .arhp-ssd { stroke: var(--ok); }
+.fg-pcie-lane-budget .arhp-cpu { stroke: var(--warn); }
+/* the empty slots are drawn, not omitted: they are the argument */
+.fg-pcie-lane-budget .arhp-empty {
+  fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 6 5;
+  transition: stroke 0.3s; cursor: pointer;
+}
+.fg-pcie-lane-budget .arhp-group:hover .arhp-empty { stroke: var(--hot); }
+
+.fg-pcie-lane-budget .arhp-title { fill: var(--text); font-size: 14.5px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-pcie-lane-budget .arhp-sub   { fill: var(--muted); font-size: 11.5px; text-anchor: middle; pointer-events: none; }
+.fg-pcie-lane-budget .arhp-dim   { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-pcie-lane-budget .arhp-note  { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; }
+
+/* lane bundles: stroke width is drawn proportional to lane count */
+.fg-pcie-lane-budget .arhp-lane { fill: none; stroke-linecap: round; }
+.fg-pcie-lane-budget .arhp-x16 { stroke: var(--accent); stroke-width: 16; opacity: 0.85; }
+.fg-pcie-lane-budget .arhp-x4  { stroke: var(--ok); stroke-width: 4; opacity: 0.85; }
+.fg-pcie-lane-budget .arhp-x4-chipset { stroke: var(--line); stroke-width: 4; opacity: 0.85; }
+.fg-pcie-lane-budget .arhp-lane-unused {
+  stroke: var(--hot); stroke-width: 4; opacity: 0.35; stroke-dasharray: 5 6;
+}
+.fg-pcie-lane-budget .arhp-cost { fill: var(--hot); font-size: 11px; font-family: var(--mono); opacity: 0.8; }
+.fg-pcie-lane-budget .arhp-lane-label { fill: var(--muted); font-size: 11px; font-family: var(--mono); }
+
+/* traffic on the populated lanes; the empty ones stay still */
+.fg-pcie-lane-budget .arhp-traffic {
+  fill: none; stroke: var(--text); stroke-width: 2; opacity: 0.5;
+  stroke-dasharray: 4 14; animation: fg-arhp-flow 1.6s linear infinite;
+}
+@keyframes fg-arhp-flow { to { stroke-dashoffset: -36; } }
+
+.fg-pcie-lane-budget .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+  /* tall enough for the longest data-info at column width: no page reflow on hover */
+  color: var(--muted); font-size: 13px; min-height: 6.4em;
+  transition: color 0.3s;
+}
+.fg-pcie-lane-budget .fg-caption.is-active { color: var(--text); }
+.fg-pcie-lane-budget .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-pcie-lane-budget .fg-caption code {
+  font-family: var(--mono); font-size: 12px; color: var(--warn);
+  background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
+}
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-pcie-lane-budget, .fg-pcie-lane-budget * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 720 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="How the CPU's PCIe lanes are spent: sixteen lanes to the RTX 5090 in the primary slot, four CPU-direct lanes to the 2TB data drive, four lanes down to the chipset which carries the 1TB OS drive, and two M.2 slots left deliberately empty because populating them would re-split the sixteen GPU lanes down to eight.">
+  <g class="arhp-group" data-info="The lane budget is fixed at the socket and cannot be extended. Every device that wants bandwidth is spending from the same pool, so the build is decided by what you refuse to plug in as much as by what you buy.">
+    <rect class="arhp-halo" x="270" y="24" width="180" height="66" rx="10" fill="var(--warn)"/>
+    <rect class="arhp-block arhp-cpu" x="270" y="24" width="180" height="66" rx="10"/>
+    <text class="arhp-title" x="360" y="52">Ryzen 9 9950X</text>
+    <text class="arhp-sub"   x="360" y="72">a fixed pool of PCIe 5.0 lanes</text>
+  </g>
+
+  <!-- lane bundles, drawn to scale: x16 is four times the width of x4 -->
+  <path class="arhp-lane arhp-x16" d="M 320 90 C 320 170, 150 160, 150 232"/>
+  <path class="arhp-traffic" d="M 320 90 C 320 170, 150 160, 150 232"/>
+  <text class="arhp-lane-label" x="62" y="150">x16 Gen5</text>
+
+  <path class="arhp-lane arhp-x4" d="M 372 90 L 372 232"/>
+  <path class="arhp-traffic" d="M 372 90 L 372 232"/>
+  <text class="arhp-lane-label" x="382" y="160">x4 CPU-direct</text>
+
+  <path class="arhp-lane arhp-x4-chipset" d="M 424 90 C 424 140, 596 130, 596 176"/>
+  <path class="arhp-traffic" d="M 424 90 C 424 140, 596 130, 596 176"/>
+  <text class="arhp-lane-label" x="500" y="124">x4 to chipset</text>
+
+  <g class="arhp-group" data-info="The card that the whole lane budget exists to protect. A full x16 Gen5 link is what keeps model loads and host-to-device transfers off the critical path; drop it to x8 and every weight upload pays double. Verify: nvidia-smi -q | grep -A 2 'Link Width'">
+    <rect class="arhp-halo" x="50" y="232" width="200" height="96" rx="10" fill="var(--accent)"/>
+    <rect class="arhp-block arhp-gpu" x="50" y="232" width="200" height="96" rx="10"/>
+    <text class="arhp-dim"   x="150" y="260">x16</text>
+    <text class="arhp-title" x="150" y="288">RTX 5090</text>
+    <text class="arhp-sub"   x="150" y="308">primary slot, closest to CPU</text>
+  </g>
+
+  <g class="arhp-group" data-info="The 2TB data drive holding models, datasets and caches, wired straight to the CPU rather than through the chipset. This is the drive whose sequential read gates how fast a model reaches memory, so it gets the direct link. Verify: lsblk -o NAME,SIZE,MODEL,MOUNTPOINT">
+    <rect class="arhp-halo" x="292" y="232" width="160" height="96" rx="10" fill="var(--ok)"/>
+    <rect class="arhp-block arhp-ssd" x="292" y="232" width="160" height="96" rx="10"/>
+    <text class="arhp-dim"   x="372" y="260">x4</text>
+    <text class="arhp-title" x="372" y="288">990 Pro 2TB</text>
+    <text class="arhp-sub"   x="372" y="308">/mnt/ai-data</text>
+  </g>
+
+  <g class="arhp-group" data-info="The OS drive hangs off the chipset instead of the CPU. Boot and package installs are not bandwidth-sensitive, so this is the right place to spend a slower link and leave the CPU-direct one for model data.">
+    <rect class="arhp-halo" x="516" y="176" width="160" height="152" rx="10" fill="var(--ok)"/>
+    <rect class="arhp-block arhp-ssd" x="516" y="176" width="160" height="152" rx="10"/>
+    <text class="arhp-sub"   x="596" y="202">X870E chipset</text>
+    <text class="arhp-dim"   x="596" y="240">x4</text>
+    <text class="arhp-title" x="596" y="272">990 EVO Plus 1TB</text>
+    <text class="arhp-sub"   x="596" y="292">Ubuntu 24.04</text>
+  </g>
+
+  <!-- the unused lanes: drawn, so the cost of using them is visible -->
+  <path class="arhp-lane arhp-lane-unused" d="M 150 328 L 150 396"/>
+  <path class="arhp-lane arhp-lane-unused" d="M 372 328 L 372 396"/>
+  <text class="arhp-cost" x="160" y="366">shares the x16 lanes</text>
+  <text class="arhp-cost" x="382" y="366">shares the x16 lanes</text>
+
+  <g class="arhp-group" data-info="The remaining M.2 slots are empty on purpose. On this board they share lanes with the primary x16 slot, so filling one re-splits the GPU link down to x8 — a third NVMe drive would be paid for in GPU bandwidth on every model load. Leave them empty and buy capacity externally instead.">
+    <rect class="arhp-empty" x="50" y="396" width="200" height="62" rx="10"/>
+    <rect class="arhp-empty" x="292" y="396" width="160" height="62" rx="10"/>
+    <text class="arhp-sub" x="150" y="422">M.2 slot — empty</text>
+    <text class="arhp-sub" x="150" y="440">on purpose</text>
+    <text class="arhp-sub" x="372" y="422">M.2 slot — empty</text>
+    <text class="arhp-sub" x="372" y="440">on purpose</text>
+  </g>
+
+  <text class="arhp-note" x="360" y="484">filling either one re-splits the x16 link to x8</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover a device to see what it spends, and the empty slots to see what they save.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const caption = root.querySelector('[data-fg="caption"]');
+  const DEFAULT = 'Hover a device to see what it spends, and the empty slots to see what they save.';
+  const TITLES = ['CPU lane budget', 'RTX 5090 — x16 Gen5', '990 Pro 2TB — x4 CPU-direct', '990 EVO Plus 1TB — x4 via chipset', 'Two empty M.2 slots'];
+  root.querySelectorAll('.arhp-group[data-info]').forEach((g, idx) => {
+    g.addEventListener('mouseenter', () => {
+      root.classList.add('is-hover-' + (idx + 1));
+      caption.innerHTML = '';
+      const strong = document.createElement('strong');
+      strong.textContent = TITLES[idx];
+      caption.appendChild(strong);
+      const info = g.getAttribute('data-info');
+      // render a trailing "Verify: <cmd>" as inline code
+      const m = info.match(/^(.*?)(?:\s*Verify(?:\s[^:]*)?:\s*(.+))?$/s);
+      caption.appendChild(document.createTextNode(' — ' + (m[1] || info)));
+      if (m[2]) {
+        caption.appendChild(document.createTextNode(' Verify: '));
+        const code = document.createElement('code');
+        code.textContent = m[2];
+        caption.appendChild(code);
+      }
+      caption.classList.add('is-active');
+    });
+    g.addEventListener('mouseleave', () => {
+      root.classList.remove('is-hover-' + (idx + 1));
+      caption.textContent = DEFAULT;
+      caption.classList.remove('is-active');
+    });
+  });
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
