@@ -173,7 +173,7 @@
 </style>
 
 <svg viewBox="0 0 720 540" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="A five-step power and thermal budget. A bar scaled to the 1200W power supply fills in stages: about 55W of board, drives and fans at idle, then 575W for the RTX 5090, then 170W for the Ryzen 9950X, reaching roughly 800W with both compute paths loaded and about 400W of headroom left. The final step shows the case airflow: six intake fans — three front, three bottom — against three top and one rear exhaust fan carrying the heat out.">
+     aria-label="A five-step power and thermal budget. A bar scaled to the 1200W power supply fills in stages: about 55W of board, drives and fans at idle, then 575W for the RTX 5090, then 170W for the Ryzen 9950X, reaching roughly 800W with both compute paths loaded and about 400W of headroom left. The final step shows the case airflow: six intake fans — three in the front panel and three in the side panel beside them — against three top and one rear exhaust fan carrying the heat out.">
   <defs>
     <marker id="arht-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
@@ -221,13 +221,20 @@
   <circle class="arht-fan arht-fan-in" cx="150" cy="292" r="15"/>
   <circle class="arht-fan arht-fan-in" cx="150" cy="355" r="15"/>
   <circle class="arht-fan arht-fan-in" cx="150" cy="418" r="15"/>
-  <text class="arht-mono" x="52" y="352">3 front</text>
-  <text class="arht-mono" x="52" y="368">intake</text>
+  <text class="arht-mono" x="52" y="356">6 intake</text>
 
-  <circle class="arht-fan arht-fan-in" cx="230" cy="460" r="15"/>
-  <circle class="arht-fan arht-fan-in" cx="320" cy="460" r="15"/>
-  <circle class="arht-fan arht-fan-in" cx="410" cy="460" r="15"/>
-  <text class="arht-mono" x="440" y="466">3 bottom intake</text>
+  <!-- side-panel bank, drawn just inside the wall beside the front fans.
+       They blow toward the viewer, which a side section cannot show, so their
+       air is drawn merging into the front-to-back stream instead. -->
+  <circle class="arht-fan arht-fan-in" cx="196" cy="292" r="15"/>
+  <circle class="arht-fan arht-fan-in" cx="196" cy="355" r="15"/>
+  <circle class="arht-fan arht-fan-in" cx="196" cy="418" r="15"/>
+  <text class="arht-mono" x="128" y="450">front</text>
+  <text class="arht-mono" x="180" y="450">side</text>
+
+  <path class="arht-air" d="M 214 292 L 244 296" marker-end="url(#arht-arrow)"/>
+  <path class="arht-air" d="M 214 355 L 244 358" marker-end="url(#arht-arrow)"/>
+  <path class="arht-air" d="M 214 418 L 244 414" marker-end="url(#arht-arrow)"/>
 
   <circle class="arht-fan arht-fan-out" cx="270" cy="250" r="15"/>
   <circle class="arht-fan arht-fan-out" cx="350" cy="250" r="15"/>
@@ -239,7 +246,7 @@
 
   <path id="arht-route-1" class="arht-air" d="M 166 292 C 200 288, 232 284, 266 234" marker-end="url(#arht-arrow)"/>
   <path id="arht-route-2" class="arht-air" d="M 166 355 C 300 372, 420 356, 430 234" marker-end="url(#arht-arrow)"/>
-  <path id="arht-route-3" class="arht-air" d="M 320 444 C 400 430, 490 396, 552 302" marker-end="url(#arht-arrow)"/>
+  <path id="arht-route-3" class="arht-air" d="M 166 418 C 300 462, 470 442, 552 302" marker-end="url(#arht-arrow)"/>
 
   <g class="arht-comet arht-comet-1">
     <circle r="5"><animateMotion class="arht-head" id="arht-c1-head" begin="indefinite" dur="1s" fill="freeze"><mpath href="#arht-route-1"/></animateMotion></circle>
@@ -311,7 +318,7 @@
     ['GPU under load', 'The RTX 5090 adds up to 575W on its own — more than two thirds of the eventual total, from one card.'],
     ['CPU under load at the same time', 'The 9950X adds another 170W. Because the machine is built to run GPU and CPU inference concurrently, these loads add rather than alternate: sizing for the larger one alone is the mistake.'],
     ['Roughly 800W, against 1200W', 'That leaves around 400W of headroom. The margin is not vanity — transient GPU spikes are far shorter than a supply’s rated response, and a supply run near its ceiling runs hot and loud for years.'],
-    ['Where the heat goes', 'Six intake fans — three front, three in the floor under the card — against three top and one rear exhaust keeps the case at positive pressure, so air enters through filters instead of every seam. The CPU cooler is rated for 270W against a 170W part: the headroom is spent on staying quiet at a sustained load, not on a benchmark run.'],
+    ['Where the heat goes', 'Six intake fans — three in the front panel, three in the side panel beside them — against three top and one rear exhaust keeps the case at positive pressure, so air enters through filters instead of every seam. The CPU cooler is rated for 270W against a 170W part: the headroom is spent on staying quiet at a sustained load, not on a benchmark run.'],
   ];
 
   root.addEventListener('fg:step', (e) => {
