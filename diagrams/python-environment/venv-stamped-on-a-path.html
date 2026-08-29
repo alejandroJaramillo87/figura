@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A venv is stamped on a path</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>A venv is stamped on a path</h1>
+<p>Why removing a tool, or updating an editor, can break a Python environment that nothing else touched.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-venv-stamped-on-a-path">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-venv-stamped-on-a-path {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-venv-stamped-on-a-path {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-venv-stamped-on-a-path svg { display: block; width: 100%; height: auto; }
+.fg-venv-stamped-on-a-path text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-venv-stamped-on-a-path {
+  padding: 16px 16px 12px;
+}
+
+/* --- diagram-specific styling ------------------------------------- */
+/* The caption runs longer than the 4.2em the managed block reserves;
+   raising the floor keeps stepping from reflowing the surrounding post. */
+.fg-venv-stamped-on-a-path { --fg-cap-minh: 5.6em; }
+
+.fg-venv-stamped-on-a-path .pyvs-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast) var(--ease),
+              opacity var(--dur-fast) var(--ease);
+}
+.fg-venv-stamped-on-a-path .pyvs-title { fill: var(--text); font-size: 12.5px; font-weight: 600; }
+.fg-venv-stamped-on-a-path .pyvs-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); }
+.fg-venv-stamped-on-a-path .pyvs-cfg {
+  fill: var(--muted); font-size: 11px; font-family: var(--mono);
+}
+.fg-venv-stamped-on-a-path .pyvs-conn { fill: none; stroke: var(--line); stroke-width: 1.5; }
+.fg-venv-stamped-on-a-path .pyvs-flow {
+  fill: none; stroke: var(--accent); stroke-width: 2;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--dur-fast) var(--ease);
+}
+.fg-venv-stamped-on-a-path .pyvs-flow.is-drawn { stroke-dashoffset: 0; }
+
+.fg-venv-stamped-on-a-path .pyvs-halo {
+  opacity: 0; filter: blur(9px);
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.fg-venv-stamped-on-a-path .pyvs-node.is-active .pyvs-halo { opacity: 0.5; }
+.fg-venv-stamped-on-a-path .pyvs-node.is-active .pyvs-box {
+  fill: var(--accent-dim); stroke: var(--accent); stroke-width: 1.8;
+}
+.fg-venv-stamped-on-a-path .pyvs-node.is-done .pyvs-box { fill: var(--accent-dim); }
+
+/* The base interpreter does not move; it stops existing. Fading it to a
+   dashed outline says removed rather than relocated. */
+.fg-venv-stamped-on-a-path .pyvs-base { transition: opacity var(--dur-fast) var(--ease); }
+.fg-venv-stamped-on-a-path.is-step-3 .pyvs-base,
+.fg-venv-stamped-on-a-path.is-step-4 .pyvs-base { opacity: 0.18; }
+.fg-venv-stamped-on-a-path.is-step-3 .pyvs-ghost,
+.fg-venv-stamped-on-a-path.is-step-4 .pyvs-ghost { opacity: 1; }
+.fg-venv-stamped-on-a-path .pyvs-ghost {
+  opacity: 0; transition: opacity var(--dur-fast) var(--ease);
+}
+.fg-venv-stamped-on-a-path .pyvs-ghostbox {
+  fill: none; stroke: var(--hot); stroke-width: 1.5; stroke-dasharray: 5 4;
+}
+.fg-venv-stamped-on-a-path .pyvs-ghosttext {
+  fill: var(--hot); font-size: 12px; font-weight: 600; text-anchor: middle;
+}
+.fg-venv-stamped-on-a-path.is-step-4 .pyvs-link { stroke: var(--hot); stroke-dasharray: 5 4; }
+.fg-venv-stamped-on-a-path .pyvs-fail {
+  opacity: 0; transition: opacity var(--dur-fast) var(--ease);
+}
+.fg-venv-stamped-on-a-path.is-step-4 .pyvs-fail { opacity: 1; }
+.fg-venv-stamped-on-a-path .pyvs-failtext {
+  fill: var(--hot); font-size: 12px; font-weight: 600; font-family: var(--mono);
+}
+
+/* --- step states --------------------------------------------------- */
+/* Node highlighting is class-driven from the fg:step handler; the rules
+   above carry the two states that are about absence rather than focus. */
+
+/* fg:begin caption-box v1 */
+.fg-venv-stamped-on-a-path .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
+  border-radius: 0 8px 8px 0;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
+}
+/* fg:end caption-box */
+
+/* fg:begin controls-bar v1 */
+.fg-venv-stamped-on-a-path .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-venv-stamped-on-a-path .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-venv-stamped-on-a-path .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
+.fg-venv-stamped-on-a-path .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+/* fg:end controls-bar */
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-venv-stamped-on-a-path, .fg-venv-stamped-on-a-path * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A virtual environment records its base interpreter as an absolute path in pyvenv.cfg. When that directory is removed, by uninstalling pyenv or by a snap revision being garbage-collected, the path dangles and every import fails.">
+  <g class="pyvs-node" data-step="1">
+    <rect class="pyvs-halo" x="40" y="30" width="220" height="66" rx="8" fill="var(--accent)"/>
+    <rect class="pyvs-box" x="40" y="30" width="220" height="66" rx="8"/>
+    <text class="pyvs-title" x="58" y="56">uv sync builds .venv</text>
+    <text class="pyvs-sub" x="58" y="76">from an interpreter it picks</text>
+  </g>
+
+  <path class="pyvs-conn" d="M 150 96 L 150 134"/>
+  <path id="pyvs-r1" class="pyvs-flow" pathLength="1" d="M 150 96 L 150 134"/>
+
+  <g class="pyvs-node" data-step="2">
+    <rect class="pyvs-halo" x="40" y="134" width="300" height="86" rx="8" fill="var(--accent)"/>
+    <rect class="pyvs-box" x="40" y="134" width="300" height="86" rx="8"/>
+    <text class="pyvs-title" x="58" y="158">.venv/pyvenv.cfg</text>
+    <text class="pyvs-cfg" x="58" y="180">home = /home/you/.pyenv/</text>
+    <text class="pyvs-cfg" x="58" y="198">       versions/3.12.11/bin</text>
+    <text class="pyvs-sub" x="58" y="214">an absolute path, not a copy</text>
+  </g>
+
+  <path class="pyvs-link pyvs-conn" d="M 340 177 L 452 177"/>
+  <path id="pyvs-r2" class="pyvs-flow" pathLength="1" d="M 340 177 L 452 177"/>
+
+  <g class="pyvs-base">
+    <rect class="pyvs-box" x="452" y="140" width="268" height="74" rx="8"/>
+    <text class="pyvs-title" x="470" y="166">The base interpreter</text>
+    <text class="pyvs-sub" x="470" y="186">python3.12 and its stdlib</text>
+    <text class="pyvs-sub" x="470" y="203">everything .venv points at</text>
+  </g>
+  <g class="pyvs-ghost">
+    <rect class="pyvs-ghostbox" x="452" y="140" width="268" height="74" rx="8"/>
+    <text class="pyvs-ghosttext" x="586" y="183">directory no longer exists</text>
+  </g>
+
+  <path class="pyvs-conn" d="M 586 214 L 586 254"/>
+  <path id="pyvs-r3" class="pyvs-flow" pathLength="1" d="M 586 214 L 586 254"/>
+
+  <g class="pyvs-node" data-step="3">
+    <rect class="pyvs-halo" x="410" y="254" width="310" height="76" rx="8" fill="var(--accent)"/>
+    <rect class="pyvs-box" x="410" y="254" width="310" height="76" rx="8"/>
+    <text class="pyvs-title" x="428" y="278">Something removes it</text>
+    <text class="pyvs-sub" x="428" y="298">rm -rf ~/.pyenv, or a VS Code snap</text>
+    <text class="pyvs-sub" x="428" y="315">revision that snapd garbage-collects</text>
+  </g>
+
+  <path class="pyvs-conn" d="M 410 292 L 340 292"/>
+  <path id="pyvs-r4" class="pyvs-flow" pathLength="1" d="M 410 292 L 340 292"/>
+
+  <g class="pyvs-node" data-step="4">
+    <rect class="pyvs-halo" x="40" y="254" width="300" height="76" rx="8" fill="var(--accent)"/>
+    <rect class="pyvs-box" x="40" y="254" width="300" height="76" rx="8"/>
+    <text class="pyvs-title" x="58" y="278">.venv is unusable</text>
+    <text class="pyvs-sub" x="58" y="298">nothing moved; the path dangles</text>
+    <text class="pyvs-sub" x="58" y="315">and no error names the cause</text>
+  </g>
+
+  <g class="pyvs-fail">
+    <text class="pyvs-failtext" x="40" y="362">grep &apos;^home&apos; .venv/pyvenv.cfg</text>
+    <text class="pyvs-sub" x="40" y="382">the one check that separates cause from symptom</text>
+  </g>
+</svg>
+
+<div class="fg-caption" data-fg="caption">How a working environment stops working. Press play, or step through.</div>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const TOTAL = 4, STEP_MS = 2600;
+
+  // fg:begin timeline-core v1
+  let step = 0, timer = null;
+  function apply() {
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); root.classList.add('is-playing'); } },
+    pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
+  };
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  const counter = btn('counter');
+  function sync() {
+    if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // fg:end timeline-core
+
+  const caption = root.querySelector('[data-fg="caption"]');
+
+  const CAPTIONS = [
+    'How a working environment stops working. Press play, or step through.',
+    ['uv sync builds .venv', 'The environment is created against whatever interpreter uv selected at the time \u2014 a uv-managed build, or whatever else answered for the version pin.'],
+    ['pyvenv.cfg records the base', 'A virtual environment does not contain an interpreter. It records where one lives, as an absolute path, and borrows it on every run.'],
+    ['The base goes away', 'Uninstalling pyenv does it. So does a VS Code snap revision bump, when XDG_DATA_HOME pointed into ~/snap/code/<revision>/ and snapd collected the old one.'],
+    ['Every import fails', 'Nothing about .venv changed. The path it names simply is not there any more, and the failures that follow describe symptoms rather than this cause.'],
+  ];
+
+  root.addEventListener('fg:step', (e) => {
+    const s = e.detail.step;
+    root.querySelectorAll('.pyvs-node').forEach((g) => {
+      const n = Number(g.getAttribute('data-step'));
+      g.classList.toggle('is-active', n === s);
+      g.classList.toggle('is-done', n < s);
+    });
+    root.querySelectorAll('.pyvs-flow').forEach((path, i) => {
+      path.classList.toggle('is-drawn', s >= i + 2);
+    });
+    const c = CAPTIONS[s];
+    caption.innerHTML = '';
+    if (Array.isArray(c)) {
+      const b = document.createElement('strong');
+      b.textContent = c[0] + ' \u2014 ';
+      caption.appendChild(b);
+      caption.appendChild(document.createTextNode(c[1]));
+    } else {
+      caption.textContent = c;
+    }
+  });
+
+
+  // fg:begin timeline-start v1
+  apply();
+  if (reduced) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+  // fg:end timeline-start
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

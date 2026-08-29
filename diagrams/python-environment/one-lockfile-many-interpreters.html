@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One lockfile, many interpreters</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>One lockfile, many interpreters</h1>
+<p>How one pyproject.toml and uv.lock reach every Python environment on the workstation — and the four container images that carry no Python at all.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-one-lockfile-many-interpreters">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-one-lockfile-many-interpreters {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-one-lockfile-many-interpreters {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-one-lockfile-many-interpreters svg { display: block; width: 100%; height: auto; }
+.fg-one-lockfile-many-interpreters text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-one-lockfile-many-interpreters {
+  padding: 16px 16px 12px;
+}
+
+/* --- diagram-specific styling ------------------------------------- */
+.fg-one-lockfile-many-interpreters .pyol-src {
+  fill: var(--panel); stroke: var(--accent); stroke-width: 1.5;
+}
+.fg-one-lockfile-many-interpreters .pyol-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast) var(--ease);
+}
+.fg-one-lockfile-many-interpreters .pyol-group { cursor: pointer; }
+.fg-one-lockfile-many-interpreters .pyol-group:hover .pyol-box {
+  fill: var(--panel-hover); stroke: var(--accent);
+}
+/* Band tint carries the relationship to the lock file, so the three
+   groupings read before any label is. */
+.fg-one-lockfile-many-interpreters .pyol-locked:hover .pyol-box { stroke: var(--accent); }
+.fg-one-lockfile-many-interpreters .pyol-locked .pyol-box { fill: var(--accent-dim); }
+.fg-one-lockfile-many-interpreters .pyol-hand .pyol-box { fill: var(--warn-dim); }
+.fg-one-lockfile-many-interpreters .pyol-hand:hover .pyol-box { stroke: var(--warn); }
+.fg-one-lockfile-many-interpreters .pyol-none .pyol-box {
+  fill: var(--bg); stroke-dasharray: 3 3;
+}
+.fg-one-lockfile-many-interpreters .pyol-none:hover .pyol-box { stroke: var(--muted); }
+
+.fg-one-lockfile-many-interpreters .pyol-title {
+  fill: var(--text); font-size: 13px; font-weight: 600;
+}
+.fg-one-lockfile-many-interpreters .pyol-sub {
+  fill: var(--muted); font-size: 10.5px; font-family: var(--mono);
+}
+.fg-one-lockfile-many-interpreters .pyol-none .pyol-title { fill: var(--muted); }
+.fg-one-lockfile-many-interpreters .pyol-band {
+  fill: var(--muted); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.fg-one-lockfile-many-interpreters .pyol-srctitle {
+  fill: var(--text); font-size: 13px; font-weight: 600; font-family: var(--mono);
+}
+.fg-one-lockfile-many-interpreters .pyol-srcsub { fill: var(--muted); font-size: 10.5px; }
+
+/* Solid edge = uv resolves it from the lock file. Dashed = a human keeps
+   the two in step. No edge at all = the image carries no Python. */
+.fg-one-lockfile-many-interpreters .pyol-edge {
+  fill: none; stroke: var(--accent); stroke-width: 1.5;
+}
+.fg-one-lockfile-many-interpreters .pyol-edge-hand {
+  fill: none; stroke: var(--warn); stroke-width: 1.5; stroke-dasharray: 5 4;
+}
+.fg-one-lockfile-many-interpreters .pyol-edgelabel {
+  fill: var(--muted); font-size: 10px; font-style: italic;
+}
+
+/* fg:begin caption-box v1 */
+.fg-one-lockfile-many-interpreters .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
+  border-radius: 0 8px 8px 0;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
+}
+/* fg:end caption-box */
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-one-lockfile-many-interpreters, .fg-one-lockfile-many-interpreters * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 760 430" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="One pyproject.toml and uv.lock feeding several Python interpreters. Four environments sync from the lock file, two install by hand with their own torch, and four container images carry no Python at all.">
+  <g>
+    <rect class="pyol-src" x="14" y="176" width="150" height="82" rx="10"/>
+    <text class="pyol-srctitle" x="30" y="205">pyproject.toml</text>
+    <text class="pyol-srctitle" x="30" y="225">uv.lock</text>
+    <text class="pyol-srcsub" x="30" y="245">one pinned resolution</text>
+  </g>
+
+  <path class="pyol-edge" d="M 164 208 C 186 208 186 78 202 78"/>
+  <path class="pyol-edge" d="M 202 42 L 202 114"/>
+  <path class="pyol-edge-hand" d="M 164 232 C 186 232 186 220 202 220"/>
+  <path class="pyol-edge-hand" d="M 202 184 L 202 256"/>
+  <text class="pyol-edgelabel" x="166" y="140">uv sync</text>
+  <text class="pyol-edgelabel" x="166" y="284">by hand</text>
+
+  <text class="pyol-band" x="214" y="32">Synced from the lock file</text>
+  <g class="pyol-group pyol-locked" data-info="The workstation environment. make install runs uv sync --all-groups --all-extras, so torch and the whole CUDA stack are present and a REPL can reach the GPU without starting a container.">
+    <rect class="pyol-box" x="214" y="42" width="124" height="72" rx="8"/>
+    <text class="pyol-title" x="228" y="70">host</text>
+    <text class="pyol-sub" x="228" y="88">/.venv</text>
+    <text class="pyol-sub" x="228" y="103">all groups</text>
+  </g>
+  <g class="pyol-group pyol-locked" data-info="The agent sandbox. Syncs --frozen --only-group dev --only-group sandbox: --only-group rather than --group, because --group would add the groups to the project dependencies and drag torch into a deliberately torch-free image.">
+    <rect class="pyol-box" x="352" y="42" width="124" height="72" rx="8"/>
+    <text class="pyol-title" x="366" y="70">agents</text>
+    <text class="pyol-sub" x="366" y="88">/opt/pyenv</text>
+    <text class="pyol-sub" x="366" y="103">dev + sandbox</text>
+  </g>
+  <g class="pyol-group pyol-locked" data-info="The mechanistic-interpretability workbench. Syncs --frozen --no-install-project --no-default-groups --group interp, so the image is the lock file and notebooks need no in-container installs.">
+    <rect class="pyol-box" x="490" y="42" width="124" height="72" rx="8"/>
+    <text class="pyol-title" x="504" y="70">interp</text>
+    <text class="pyol-sub" x="504" y="88">/opt/venv</text>
+    <text class="pyol-sub" x="504" y="103">interp group</text>
+  </g>
+  <g class="pyol-group pyol-locked" data-info="The training image. Same shape as interp with --group training. Built on the CUDA devel base rather than runtime, because DeepSpeed CPUAdam and flash-attn compile at build time.">
+    <rect class="pyol-box" x="628" y="42" width="124" height="72" rx="8"/>
+    <text class="pyol-title" x="642" y="70">training</text>
+    <text class="pyol-sub" x="642" y="88">/opt/venv</text>
+    <text class="pyol-sub" x="642" y="103">training group</text>
+  </g>
+
+  <text class="pyol-band" x="214" y="174">Pinned by hand</text>
+  <g class="pyol-group pyol-hand" data-info="GGUF export. Installs with uv pip install and pins transcribed by hand from pyproject.toml, and takes torch from the CPU index: a GGUF conversion never reaches the GPU. Nothing enforces that the copies stay in step.">
+    <rect class="pyol-box" x="214" y="184" width="124" height="72" rx="8"/>
+    <text class="pyol-title" x="228" y="212">export</text>
+    <text class="pyol-sub" x="228" y="230">/opt/venv</text>
+    <text class="pyol-sub" x="228" y="245">torch cpu</text>
+  </g>
+  <g class="pyol-group pyol-hand" data-info="The vLLM server. Installs the official cu130 wheel, which requires its own torch 2.11 rather than the 2.13.0 pinned in pyproject.toml. Three torch builds therefore coexist on this machine, by design.">
+    <rect class="pyol-box" x="352" y="184" width="124" height="72" rx="8"/>
+    <text class="pyol-title" x="366" y="212">vllm-gpu</text>
+    <text class="pyol-sub" x="366" y="230">/opt/venv</text>
+    <text class="pyol-sub" x="366" y="245">torch 2.11</text>
+  </g>
+
+  <text class="pyol-band" x="214" y="316">No Python at all</text>
+  <g class="pyol-group pyol-none" data-info="The CPU inference engine. A compiled llama.cpp binary on a Debian slim base, with no interpreter in the image. Python drives it from outside, over HTTP.">
+    <rect class="pyol-box" x="214" y="326" width="124" height="58" rx="8"/>
+    <text class="pyol-title" x="228" y="352">llama-cpu</text>
+    <text class="pyol-sub" x="228" y="370">compiled</text>
+  </g>
+  <g class="pyol-group pyol-none" data-info="The GPU inference engine. Its builder stage installs python3 as a llama.cpp build dependency, and none of it survives into the runtime stage that actually serves tokens.">
+    <rect class="pyol-box" x="352" y="326" width="124" height="58" rx="8"/>
+    <text class="pyol-title" x="366" y="352">llama-gpu</text>
+    <text class="pyol-sub" x="366" y="370">builder only</text>
+  </g>
+  <g class="pyol-group pyol-none" data-info="The Rust correctness harness. Reads Hugging Face checkpoints directly; the image carries the pinned Rust toolchain and no interpreter.">
+    <rect class="pyol-box" x="490" y="326" width="124" height="58" rx="8"/>
+    <text class="pyol-title" x="504" y="352">rust-harness</text>
+    <text class="pyol-sub" x="504" y="370">compiled</text>
+  </g>
+  <g class="pyol-group pyol-none" data-info="The egress proxy for agent sandboxes. Squid on a Debian slim base, enforcing the network allowlist. No Python.">
+    <rect class="pyol-box" x="628" y="326" width="124" height="58" rx="8"/>
+    <text class="pyol-title" x="642" y="352">proxy</text>
+    <text class="pyol-sub" x="642" y="370">squid</text>
+  </g>
+</svg>
+
+<div class="fg-caption" data-fg="caption">One pinned resolution, several interpreters. Hover any environment for how it is built.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+
+  // fg:begin hover-caption v1
+  const caption = root.querySelector('[data-fg="caption"]');
+  const captionDefault = caption.textContent;
+  root.querySelectorAll('[data-info]').forEach((el) => {
+    el.addEventListener('mouseenter', () => {
+      caption.textContent = el.getAttribute('data-info');
+      caption.classList.add('is-active');
+    });
+    el.addEventListener('mouseleave', () => {
+      caption.textContent = captionDefault;
+      caption.classList.remove('is-active');
+    });
+  });
+  // fg:end hover-caption
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
