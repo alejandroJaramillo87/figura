@@ -91,7 +91,7 @@
   fill: none; stroke: var(--line); stroke-width: 1.5; opacity: 0;
   stroke-dasharray: 4 5; transition: opacity var(--dur-fast) var(--ease);
 }
-.fg-power-thermal .arht-comet { opacity: 0; }
+.fg-power-thermal .arht-comet { opacity: 0; visibility: hidden; }
 .fg-power-thermal .arht-comet circle { fill: var(--ok); }
 
 /* --- step states ---------------------------------------------------- */
@@ -134,7 +134,7 @@
 .fg-power-thermal.is-step-5 .arht-halo-cpu { opacity: 0.5; }
 
 .fg-power-thermal.is-step-5 .arht-air { opacity: 0.8; }
-.fg-power-thermal.is-step-5 .arht-comet { opacity: 1; }
+.fg-power-thermal.is-step-5 .arht-comet { opacity: 1; visibility: visible; }
 
 .fg-power-thermal .fg-caption {
   margin-top: 12px; padding: 10px 14px;
@@ -173,7 +173,7 @@
 </style>
 
 <svg viewBox="0 0 720 540" xmlns="http://www.w3.org/2000/svg" role="img"
-     aria-label="A five-step power and thermal budget. A bar scaled to the 1200W power supply fills in stages: about 55W of board, drives and fans at idle, then 575W for the RTX 5090, then 170W for the Ryzen 9950X, reaching roughly 800W with both compute paths loaded and about 400W of headroom left. The final step shows the case airflow: three front intake fans, three top and one rear exhaust fan carrying the heat out.">
+     aria-label="A five-step power and thermal budget. A bar scaled to the 1200W power supply fills in stages: about 55W of board, drives and fans at idle, then 575W for the RTX 5090, then 170W for the Ryzen 9950X, reaching roughly 800W with both compute paths loaded and about 400W of headroom left. The final step shows the case airflow: six intake fans — three front, three bottom — against three top and one rear exhaust fan carrying the heat out.">
   <defs>
     <marker id="arht-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
@@ -221,7 +221,13 @@
   <circle class="arht-fan arht-fan-in" cx="150" cy="292" r="15"/>
   <circle class="arht-fan arht-fan-in" cx="150" cy="355" r="15"/>
   <circle class="arht-fan arht-fan-in" cx="150" cy="418" r="15"/>
-  <text class="arht-mono" x="52" y="359">3 intake</text>
+  <text class="arht-mono" x="52" y="352">3 front</text>
+  <text class="arht-mono" x="52" y="368">intake</text>
+
+  <circle class="arht-fan arht-fan-in" cx="230" cy="460" r="15"/>
+  <circle class="arht-fan arht-fan-in" cx="320" cy="460" r="15"/>
+  <circle class="arht-fan arht-fan-in" cx="410" cy="460" r="15"/>
+  <text class="arht-mono" x="440" y="466">3 bottom intake</text>
 
   <circle class="arht-fan arht-fan-out" cx="270" cy="250" r="15"/>
   <circle class="arht-fan arht-fan-out" cx="350" cy="250" r="15"/>
@@ -233,7 +239,7 @@
 
   <path id="arht-route-1" class="arht-air" d="M 166 292 C 200 288, 232 284, 266 234" marker-end="url(#arht-arrow)"/>
   <path id="arht-route-2" class="arht-air" d="M 166 355 C 300 372, 420 356, 430 234" marker-end="url(#arht-arrow)"/>
-  <path id="arht-route-3" class="arht-air" d="M 166 418 C 300 462, 470 442, 552 302" marker-end="url(#arht-arrow)"/>
+  <path id="arht-route-3" class="arht-air" d="M 320 444 C 400 430, 490 396, 552 302" marker-end="url(#arht-arrow)"/>
 
   <g class="arht-comet arht-comet-1">
     <circle r="5"><animateMotion class="arht-head" id="arht-c1-head" begin="indefinite" dur="1s" fill="freeze"><mpath href="#arht-route-1"/></animateMotion></circle>
@@ -251,8 +257,8 @@
     <circle r="2.5" opacity="0.22"><animateMotion begin="arht-c3-head.begin+0.15s" dur="1.2s" fill="freeze"><mpath href="#arht-route-3"/></animateMotion></circle>
   </g>
 
-  <text class="arht-mono" x="150" y="482">mid-tower, positive pressure</text>
-  <text class="arht-note" x="360" y="512" text-anchor="middle">both compute paths run at once, so the two loads add rather than alternate</text>
+  <text class="arht-mono" x="150" y="506">mid-tower · 6 intake, 4 exhaust · positive pressure</text>
+  <text class="arht-note" x="360" y="530" text-anchor="middle">both compute paths run at once, so the two loads add rather than alternate</text>
 </svg>
 
 <div class="fg-caption" data-fg="caption">Five steps: idle, GPU load, CPU load, the total against supply capacity, and where the heat leaves.</div>
@@ -305,7 +311,7 @@
     ['GPU under load', 'The RTX 5090 adds up to 575W on its own — more than two thirds of the eventual total, from one card.'],
     ['CPU under load at the same time', 'The 9950X adds another 170W. Because the machine is built to run GPU and CPU inference concurrently, these loads add rather than alternate: sizing for the larger one alone is the mistake.'],
     ['Roughly 800W, against 1200W', 'That leaves around 400W of headroom. The margin is not vanity — transient GPU spikes are far shorter than a supply’s rated response, and a supply run near its ceiling runs hot and loud for years.'],
-    ['Where the heat goes', 'Three front intake fans against three top and one rear exhaust keeps the case at positive pressure, so air enters through filters instead of every seam. The CPU cooler is rated for 270W against a 170W part: the headroom is spent on staying quiet at a sustained load, not on a benchmark run.'],
+    ['Where the heat goes', 'Six intake fans — three front, three in the floor under the card — against three top and one rear exhaust keeps the case at positive pressure, so air enters through filters instead of every seam. The CPU cooler is rated for 270W against a 170W part: the headroom is spent on staying quiet at a sustained load, not on a benchmark run.'],
   ];
 
   root.addEventListener('fg:step', (e) => {
