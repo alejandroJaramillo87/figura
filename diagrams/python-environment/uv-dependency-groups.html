@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The dependency groups and who installs them</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>The dependency groups and who installs them</h1>
+<p>Which sections of pyproject.toml each environment installs — and why the agent sandbox, alone among them, gets none of the core dependencies.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-uv-dependency-groups">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-uv-dependency-groups {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-uv-dependency-groups {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-uv-dependency-groups svg { display: block; width: 100%; height: auto; }
+.fg-uv-dependency-groups text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-uv-dependency-groups {
+  padding: 16px 16px 12px;
+}
+
+/* --- diagram-specific styling ------------------------------------- */
+.fg-uv-dependency-groups .pyug-row { cursor: pointer; }
+.fg-uv-dependency-groups .pyug-rowbg {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast) var(--ease);
+}
+.fg-uv-dependency-groups .pyug-row:hover .pyug-rowbg {
+  fill: var(--panel-hover); stroke: var(--accent);
+}
+.fg-uv-dependency-groups .pyug-name {
+  fill: var(--text); font-size: 12px; font-weight: 600; font-family: var(--mono);
+}
+.fg-uv-dependency-groups .pyug-count { fill: var(--muted); font-size: 10px; }
+.fg-uv-dependency-groups .pyug-col {
+  fill: var(--muted); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.03em; text-anchor: middle;
+}
+.fg-uv-dependency-groups .pyug-colsub {
+  fill: var(--muted); font-size: 9.5px; text-anchor: middle;
+  font-family: var(--mono);
+}
+/* A filled cell means the environment installs that section. An empty
+   dashed cell means it does not -- the absence is the informative half. */
+.fg-uv-dependency-groups .pyug-yes {
+  fill: var(--ok-dim); stroke: var(--ok); stroke-width: 1;
+}
+.fg-uv-dependency-groups .pyug-dot { fill: var(--ok); }
+.fg-uv-dependency-groups .pyug-no {
+  fill: none; stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 3;
+}
+.fg-uv-dependency-groups .pyug-divider { stroke: var(--border); stroke-width: 1; }
+.fg-uv-dependency-groups .pyug-note {
+  fill: var(--muted); font-size: 10px; font-style: italic;
+}
+
+/* fg:begin caption-box v1 */
+.fg-uv-dependency-groups .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
+  border-radius: 0 8px 8px 0;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
+}
+/* fg:end caption-box */
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-uv-dependency-groups, .fg-uv-dependency-groups * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="A matrix of the six pin-bearing sections of pyproject.toml against the four environments that sync from the lock file, showing which sections each one installs.">
+  <text class="pyug-col" x="236" y="30">host</text>
+  <text class="pyug-colsub" x="236" y="44">all groups</text>
+  <text class="pyug-col" x="366" y="30">agents</text>
+  <text class="pyug-colsub" x="366" y="44">--only-group</text>
+  <text class="pyug-col" x="496" y="30">interp</text>
+  <text class="pyug-colsub" x="496" y="44">--group</text>
+  <text class="pyug-col" x="626" y="30">training</text>
+  <text class="pyug-colsub" x="626" y="44">--group</text>
+  <line class="pyug-divider" x1="14" y1="54" x2="746" y2="54"/>
+  <g class="pyug-row" data-info="The core runtime dependencies, torch included. Present wherever uv resolves the project itself. The agent image is the exception: --only-group installs the named groups and nothing else, which is precisely how a torch-free sandbox stays torch-free.">
+    <rect class="pyug-rowbg" x="14" y="64" width="732" height="44" rx="6"/>
+    <text class="pyug-name" x="30" y="86">[project]</text>
+    <text class="pyug-count" x="30" y="100">30 core pins</text>
+    <rect class="pyug-yes" x="210" y="74" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="236" cy="86" r="4"/>
+    <rect class="pyug-no" x="340" y="74" width="52" height="24" rx="5"/>
+    <rect class="pyug-yes" x="470" y="74" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="496" cy="86" r="4"/>
+    <rect class="pyug-yes" x="600" y="74" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="626" cy="86" r="4"/>
+  </g>
+  <g class="pyug-row" data-info="An optional extra rather than a group, isolating nemo-toolkit and its companions so their transitive constraints cannot block a core upgrade. Only the host installs it, via --all-extras.">
+    <rect class="pyug-rowbg" x="14" y="116" width="732" height="44" rx="6"/>
+    <text class="pyug-name" x="30" y="138">quant</text>
+    <text class="pyug-count" x="30" y="152">extra, 5 pins</text>
+    <rect class="pyug-yes" x="210" y="126" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="236" cy="138" r="4"/>
+    <rect class="pyug-no" x="340" y="126" width="52" height="24" rx="5"/>
+    <rect class="pyug-no" x="470" y="126" width="52" height="24" rx="5"/>
+    <rect class="pyug-no" x="600" y="126" width="52" height="24" rx="5"/>
+  </g>
+  <g class="pyug-row" data-info="pytest, ruff, mypy, and the pinned shellcheck-py whose binary the quality gate runs. The agent image omits apt shellcheck deliberately so this pinned wheel is the only one on PATH.">
+    <rect class="pyug-rowbg" x="14" y="168" width="732" height="44" rx="6"/>
+    <text class="pyug-name" x="30" y="190">dev</text>
+    <text class="pyug-count" x="30" y="204">9 pins</text>
+    <rect class="pyug-yes" x="210" y="178" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="236" cy="190" r="4"/>
+    <rect class="pyug-yes" x="340" y="178" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="366" cy="190" r="4"/>
+    <rect class="pyug-no" x="470" y="178" width="52" height="24" rx="5"/>
+    <rect class="pyug-no" x="600" y="178" width="52" height="24" rx="5"/>
+  </g>
+  <g class="pyug-row" data-info="The exact set a torch-free environment needs to collect the suite. Without it most test files fail collection on a missing import, which reports as an error rather than as a skip. Every pin here mirrors one elsewhere.">
+    <rect class="pyug-rowbg" x="14" y="220" width="732" height="44" rx="6"/>
+    <text class="pyug-name" x="30" y="242">sandbox</text>
+    <text class="pyug-count" x="30" y="256">13 pins</text>
+    <rect class="pyug-yes" x="210" y="230" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="236" cy="242" r="4"/>
+    <rect class="pyug-yes" x="340" y="230" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="366" cy="242" r="4"/>
+    <rect class="pyug-no" x="470" y="230" width="52" height="24" rx="5"/>
+    <rect class="pyug-no" x="600" y="230" width="52" height="24" rx="5"/>
+  </g>
+  <g class="pyug-row" data-info="Mechanistic-interpretability tooling, with the notebook packages folded in so the workbench image is the lock file and notebooks need no in-container installs.">
+    <rect class="pyug-rowbg" x="14" y="272" width="732" height="44" rx="6"/>
+    <text class="pyug-name" x="30" y="294">interp</text>
+    <text class="pyug-count" x="30" y="308">14 pins</text>
+    <rect class="pyug-yes" x="210" y="282" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="236" cy="294" r="4"/>
+    <rect class="pyug-no" x="340" y="282" width="52" height="24" rx="5"/>
+    <rect class="pyug-yes" x="470" y="282" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="496" cy="294" r="4"/>
+    <rect class="pyug-no" x="600" y="282" width="52" height="24" rx="5"/>
+  </g>
+  <g class="pyug-row" data-info="The training tier: trl, torchao, flash-attn and the evaluation harness. flash-attn imports torch in its setup.py, so extra-build-dependencies supplies it at build time.">
+    <rect class="pyug-rowbg" x="14" y="324" width="732" height="44" rx="6"/>
+    <text class="pyug-name" x="30" y="346">training</text>
+    <text class="pyug-count" x="30" y="360">10 pins</text>
+    <rect class="pyug-yes" x="210" y="334" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="236" cy="346" r="4"/>
+    <rect class="pyug-no" x="340" y="334" width="52" height="24" rx="5"/>
+    <rect class="pyug-no" x="470" y="334" width="52" height="24" rx="5"/>
+    <rect class="pyug-yes" x="600" y="334" width="52" height="24" rx="5"/>
+    <circle class="pyug-dot" cx="626" cy="346" r="4"/>
+  </g>
+  <text class="pyug-note" x="14" y="388">Export and vllm-gpu install no group at all: they use uv pip install with their own pins.</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Six pin-bearing sections, four environments. Hover a row for what it holds and why.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+
+  // fg:begin hover-caption v1
+  const caption = root.querySelector('[data-fg="caption"]');
+  const captionDefault = caption.textContent;
+  root.querySelectorAll('[data-info]').forEach((el) => {
+    el.addEventListener('mouseenter', () => {
+      caption.textContent = el.getAttribute('data-info');
+      caption.classList.add('is-active');
+    });
+    el.addEventListener('mouseleave', () => {
+      caption.textContent = captionDefault;
+      caption.classList.remove('is-active');
+    });
+  });
+  // fg:end hover-caption
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

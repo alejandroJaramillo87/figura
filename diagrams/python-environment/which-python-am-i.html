@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which Python am I running?</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Which Python am I running?</h1>
+<p>The same script, resolved two ways: through a pyenv shim that reads the file uv wrote, and through uv run.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-which-python-am-i">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-which-python-am-i {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-which-python-am-i {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-which-python-am-i svg { display: block; width: 100%; height: auto; }
+.fg-which-python-am-i text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-which-python-am-i {
+  padding: 16px 16px 12px;
+}
+
+/* --- diagram-specific styling ------------------------------------- */
+/* The caption runs longer than the 4.2em the managed block reserves;
+   raising the floor keeps stepping from reflowing the surrounding post. */
+.fg-which-python-am-i { --fg-cap-minh: 5.6em; }
+
+.fg-which-python-am-i .pywp-box {
+  fill: var(--panel); stroke: var(--border); stroke-width: 1;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast) var(--ease);
+}
+.fg-which-python-am-i .pywp-title { fill: var(--text); font-size: 12.5px; font-weight: 600; }
+.fg-which-python-am-i .pywp-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); }
+.fg-which-python-am-i .pywp-lane {
+  fill: var(--muted); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase; text-anchor: middle;
+}
+.fg-which-python-am-i .pywp-conn { fill: none; stroke: var(--line); stroke-width: 1.5; }
+
+/* Draw-in: the edge exists statically and is revealed, so nothing
+   reflows as the timeline advances. */
+.fg-which-python-am-i .pywp-flow {
+  fill: none; stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--dur-fast) var(--ease);
+}
+.fg-which-python-am-i .pywp-flow-bad { stroke: var(--hot); }
+.fg-which-python-am-i .pywp-flow-good { stroke: var(--ok); }
+.fg-which-python-am-i .pywp-flow.is-drawn { stroke-dashoffset: 0; }
+
+/* Glow: a statically blurred duplicate whose opacity animates. The blur
+   itself never re-renders, which is what keeps this cheap. */
+.fg-which-python-am-i .pywp-halo {
+  opacity: 0; filter: blur(9px);
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.fg-which-python-am-i .pywp-node.is-active .pywp-halo { opacity: 0.5; }
+.fg-which-python-am-i .pywp-node.is-active .pywp-box { stroke-width: 1.8; }
+.fg-which-python-am-i .pywp-node.is-done .pywp-box { stroke: var(--line); }
+
+.fg-which-python-am-i .pywp-bad.is-active .pywp-box { fill: var(--hot-dim); stroke: var(--hot); }
+.fg-which-python-am-i .pywp-good.is-active .pywp-box { fill: var(--ok-dim); stroke: var(--ok); }
+.fg-which-python-am-i .pywp-neutral.is-active .pywp-box { fill: var(--accent-dim); stroke: var(--accent); }
+.fg-which-python-am-i .pywp-bad.is-done .pywp-box { fill: var(--hot-dim); }
+.fg-which-python-am-i .pywp-good.is-done .pywp-box { fill: var(--ok-dim); }
+.fg-which-python-am-i .pywp-neutral.is-done .pywp-box { fill: var(--accent-dim); }
+
+.fg-which-python-am-i .pywp-verdict { font-size: 12px; font-weight: 600; font-family: var(--mono); }
+.fg-which-python-am-i .pywp-verdict-bad { fill: var(--hot); }
+.fg-which-python-am-i .pywp-verdict-good { fill: var(--ok); }
+
+/* --- step states --------------------------------------------------- */
+/* Every state is carried by is-active / is-done classes the fg:step
+   handler sets, so there are no per-step selectors to keep in sync. */
+
+/* fg:begin caption-box v1 */
+.fg-which-python-am-i .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
+  border-radius: 0 8px 8px 0;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
+}
+/* fg:end caption-box */
+
+/* fg:begin controls-bar v1 */
+.fg-which-python-am-i .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-which-python-am-i .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-which-python-am-i .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
+.fg-which-python-am-i .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+/* fg:end controls-bar */
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-which-python-am-i, .fg-which-python-am-i * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 760 500" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="One command resolved two ways. A bare python3 finds a pyenv shim that reads the same .python-version file uv wrote, lands on an interpreter without the project dependencies, and reports a working machine as broken. Under uv run the same command reaches the project environment and finds PyTorch.">
+  <g class="pywp-node pywp-neutral" data-step="1">
+    <rect class="pywp-halo" x="250" y="14" width="260" height="46" rx="8" fill="var(--accent)"/>
+    <rect class="pywp-box" x="250" y="14" width="260" height="46" rx="8"/>
+    <text class="pywp-title" x="270" y="34">Run a script in the repo</text>
+    <text class="pywp-sub" x="270" y="50">check_py_deps_install.py</text>
+  </g>
+
+  <path class="pywp-conn" d="M 380 60 L 380 88"/>
+
+  <g class="pywp-node pywp-neutral" data-step="2">
+    <rect class="pywp-halo" x="250" y="88" width="260" height="46" rx="8" fill="var(--accent)"/>
+    <rect class="pywp-box" x="250" y="88" width="260" height="46" rx="8"/>
+    <text class="pywp-title" x="270" y="108">The shell searches PATH</text>
+    <text class="pywp-sub" x="270" y="124">first match wins</text>
+  </g>
+
+  <path class="pywp-conn" d="M 380 134 C 380 160 195 152 195 182"/>
+  <path class="pywp-conn" d="M 380 134 C 380 160 565 152 565 182"/>
+  <path id="pywp-r1" class="pywp-flow pywp-flow-bad" pathLength="1" d="M 380 134 C 380 160 195 152 195 182"/>
+  <path id="pywp-r2" class="pywp-flow pywp-flow-good" pathLength="1" d="M 380 134 C 380 160 565 152 565 182"/>
+
+  <text class="pywp-lane" x="195" y="155">bare python3</text>
+  <text class="pywp-lane" x="565" y="155">under uv run</text>
+
+  <g class="pywp-node pywp-bad" data-step="3">
+    <rect class="pywp-halo" x="40" y="182" width="310" height="52" rx="8" fill="var(--hot)"/>
+    <rect class="pywp-box" x="40" y="182" width="310" height="52" rx="8"/>
+    <text class="pywp-title" x="58" y="204">A pyenv shim answers first</text>
+    <text class="pywp-sub" x="58" y="221">~/.pyenv/shims/python3</text>
+  </g>
+  <g class="pywp-node pywp-good" data-step="3">
+    <rect class="pywp-halo" x="410" y="182" width="310" height="52" rx="8" fill="var(--ok)"/>
+    <rect class="pywp-box" x="410" y="182" width="310" height="52" rx="8"/>
+    <text class="pywp-title" x="428" y="204">uv selects the project env</text>
+    <text class="pywp-sub" x="428" y="221">.venv/bin/python3</text>
+  </g>
+
+  <path class="pywp-conn" d="M 195 234 L 195 262"/>
+  <path class="pywp-conn" d="M 565 234 L 565 262"/>
+  <path id="pywp-r3" class="pywp-flow pywp-flow-bad" pathLength="1" d="M 195 234 L 195 262"/>
+  <path id="pywp-r4" class="pywp-flow pywp-flow-good" pathLength="1" d="M 565 234 L 565 262"/>
+
+  <g class="pywp-node pywp-bad" data-step="4">
+    <rect class="pywp-halo" x="40" y="262" width="310" height="52" rx="8" fill="var(--hot)"/>
+    <rect class="pywp-box" x="40" y="262" width="310" height="52" rx="8"/>
+    <text class="pywp-title" x="58" y="284">It reads .python-version</text>
+    <text class="pywp-sub" x="58" y="301">the file uv pin wrote</text>
+  </g>
+  <g class="pywp-node pywp-good" data-step="4">
+    <rect class="pywp-halo" x="410" y="262" width="310" height="52" rx="8" fill="var(--ok)"/>
+    <rect class="pywp-box" x="410" y="262" width="310" height="52" rx="8"/>
+    <text class="pywp-title" x="428" y="284">sys.prefix != sys.base_prefix</text>
+    <text class="pywp-sub" x="428" y="301">so: inside a virtual environment</text>
+  </g>
+
+  <path class="pywp-conn" d="M 195 314 L 195 342"/>
+  <path class="pywp-conn" d="M 565 314 L 565 342"/>
+  <path id="pywp-r5" class="pywp-flow pywp-flow-bad" pathLength="1" d="M 195 314 L 195 342"/>
+  <path id="pywp-r6" class="pywp-flow pywp-flow-good" pathLength="1" d="M 565 314 L 565 342"/>
+
+  <g class="pywp-node pywp-bad" data-step="5">
+    <rect class="pywp-halo" x="40" y="342" width="310" height="52" rx="8" fill="var(--hot)"/>
+    <rect class="pywp-box" x="40" y="342" width="310" height="52" rx="8"/>
+    <text class="pywp-title" x="58" y="364">pyenv resolves it to its own</text>
+    <text class="pywp-sub" x="58" y="381">3.12.11, carrying no project deps</text>
+  </g>
+  <g class="pywp-node pywp-good" data-step="5">
+    <rect class="pywp-halo" x="410" y="342" width="310" height="52" rx="8" fill="var(--ok)"/>
+    <rect class="pywp-box" x="410" y="342" width="310" height="52" rx="8"/>
+    <text class="pywp-title" x="428" y="364">pyvenv.cfg names its base</text>
+    <text class="pywp-sub" x="428" y="381">uv-managed 3.12.13</text>
+  </g>
+
+  <path class="pywp-conn" d="M 195 394 L 195 422"/>
+  <path class="pywp-conn" d="M 565 394 L 565 422"/>
+  <path id="pywp-r7" class="pywp-flow pywp-flow-bad" pathLength="1" d="M 195 394 L 195 422"/>
+  <path id="pywp-r8" class="pywp-flow pywp-flow-good" pathLength="1" d="M 565 394 L 565 422"/>
+
+  <g class="pywp-node pywp-bad" data-step="6">
+    <rect class="pywp-halo" x="40" y="422" width="310" height="52" rx="8" fill="var(--hot)"/>
+    <rect class="pywp-box" x="40" y="422" width="310" height="52" rx="8"/>
+    <text class="pywp-verdict pywp-verdict-bad" x="58" y="444">[ERROR] not installed</text>
+    <text class="pywp-sub" x="58" y="461">a working machine, reported broken</text>
+  </g>
+  <g class="pywp-node pywp-good" data-step="6">
+    <rect class="pywp-halo" x="410" y="422" width="310" height="52" rx="8" fill="var(--ok)"/>
+    <rect class="pywp-box" x="410" y="422" width="310" height="52" rx="8"/>
+    <text class="pywp-verdict pywp-verdict-good" x="428" y="444">[OK] torch 2.13.0+cu130</text>
+    <text class="pywp-sub" x="428" y="461">CUDA available: True</text>
+  </g>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Two ways to run one script. Press play, or step through.</div>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const TOTAL = 6, STEP_MS = 2400;
+
+  // fg:begin timeline-core v1
+  let step = 0, timer = null;
+  function apply() {
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); root.classList.add('is-playing'); } },
+    pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
+  };
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  const counter = btn('counter');
+  function sync() {
+    if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // fg:end timeline-core
+
+  const caption = root.querySelector('[data-fg="caption"]');
+
+  const CAPTIONS = [
+    'Two ways to run one script. Press play, or step through.',
+    ['Run a script in the repo', 'The same command, about to resolve two different ways \u2014 depending only on what is on PATH.'],
+    ['The shell searches PATH', 'First match wins. Nothing here knows or cares which interpreter carries the project dependencies.'],
+    ['The fork', 'A pyenv shim answers before anything else. Under uv run, uv selects the project environment instead.'],
+    ['The same file, read twice', 'pyenv reads .python-version \u2014 the file uv pin wrote. The collision is on the file, not on the shell, so keeping pyenv for other projects is not a way around it. uv instead checks sys.prefix against sys.base_prefix.'],
+    ['Two different interpreters', 'pyenv resolves the 3.12 pin to its own build, which carries none of the project dependencies. The venv records its base interpreter by absolute path in pyvenv.cfg.'],
+    ['Contradictory answers', 'One machine, one moment, two verdicts. This is why the checker now refuses to run outside a virtual environment rather than reporting a false negative.'],
+  ];
+
+  root.addEventListener('fg:step', (e) => {
+    const s = e.detail.step;
+    root.querySelectorAll('.pywp-node').forEach((g) => {
+      const n = Number(g.getAttribute('data-step'));
+      g.classList.toggle('is-active', n === s);
+      g.classList.toggle('is-done', n < s);
+    });
+    // Two edges per advance, one per lane: edge pair k is drawn once the
+    // step it leads into has been reached.
+    root.querySelectorAll('.pywp-flow').forEach((path, i) => {
+      path.classList.toggle('is-drawn', s >= Math.floor(i / 2) + 3);
+    });
+    const c = CAPTIONS[s];
+    caption.innerHTML = '';
+    if (Array.isArray(c)) {
+      const b = document.createElement('strong');
+      b.textContent = c[0] + ' \u2014 ';
+      caption.appendChild(b);
+      caption.appendChild(document.createTextNode(c[1]));
+    } else {
+      caption.textContent = c;
+    }
+  });
+
+
+  // fg:begin timeline-start v1
+  apply();
+  if (reduced) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+  // fg:end timeline-start
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
