@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Block tap seam</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Block tap seam</h1>
+<p>One decoder block of the CPU backend, in execution order: three residual adds, the output scale, the optional steering add, then the tap that copies the last-position row out.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-block-tap-seam">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-block-tap-seam {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-block-tap-seam {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-block-tap-seam svg { display: block; width: 100%; height: auto; }
+.fg-block-tap-seam text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-block-tap-seam {
+  padding: 16px 16px 12px;
+}
+
+/* --- static styling ------------------------------------------------ */
+.fg-block-tap-seam .bts-node {
+  fill: var(--panel); stroke: var(--border); stroke-width: 2;
+  transition: stroke var(--dur-fast) var(--ease), fill var(--dur-fast) var(--ease), opacity var(--dur-fast) var(--ease);
+}
+.fg-block-tap-seam .bts-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; }
+.fg-block-tap-seam .bts-sub   { fill: var(--muted); font-size: 11px; text-anchor: middle; }
+.fg-block-tap-seam .bts-lab   { fill: var(--muted); font-size: 12px; }
+.fg-block-tap-seam .bts-code  { font-family: var(--mono); font-size: 11px; }
+.fg-block-tap-seam .bts-op    { fill: var(--text); font-size: 15px; font-weight: 600; text-anchor: middle; }
+
+/* residual stream: the horizontal band every stage writes into */
+.fg-block-tap-seam .bts-stream {
+  stroke: var(--ok); stroke-width: 3; fill: none; stroke-linecap: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.35;
+  transition: stroke-dashoffset 0.6s var(--ease), opacity var(--dur-fast);
+}
+.fg-block-tap-seam .bts-stream-0 { stroke-dashoffset: 0; opacity: 0.9; }
+.fg-block-tap-seam.is-step-1 .bts-stream-1, .fg-block-tap-seam.is-step-2 .bts-stream-1, .fg-block-tap-seam.is-step-3 .bts-stream-1,
+.fg-block-tap-seam.is-step-4 .bts-stream-1, .fg-block-tap-seam.is-step-5 .bts-stream-1, .fg-block-tap-seam.is-step-6 .bts-stream-1,
+.fg-block-tap-seam.is-step-2 .bts-stream-2, .fg-block-tap-seam.is-step-3 .bts-stream-2, .fg-block-tap-seam.is-step-4 .bts-stream-2,
+.fg-block-tap-seam.is-step-5 .bts-stream-2, .fg-block-tap-seam.is-step-6 .bts-stream-2,
+.fg-block-tap-seam.is-step-3 .bts-stream-3, .fg-block-tap-seam.is-step-4 .bts-stream-3, .fg-block-tap-seam.is-step-5 .bts-stream-3,
+.fg-block-tap-seam.is-step-6 .bts-stream-3,
+.fg-block-tap-seam.is-step-4 .bts-stream-4, .fg-block-tap-seam.is-step-5 .bts-stream-4, .fg-block-tap-seam.is-step-6 .bts-stream-4,
+.fg-block-tap-seam.is-step-5 .bts-stream-5, .fg-block-tap-seam.is-step-6 .bts-stream-5,
+.fg-block-tap-seam.is-step-6 .bts-stream-6 { stroke-dashoffset: 0; opacity: 0.9; }
+
+/* contributor boxes: dim until their step, accent at their step, done after */
+.fg-block-tap-seam .bts-stage { opacity: 0.4; transition: opacity var(--dur-fast) var(--ease); }
+.fg-block-tap-seam .bts-feed {
+  stroke: var(--line); stroke-width: 2; fill: none;
+  stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0;
+  transition: stroke-dashoffset 0.5s var(--ease), opacity var(--dur-fast);
+}
+.fg-block-tap-seam.is-step-1 .bts-stage-1, .fg-block-tap-seam.is-step-2 .bts-stage-1, .fg-block-tap-seam.is-step-3 .bts-stage-1,
+.fg-block-tap-seam.is-step-4 .bts-stage-1, .fg-block-tap-seam.is-step-5 .bts-stage-1, .fg-block-tap-seam.is-step-6 .bts-stage-1,
+.fg-block-tap-seam.is-step-2 .bts-stage-2, .fg-block-tap-seam.is-step-3 .bts-stage-2, .fg-block-tap-seam.is-step-4 .bts-stage-2,
+.fg-block-tap-seam.is-step-5 .bts-stage-2, .fg-block-tap-seam.is-step-6 .bts-stage-2,
+.fg-block-tap-seam.is-step-3 .bts-stage-3, .fg-block-tap-seam.is-step-4 .bts-stage-3, .fg-block-tap-seam.is-step-5 .bts-stage-3,
+.fg-block-tap-seam.is-step-6 .bts-stage-3,
+.fg-block-tap-seam.is-step-4 .bts-stage-4, .fg-block-tap-seam.is-step-5 .bts-stage-4, .fg-block-tap-seam.is-step-6 .bts-stage-4,
+.fg-block-tap-seam.is-step-5 .bts-stage-5, .fg-block-tap-seam.is-step-6 .bts-stage-5,
+.fg-block-tap-seam.is-step-6 .bts-stage-6 { opacity: 1; }
+.fg-block-tap-seam.is-step-1 .bts-stage-1 .bts-feed, .fg-block-tap-seam.is-step-2 .bts-stage-1 .bts-feed, .fg-block-tap-seam.is-step-3 .bts-stage-1 .bts-feed,
+.fg-block-tap-seam.is-step-4 .bts-stage-1 .bts-feed, .fg-block-tap-seam.is-step-5 .bts-stage-1 .bts-feed, .fg-block-tap-seam.is-step-6 .bts-stage-1 .bts-feed,
+.fg-block-tap-seam.is-step-2 .bts-stage-2 .bts-feed, .fg-block-tap-seam.is-step-3 .bts-stage-2 .bts-feed, .fg-block-tap-seam.is-step-4 .bts-stage-2 .bts-feed,
+.fg-block-tap-seam.is-step-5 .bts-stage-2 .bts-feed, .fg-block-tap-seam.is-step-6 .bts-stage-2 .bts-feed,
+.fg-block-tap-seam.is-step-3 .bts-stage-3 .bts-feed, .fg-block-tap-seam.is-step-4 .bts-stage-3 .bts-feed, .fg-block-tap-seam.is-step-5 .bts-stage-3 .bts-feed,
+.fg-block-tap-seam.is-step-6 .bts-stage-3 .bts-feed,
+.fg-block-tap-seam.is-step-5 .bts-stage-5 .bts-feed, .fg-block-tap-seam.is-step-6 .bts-stage-5 .bts-feed { stroke-dashoffset: 0; opacity: 0.9; }
+
+/* the active stage: accent stroke and dim fill, one lead effect per step */
+.fg-block-tap-seam.is-step-1 .bts-stage-1 .bts-node, .fg-block-tap-seam.is-step-2 .bts-stage-2 .bts-node,
+.fg-block-tap-seam.is-step-3 .bts-stage-3 .bts-node, .fg-block-tap-seam.is-step-4 .bts-stage-4 .bts-node,
+.fg-block-tap-seam.is-step-5 .bts-stage-5 .bts-node, .fg-block-tap-seam.is-step-6 .bts-stage-6 .bts-node { stroke: var(--accent); fill: var(--accent-dim); }
+
+/* the steering add is dashed: optional, absent unless a control vector is set */
+.fg-block-tap-seam .bts-stage-5 .bts-node { stroke-dasharray: 5 4; }
+.fg-block-tap-seam .bts-stage-5 .bts-feed { stroke-dasharray: 5 4; }
+.fg-block-tap-seam.is-step-5 .bts-stage-5 .bts-node { stroke: var(--violet); fill: var(--violet-dim); }
+
+/* ripple on the residual add of the active step (in-place update) */
+.fg-block-tap-seam .bts-ripple {
+  fill: none; stroke: var(--accent); stroke-width: 2; opacity: 0;
+  transform-box: fill-box; transform-origin: center;
+}
+.fg-block-tap-seam.is-step-1 .bts-ripple-1, .fg-block-tap-seam.is-step-2 .bts-ripple-2,
+.fg-block-tap-seam.is-step-3 .bts-ripple-3, .fg-block-tap-seam.is-step-4 .bts-ripple-4,
+.fg-block-tap-seam.is-step-5 .bts-ripple-5 { animation: fg-bts-ripple 1.4s var(--ease) infinite; }
+@keyframes fg-bts-ripple {
+  0%   { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* the tap: a copy, not an add; the comet carries one row down to the tap box */
+.fg-block-tap-seam .bts-comet { opacity: 0; transition: opacity 0.3s; }
+.fg-block-tap-seam.is-step-6 .bts-comet { opacity: 1; }
+.fg-block-tap-seam .bts-tapbox-halo { filter: blur(7px); opacity: 0; transition: opacity var(--dur-fast); }
+.fg-block-tap-seam.is-step-6 .bts-tapbox-halo { animation: fg-bts-glow 1.4s var(--ease) infinite alternate; }
+@keyframes fg-bts-glow { from { opacity: 0.25; } to { opacity: 0.7; } }
+.fg-block-tap-seam .bts-lastpos { opacity: 0; transition: opacity var(--dur-fast); }
+.fg-block-tap-seam.is-step-6 .bts-lastpos { opacity: 1; }
+
+/* phase captions */
+.fg-block-tap-seam .bts-phase { opacity: 0; transition: opacity var(--dur-fast); }
+.fg-block-tap-seam.is-step-0 .bts-phase-0, .fg-block-tap-seam.is-step-1 .bts-phase-1,
+.fg-block-tap-seam.is-step-2 .bts-phase-2, .fg-block-tap-seam.is-step-3 .bts-phase-3,
+.fg-block-tap-seam.is-step-4 .bts-phase-4, .fg-block-tap-seam.is-step-5 .bts-phase-5,
+.fg-block-tap-seam.is-step-6 .bts-phase-6 { opacity: 1; }
+
+/* fg:begin controls-bar v1 */
+.fg-block-tap-seam .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-block-tap-seam .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
+  cursor: pointer; padding: 0; line-height: 1;
+}
+.fg-block-tap-seam .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
+.fg-block-tap-seam .fg-controls [data-fg="counter"] {
+  color: var(--muted); font-size: 12px; margin-left: 4px;
+  font-variant-numeric: tabular-nums;
+}
+/* fg:end controls-bar */
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-block-tap-seam, .fg-block-tap-seam * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .fg-block-tap-seam .bts-comet { display: none; }
+  .fg-block-tap-seam.is-step-6 .bts-tapbox-halo { opacity: 0.4; }
+  .fg-block-tap-seam .bts-ripple { opacity: 0; }
+}
+</style>
+
+<svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="One decoder block in the CPU backend: the residual stream enters at the left; attention, the MLP, and the per-layer embedding each add into it; the layer output scale multiplies it; an optional control vector is added; then the tap copies the last position's row out before the stream continues to the next block.">
+  <defs>
+    <marker id="bts-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="bts-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+    </marker>
+  </defs>
+
+  <!-- residual stream, left to right, drawn in one segment per step -->
+  <text class="bts-lab" x="24" y="190">x: n positions × embed_dim</text>
+  <path class="bts-stream bts-stream-0" pathLength="1" d="M 24 220 L 92 220"/>
+  <path class="bts-stream bts-stream-1" pathLength="1" d="M 92 220 L 202 220"/>
+  <path class="bts-stream bts-stream-2" pathLength="1" d="M 202 220 L 312 220"/>
+  <path class="bts-stream bts-stream-3" pathLength="1" d="M 312 220 L 422 220"/>
+  <path class="bts-stream bts-stream-4" pathLength="1" d="M 422 220 L 532 220"/>
+  <path class="bts-stream bts-stream-5" pathLength="1" d="M 532 220 L 642 220"/>
+  <path class="bts-stream bts-stream-6" pathLength="1" d="M 642 220 L 736 220" marker-end="url(#bts-arrow-ok)"/>
+  <text class="bts-sub" x="700" y="205">block i+1</text>
+
+  <!-- stage 1: attention residual -->
+  <g class="bts-stage bts-stage-1">
+    <rect class="bts-node" x="94" y="40" width="106" height="52" rx="8"/>
+    <text class="bts-title" x="147" y="62">attention</text>
+    <text class="bts-sub" x="147" y="80">post_attn_norm</text>
+    <path class="bts-feed" pathLength="1" d="M 147 92 L 147 200" marker-end="url(#bts-arrow)"/>
+    <circle class="bts-ripple bts-ripple-1" cx="147" cy="220" r="14"/>
+    <circle class="bts-node" cx="147" cy="220" r="14"/>
+    <text class="bts-op" x="147" y="225">+</text>
+  </g>
+
+  <!-- stage 2: MLP residual -->
+  <g class="bts-stage bts-stage-2">
+    <rect class="bts-node" x="204" y="40" width="106" height="52" rx="8"/>
+    <text class="bts-title" x="257" y="62">GeGLU MLP</text>
+    <text class="bts-sub" x="257" y="80">post_ffw_norm</text>
+    <path class="bts-feed" pathLength="1" d="M 257 92 L 257 200" marker-end="url(#bts-arrow)"/>
+    <circle class="bts-ripple bts-ripple-2" cx="257" cy="220" r="14"/>
+    <circle class="bts-node" cx="257" cy="220" r="14"/>
+    <text class="bts-op" x="257" y="225">+</text>
+  </g>
+
+  <!-- stage 3: per-layer input embedding residual -->
+  <g class="bts-stage bts-stage-3">
+    <rect class="bts-node" x="314" y="40" width="106" height="52" rx="8"/>
+    <text class="bts-title" x="367" y="62">per-layer embed</text>
+    <text class="bts-sub" x="367" y="80">gate·ple[i]·proj</text>
+    <path class="bts-feed" pathLength="1" d="M 367 92 L 367 200" marker-end="url(#bts-arrow)"/>
+    <circle class="bts-ripple bts-ripple-3" cx="367" cy="220" r="14"/>
+    <circle class="bts-node" cx="367" cy="220" r="14"/>
+    <text class="bts-op" x="367" y="225">+</text>
+  </g>
+
+  <!-- stage 4: layer output scale -->
+  <g class="bts-stage bts-stage-4">
+    <circle class="bts-ripple bts-ripple-4" cx="477" cy="220" r="14"/>
+    <circle class="bts-node" cx="477" cy="220" r="14"/>
+    <text class="bts-op" x="477" y="225">×</text>
+    <text class="bts-sub" x="477" y="256">layer_output_scale</text>
+  </g>
+
+  <!-- stage 5: control vector add (optional, dashed) -->
+  <g class="bts-stage bts-stage-5">
+    <rect class="bts-node" x="534" y="40" width="106" height="52" rx="8"/>
+    <text class="bts-title" x="587" y="62">control vector</text>
+    <text class="bts-sub" x="587" y="80">scale · direction[i]</text>
+    <path class="bts-feed" pathLength="1" d="M 587 92 L 587 200" marker-end="url(#bts-arrow)"/>
+    <circle class="bts-ripple bts-ripple-5" cx="587" cy="220" r="14"/>
+    <circle class="bts-node" cx="587" cy="220" r="14"/>
+    <text class="bts-op" x="587" y="225">+</text>
+  </g>
+
+  <!-- stage 6: the tap copies the last-position row out -->
+  <g class="bts-stage bts-stage-6">
+    <circle class="bts-node" cx="680" cy="220" r="7"/>
+    <path id="bts-taproute" d="M 680 220 C 680 270, 600 270, 560 300 L 540 312" fill="none" stroke="none"/>
+    <path class="bts-feed" pathLength="1" d="M 680 227 C 680 270, 600 270, 560 300 L 540 312" marker-end="url(#bts-arrow)"/>
+    <rect class="bts-tapbox-halo" x="330" y="300" width="210" height="60" rx="8" fill="var(--accent)"/>
+    <rect class="bts-node" x="330" y="300" width="210" height="60" rx="8"/>
+    <text class="bts-title" x="435" y="323">LastRowTap</text>
+    <text class="bts-sub bts-code" x="435" y="343">rows[i] = (position, x[position].to_vec())</text>
+    <text class="bts-sub bts-lastpos" x="680" y="248">position n-1</text>
+  </g>
+
+  <!-- comet along the tap route, kicked from the fg:step handler -->
+  <g class="bts-comet">
+    <circle r="5" fill="var(--accent)">
+      <animateMotion id="bts-ct-head" dur="1.2s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#bts-taproute"/></animateMotion>
+    </circle>
+    <circle r="3.5" fill="var(--accent)" opacity="0.45">
+      <animateMotion dur="1.2s" begin="bts-ct-head.begin+0.10s" repeatCount="1" fill="freeze"><mpath href="#bts-taproute"/></animateMotion>
+    </circle>
+    <circle r="2" fill="var(--accent)" opacity="0.22">
+      <animateMotion dur="1.2s" begin="bts-ct-head.begin+0.19s" repeatCount="1" fill="freeze"><mpath href="#bts-taproute"/></animateMotion>
+    </circle>
+  </g>
+
+  <!-- phase captions: the statement each step executes -->
+  <text class="bts-sub bts-code bts-phase bts-phase-0" x="24" y="396" style="text-anchor: start">block i input: x, n positions × embed_dim, f32</text>
+  <text class="bts-sub bts-code bts-phase bts-phase-1" x="24" y="396" style="text-anchor: start">x += post_attn_norm(wo · attention(x))</text>
+  <text class="bts-sub bts-code bts-phase bts-phase-2" x="24" y="396" style="text-anchor: start">x += post_ffw_norm(w_down · (gelu(w_gate · norm(x)) * (w_up · norm(x))))</text>
+  <text class="bts-sub bts-code bts-phase bts-phase-3" x="24" y="396" style="text-anchor: start">x += ple_post_norm(proj · (gelu(inp_gate · x) * ple_rows[i]))</text>
+  <text class="bts-sub bts-code bts-phase bts-phase-4" x="24" y="396" style="text-anchor: start">x *= layer_output_scale   (the layer's last operation; block boundary)</text>
+  <text class="bts-sub bts-code bts-phase bts-phase-5" x="24" y="396" style="text-anchor: start">x += cv_scale * direction[i]   (only under --control-vector; same seam)</text>
+  <text class="bts-sub bts-code bts-phase bts-phase-6" x="24" y="396" style="text-anchor: start">tap.on_residual(i, Site::LayerOutput, position, x[position])   keeps the highest position</text>
+</svg>
+
+<div class="fg-controls">
+  <button data-fg="prev" aria-label="Previous step">‹</button>
+  <button data-fg="play" aria-label="Play or pause">▶</button>
+  <button data-fg="next" aria-label="Next step">›</button>
+  <span data-fg="counter"></span>
+</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  const TOTAL = 6, STEP_MS = 2200;
+
+  // fg:begin timeline-core v1
+  let step = 0, timer = null;
+  function apply() {
+    for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
+    root.classList.add('is-step-' + step);
+    root.dispatchEvent(new CustomEvent('fg:step', { detail: { step } }));
+  }
+  const tl = {
+    get step() { return step; },
+    get playing() { return timer !== null; },
+    go(n) { step = ((n % (TOTAL + 1)) + TOTAL + 1) % (TOTAL + 1); apply(); },
+    next() { tl.go(step + 1); },
+    prev() { tl.go(step - 1); },
+    play() { if (!timer) { timer = setInterval(() => tl.next(), STEP_MS); root.classList.add('is-playing'); } },
+    pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
+  };
+  const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
+  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  const counter = btn('counter');
+  function sync() {
+    if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
+    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  }
+  root.addEventListener('fg:step', sync);
+  root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // fg:end timeline-core
+
+  // the tap step launches the comet; trails chain off the head via syncbase
+  root.addEventListener('fg:step', (e) => {
+    if (e.detail.step === 6 && !reduced) {
+      root.querySelectorAll('#bts-ct-head').forEach((m) => m.beginElement());
+    }
+  });
+
+  // fg:begin timeline-start v1
+  apply();
+  if (reduced) {
+    tl.go(TOTAL); // show final state, manual stepping still available
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      { threshold: 0.3 }
+    );
+    io.observe(root);
+  }
+  // fg:end timeline-start
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
