@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Capture artifact</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>Capture artifact</h1>
+<p>Hover any file or manifest field to see what it records. The directory activation-capture writes, and the readers that check its model hash.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-capture-artifact">
+<style>
+/* fg:begin palette-classic v1 */
+.fg-capture-artifact {
+  --bg: #0f172a;
+  --panel: #1e293b;
+  --panel-hover: #334155;
+  --border: #334155;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --ok: #34d399;
+  --warn: #fbbf24;
+  --hot: #f87171;
+  --violet: #a78bfa;
+  --accent-dim: #0c3550;
+  --ok-dim: #0e4429;
+  --warn-dim: #4a3608;
+  --hot-dim: #4a1d1d;
+  --violet-dim: #2a2350;
+  --line: #64748b;
+  --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 12px;
+  --dur-fast: 0.45s;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* fg:end palette-classic */
+/* fg:begin panel-base v1 */
+.fg-capture-artifact {
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-family: var(--font);
+  line-height: 1.4;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+.fg-capture-artifact svg { display: block; width: 100%; height: auto; }
+.fg-capture-artifact text { font-family: inherit; }
+/* fg:end panel-base */
+.fg-capture-artifact {
+  padding: 16px 16px 12px;
+}
+
+/* --- static styling ------------------------------------------------ */
+.fg-capture-artifact .cap-block {
+  fill: var(--panel); stroke: var(--border); stroke-width: 2;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast) var(--ease); cursor: pointer;
+}
+.fg-capture-artifact .cap-group:hover .cap-block { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-capture-artifact .cap-hash { stroke: var(--warn); }
+.fg-capture-artifact .cap-group:hover .cap-hash { stroke: var(--warn); fill: var(--warn-dim); }
+.fg-capture-artifact .cap-title { fill: var(--text); font-size: 13px; font-weight: 600; pointer-events: none; }
+.fg-capture-artifact .cap-sub   { fill: var(--muted); font-size: 11px; pointer-events: none; }
+.fg-capture-artifact .cap-code  { font-family: var(--mono); }
+.fg-capture-artifact .cap-lab   { fill: var(--muted); font-size: 12px; }
+.fg-capture-artifact .cap-dir   { fill: none; stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 4 4; }
+
+/* hash provenance lines: where each digest is computed from */
+.fg-capture-artifact .cap-prov {
+  stroke: var(--warn); stroke-width: 1.5; fill: none;
+  stroke-dasharray: 5 4; animation: fg-cap-flow 1.6s linear infinite; opacity: 0.8;
+}
+/* the readers' check: every consumer compares model_hash before pairing */
+.fg-capture-artifact .cap-check {
+  stroke: var(--accent); stroke-width: 1.5; fill: none;
+  stroke-dasharray: 5 4; animation: fg-cap-flow 1.6s linear infinite; opacity: 0.8;
+}
+@keyframes fg-cap-flow { to { stroke-dashoffset: -18; } }
+
+/* fg:begin caption-box v1 */
+.fg-capture-artifact .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
+  border-radius: 0 8px 8px 0;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
+}
+/* fg:end caption-box */
+.fg-capture-artifact { --fg-cap-minh: 5.4em; } /* longest data-info at column width: no reflow on hover */
+
+/* fg:begin reduced-motion v1 */
+@media (prefers-reduced-motion: reduce) {
+  .fg-capture-artifact, .fg-capture-artifact * { transition: none !important; animation: none !important; }
+}
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 800 440" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="The capture directory activation-capture writes: numbered npz shards holding one float32 row per example per layer plus int64 labels, an examples.jsonl of the prompts, and a manifest.json whose model_hash is the sha256 of the served model.safetensors. Arrows show the hash's provenance and the readers that check it.">
+  <defs>
+    <marker id="cap-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="cap-arrow-warn" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#fbbf24"/>
+    </marker>
+    <marker id="cap-arrow-accent" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8"/>
+    </marker>
+  </defs>
+
+  <!-- inputs, left column -->
+  <text class="cap-lab" x="24" y="40">inputs</text>
+  <g class="cap-group" data-info="config.json + model.safetensors: the checkpoint the forward pass loads. The safetensors header (a u64 length prefix and that many bytes of JSON) names every tensor; the payload follows it.">
+    <rect class="cap-block" x="24" y="52" width="160" height="46" rx="8"/>
+    <text class="cap-title cap-code" x="36" y="72">model.safetensors</text>
+    <text class="cap-sub cap-code" x="36" y="88">+ config.json</text>
+  </g>
+  <g class="cap-group" data-info="dataset: one JSON object per line, {text, label}. The refusal set is 258 lines, 129 pairs. Each line is one example and yields one captured row per requested layer.">
+    <rect class="cap-block" x="24" y="118" width="160" height="46" rx="8"/>
+    <text class="cap-title cap-code" x="36" y="138">refusal.jsonl</text>
+    <text class="cap-sub cap-code" x="36" y="154">{text, label} × count</text>
+  </g>
+
+  <!-- the capture directory, center -->
+  <rect class="cap-dir" x="214" y="28" width="330" height="392" rx="10"/>
+  <text class="cap-lab cap-code" x="226" y="46">--out &lt;capture dir&gt;/</text>
+
+  <g class="cap-group" data-info="shard_00000.npz: np.savez_compressed, 2048 examples per shard (SHARD_SIZE, fixed by interp/probes/capture.py). Keys: layer_&lt;L&gt; (count × embed_dim float32) and labels (count int64).">
+    <rect class="cap-block" x="226" y="58" width="306" height="96" rx="8"/>
+    <text class="cap-title cap-code" x="238" y="78">shard_00000.npz</text>
+    <text class="cap-sub cap-code" x="238" y="98">layer_8   float32 [count, embed_dim]</text>
+    <text class="cap-sub cap-code" x="238" y="114">layer_16  float32 [count, embed_dim]</text>
+    <text class="cap-sub cap-code" x="238" y="130">layer_24  float32 [count, embed_dim]</text>
+    <text class="cap-sub cap-code" x="238" y="146">labels    int64   [count]</text>
+  </g>
+
+  <g class="cap-group" data-info="examples.jsonl: {text, label} per line, in row order. Rows, labels, and texts are joined by position alone, so load_capture cross-checks all three counts against the manifest before returning.">
+    <rect class="cap-block" x="226" y="166" width="306" height="40" rx="8"/>
+    <text class="cap-title cap-code" x="238" y="185">examples.jsonl</text>
+    <text class="cap-sub cap-code" x="238" y="199">the prompts, row order</text>
+  </g>
+
+  <g class="cap-group" data-info="manifest.json: written last, to manifest.json.tmp then renamed, so no manifest exists until every shard is on disk. schema_version 1, artifact activation_capture, capture_backend rust-harness-cpu.">
+    <rect class="cap-block" x="226" y="218" width="306" height="190" rx="8"/>
+    <text class="cap-title cap-code" x="238" y="238">manifest.json</text>
+  </g>
+  <g class="cap-group" data-info="model_hash: sha256 of model.safetensors, streamed in 1 MiB chunks (digest.rs sha256_file). The identity of the weights the rows came from; the field every reader compares before pairing an artifact with a served model.">
+    <rect class="cap-block cap-hash" x="238" y="248" width="282" height="26" rx="6"/>
+    <text class="cap-sub cap-code" x="248" y="265">model_hash   sha256(model.safetensors)</text>
+  </g>
+  <g class="cap-group" data-info="site layer_output, position last: which point of each layer, and which token, the rows were taken at. layers alone names half of where a row came from; the manifest stores the other half from Site's own Display.">
+    <rect class="cap-block" x="238" y="280" width="282" height="26" rx="6"/>
+    <text class="cap-sub cap-code" x="248" y="297">site layer_output   position last   layers [8,16,24]</text>
+  </g>
+  <g class="cap-group" data-info="dataset_sha256: sha256 of the dataset file bytes. tokenizer_fingerprint: hash of the tokenizer the prompts were encoded with. Together they pin what was fed, not only what came out.">
+    <rect class="cap-block" x="238" y="312" width="282" height="26" rx="6"/>
+    <text class="cap-sub cap-code" x="248" y="329">dataset_sha256   tokenizer_fingerprint</text>
+  </g>
+  <g class="cap-group" data-info="count, shards, dtype float32: the row arithmetic a reader checks. git_sha of the harness build and created (UTC): which code produced the shard, and when.">
+    <rect class="cap-block" x="238" y="344" width="282" height="26" rx="6"/>
+    <text class="cap-sub cap-code" x="248" y="361">count 258   shards 1   dtype float32</text>
+  </g>
+  <g class="cap-group" data-info="capture_backend rust-harness-cpu, git_sha, created: provenance of the writer. The Python writer (interp/probes/capture.py) emits the same layout with its own backend name, so one reader serves both.">
+    <rect class="cap-block" x="238" y="376" width="282" height="26" rx="6"/>
+    <text class="cap-sub cap-code" x="248" y="393">capture_backend   git_sha   created</text>
+  </g>
+
+  <!-- provenance: the digests come from the inputs -->
+  <path class="cap-prov" d="M 184 75 C 206 75, 206 261, 238 261" marker-end="url(#cap-arrow-warn)"/>
+  <path class="cap-prov" d="M 184 141 C 208 141, 208 325, 238 325" marker-end="url(#cap-arrow-warn)"/>
+  <path class="cap-flow-in" d="M 184 88 L 226 88" stroke="#64748b" stroke-width="1.5" marker-end="url(#cap-arrow)"/>
+
+  <!-- readers, right column -->
+  <text class="cap-lab" x="574" y="40">readers</text>
+  <g class="cap-group" data-info="interp probe train and registry (require_match): fit a linear probe on the rows; refuse a capture whose model_hash disagrees with the model the probe is registered against.">
+    <rect class="cap-block" x="574" y="52" width="202" height="46" rx="8"/>
+    <text class="cap-title" x="586" y="72">probe train</text>
+    <text class="cap-sub cap-code" x="586" y="88">interp/probes</text>
+  </g>
+  <g class="cap-group" data-info="steer-extract: difference of class means per layer, exported as a safetensors control vector whose manifest carries the same model_hash forward.">
+    <rect class="cap-block" x="574" y="118" width="202" height="46" rx="8"/>
+    <text class="cap-title" x="586" y="138">steer-extract</text>
+    <text class="cap-sub cap-code" x="586" y="154">interp/steering</text>
+  </g>
+  <g class="cap-group" data-info="harness --status --deep: hashes the served weights and compares against the artifact's model_hash without loading the model. A mismatch is refused with an [ERROR] line, then indented Solution: and Command: lines (harness/src/actionable.rs).">
+    <rect class="cap-block" x="574" y="184" width="202" height="60" rx="8"/>
+    <text class="cap-title" x="586" y="204">harness serve</text>
+    <text class="cap-sub cap-code" x="586" y="220">--probe / --control-vector</text>
+    <text class="cap-sub cap-code" x="586" y="236">--status --deep</text>
+  </g>
+
+  <!-- the check: every reader reads model_hash -->
+  <path class="cap-check" d="M 520 261 C 550 261, 550 75, 574 75" marker-end="url(#cap-arrow-accent)"/>
+  <path class="cap-check" d="M 520 261 C 550 261, 550 141, 574 141" marker-end="url(#cap-arrow-accent)"/>
+  <path class="cap-check" d="M 520 261 C 550 261, 550 214, 574 214" marker-end="url(#cap-arrow-accent)"/>
+  <text class="cap-sub" x="574" y="270">model_hash == sha256(served)?</text>
+  <text class="cap-sub" x="574" y="286">else: refused, Solution: + Command:</text>
+</svg>
+
+<div class="fg-caption" data-fg="caption">Hover a file, a manifest field, or a reader.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+
+  // fg:begin hover-caption v1
+  const caption = root.querySelector('[data-fg="caption"]');
+  const captionDefault = caption.textContent;
+  root.querySelectorAll('[data-info]').forEach((el) => {
+    el.addEventListener('mouseenter', () => {
+      caption.textContent = el.getAttribute('data-info');
+      caption.classList.add('is-active');
+    });
+    el.addEventListener('mouseleave', () => {
+      caption.textContent = captionDefault;
+      caption.classList.remove('is-active');
+    });
+  });
+  // fg:end hover-caption
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>
