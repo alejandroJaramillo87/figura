@@ -506,5 +506,13 @@
     "post": "ai-rig-hardware",
     "kind": "step-timeline",
     "description": "A five-step build-up from the idle floor to roughly 800W with both compute paths loaded, against a 1200W supply, ending with the case airflow that carries the heat out."
+  },
+  {
+    "id": "observability-grains",
+    "path": "diagrams/rust-harness/observability-grains.html",
+    "title": "Five observability mechanisms, five grains",
+    "post": "rust-harness",
+    "kind": "static",
+    "description": "The five harness observability mechanisms ordered by grain, from one run to one instruction, with how each is enabled and the run id that joins the in-process three. Static, exported as SVG for the docs site."
   }
 ]
