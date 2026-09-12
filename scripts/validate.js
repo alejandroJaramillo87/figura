@@ -6,6 +6,9 @@
  * prefixed keyframes and SVG ids, scoped JS conventions, self-containment
  * (no external URLs, imports, or absolute paths), reduced-motion coverage,
  * SMIL comet gating, accessibility attributes, and manifest consistency.
+ * Diagrams the manifest marks kind "static" additionally carry no script,
+ * no SMIL, no CSS motion, and no controls or caption chrome, so that the
+ * fragment can be exported as a standalone SVG (scripts/export-svg.js).
  *
  * Usage:
  *   node scripts/validate.js           # strict: exit 1 on any finding
@@ -75,7 +78,7 @@ function collectSelectors(css, out) {
   }
 }
 
-function checkFile(file) {
+function checkFile(file, kind) {
   const source = fs.readFileSync(file, 'utf8');
   const rel = F.relPath(file);
 
@@ -123,13 +126,16 @@ function checkFile(file) {
     if (!/^fg-[a-z0-9]+-/.test(kf)) report(file, 'keyframes', `keyframe name not fg-<abbr>-* prefixed: "${kf}"`);
   }
 
+  /* the fragment with managed blocks removed: rules about what an author may
+     write apply only to the diagram-specific parts */
+  let unmanaged = frag;
+  for (const b of F.findBlocks(frag).slice().reverse()) {
+    unmanaged = unmanaged.slice(0, b.start) + unmanaged.slice(b.end);
+  }
+
   /* motion tokens: easing curves and dim state fills come from the palette
      block, never hand-written — a tokens.css change must reach every state */
   {
-    let unmanaged = frag;
-    for (const b of F.findBlocks(frag).slice().reverse()) {
-      unmanaged = unmanaged.slice(0, b.start) + unmanaged.slice(b.end);
-    }
     if (/cubic-bezier\(/.test(unmanaged)) {
       report(file, 'motion-token', 'literal cubic-bezier() outside managed blocks (use var(--ease))');
     }
@@ -184,19 +190,29 @@ function checkFile(file) {
       report(file, 'js-syntax', `script does not parse: ${e.message}`);
     }
   }
+
+  /* static kind: nothing that needs a script engine or a clock, so the
+     fragment survives export to a standalone SVG consumed as an image */
+  if (kind === 'static') {
+    if (scripts.length) report(file, 'static-script', 'static diagram contains a <script>');
+    if (/<(?:animate|animateMotion|animateTransform|set)\b/.test(frag)) {
+      report(file, 'static-smil', 'static diagram contains a SMIL animation element');
+    }
+    if (out.keyframes.length) report(file, 'static-motion', 'static diagram declares @keyframes');
+    if (/(?:^|[\s;{])(?:animation|transition)(?:-[a-z]+)?\s*:/.test(stripCssComments(unmanaged))) {
+      report(file, 'static-motion', 'animation or transition declaration outside managed blocks');
+    }
+    if (/class="[^"]*\bfg-(?:controls|caption)\b/.test(frag)) {
+      report(file, 'static-chrome', 'static diagram carries .fg-controls or .fg-caption markup');
+    }
+  }
 }
 
 /* --- manifest checks ----------------------------------------------------- */
 
-function checkManifest(files) {
-  let manifest;
-  try {
-    manifest = F.loadManifest();
-  } catch (e) {
-    report(null, 'manifest', `manifest.json unreadable: ${e.message}`);
-    return;
-  }
-  const KINDS = ['step-timeline', 'hover-inspect', 'ambient'];
+const KINDS = ['step-timeline', 'hover-inspect', 'ambient', 'static'];
+
+function checkManifest(manifest, files) {
   const rels = new Set(files.map((f) => F.relPath(f)));
   const seenIds = new Set();
   const seenPaths = new Set();
@@ -225,8 +241,15 @@ function checkManifest(files) {
 function main() {
   const warnOnly = process.argv.includes('--warn');
   const files = F.listDiagramFiles();
-  for (const f of files) checkFile(f);
-  checkManifest(files);
+  let manifest = null;
+  try {
+    manifest = F.loadManifest();
+  } catch (e) {
+    report(null, 'manifest', `manifest.json unreadable: ${e.message}`);
+  }
+  const kindOf = new Map((manifest || []).map((e) => [e.path, e.kind]));
+  for (const f of files) checkFile(f, kindOf.get(F.relPath(f)));
+  if (manifest) checkManifest(manifest, files);
 
   for (const f of findings) console.error(`[${warnOnly ? 'WARN' : 'FAIL'}] ${f.rel} (${f.rule}): ${f.msg}`);
   const byRule = {};

@@ -16,13 +16,13 @@ development workflow, authoring guide) lives in `docs/` — see
 
 1. Read the diagram notes provided by the author.
 2. Read 1–2 existing diagrams closest in kind (step-timeline,
-   hover-inspect or ambient).
+   hover-inspect, ambient or static).
 3. Scaffold the file (this also appends the `manifest.json` entry —
    fill in its `description`):
 
    ```
    node scripts/new-diagram.js <post-slug>/<kebab-name> \
-     --kind step-timeline|hover-inspect|ambient \
+     --kind step-timeline|hover-inspect|ambient|static \
      --abbr <2-6 char prefix> --title "Human-readable title"
    ```
 
@@ -131,6 +131,14 @@ is inlined into the blog. Everything the diagram needs must live inside it.
   with a diagram never reflows the surrounding post.
 - **Responsive.** SVG uses `viewBox` and `width: 100%; height: auto`. Design
   for a ~720px column; keep text ≥ 11px at natural size.
+- **Static kind.** A diagram whose manifest entry says `"kind": "static"`
+  carries no `<script>`, no SMIL element, no `@keyframes`, no `animation` or
+  `transition` declaration outside the managed blocks, and no
+  `.fg-controls` or `.fg-caption` markup. State is encoded with the palette
+  hues, not motion. The kind exists for consumers that cannot inline HTML or
+  run script: `node scripts/export-svg.js` writes each static diagram to
+  `dist/<slug>/<name>.svg` as a standalone image, and the consuming repo
+  commits a copy. The validator enforces all of it.
 
 ## Visual language
 

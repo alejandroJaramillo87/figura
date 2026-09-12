@@ -49,12 +49,13 @@ scripts/
   new-diagram.js scaffold a diagram from templates/ with blocks pre-expanded
   build.js       re-expand managed blocks (--check fails on drift)
   validate.js    contract linter: scoping, id prefixes, reduced motion,
-                 a11y, self-containment, manifest sync
+                 a11y, self-containment, manifest sync, static-kind rules
+  export-svg.js  write static diagrams to dist/ as standalone SVG images
   lib/fragment.js shared parsing helpers (embed split, block finding,
                  palette generation) used by all three scripts
 docs/            project documentation (architecture, blog integration,
                  development, authoring)
-templates/       step-timeline, hover-inspect, ambient scaffolds
+templates/       step-timeline, hover-inspect, ambient, static scaffolds
 diagrams/<post-slug>/<kebab-name>.html
 ```
 
