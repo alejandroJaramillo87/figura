@@ -71,11 +71,16 @@ managed blocks; `prefers-reduced-motion` handling present, with a
 ids diagram-prefixed and all id references resolvable within the
 fragment; `role="img"` + `aria-label` on every `<svg>`; scripts
 resolve their root via `document.currentScript.closest`, avoid
-`getElementById`/`DOMContentLoaded`, and parse cleanly.
+`getElementById`/`DOMContentLoaded`, and parse cleanly. A diagram the
+manifest marks `static` additionally has no `<script>`
+(`static-script`), no SMIL element (`static-smil`), no `@keyframes` and
+no `animation`/`transition` declaration outside managed blocks
+(`static-motion`), and no `.fg-controls`/`.fg-caption` markup
+(`static-chrome`).
 
 Per repo: manifest entries have all five required fields (`id`,
 `path`, `title`, `post`, `description`) plus an optional `kind`
-(`step-timeline`, `hover-inspect` or `ambient`), unique ids/paths,
+(`step-timeline`, `hover-inspect`, `ambient` or `static`), unique ids/paths,
 `id` == filename stem, every path exists, and no diagram is missing
 from the manifest.
 
