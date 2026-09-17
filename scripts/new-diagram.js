@@ -4,7 +4,7 @@
  *
  * Usage:
  *   node scripts/new-diagram.js <post-slug>/<kebab-name> \
- *     --kind step-timeline|hover-inspect|ambient \
+ *     --kind step-timeline|hover-inspect|ambient|static \
  *     --palette classic \
  *     --abbr <short-prefix> \
  *     [--title "Human-readable title"]

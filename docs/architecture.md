@@ -43,7 +43,7 @@ diagram — from colliding.
 
 ```
 diagrams/<post-slug>/<name>.html   the diagrams (one dir per blog post)
-templates/                         scaffolds: step-timeline, hover-inspect, ambient
+templates/                         scaffolds: step-timeline, hover-inspect, ambient, static
 shared/
   tokens.css                       palette source of truth (classic dark)
   runtime/                         canonical managed-block sources
@@ -129,6 +129,13 @@ and loading the manifest.
   appends a `manifest.json` entry with a TODO description.
 - **`scripts/build.js`** (`npm run build`) is the block expander
   described above.
+- **`scripts/export-svg.js`** (`npm run export`) writes every static
+  diagram to `dist/<slug>/<name>.svg`: the fragment's `<style>` moves
+  inside an outer `<svg>` that carries the root class, a `<rect>` supplies
+  the panel, and the body is translated in by the panel padding. A
+  consumer that cannot inline HTML (the harness docs site) commits a copy
+  of the export and references it as an image; re-export and re-copy is
+  the update path.
 - **`scripts/validate.js`** (`npm run validate`) is the contract
   linter — it mechanically enforces the CLAUDE.md hard rules plus
   manifest sync. See [development.md](development.md#what-the-validator-enforces)
@@ -152,8 +159,10 @@ A flat array indexing every diagram:
   "description": "…" }
 ```
 
-`kind` is optional (`step-timeline`, `hover-inspect` or `ambient`);
-the scaffolder always writes it, but most existing entries predate it.
+`kind` is optional (`step-timeline`, `hover-inspect`, `ambient` or
+`static`); the scaffolder always writes it, but most existing entries
+predate it. It is required for `static`, since that is what gates the
+kind's extra validator rules and what `export-svg.js` selects on.
 The validator enforces: all five required fields present, ids and paths unique,
 `id` equal to the filename stem, every `path` existing on disk, and no
 diagram on disk missing from the manifest. `post` names the blog post

@@ -506,5 +506,37 @@
     "post": "ai-rig-hardware",
     "kind": "step-timeline",
     "description": "A five-step build-up from the idle floor to roughly 800W with both compute paths loaded, against a 1200W supply, ending with the case airflow that carries the heat out."
+  },
+  {
+    "id": "observability-grains",
+    "path": "diagrams/rust-harness/observability-grains.html",
+    "title": "Five observability mechanisms, five grains",
+    "post": "rust-harness",
+    "kind": "static",
+    "description": "The five harness observability mechanisms ordered by grain, from one run to one instruction, with how each is enabled and the run id that joins the in-process three. Static, exported as SVG for the docs site."
+  },
+  {
+    "id": "tier-loop",
+    "path": "diagrams/ai-experiments/tier-loop.html",
+    "title": "How the tiers exchange artifacts",
+    "post": "ai-experiments",
+    "kind": "static",
+    "description": "The three repository tiers and the artifacts that cross between them, each with a contract file under schemas/. Static, exported as SVG for the docs site landing page."
+  },
+  {
+    "id": "interp-loop",
+    "path": "diagrams/rust-harness/interp-loop.html",
+    "title": "The interp loop across the two tiers",
+    "post": "rust-harness",
+    "kind": "static",
+    "description": "The capture, train, export, load, serve, and monitor loop between the rust harness and the interp tier. Static, exported as SVG for the docs site."
+  },
+  {
+    "id": "interp-observability-grains",
+    "path": "diagrams/rust-harness/interp-observability-grains.html",
+    "title": "Four interp observability mechanisms, four grains",
+    "post": "rust-harness",
+    "kind": "static",
+    "description": "The four interp observability mechanisms ordered by grain, with how each is enabled and the run id that joins them. Static, exported as SVG for the docs site."
   }
 ]
