@@ -25,10 +25,16 @@ function expandFile(file) {
   const cls = F.rootClass(parts.fragment);
   if (!cls) return { file, error: 'missing root class (fg-diagram fg-<name>)' };
 
+  let blocks;
+  try {
+    blocks = F.findBlocks(parts.fragment);
+  } catch (e) {
+    return { file, error: e.message };
+  }
   const unknown = [];
   let out = '';
   let cursor = 0;
-  for (const b of F.findBlocks(parts.fragment)) {
+  for (const b of blocks) {
     const body = F.canonicalBody(b.name, cls);
     if (body === null) {
       unknown.push(b.name);
@@ -57,6 +63,10 @@ function main() {
   const fileArg = args.includes('--file') ? args[args.indexOf('--file') + 1] : null;
 
   const files = fileArg ? [path.resolve(F.REPO_ROOT, fileArg)] : F.listDiagramFiles();
+  if (!files.length) {
+    console.error('[ERROR] build: no diagram files found; nothing was checked');
+    process.exit(1);
+  }
   let drifted = 0, errors = 0, written = 0;
 
   for (const file of files) {

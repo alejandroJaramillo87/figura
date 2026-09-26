@@ -26,9 +26,11 @@ const MANIFEST_PATH = path.join(REPO_ROOT, 'manifest.json');
 const EMBED_START = '<!-- fg:embed-start -->';
 const EMBED_END = '<!-- fg:embed-end -->';
 
-/* Matches one managed block, CSS or JS style, capturing name/version/body. */
-const BLOCK_RE =
-  /(\/\* fg:begin ([a-z0-9-]+) v(\d+) \*\/|\/\/ fg:begin ([a-z0-9-]+) v(\d+))\n([\s\S]*?)(\/\* fg:end \2? ?\*\/|\/\/ fg:end \4?)/g;
+/* One sentinel token, CSS or JS style. A begin carries a version; an end does not. */
+const TOKEN_RE =
+  /\/\* fg:(begin|end) ([a-z0-9-]+)(?: v(\d+))? \*\/|\/\/ fg:(begin|end) ([a-z0-9-]+)(?: v(\d+))?(?=\r?\n|$)/g;
+/* Any text that looks like a sentinel, well formed or not. */
+const LOOSE_RE = /fg:(?:begin|end)\b/g;
 
 function listDiagramFiles() {
   const out = [];
@@ -65,21 +67,57 @@ function rootClass(fragment) {
   return m ? m[1] : null;
 }
 
-/* Find managed blocks in a string: [{ name, version, body, start, end, style }] */
+/*
+ * Find managed blocks in a string: [{ name, version, body, start, end, style }].
+ *
+ * Every begin must be closed by an end of the same name and comment style
+ * before any other sentinel appears; nesting, an orphan end, an unclosed
+ * begin, or text that mentions fg:begin/fg:end without forming a valid
+ * sentinel is an error. A lenient match here once let a malformed end marker
+ * swallow the rest of a diagram, which build.js then overwrote.
+ * Throws an Error whose message names the first problem.
+ */
 function findBlocks(text) {
-  const blocks = [];
+  const tokens = [];
   let m;
-  BLOCK_RE.lastIndex = 0;
-  while ((m = BLOCK_RE.exec(text)) !== null) {
-    const style = m[2] ? 'css' : 'js';
-    blocks.push({
-      name: m[2] || m[4],
-      version: Number(m[3] || m[5]),
-      body: m[6],
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(text)) !== null) {
+    const css = m[1] !== undefined;
+    tokens.push({
+      kind: css ? m[1] : m[4],
+      name: css ? m[2] : m[5],
+      version: css ? m[3] : m[6],
+      style: css ? 'css' : 'js',
       start: m.index,
       end: m.index + m[0].length,
-      full: m[0],
-      style,
+    });
+  }
+  const loose = (text.match(LOOSE_RE) || []).length;
+  if (loose !== tokens.length) {
+    throw new Error(`${loose - tokens.length} malformed fg:begin/fg:end sentinel(s)`);
+  }
+
+  const blocks = [];
+  for (let i = 0; i < tokens.length; i += 2) {
+    const b = tokens[i], e = tokens[i + 1];
+    if (b.kind !== 'begin') throw new Error(`fg:end ${b.name} without a matching fg:begin`);
+    if (b.version === undefined) throw new Error(`fg:begin ${b.name} has no version`);
+    if (!e) throw new Error(`fg:begin ${b.name} is never closed`);
+    if (e.kind !== 'end') throw new Error(`fg:begin ${e.name} nested inside ${b.name}`);
+    if (e.version !== undefined) throw new Error(`fg:end ${e.name} carries a version`);
+    if (e.name !== b.name || e.style !== b.style) {
+      throw new Error(`fg:begin ${b.name} closed by fg:end ${e.name} (${e.style})`);
+    }
+    const nl = text.slice(b.end).match(/^\r?\n/);
+    if (!nl) throw new Error(`fg:begin ${b.name} is not followed by a newline`);
+    blocks.push({
+      name: b.name,
+      version: Number(b.version),
+      body: text.slice(b.end + nl[0].length, e.start),
+      start: b.start,
+      end: e.end,
+      full: text.slice(b.start, e.end),
+      style: b.style,
     });
   }
   return blocks;

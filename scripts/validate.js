@@ -128,8 +128,14 @@ function checkFile(file, kind) {
 
   /* the fragment with managed blocks removed: rules about what an author may
      write apply only to the diagram-specific parts */
+  let blocks = [];
+  try {
+    blocks = F.findBlocks(frag);
+  } catch (e) {
+    report(file, 'sentinel', e.message);
+  }
   let unmanaged = frag;
-  for (const b of F.findBlocks(frag).slice().reverse()) {
+  for (const b of blocks.slice().reverse()) {
     unmanaged = unmanaged.slice(0, b.start) + unmanaged.slice(b.end);
   }
 
@@ -241,6 +247,10 @@ function checkManifest(manifest, files) {
 function main() {
   const warnOnly = process.argv.includes('--warn');
   const files = F.listDiagramFiles();
+  if (!files.length) {
+    console.error('[FAIL] validate: no diagram files found; nothing was checked');
+    process.exit(1);
+  }
   let manifest = null;
   try {
     manifest = F.loadManifest();
