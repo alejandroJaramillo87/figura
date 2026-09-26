@@ -20,7 +20,8 @@ btn('play').addEventListener('click', () => { held = tl.playing; held ? tl.pause
 const counter = btn('counter');
 function sync() {
   if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
-  btn('play').textContent = tl.playing ? '❚❚' : '▶';
+  btn('play').textContent = tl.playing ? '\u275A\u275A' : '\u25B6\uFE0E'; // FE0E: text glyph, not emoji
+  btn('play').setAttribute('aria-pressed', String(tl.playing));
 }
 root.addEventListener('fg:step', sync);
 root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
