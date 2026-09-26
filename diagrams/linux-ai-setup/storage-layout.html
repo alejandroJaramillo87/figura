@@ -253,9 +253,8 @@
   });
   // fg:end hover-caption
   // hovering either end of the symlink lights the route
-  root.querySelectorAll('.stl-group[data-sym]').forEach((g) => {
-    g.addEventListener('mouseenter', () => root.classList.add('is-sym-hot'));
-    g.addEventListener('mouseleave', () => root.classList.remove('is-sym-hot'));
+  root.addEventListener('fg:hover', (e) => {
+    if (e.detail.el.hasAttribute('data-sym')) root.classList.toggle('is-sym-hot', e.detail.on);
   });
 })();</script>
 </div>

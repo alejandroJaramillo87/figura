@@ -116,7 +116,6 @@ function findBlocks(text) {
       body: text.slice(b.end + nl[0].length, e.start),
       start: b.start,
       end: e.end,
-      full: text.slice(b.start, e.end),
       style: b.style,
     });
   }

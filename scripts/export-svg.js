@@ -24,13 +24,13 @@
 const fs = require('fs');
 const path = require('path');
 const F = require('./lib/fragment');
+const cli = require('./lib/cli');
+
+const USAGE = 'usage: node scripts/export-svg.js [--file diagrams/<slug>/<name>.html] [--out <dir>]';
 
 const PAD = 16;   // matches the root padding the static template sets
 
-function fail(msg) {
-  console.error('[ERROR] ' + msg);
-  process.exit(2);
-}
+const fail = cli.fail;
 
 function exportFile(file, entry, outDir) {
   const source = fs.readFileSync(file, 'utf8');
@@ -133,9 +133,9 @@ function wellFormed(xml) {
 }
 
 function main() {
-  const args = process.argv.slice(2);
-  const fileArg = args.includes('--file') ? args[args.indexOf('--file') + 1] : null;
-  const outDir = path.resolve(F.REPO_ROOT, args.includes('--out') ? args[args.indexOf('--out') + 1] : 'dist');
+  const { values } = cli.parse(USAGE, { file: { type: 'string' }, out: { type: 'string' } });
+  const fileArg = values.file || null;
+  const outDir = path.resolve(F.REPO_ROOT, values.out || 'dist');
 
   const byPath = new Map(F.loadManifest().map((e) => [e.path, e]));
   const files = fileArg ? [path.resolve(F.REPO_ROOT, fileArg)] : F.listDiagramFiles();

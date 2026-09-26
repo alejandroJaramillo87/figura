@@ -17,19 +17,26 @@
 const fs = require('fs');
 const path = require('path');
 const F = require('./lib/fragment');
+const cli = require('./lib/cli');
+
+const USAGE = 'usage: node scripts/build.js [--check] [--file diagrams/<slug>/<name>.html]';
 
 function expandFile(file) {
-  const source = fs.readFileSync(file, 'utf8');
+  return { file, ...expandSource(fs.readFileSync(file, 'utf8')) };
+}
+
+/* Re-expand every managed block in one diagram's source text. */
+function expandSource(source) {
   const parts = F.splitEmbed(source);
-  if (!parts) return { file, error: 'missing embed markers' };
+  if (!parts) return { error: 'missing embed markers' };
   const cls = F.rootClass(parts.fragment);
-  if (!cls) return { file, error: 'missing root class (fg-diagram fg-<name>)' };
+  if (!cls) return { error: 'missing root class (fg-diagram fg-<name>)' };
 
   let blocks;
   try {
     blocks = F.findBlocks(parts.fragment);
   } catch (e) {
-    return { file, error: e.message };
+    return { error: e.message };
   }
   const unknown = [];
   let out = '';
@@ -54,13 +61,14 @@ function expandFile(file) {
   out += parts.fragment.slice(cursor);
 
   const rebuilt = parts.before + out + parts.after;
-  return { file, source, rebuilt, changed: rebuilt !== source, unknown };
+  return { source, rebuilt, changed: rebuilt !== source, unknown };
 }
 
 function main() {
-  const args = process.argv.slice(2);
-  const check = args.includes('--check');
-  const fileArg = args.includes('--file') ? args[args.indexOf('--file') + 1] : null;
+  const { values } = cli.parse(USAGE, { check: { type: 'boolean' }, file: { type: 'string' } });
+  const check = !!values.check;
+  const fileArg = values.file || null;
+  if (fileArg && !fs.existsSync(path.resolve(F.REPO_ROOT, fileArg))) cli.fail('no such file: ' + fileArg);
 
   const files = fileArg ? [path.resolve(F.REPO_ROOT, fileArg)] : F.listDiagramFiles();
   if (!files.length) {
@@ -100,4 +108,6 @@ function main() {
   process.exit(errors ? 1 : 0);
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = { expandSource };

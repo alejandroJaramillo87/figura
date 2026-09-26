@@ -24,14 +24,13 @@
 const fs = require('fs');
 const path = require('path');
 const F = require('./lib/fragment');
+const cli = require('./lib/cli');
 
-/* per-file rule exemptions (currently none) */
-const EXEMPT = {};
+const USAGE = 'usage: node scripts/validate.js [--warn]';
 
 const findings = [];
 function report(file, rule, msg) {
   const rel = file ? F.relPath(file) : '(repo)';
-  if (file && (EXEMPT[rel] || []).includes(rule)) return;
   findings.push({ rel, rule, msg });
 }
 
@@ -326,7 +325,7 @@ function checkManifest(manifest, files) {
 }
 
 function main() {
-  const warnOnly = process.argv.includes('--warn');
+  const warnOnly = !!cli.parse(USAGE, { warn: { type: 'boolean' } }).values.warn;
   const files = F.listDiagramFiles();
   if (!files.length) {
     console.error('[FAIL] validate: no diagram files found; nothing was checked');
