@@ -74,14 +74,21 @@
 .fg-ambiguity-ladder .abl-axis { fill: var(--muted); font-size: 11px; }
 .fg-ambiguity-ladder .abl-axis-line { stroke: var(--line); stroke-width: 1.5; fill: none; }
 
+/* fg:begin caption-box v1 */
 .fg-ambiguity-ladder .fg-caption {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  /* tall enough for the longest data-info at column width: no page reflow on hover */
-  color: var(--muted); font-size: 13px; min-height: 5.4em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-ambiguity-ladder .fg-caption.fg-cap-grid { display: grid; }
+.fg-ambiguity-ladder .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-ambiguity-ladder .fg-cap-live { grid-area: 1 / 1; }
+.fg-ambiguity-ladder [data-info]:focus { outline: none; }
+.fg-ambiguity-ladder [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-ambiguity-ladder .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
 .fg-ambiguity-ladder .fg-caption.is-active { color: var(--text); }
 .fg-ambiguity-ladder .fg-caption strong { color: var(--accent); font-weight: 600; }
 .fg-ambiguity-ladder .fg-caption em { color: var(--text); font-style: italic; }
@@ -162,22 +169,58 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const DEFAULT = 'Hover a level to see its question, its phenomena, and where its resolving context lives.';
-  root.querySelectorAll('.abl-level[data-info]').forEach((g) => {
-    g.addEventListener('mouseenter', () => {
-      caption.innerHTML = '';
-      const strong = document.createElement('strong');
-      strong.textContent = g.getAttribute('data-title');
-      caption.appendChild(strong);
-      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
-      caption.classList.add('is-active');
-    });
-    g.addEventListener('mouseleave', () => {
-      caption.textContent = DEFAULT;
-      caption.classList.remove('is-active');
-    });
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin hover-caption v1
+  // Targets carry data-info (plain text), optionally data-title (shown bold
+  // before it) and data-code (shown as inline code after it). Focus reaches
+  // the same readout as the pointer; fg:hover lets a diagram add its own
+  // highlight classes.
+  const hoverTargets = [...root.querySelectorAll('[data-info]')];
+  function hoverHtml(el) {
+    const title = el.getAttribute('data-title');
+    const code = el.getAttribute('data-code');
+    return (title ? '<strong>' + escHtml(title) + '</strong> — ' : '') + escHtml(el.getAttribute('data-info')) +
+      (code ? ' <code>' + escHtml(code) + '</code>' : '');
+  }
+  reserveCaption(hoverTargets.map(hoverHtml));
+  hoverTargets.forEach((el, index) => {
+    el.setAttribute('tabindex', '0');
+    const set = (on) => {
+      setCaption(on ? hoverHtml(el) : captionInitial);
+      if (caption) caption.classList.toggle('is-active', on);
+      root.dispatchEvent(new CustomEvent('fg:hover', { detail: { el, index, on } }));
+    };
+    el.addEventListener('mouseenter', () => set(true));
+    el.addEventListener('focus', () => set(true));
+    el.addEventListener('mouseleave', () => set(false));
+    el.addEventListener('blur', () => set(false));
   });
+  // fg:end hover-caption
 })();</script>
 </div>
 <!-- fg:embed-end -->

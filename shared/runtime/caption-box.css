@@ -5,3 +5,8 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+{{SCOPE}} .fg-caption.fg-cap-grid { display: grid; }
+{{SCOPE}} .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+{{SCOPE}} .fg-cap-live { grid-area: 1 / 1; }
+{{SCOPE}} [data-info]:focus { outline: none; }
+{{SCOPE}} [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

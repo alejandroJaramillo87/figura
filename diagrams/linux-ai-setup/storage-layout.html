@@ -93,14 +93,21 @@
 /* ambient comet riding the symlink path (the one always-on motion) */
 .fg-storage-layout .stl-comet circle { fill: var(--violet); }
 
+/* fg:begin caption-box v1 */
 .fg-storage-layout .fg-caption {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--ok);
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  /* tall enough for the longest data-info at column width: no page reflow on hover */
-  color: var(--muted); font-size: 13px; min-height: 6em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-storage-layout .fg-caption.fg-cap-grid { display: grid; }
+.fg-storage-layout .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-storage-layout .fg-cap-live { grid-area: 1 / 1; }
+.fg-storage-layout [data-info]:focus { outline: none; }
+.fg-storage-layout [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-storage-layout .fg-caption { --fg-cap-accent: var(--ok); color: var(--muted); transition: color var(--dur-fast) var(--ease); }
 .fg-storage-layout .fg-caption.is-active { color: var(--text); }
 .fg-storage-layout .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-storage-layout .fg-caption code {
@@ -126,14 +133,14 @@
   <text class="stl-drive-label" x="36" y="56">OS SSD — 990 EVO</text>
   <text class="stl-drive-sub"   x="36" y="74">Samsung · 1TB NVMe · ext4</text>
 
-  <g class="stl-group" data-info="Ubuntu 24.04 LTS root filesystem: OS, applications, Docker images, and dotfiles. Kept lean — nothing model-sized lives here, so OS reinstalls and Clonezilla images stay small.">
+  <g class="stl-group" data-info="Ubuntu 24.04 LTS root filesystem: OS, applications, Docker images, and dotfiles. Kept lean — nothing model-sized lives here, so OS reinstalls and Clonezilla images stay small." data-title="/ (root)">
     <rect class="stl-halo" x="36" y="90" width="208" height="48" rx="6" fill="var(--accent)"/>
     <rect class="stl-block stl-os" x="36" y="90" width="208" height="48" rx="6"/>
     <text class="stl-title stl-t-os" x="140" y="110">/ (root)</text>
     <text class="stl-sub stl-t-os"   x="140" y="127">Ubuntu 24.04 · Docker · tools</text>
   </g>
 
-  <g class="stl-group" data-sym data-info="Home holds config and code only. The heavyweight cache directories inside it (~/.cache/huggingface and friends) are symlinks that resolve onto the data drive — tools keep their default paths, bytes land on the data SSD.">
+  <g class="stl-group" data-sym data-info="Home holds config and code only. The heavyweight cache directories inside it (~/.cache/huggingface and friends) are symlinks that resolve onto the data drive — tools keep their default paths, bytes land on the data SSD." data-title="/home/user">
     <rect class="stl-halo" x="36" y="148" width="208" height="48" rx="6" fill="var(--accent)"/>
     <rect class="stl-block stl-os" x="36" y="148" width="208" height="48" rx="6"/>
     <text class="stl-title stl-t-os" x="140" y="168">/home/user</text>
@@ -145,28 +152,28 @@
   <text class="stl-drive-label" x="316" y="56">Data SSD — 990 Pro</text>
   <text class="stl-drive-sub"   x="316" y="74">Samsung · 2TB NVMe · /mnt/ai-data</text>
 
-  <g class="stl-group" data-info="All model weights in one tree on the faster 990 Pro — sequential reads here gate model load times. models/gguf for llama.cpp quantizations, models/hf for Hugging Face safetensors, plus trained and checkpoint output. Formatted with huge_file and mounted noatime so multi-gigabyte reads skip access-time writes.">
+  <g class="stl-group" data-info="All model weights in one tree on the faster 990 Pro — sequential reads here gate model load times. models/gguf for llama.cpp quantizations, models/hf for Hugging Face safetensors, plus trained and checkpoint output. Formatted with huge_file and mounted noatime so multi-gigabyte reads skip access-time writes." data-title="models/">
     <rect class="stl-halo" x="316" y="90" width="208" height="60" rx="6" fill="var(--ok)"/>
     <rect class="stl-block stl-models" x="316" y="90" width="208" height="60" rx="6"/>
     <text class="stl-title stl-t-models" x="420" y="114">models/</text>
     <text class="stl-sub stl-t-models"   x="420" y="132">gguf · hf · trained</text>
   </g>
 
-  <g class="stl-group" data-info="Datasets, pre-tokenized shards, tokenizers and run output, kept separate from model weights so either can be pruned independently.">
+  <g class="stl-group" data-info="Datasets, pre-tokenized shards, tokenizers and run output, kept separate from model weights so either can be pruned independently." data-title="training/">
     <rect class="stl-halo" x="316" y="160" width="208" height="52" rx="6" fill="var(--warn)"/>
     <rect class="stl-block stl-data" x="316" y="160" width="208" height="52" rx="6"/>
     <text class="stl-title stl-t-data" x="420" y="182">training/</text>
     <text class="stl-sub stl-t-data"   x="420" y="199">datasets · shards · runs</text>
   </g>
 
-  <g class="stl-group" data-sym data-info="Download caches for Hugging Face, torch, pip and uv. This is the symlink target from home: delete-safe, re-downloadable, and off the OS drive.">
+  <g class="stl-group" data-sym data-info="Download caches for Hugging Face, torch, pip and uv. This is the symlink target from home: delete-safe, re-downloadable, and off the OS drive." data-title="cache/">
     <rect class="stl-halo" x="316" y="222" width="208" height="52" rx="6" fill="var(--violet)"/>
     <rect class="stl-block stl-cache" x="316" y="222" width="208" height="52" rx="6"/>
     <text class="stl-title stl-t-cache" x="420" y="244">cache/</text>
     <text class="stl-sub stl-t-cache"   x="420" y="261">huggingface · torch · pip · uv</text>
   </g>
 
-  <g class="stl-group" data-info="Activation captures, SAEs and probes from interpretability runs, alongside benchmark output and per-service logs — large, regenerable, and never competing with the OS drive for space.">
+  <g class="stl-group" data-info="Activation captures, SAEs and probes from interpretability runs, alongside benchmark output and per-service logs — large, regenerable, and never competing with the OS drive for space." data-title="interp/ · benchmarks/">
     <rect class="stl-halo" x="316" y="284" width="208" height="52" rx="6" fill="var(--warn)"/>
     <rect class="stl-block stl-data" x="316" y="284" width="208" height="52" rx="6"/>
     <text class="stl-title stl-t-data" x="420" y="306">interp/ · benchmarks/</text>
@@ -193,23 +200,58 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const DEFAULT = 'Hover over any block to see why it lives on that drive.';
-  root.querySelectorAll('.stl-group[data-info]').forEach((g) => {
-    g.addEventListener('mouseenter', () => {
-      const title = g.querySelector('.stl-title').textContent;
-      caption.innerHTML = '';
-      const strong = document.createElement('strong');
-      strong.textContent = title;
-      caption.appendChild(strong);
-      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
-      caption.classList.add('is-active');
-    });
-    g.addEventListener('mouseleave', () => {
-      caption.textContent = DEFAULT;
-      caption.classList.remove('is-active');
-    });
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin hover-caption v1
+  // Targets carry data-info (plain text), optionally data-title (shown bold
+  // before it) and data-code (shown as inline code after it). Focus reaches
+  // the same readout as the pointer; fg:hover lets a diagram add its own
+  // highlight classes.
+  const hoverTargets = [...root.querySelectorAll('[data-info]')];
+  function hoverHtml(el) {
+    const title = el.getAttribute('data-title');
+    const code = el.getAttribute('data-code');
+    return (title ? '<strong>' + escHtml(title) + '</strong> — ' : '') + escHtml(el.getAttribute('data-info')) +
+      (code ? ' <code>' + escHtml(code) + '</code>' : '');
+  }
+  reserveCaption(hoverTargets.map(hoverHtml));
+  hoverTargets.forEach((el, index) => {
+    el.setAttribute('tabindex', '0');
+    const set = (on) => {
+      setCaption(on ? hoverHtml(el) : captionInitial);
+      if (caption) caption.classList.toggle('is-active', on);
+      root.dispatchEvent(new CustomEvent('fg:hover', { detail: { el, index, on } }));
+    };
+    el.addEventListener('mouseenter', () => set(true));
+    el.addEventListener('focus', () => set(true));
+    el.addEventListener('mouseleave', () => set(false));
+    el.addEventListener('blur', () => set(false));
   });
+  // fg:end hover-caption
   // hovering either end of the symlink lights the route
   root.querySelectorAll('.stl-group[data-sym]').forEach((g) => {
     g.addEventListener('mouseenter', () => root.classList.add('is-sym-hot'));

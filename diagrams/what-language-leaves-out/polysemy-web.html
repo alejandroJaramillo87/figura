@@ -81,7 +81,6 @@
 .fg-polysemy-web .plw-sense:hover rect,
 .fg-polysemy-web .plw-sense:focus-visible rect,
 .fg-polysemy-web .plw-sense.is-active rect { fill: var(--panel-hover); stroke: var(--ok); }
-.fg-polysemy-web .plw-sense:focus { outline: none; }
 
 /* fg:begin caption-box v1 */
 .fg-polysemy-web .fg-caption {
@@ -91,6 +90,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-polysemy-web .fg-caption.fg-cap-grid { display: grid; }
+.fg-polysemy-web .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-polysemy-web .fg-cap-live { grid-area: 1 / 1; }
+.fg-polysemy-web [data-info]:focus { outline: none; }
+.fg-polysemy-web [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-polysemy-web .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-polysemy-web .fg-caption em { color: var(--warn); font-style: italic; }
@@ -121,26 +125,26 @@
   </g>
 
   <!-- sense nodes -->
-  <g class="plw-sense" tabindex="0" role="button" aria-label="Sense: the material"
-     data-info='<strong>the material</strong> &#8212; &#8220;Wrap it in <em>paper</em>.&#8221; The physical sheet itself: the sense closest to the core, and historically the oldest.'>
+  <g class="plw-sense"
+     data-title="the material" data-info="“Wrap it in paper.” The physical sheet itself: the sense closest to the core, and historically the oldest.">
     <rect x="40" y="56" width="196" height="52" rx="8"/>
     <text x="138" y="79">the material</text>
     <text class="plw-gloss" x="138" y="97">"wrap it in paper"</text>
   </g>
-  <g class="plw-sense" tabindex="0" role="button" aria-label="Sense: a newspaper"
-     data-info='<strong>a newspaper</strong> &#8212; &#8220;It made the front page of the <em>paper</em>.&#8221; The material stands in for the publication printed on it &#8212; a metonymic step away from the core.'>
+  <g class="plw-sense"
+     data-title="a newspaper" data-info="“It made the front page of the paper.” The material stands in for the publication printed on it — a metonymic step away from the core.">
     <rect x="484" y="56" width="196" height="52" rx="8"/>
     <text x="582" y="79">a newspaper</text>
     <text class="plw-gloss" x="582" y="97">"the front page of the paper"</text>
   </g>
-  <g class="plw-sense" tabindex="0" role="button" aria-label="Sense: an academic article"
-     data-info='<strong>an academic article</strong> &#8212; &#8220;She published a <em>paper</em> on attention.&#8221; The medium again stands for the work &#8212; senses drift outward but stay recognizably related.'>
+  <g class="plw-sense"
+     data-title="an academic article" data-info="“She published a paper on attention.” The medium again stands for the work — senses drift outward but stay recognizably related.">
     <rect x="40" y="202" width="196" height="52" rx="8"/>
     <text x="138" y="225">an academic article</text>
     <text class="plw-gloss" x="138" y="243">"a paper on attention"</text>
   </g>
-  <g class="plw-sense" tabindex="0" role="button" aria-label="Sense: an exam"
-     data-info='<strong>an exam</strong> &#8212; &#8220;The physics <em>paper</em> was brutal.&#8221; (British English.) Four senses in, the core is still visible: a sheet, and what is written on it.'>
+  <g class="plw-sense"
+     data-title="an exam" data-info="“The physics paper was brutal.” (British English.) Four senses in, the core is still visible: a sheet, and what is written on it.">
     <rect x="484" y="202" width="196" height="52" rx="8"/>
     <text x="582" y="225">an exam</text>
     <text class="plw-gloss" x="582" y="243">"the physics paper was brutal"</text>
@@ -153,20 +157,59 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  root.addEventListener('fg:hover', (e) => e.detail.el.classList.toggle('is-active', e.detail.on));
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const DEFAULT = caption.innerHTML;
-  const senses = root.querySelectorAll('.plw-sense');
-  senses.forEach((s) => {
-    const show = () => {
-      senses.forEach((x) => x.classList.toggle('is-active', x === s));
-      caption.innerHTML = s.dataset.info;
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin hover-caption v1
+  // Targets carry data-info (plain text), optionally data-title (shown bold
+  // before it) and data-code (shown as inline code after it). Focus reaches
+  // the same readout as the pointer; fg:hover lets a diagram add its own
+  // highlight classes.
+  const hoverTargets = [...root.querySelectorAll('[data-info]')];
+  function hoverHtml(el) {
+    const title = el.getAttribute('data-title');
+    const code = el.getAttribute('data-code');
+    return (title ? '<strong>' + escHtml(title) + '</strong> — ' : '') + escHtml(el.getAttribute('data-info')) +
+      (code ? ' <code>' + escHtml(code) + '</code>' : '');
+  }
+  reserveCaption(hoverTargets.map(hoverHtml));
+  hoverTargets.forEach((el, index) => {
+    el.setAttribute('tabindex', '0');
+    const set = (on) => {
+      setCaption(on ? hoverHtml(el) : captionInitial);
+      if (caption) caption.classList.toggle('is-active', on);
+      root.dispatchEvent(new CustomEvent('fg:hover', { detail: { el, index, on } }));
     };
-    const clear = () => { s.classList.remove('is-active'); caption.innerHTML = DEFAULT; };
-    s.addEventListener('mouseenter', show);
-    s.addEventListener('focus', show);
-    s.addEventListener('mouseleave', clear);
-    s.addEventListener('blur', clear);
+    el.addEventListener('mouseenter', () => set(true));
+    el.addEventListener('focus', () => set(true));
+    el.addEventListener('mouseleave', () => set(false));
+    el.addEventListener('blur', () => set(false));
   });
+  // fg:end hover-caption
 })();</script>
 </div>
 <!-- fg:embed-end -->
