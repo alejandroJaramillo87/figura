@@ -213,6 +213,12 @@ function checkFile(file, kind) {
       const literal = m[1].replace(/var\([^()]*\)|calc\((?:[^()]|\([^()]*\))*\)/g, '').match(/(?<![\w.-])(?!0m?s\b)\d*\.?\d+m?s\b/);
       if (literal) report(file, 'motion-token', `literal transition duration ${literal[0]} (use var(--dur-quick|fast|slow))`);
     }
+    for (const m of unmanaged.matchAll(/font-size(?::\s*|=")(\d+(?:\.\d+)?)(?:px)?/g)) {
+      if (Number(m[1]) < 11) report(file, 'font-size', `font-size ${m[1]}px is below the 11px floor`);
+    }
+    if (/font-family:\s*[^;"]*monospace/.test(unmanaged)) {
+      report(file, 'font-token', 'hand-written monospace stack (use var(--mono))');
+    }
     const dimHexes = unmanaged.match(/#(?:0c3550|12283f|0e4429|14352a|123c2e|4a3608|4a1d1d|3f1d1d|2a2350)\b/gi) || [];
     for (const h of dimHexes) {
       report(file, 'dim-token', `hand-mixed dim state fill ${h} (use var(--accent-dim)/--ok-dim/--warn-dim/--hot-dim/--violet-dim)`);

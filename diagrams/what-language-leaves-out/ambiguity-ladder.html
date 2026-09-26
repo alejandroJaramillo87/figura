@@ -90,7 +90,7 @@
 
 .fg-ambiguity-ladder .abl-name { fill: var(--text); font-size: 14px; font-weight: 600; pointer-events: none; }
 .fg-ambiguity-ladder .abl-q { fill: var(--muted); font-size: 11px; font-style: italic; pointer-events: none; }
-.fg-ambiguity-ladder .abl-ex { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); pointer-events: none; }
+.fg-ambiguity-ladder .abl-ex { fill: var(--muted); font-size: 11px; font-family: var(--mono); pointer-events: none; }
 .fg-ambiguity-ladder .abl-axis { fill: var(--muted); font-size: 11px; }
 .fg-ambiguity-ladder .abl-axis-line { stroke: var(--line); stroke-width: 1.5; fill: none; }
 
@@ -135,35 +135,35 @@
     <rect class="abl-rung" x="70" y="44" width="420" height="52" rx="8"/>
     <text class="abl-name" x="86" y="66">5 &#183; Pragmatic</text>
     <text class="abl-q" x="86" y="84">what is the speaker doing?</text>
-    <text class="abl-ex" x="300" y="76">"Can you pass the salt?"</text>
+    <text class="abl-ex" x="478" y="66" text-anchor="end">"Can you pass the salt?"</text>
   </g>
 
   <g class="abl-level abl-l4" data-title="4 &#183; Semantic" data-info="What does the sentence assert? Quantifier and negation scope, modality, metonymy, metaphor, gradable adjectives. &#8220;Every student read a book&#8221; &#8212; one shared book, or one each? The tokens admit both propositions; broader context must choose between them.">
     <rect class="abl-rung" x="70" y="109" width="420" height="52" rx="8"/>
     <text class="abl-name" x="86" y="131">4 &#183; Semantic</text>
     <text class="abl-q" x="86" y="149">what does the sentence assert?</text>
-    <text class="abl-ex" x="300" y="141">"Every student read a book"</text>
+    <text class="abl-ex" x="478" y="131" text-anchor="end">"Every student read a book"</text>
   </g>
 
   <g class="abl-level abl-l3" data-title="3 &#183; Syntactic" data-info="How does the sentence fit together? Attachment, coordination scope, garden paths, agreement across distance, filler&#8211;gap dependencies, ellipsis. &#8220;I saw the man with the telescope&#8221; &#8212; who has the telescope? Same tokens, two structures, and the structure decides who did what to whom.">
     <rect class="abl-rung" x="70" y="174" width="420" height="52" rx="8"/>
     <text class="abl-name" x="86" y="196">3 &#183; Syntactic</text>
     <text class="abl-q" x="86" y="214">how does the sentence fit together?</text>
-    <text class="abl-ex" x="300" y="206">"...the man with the telescope"</text>
+    <text class="abl-ex" x="478" y="196" text-anchor="end">"...the man with the telescope"</text>
   </g>
 
   <g class="abl-level abl-l2" data-title="2 &#183; Referential" data-info="What does this expression point to? Pronouns, definite descriptions, bridging, demonstratives, coreference chains, dropped arguments. &#8220;It&#8221; carries no meaning of its own &#8212; its entire content is imported from an antecedent that may sit sentences away.">
     <rect class="abl-rung" x="70" y="239" width="420" height="52" rx="8"/>
     <text class="abl-name" x="86" y="261">2 &#183; Referential</text>
     <text class="abl-q" x="86" y="279">what does this expression point to?</text>
-    <text class="abl-ex" x="300" y="271">"it" / "she" / "the aforementioned"</text>
+    <text class="abl-ex" x="478" y="261" text-anchor="end">"it" / "she" / "the aforementioned"</text>
   </g>
 
   <g class="abl-level abl-l1" data-title="1 &#183; Lexical" data-info="What does this word mean? Polysemy, homonymy, part-of-speech ambiguity, idioms, domain-dependent senses &#8212; and, beneath all of them, subword tokens: fragments like &#8220;&#9601;un&#8221; or &#8220;ing&#8221; that mean nothing at all until bound to their neighbors. The most local level, and for an LLM the most pervasive.">
     <rect class="abl-rung" x="70" y="304" width="420" height="52" rx="8"/>
     <text class="abl-name" x="86" y="326">1 &#183; Lexical</text>
     <text class="abl-q" x="86" y="344">what does this word mean?</text>
-    <text class="abl-ex" x="300" y="336">"bank" / "&#9601;un" + "believ" + "able"</text>
+    <text class="abl-ex" x="478" y="326" text-anchor="end">"bank" / "&#9601;un" + "believ" + "able"</text>
   </g>
 
   <g class="abl-level abl-l6" data-title="&#8951; Structural (LLM-specific)" data-info="Not classical linguistics, but the same shape of problem: a closing bracket needs its distant opener, a variable use needs its definition, a table row needs the header, an instruction governs text thousands of tokens later, and induction &#8212; [A][B]&#8230;[A] &#8594; [B] &#8212; needs the last occurrence. Context-dependencies that run alongside every level.">

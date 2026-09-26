@@ -89,12 +89,12 @@
 .fg-delimiter-match .dlm-q1 { transition: opacity var(--dur-slow); }
 .fg-delimiter-match .dlm-q1-hole { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-delimiter-match .dlm-q1-hole rect { fill: none; stroke: var(--hot); stroke-width: 1.5; stroke-dasharray: 6 4; }
-.fg-delimiter-match .dlm-q1-hole text { fill: var(--hot); font-size: 10px; text-anchor: middle; }
+.fg-delimiter-match .dlm-q1-hole text { fill: var(--hot); font-size: 11px; text-anchor: middle; }
 .fg-delimiter-match.is-dropped .dlm-q1 { opacity: 0; }
 .fg-delimiter-match.is-dropped .dlm-q1-hole { opacity: 1; }
 
 /* role tags under the quote tokens */
-.fg-delimiter-match .dlm-tag { font-size: 10px; text-anchor: middle; transition: opacity var(--dur-slow); }
+.fg-delimiter-match .dlm-tag { font-size: 11px; text-anchor: middle; transition: opacity var(--dur-slow); }
 .fg-delimiter-match .dlm-tag-open { fill: var(--accent); }
 .fg-delimiter-match .dlm-tag-close { fill: var(--ok); }
 .fg-delimiter-match .dlm-tag-hot { fill: var(--hot); }
@@ -208,7 +208,7 @@
 
   <text class="dlm-note" x="40" y="196">Parity: every quote's role depends on how many quotes precede it. Delete one, thousands of</text>
   <text class="dlm-note" x="40" y="212">tokens upstream, and every later quote, bracket, or tag flips between "code" and "string".</text>
-  <text class="dlm-note" x="40" y="240">The same holds for <tspan style="font-family: ui-monospace, Menlo, monospace;">}</tspan> and <tspan style="font-family: ui-monospace, Menlo, monospace;">&lt;/div&gt;</tspan> and ``` &#8212; a closer is meaningless without its opener.</text>
+  <text class="dlm-note" x="40" y="240">The same holds for <tspan style="font-family: var(--mono);">}</tspan> and <tspan style="font-family: var(--mono);">&lt;/div&gt;</tspan> and ``` &#8212; a closer is meaningless without its opener.</text>
 
   <defs>
     <marker id="dlm-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
