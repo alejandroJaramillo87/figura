@@ -8,7 +8,7 @@ architectural decision below.
 ## The one-file-per-diagram model
 
 Each diagram is **one self-contained HTML file** under
-`diagrams/<post-slug>/<kebab-name>.html`, built from three parts:
+`diagrams/<consumer-dir>/<kebab-name>.html`, built from three parts:
 
 - a static SVG (markup is authored, never generated at runtime),
 - scoped CSS in a `<style>` tag,
@@ -41,20 +41,22 @@ diagram — from colliding.
 
 ## Directory layout
 
-```
-diagrams/<post-slug>/<name>.html   the diagrams (one dir per blog post)
-templates/                         scaffolds: step-timeline, hover-inspect, ambient, static
+```text
+diagrams/<consumer-dir>/<name>.html  the diagrams (one dir per post, series or docs section)
+templates/                         scaffolds: step-timeline, hover-inspect, toggle, ambient, static
 shared/
   tokens.css                       palette source of truth (classic dark)
   runtime/                         canonical managed-block sources
   effects.css                      copy-source catalog of animation effects
-  snippets.js                      reference-only JS patterns
+  snippets.js                      copy-source effect helpers (never loaded)
   preview.css                      standalone/gallery page chrome (never inlined)
 scripts/
   new-diagram.js                   scaffolder
   build.js                         managed-block expander / drift checker
   validate.js                      contract linter
-  lib/fragment.js                  shared parsing helpers used by the three CLIs
+  export-svg.js                    static diagrams to standalone SVG
+  lib/fragment.js                  shared parsing helpers
+  lib/cli.js                       strict argument parsing shared by the four scripts
 manifest.json                      diagram index
 index.html                         gallery
 ```
@@ -63,7 +65,7 @@ index.html                         gallery
 
 Every diagram needs the same boilerplate: palette variables, panel
 styling, control-bar styling, the step-timeline state machine, and so
-on. Rather than hand-copying it (and watching 69 copies drift), the
+on. Rather than hand-copying it (and watching 76 copies drift), the
 canonical source of each piece lives once under `shared/runtime/`, and
 `scripts/build.js` stamps it into every fragment between sentinel
 comments:
@@ -93,6 +95,16 @@ provides):
 | `timeline-core` | `shared/runtime/timeline-core.js` |
 | `timeline-start` | `shared/runtime/timeline-start.js` |
 | `hover-caption` | `shared/runtime/hover-caption.js` |
+| `caption-core` | `shared/runtime/caption-core.js` |
+| `step-caption` | `shared/runtime/step-caption.js` |
+| `toggle-bar` | `shared/runtime/toggle-bar.css` |
+| `toggle-core` | `shared/runtime/toggle-core.js` |
+| `instance-ids` | `shared/runtime/instance-ids.js` |
+
+`scripts/lib/fragment.js` also records each block's interface version
+and the blocks each manifest `kind` requires; the validator refuses a
+stale version, a missing required block, a duplicate, or a block placed
+before one it depends on.
 
 Properties of the system:
 
@@ -101,8 +113,9 @@ Properties of the system:
   marker); running it twice is a no-op. `--file <path>` limits it to
   one diagram.
 - **Drift detection.** `node scripts/build.js --check` writes nothing
-  and exits non-zero if any block body differs from canonical, or an
-  unknown block name appears. CI runs this on every push and PR, so a
+  and exits non-zero if any block body differs from canonical, an
+  unknown block name appears, or a sentinel is malformed (an unclosed or
+  mismatched begin/end fails rather than swallowing the text between). CI runs this on every push and PR, so a
   hand-edited block cannot land.
 - **One edit propagates everywhere.** Change `shared/tokens.css` (or a
   runtime file), run `build.js`, and every diagram picks it up.
@@ -111,31 +124,36 @@ Properties of the system:
   `--fg-cap-minh`) that a diagram may set *outside* the sentinels;
   anything else diagram-specific also lives outside the blocks.
 
-`shared/snippets.js` documents the JS patterns for humans; the
-executable truth is `shared/runtime/`.
+`shared/snippets.js` holds the two effect helpers a diagram copies by
+hand (`restartAnimation`, `launchComets`); everything else executable
+lives in `shared/runtime/`.
 
 ## The scripts pipeline
 
-All three CLIs sit on `scripts/lib/fragment.js`, the shared parsing
+All four scripts sit on `scripts/lib/fragment.js`, the shared parsing
 layer: splitting a file on the embed markers (`splitEmbed`), finding
-the root class (`rootClass`), locating sentinel blocks (`findBlocks`),
+the root class (`rootClass`), pairing sentinel blocks (`findBlocks`),
 generating the palette block from `tokens.css`, listing diagram files,
-and loading the manifest.
+and loading the manifest. `scripts/lib/cli.js` gives them one strict
+argument parser: an unknown flag is a usage error, not a no-op.
 
 - **`scripts/new-diagram.js`** (`npm run new`) scaffolds a diagram:
-  validates the `<slug>/<name>` and `--abbr`, copies
-  `templates/<kind>.html` with `{{NAME}}`/`{{TITLE}}`/`{{ABBR}}`/…
-  substitution, expands the managed blocks via `build.js --file`, and
-  appends a `manifest.json` entry with a TODO description.
+  validates every input before writing (kebab-case path, known kind,
+  an abbreviation no other diagram uses, a free manifest id), fills
+  `templates/<kind>.html`, expands the managed blocks in memory through
+  `build.js`'s `expandSource`, and appends a `manifest.json` entry with
+  a TODO description, replacing the manifest atomically.
 - **`scripts/build.js`** (`npm run build`) is the block expander
   described above.
 - **`scripts/export-svg.js`** (`npm run export`) writes every static
   diagram to `dist/<slug>/<name>.svg`: the fragment's `<style>` moves
   inside an outer `<svg>` that carries the root class, a `<rect>` supplies
-  the panel, and the body is translated in by the panel padding. A
-  consumer that cannot inline HTML (the harness docs site) commits a copy
-  of the export and references it as an image; re-export and re-copy is
-  the update path.
+  the panel, and the body is translated in by the panel padding. HTML
+  named entities become numeric references, and every export passes a
+  well-formedness check before it is written. A consumer that cannot
+  inline HTML (the ai-experiments docs site) commits a copy of the export
+  and references it as an image; re-export and re-copy is the update
+  path.
 - **`scripts/validate.js`** (`npm run validate`) is the contract
   linter — it mechanically enforces the CLAUDE.md hard rules plus
   manifest sync. See [development.md](development.md#what-the-validator-enforces)
@@ -153,29 +171,30 @@ A flat array indexing every diagram:
 ```json
 { "id": "kv-cache-fill",
   "path": "diagrams/inference-loop/kv-cache-fill.html",
-  "title": "KV cache fill during decode",
-  "post": "inference-loop",
+  "title": "KV cache fill during the decode loop",
   "kind": "step-timeline",
+  "consumers": ["curiosity-chronicles:content/posts/diagram-test.md"],
   "description": "…" }
 ```
 
-`kind` is optional (`step-timeline`, `hover-inspect`, `ambient` or
-`static`); the scaffolder always writes it, but most existing entries
-predate it. It is required for `static`, since that is what gates the
-kind's extra validator rules and what `export-svg.js` selects on.
-The validator enforces: all five required fields present, ids and paths unique,
-`id` equal to the filename stem, every `path` existing on disk, and no
-diagram on disk missing from the manifest. `post` names the blog post
-the diagram belongs to; entries for not-yet-published posts use
-placeholder values (e.g. `"future — LLM training series"`, or
-`"n/a — internal reference"` for the effects sampler).
+`kind` is one of `step-timeline`, `hover-inspect`, `toggle`, `ambient`
+or `static`; it selects the managed blocks the diagram must carry, and
+`static` also gates the export rules and is what `export-svg.js` selects
+on. `consumers` lists every page that embeds or copies the diagram, as
+`<repo>:<path>`, so a change can be traced to who must pick it up; it is
+empty for a diagram nothing uses yet. The validator enforces all six
+fields, unique ids and paths, `id` equal to the filename stem, every
+`path` existing on disk, no diagram on disk missing from the manifest,
+curly quotes in titles, and a page `<title>` and `<h1>` equal to the
+manifest title.
 
 ## The gallery (`index.html`)
 
 A dependency-free page that fetches `manifest.json`, extracts each
 file's embed fragment with the same marker convention, injects the
-markup, and re-creates the `<script>` nodes so they execute. It
-renders the **first manifest entry twice** as a standing regression
+markup, and re-creates the `<script>` nodes so they execute. An HTTP
+error or a script that throws while embedding is shown on that entry.
+It renders the **first manifest entry twice** as a standing regression
 check for multi-instance collisions — exactly the situation a blog
 post embedding the same diagram twice would create. Because of the
 manifest fetch it must be served over HTTP

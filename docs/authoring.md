@@ -10,7 +10,8 @@ swatch and effect is `diagrams/effects-sampler/effects-sampler.html`.
 | kind | when | interaction |
 |---|---|---|
 | **step-timeline** | a process unfolds over discrete steps: loops, cache fills, pipelines | prev/play/next controls drive `is-step-N` root classes; autoplays when ~30% visible, pauses off-screen |
-| **hover-inspect** | an architecture/block diagram where parts need explanation | blocks carry `data-info`; hovering fills the `.fg-caption` box |
+| **hover-inspect** | an architecture/block diagram where parts need explanation | blocks carry `data-info` (and optionally `data-title`, `data-code`); hovering or focusing one fills the `.fg-caption` box |
+| **toggle** | two or a few readings of the same thing, compared by switching | a button cycles the root through a `STATES` table, or one button per state selects it; each state has its caption |
 | **ambient** | continuous flow with no natural steps | looping CSS animation (e.g. dashed-line `stroke-dashoffset` flow) |
 | **static** | an architecture or layout figure for reference docs, read at a glance and printable | none; state is encoded with the palette hues, not motion, and the file exports to a standalone SVG (`npm run export`) |
 
@@ -31,7 +32,7 @@ between diagrams:
 - `--warn` (amber) — in progress or the hot path: decode, work in
   flight.
 - `--hot` (red) — trouble: bottleneck, eviction, contention.
-- `--violet` — a second series when one hue isn't enough.
+- `--violet` — a second series when one hue is not enough.
 - `--*-dim` variants — the *fill* of a box that is active in the
   current step (accent hue ~15% over panel). Always the token, never a
   hand-mixed hex — the validator rejects the known hand-mixed values.
@@ -58,13 +59,13 @@ your fragment and rename the `fg-XX-*` keyframes to your abbr:
 - **flash** — a discrete event.
 
 Two hard rules travel with the effects (both are contract rules, both
-checked in review even where the validator can't see them):
+checked in review even where the validator cannot see them):
 
 1. **Never animate SVG filter primitives** — filters re-render per
    frame and jank. Blur once statically, animate opacity only.
 2. **CSS-gate every SMIL animation** with `display: none` under
    `prefers-reduced-motion`, because SMIL ignores the media query on
-   its own. The validator enforces this for `<animateMotion>`.
+   its own. The validator enforces this for every SMIL element.
 
 ### Taste
 
@@ -83,9 +84,14 @@ checked in review even where the validator can't see them):
   rules in a second `@media` outside the block), step timelines jump
   to the final state, and manual controls stay usable.
 - **No layout shift**: anything whose content changes at runtime
-  (hover captions, step counters) reserves its maximum height up front
-  — size `min-height` for the longest text at column width. The
-  `--fg-cap-minh` hook exists for exactly this.
+  reserves its maximum height up front. Captions get this from the
+  `caption-core` block, which stacks every variant invisibly so the box
+  is as tall as the longest at any width; `--fg-cap-minh` only sets the
+  height before the script runs.
+- **Keyboard reach**: nothing inside the `role="img"` SVG takes
+  `role="button"`. State changes go through real buttons in
+  `.fg-controls`; hover targets become focusable through
+  `hover-caption`, so the caption is reachable without a pointer.
 
 ## Workflow reminders
 

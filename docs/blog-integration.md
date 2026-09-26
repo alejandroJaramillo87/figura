@@ -1,10 +1,13 @@
 # Blog integration (Curiosity Chronicles)
 
-figura exists to serve one consumer: the
+figura has two consumers. The
 [Curiosity Chronicles](https://github.com/alejandroJaramillo87/curiosity-chronicles)
-blog. This doc covers the mechanics of that integration from figura's
+blog inlines diagrams into posts, which this doc covers from figura's
 side; the blog-side view lives in the blog repo at
-`docs/diagrams-figura.md`.
+`docs/diagrams/figura.md`. The ai-experiments docs site commits copies of
+the static diagrams' SVG exports (see
+[architecture.md](architecture.md#the-scripts-pipeline)). Each manifest
+entry's `consumers` list names the pages that use it.
 
 ## The submodule
 
@@ -19,8 +22,8 @@ below).
 The blog's Hugo shortcode `layouts/shortcodes/diagram.html` inlines a
 diagram at **build time** — no iframe, no runtime fetch:
 
-1. A post writes `{{</* diagram name="<post-slug>/<name>" */>}}`.
-2. Hugo reads `static/diagrams/diagrams/<post-slug>/<name>.html`
+1. A post writes `{{</* diagram name="<dir>/<name>" */>}}`.
+2. Hugo reads `static/diagrams/diagrams/<dir>/<name>.html`
    (i.e. a file in this repo's `diagrams/` tree).
 3. It extracts the region between `<!-- fg:embed-start -->` and
    `<!-- fg:embed-end -->` — everything outside the markers (preview
@@ -30,7 +33,7 @@ diagram at **build time** — no iframe, no runtime fetch:
    markdownified `<figcaption>` from the `caption` param.
 
 The shortcode fails the blog build with a clear error when the `name`
-param is missing, when the diagram file doesn't exist (typo, or an
+param is missing, when the diagram file does not exist (typo, or an
 uninitialized submodule), or when the file lacks the
 `fg:embed-start` marker — so the embed markers are load-bearing, not
 decorative.
@@ -61,15 +64,11 @@ the standing regression check for the multi-instance case.
 ## Release flow
 
 1. Author or change diagrams here; pass `npm run check`.
-2. Merge/push to `main` (CI runs the same check).
-3. In the blog repo, bump the submodule pointer:
-
-   ```bash
-   git submodule update --remote static/diagrams
-   git add static/diagrams
-   git commit -m "Bump figura diagrams"
-   ```
-
+2. Merge to `main` (CI runs the same check).
+3. In the blog repo, run the `/bump-figura` command. It moves the
+   submodule pointer, runs the blog's `npm run quality` gate (which
+   includes its mirrored-token check), and reports what changed. A
+   bump is its own commit there.
 4. Push; the blog rebuilds against the new pin.
 
 Until step 3 lands, the blog keeps building against the old commit —
@@ -80,10 +79,11 @@ retroactively; it can only break at bump time.
 
 The integration is visual as well as mechanical:
 
-- `shared/tokens.css` is the diagram-side counterpart of the blog's
-  design tokens in `assets/scss/custom.scss` — same slate neutrals,
-  same sky `#38bdf8` accent, same radii/motion/type values. A palette
-  change should be considered on both sides.
+- `shared/tokens.css` is the source of truth. The blog mirrors eleven
+  of its values as its dark-panel tokens in `assets/scss/custom.scss`,
+  and the blog's `tests/check-figura-tokens.mjs` fails until the mirror
+  matches. A palette change therefore lands here first, and the blog
+  updates its mirror in the same commit as the bump that brings it in.
 - Diagrams **never theme-switch**: the dark slate panel reads as a
   framed figure on the blog's light theme and sits nearly flush on its
   dark theme. The blog styles its code panels from the same material,
@@ -95,8 +95,9 @@ The integration is visual as well as mechanical:
 
 ## Naming convention
 
-`diagrams/<post-slug>/` matches the blog post's filename stem under
-the blog's `content/posts/`, and the manifest's `post` field records
-which post each diagram belongs to (with placeholder values for posts
-not yet written). This is a convention for humans, not something the
-shortcode depends on — it resolves whatever path `name` gives it.
+`diagrams/<dir>/` names where a diagram is used: a blog post's
+filename stem, the series directory for a post in a series
+(`what-language-leaves-out/`), or a docs-site section for a static
+diagram (`rust-harness/`). The manifest's `consumers` field records the
+exact pages. The directory is a convention for humans, not something the
+shortcode depends on: it resolves whatever path `name` gives it.

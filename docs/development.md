@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js >= 18. That's it — the tooling is zero-dependency, so there
+- Node.js >= 18. That is all: the tooling is zero-dependency, so there
   is no `npm install` step (`package.json` has no dependencies).
 - Python 3 (optional) for serving the gallery locally
   (`python3 -m http.server`). Nothing in the tooling needs it.
@@ -12,21 +12,24 @@
 Scaffold with the CLI (`npm run new -- …` or directly):
 
 ```bash
-node scripts/new-diagram.js <post-slug>/<kebab-name> \
-  --kind step-timeline|hover-inspect|ambient \
-  --abbr <2-6 char prefix> --title "Human-readable title"
+node scripts/new-diagram.js <consumer-dir>/<kebab-name> \
+  --kind step-timeline|hover-inspect|toggle|ambient|static \
+  --abbr <2-6 char prefix> --title "Name: what it shows"
 ```
 
-This copies the matching `templates/<kind>.html` with the name/title/
-abbr substituted, expands the managed blocks, writes the file to
-`diagrams/<post-slug>/<kebab-name>.html`, and appends a
-`manifest.json` entry — whose `description` is a TODO you must fill
-in. Pick the kind with the guidance in
+This checks every input first, then copies the matching
+`templates/<kind>.html` with the name/title/abbr substituted, expands
+the managed blocks, writes the file to
+`diagrams/<consumer-dir>/<kebab-name>.html`, and appends a
+`manifest.json` entry whose `description` is a TODO you must fill in
+and whose `consumers` list starts empty. The validator refuses the TODOs
+until they are gone. Pick the kind with the guidance in
 [authoring.md](authoring.md#choosing-a-kind).
 
 Then author the diagram-specific parts: the static SVG, the
-`is-step-N` state CSS, effect keyframes copied from
-`shared/effects.css` (renamed to your abbr), and any custom `fg:step`
+`is-step-N` or state CSS, the `STATES` or `CAPTIONS` table the kind
+reads, effect keyframes copied from `shared/effects.css` (renamed to
+your abbr), and any custom `fg:step` / `fg:toggle` / `fg:hover`
 handlers. Follow the contract in [CLAUDE.md](../CLAUDE.md); read 1–2
 existing diagrams of the same kind first.
 
@@ -61,16 +64,25 @@ contract.
 
 ### What the validator enforces
 
-Per file: embed markers present and balanced; root element carries
-`fg-diagram fg-<name>`; every CSS selector scoped under the root
-class; keyframes `fg-<abbr>-*` prefixed; no `<link>`, `@import`,
-external `script src`, external URLs, or absolute paths inside the
-fragment; no literal `cubic-bezier()` or hand-mixed dim hexes outside
-managed blocks; `prefers-reduced-motion` handling present, with a
-`display: none` gate whenever `<animateMotion>` (SMIL) is used; SVG
-ids diagram-prefixed and all id references resolvable within the
-fragment; `role="img"` + `aria-label` on every `<svg>`; scripts
-resolve their root via `document.currentScript.closest`, avoid
+Per file: exactly one pair of embed markers; well-formed sentinels
+(`sentinel`); the managed blocks the manifest kind requires, each once,
+at its canonical version and after the blocks it depends on
+(`block-required`, `block-duplicate`, `block-version`, `block-order`);
+a root element carrying `fg-diagram fg-<file stem>`; every CSS selector
+scoped under the root class, including inside `@media`, `@supports`,
+`@container` and `@layer`; keyframes `fg-<abbr>-*` prefixed; no id or
+keyframe name that another diagram also defines (`global-name`); no
+`<link>`, `@import`, external `script src`, external or relative URLs,
+or absolute paths inside the fragment; no HTML comments; no literal
+`cubic-bezier()`, colour, hand-mixed dim hex, or transition duration
+outside managed blocks; no `font-size` below 11px and no hand-written
+monospace stack; `prefers-reduced-motion` handling present, with every
+SMIL element inside an element that a reduced-motion `display: none`
+rule hides; the `instance-ids` block wherever SMIL syncbase timing
+appears; SVG ids diagram-prefixed and all id references resolvable
+within the fragment; `role="img"` + `aria-label` on every `<svg>`; no
+leftover scaffold `TODO`; scripts that are a bare `<script>` holding one
+IIFE, resolve their root via `document.currentScript.closest`, avoid
 `getElementById`/`DOMContentLoaded`, and parse cleanly. A diagram the
 manifest marks `static` additionally has no `<script>`
 (`static-script`), no SMIL element (`static-smil`), no `@keyframes` and
@@ -78,15 +90,15 @@ no `animation`/`transition` declaration outside managed blocks
 (`static-motion`), and no `.fg-controls`/`.fg-caption` markup
 (`static-chrome`).
 
-Per repo: manifest entries have all five required fields (`id`,
-`path`, `title`, `post`, `description`) plus an optional `kind`
-(`step-timeline`, `hover-inspect`, `ambient` or `static`), unique ids/paths,
-`id` == filename stem, every path exists, and no diagram is missing
-from the manifest.
+Per repo: manifest entries have all six fields (`id`, `path`,
+`title`, `kind`, `consumers`, `description`), a known `kind`, consumers
+written as `<repo>:<path>`, a filled description, unique ids and paths,
+`id` equal to the filename stem, a title in curly quotes that the page's
+`<title>` and `<h1>` repeat exactly, every path existing, and no diagram
+missing from the manifest.
 
 `node scripts/validate.js --warn` reports the same findings but exits
-0 — useful mid-refactor. `validate.js` also has an `EXEMPT` map for
-per-file rule exemptions (currently empty; use sparingly).
+0, which is useful mid-refactor.
 
 ## Previewing
 
@@ -112,15 +124,18 @@ on every push to `main` and every pull request, on Node 22.
   sentinel block, or `shared/runtime/`/`tokens.css` changed without a
   `build` run. Run `node scripts/build.js` and diff: if your edit
   disappeared, move it outside the block or into the canonical source.
-- **`css-scope` findings** — a selector doesn't start with
+- **`css-scope` findings** — a selector does not start with
   `.fg-<name>`. Prefix it; there are no legitimate unscoped selectors
   inside a fragment.
 - **`id-ref` findings** — an SVG `url(#…)`/`href="#…"`/`begin="…"`
   points at an id not defined in the same fragment; typically a typo
   or a leftover from a copied effect.
-- **`smil-gate` findings** — a `<animateMotion>` comet without a
-  `display: none` rule under the reduced-motion media query. The CSS
-  gate is mandatory because SMIL ignores `prefers-reduced-motion`.
+- **`smil-gate` findings** — a SMIL element that no `display: none`
+  rule under the reduced-motion media query hides. The CSS gate is
+  mandatory because SMIL ignores `prefers-reduced-motion`.
+- **`sentinel` findings** — a `fg:begin` or `fg:end` comment that is
+  malformed, unclosed, nested or mismatched. Fix the marker; `build.js`
+  refuses to touch the file until it pairs.
 - **`manifest` findings** — usually a diagram added or renamed without
   updating `manifest.json` (the scaffolder appends entries; manual
   renames must be mirrored by hand).

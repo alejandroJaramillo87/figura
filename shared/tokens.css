@@ -1,14 +1,17 @@
 /*
- * tokens.css — reference design tokens for figura diagrams.
+ * tokens.css — the design tokens for every figura diagram, and their source
+ * of truth.
  *
- * IMPORTANT: diagrams do NOT link this file. Each diagram copies the values
- * it needs into its own scoped <style> block so the embed fragment stays
- * fully self-contained (see CLAUDE.md). This file is the single source of
- * truth for the palette; update here first, then use in new diagrams.
+ * Diagrams never link this file. scripts/build.js stamps these values into
+ * each diagram's palette-classic managed block, so the embed fragment stays
+ * self-contained: change a value here, run build.js, and every diagram picks
+ * it up. The blog mirrors eleven of these values for its code panels and
+ * its tests/check-figura-tokens.mjs fails until the mirror matches, so a
+ * palette change lands here first and the blog follows at its next bump.
  */
 
 :root {
-  /* Surfaces (dark slate panel — matches the blog's mermaid diagrams) */
+  /* Surfaces (dark slate panel) */
   --fg-bg: #0f172a;
   --fg-panel: #1e293b;
   --fg-panel-hover: #334155;
