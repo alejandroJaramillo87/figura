@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-homograph-voicing .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-homograph-voicing .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-homograph-voicing .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-homograph-voicing .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-homograph-voicing .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-homograph-voicing .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-homograph-voicing .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-homograph-voicing .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-homograph-voicing .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-homograph-voicing .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-homograph-voicing .fg-fill-line) { fill: var(--line); }
+:where(.fg-homograph-voicing .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-homograph-voicing .fg-fill-border) { fill: var(--border); }
+:where(.fg-homograph-voicing .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-homograph-voicing .fg-fill-text) { fill: var(--text); }
+:where(.fg-homograph-voicing .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-homograph-voicing .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-homograph-voicing .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-homograph-voicing {
@@ -57,21 +77,21 @@
 
 .fg-homograph-voicing .hgv-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease);
+  transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease);
 }
 .fg-homograph-voicing .hgv-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none;
-  transition: opacity 0.7s var(--ease); }
+  transition: opacity var(--dur-slow) var(--ease); }
 .fg-homograph-voicing .hgv-note { fill: var(--muted); font-size: 11px; }
 .fg-homograph-voicing .hgv-ipa { font-family: var(--mono); font-size: 13px; text-anchor: middle;
-  transition: opacity 0.7s var(--ease); }
+  transition: opacity var(--dur-slow) var(--ease); }
 
 /* the homograph token */
 .fg-homograph-voicing .hgv-lead .hgv-tok { stroke: var(--accent); }
 .fg-homograph-voicing .hgv-lead .hgv-word { fill: var(--accent); font-weight: 600; }
 
 /* two context states: metal (default) / news */
-.fg-homograph-voicing .hgv-c-metal { opacity: 1; transition: opacity 0.7s var(--ease); }
-.fg-homograph-voicing .hgv-c-news { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-homograph-voicing .hgv-c-metal { opacity: 1; transition: opacity var(--dur-slow) var(--ease); }
+.fg-homograph-voicing .hgv-c-news { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-homograph-voicing.is-news .hgv-c-metal { opacity: 0; }
 .fg-homograph-voicing.is-news .hgv-c-news { opacity: 1; }
 
@@ -87,7 +107,7 @@
 /* information-need arc */
 .fg-homograph-voicing .hgv-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-homograph-voicing:not(.is-news) .hgv-arc-metal { opacity: 1; }
 .fg-homograph-voicing.is-news .hgv-arc-news { opacity: 1; }
@@ -135,7 +155,7 @@
      aria-label="A sentence containing the word lead, with two toggled contexts: the pipes were made of lead, pronounced led, versus she wrote the lead for tomorrow's front page, pronounced leed. A listener's lane shows the pronunciation as available; the model's lane shows the pronunciation crossed out — text carries no audio, so the sense must be imported from surrounding words.">
   <defs>
     <marker id="hgv-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 

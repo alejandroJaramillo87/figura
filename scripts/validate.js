@@ -162,7 +162,7 @@ function checkFile(file, kind) {
     for (const sel of selList.split(',').map((s) => s.trim()).filter(Boolean)) {
       // keyframe stop selectors (from/to/%) reach here only if nested parse missed; allow
       if (/^(from|to|\d+%)/.test(sel)) continue;
-      if (!sel.startsWith('.' + cls)) {
+      if (!sel.replace(/^:where\(/, '').startsWith('.' + cls)) {
         report(file, 'css-scope', `selector not scoped under .${cls}: "${sel}"`);
       }
     }
@@ -205,6 +205,13 @@ function checkFile(file, kind) {
   {
     if (/cubic-bezier\(/.test(unmanaged)) {
       report(file, 'motion-token', 'literal cubic-bezier() outside managed blocks (use var(--ease))');
+    }
+    for (const m of unmanaged.matchAll(/(?<![&\w])#[0-9a-fA-F]{3,8}\b(?![-\w;])/g)) {
+      report(file, 'color-token', `literal colour ${m[0]} outside managed blocks (use a palette var or an fg-fill-*/fg-stroke-* class)`);
+    }
+    for (const m of stripCssComments(unmanaged).matchAll(/transition(?:-duration)?\s*:([^;{}]*)/g)) {
+      const literal = m[1].replace(/var\([^()]*\)|calc\((?:[^()]|\([^()]*\))*\)/g, '').match(/(?<![\w.-])(?!0m?s\b)\d*\.?\d+m?s\b/);
+      if (literal) report(file, 'motion-token', `literal transition duration ${literal[0]} (use var(--dur-quick|fast|slow))`);
     }
     const dimHexes = unmanaged.match(/#(?:0c3550|12283f|0e4429|14352a|123c2e|4a3608|4a1d1d|3f1d1d|2a2350)\b/gi) || [];
     for (const h of dimHexes) {

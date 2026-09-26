@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-pos-flip .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-pos-flip .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-pos-flip .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-pos-flip .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-pos-flip .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-pos-flip .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-pos-flip .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-pos-flip .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-pos-flip .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-pos-flip .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-pos-flip .fg-fill-line) { fill: var(--line); }
+:where(.fg-pos-flip .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-pos-flip .fg-fill-border) { fill: var(--border); }
+:where(.fg-pos-flip .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-pos-flip .fg-fill-text) { fill: var(--text); }
+:where(.fg-pos-flip .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-pos-flip .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-pos-flip .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-pos-flip {
@@ -57,7 +77,7 @@
 
 .fg-pos-flip .psf-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease);
 }
 .fg-pos-flip .psf-word { fill: var(--text); font-size: 15px; text-anchor: middle; pointer-events: none; }
 .fg-pos-flip .psf-note { fill: var(--muted); font-size: 11px; }
@@ -65,7 +85,7 @@
 /* POS labels under each token: pair per ambiguous token, cross-faded */
 .fg-pos-flip .psf-pos {
   font-family: var(--mono); font-size: 11px; text-anchor: middle;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-pos-flip .psf-pos-fixed { fill: var(--muted); }
 .fg-pos-flip .psf-pos-a { fill: var(--warn); opacity: 1; }
@@ -79,7 +99,7 @@
 
 /* grouping brackets: which tokens form a unit, per reading */
 .fg-pos-flip .psf-grp {
-  fill: none; stroke-width: 2; transition: opacity 0.7s var(--ease);
+  fill: none; stroke-width: 2; transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-pos-flip .psf-grp-a { stroke: var(--warn); opacity: 1; }
 .fg-pos-flip .psf-grp-b { stroke: var(--violet); opacity: 0; }
@@ -87,7 +107,7 @@
 .fg-pos-flip.is-critter .psf-grp-b { opacity: 1; }
 .fg-pos-flip .psf-grp-label {
   font-size: 11px; text-anchor: middle;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-pos-flip .psf-grp-label.psf-grp-a { fill: var(--warn); stroke: none; }
 .fg-pos-flip .psf-grp-label.psf-grp-b { fill: var(--violet); stroke: none; }

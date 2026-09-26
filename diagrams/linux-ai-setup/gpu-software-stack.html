@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-gpu-software-stack .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-gpu-software-stack .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-gpu-software-stack .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-gpu-software-stack .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-gpu-software-stack .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-gpu-software-stack .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-gpu-software-stack .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-gpu-software-stack .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-gpu-software-stack .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-gpu-software-stack .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-gpu-software-stack .fg-fill-line) { fill: var(--line); }
+:where(.fg-gpu-software-stack .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-gpu-software-stack .fg-fill-border) { fill: var(--border); }
+:where(.fg-gpu-software-stack .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-gpu-software-stack .fg-fill-text) { fill: var(--text); }
+:where(.fg-gpu-software-stack .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-gpu-software-stack .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-gpu-software-stack .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-gpu-software-stack {
@@ -57,14 +77,14 @@
 
 .fg-gpu-software-stack .gss-block {
   fill: var(--panel); stroke: var(--border); stroke-width: 2;
-  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+  transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
 .fg-gpu-software-stack .gss-group { transition: transform var(--dur-fast) var(--ease); }
 .fg-gpu-software-stack .gss-group:hover { transform: translateY(-2px); }
 .fg-gpu-software-stack .gss-group:hover .gss-block { fill: var(--panel-hover); }
 
 /* hover glow: pre-blurred halo behind each layer, tinted to its stroke */
-.fg-gpu-software-stack .gss-halo { filter: blur(8px); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.fg-gpu-software-stack .gss-halo { filter: blur(8px); opacity: 0; transition: opacity var(--dur-quick); pointer-events: none; }
 .fg-gpu-software-stack .gss-group:hover .gss-halo { opacity: 0.45; }
 .fg-gpu-software-stack .gss-hw { stroke: var(--ok); }
 .fg-gpu-software-stack .gss-driver { stroke: var(--accent); }
@@ -145,7 +165,7 @@
      aria-label="The NVIDIA GPU software stack, top to bottom: AI frameworks and containers, cuDNN, the CUDA toolkit and runtime, the NVIDIA driver with its kernel modules, and the RTX 5090 GPU hardware.">
   <defs>
     <marker id="gss-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 

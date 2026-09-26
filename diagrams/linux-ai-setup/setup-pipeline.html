@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-setup-pipeline .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-setup-pipeline .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-setup-pipeline .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-setup-pipeline .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-setup-pipeline .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-setup-pipeline .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-setup-pipeline .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-setup-pipeline .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-setup-pipeline .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-setup-pipeline .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-setup-pipeline .fg-fill-line) { fill: var(--line); }
+:where(.fg-setup-pipeline .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-setup-pipeline .fg-fill-border) { fill: var(--border); }
+:where(.fg-setup-pipeline .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-setup-pipeline .fg-fill-text) { fill: var(--text); }
+:where(.fg-setup-pipeline .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-setup-pipeline .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-setup-pipeline .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-setup-pipeline {
@@ -57,26 +77,26 @@
 
 .fg-setup-pipeline .sup-block {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill var(--dur-fast) var(--ease), stroke 0.45s;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast);
 }
-.fg-setup-pipeline .sup-title { fill: var(--muted); font-size: 14px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
-.fg-setup-pipeline .sup-script { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; opacity: 0.75; transition: fill 0.45s; }
-.fg-setup-pipeline .sup-num { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: end; opacity: 0.6; transition: fill 0.45s, opacity 0.45s; }
+.fg-setup-pipeline .sup-title { fill: var(--muted); font-size: 14px; font-weight: 600; text-anchor: middle; transition: fill var(--dur-fast); }
+.fg-setup-pipeline .sup-script { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; opacity: 0.75; transition: fill var(--dur-fast); }
+.fg-setup-pipeline .sup-num { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: end; opacity: 0.6; transition: fill var(--dur-fast), opacity var(--dur-fast); }
 .fg-setup-pipeline .sup-sub { fill: var(--muted); font-size: 12px; letter-spacing: 0.08em; }
 .fg-setup-pipeline .sup-rail { stroke: var(--border); stroke-width: 2; opacity: 0.7; }
-.fg-setup-pipeline .sup-reboot { fill: var(--warn); font-size: 11px; text-anchor: start; opacity: 0; transition: opacity 0.45s; }
+.fg-setup-pipeline .sup-reboot { fill: var(--warn); font-size: 11px; text-anchor: start; opacity: 0; transition: opacity var(--dur-fast); }
 
 /* faint guide connectors, always visible */
 .fg-setup-pipeline .sup-conn {
   stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.4;
-  transition: opacity 0.45s;
+  transition: opacity var(--dur-fast);
 }
 
 /* draw-in overlay: the completed path turns green as stages finish */
 .fg-setup-pipeline .sup-flow {
   stroke: var(--ok); stroke-width: 2.5; fill: none; stroke-linecap: round;
   stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0;
-  transition: stroke-dashoffset 0.7s var(--ease), opacity 0.4s;
+  transition: stroke-dashoffset var(--dur-slow) var(--ease), opacity var(--dur-quick);
 }
 .fg-setup-pipeline .sup-flow.is-drawn { stroke-dashoffset: 0; opacity: 0.85; }
 
@@ -92,7 +112,7 @@
 .fg-setup-pipeline .sup-stage.is-done .sup-reboot { opacity: 1; }
 
 /* glow halo on the active stage: pre-blurred rect, opacity pulse only */
-.fg-setup-pipeline .sup-halo { filter: blur(7px); opacity: 0; transition: opacity 0.45s; }
+.fg-setup-pipeline .sup-halo { filter: blur(7px); opacity: 0; transition: opacity var(--dur-fast); }
 .fg-setup-pipeline .sup-stage.is-active .sup-halo { animation: fg-sup-glow 1.6s var(--ease) infinite alternate; }
 @keyframes fg-sup-glow { from { opacity: 0.16; } to { opacity: 0.45; } }
 
@@ -101,7 +121,7 @@
 @keyframes fg-sup-flash { 40% { opacity: 0.1; } }
 
 /* step-advance comets: hidden except during their step; SMIL kicked by JS */
-.fg-setup-pipeline .sup-comet { opacity: 0; transition: opacity 0.3s; }
+.fg-setup-pipeline .sup-comet { opacity: 0; transition: opacity var(--dur-quick); }
 .fg-setup-pipeline.is-step-2 .sup-comet-1, .fg-setup-pipeline.is-step-3 .sup-comet-2,
 .fg-setup-pipeline.is-step-4 .sup-comet-3, .fg-setup-pipeline.is-step-5 .sup-comet-4,
 .fg-setup-pipeline.is-step-6 .sup-comet-5, .fg-setup-pipeline.is-step-7 .sup-comet-6,
@@ -159,7 +179,7 @@
      aria-label="Eight-stage setup pipeline, top to bottom: install Ubuntu, configure user and terminal, harden security, provision the data SSD, install the NVIDIA driver with a reboot, install the CUDA toolkit which needs only a new shell, install cuDNN, and install Docker with the NVIDIA Container Toolkit.">
   <defs>
     <marker id="sup-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 

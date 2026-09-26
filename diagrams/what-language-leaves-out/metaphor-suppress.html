@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-metaphor-suppress .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-metaphor-suppress .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-metaphor-suppress .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-metaphor-suppress .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-metaphor-suppress .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-metaphor-suppress .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-metaphor-suppress .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-metaphor-suppress .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-metaphor-suppress .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-metaphor-suppress .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-metaphor-suppress .fg-fill-line) { fill: var(--line); }
+:where(.fg-metaphor-suppress .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-metaphor-suppress .fg-fill-border) { fill: var(--border); }
+:where(.fg-metaphor-suppress .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-metaphor-suppress .fg-fill-text) { fill: var(--text); }
+:where(.fg-metaphor-suppress .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-metaphor-suppress .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-metaphor-suppress .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-metaphor-suppress {
@@ -63,16 +83,16 @@
 .fg-metaphor-suppress .mtp-drown .mtp-tok { stroke: var(--accent); }
 
 /* the object slot swaps */
-.fg-metaphor-suppress .mtp-obj { transition: opacity 0.7s var(--ease); }
+.fg-metaphor-suppress .mtp-obj { transition: opacity var(--dur-slow) var(--ease); }
 .fg-metaphor-suppress .mtp-obj-pool { opacity: 1; }
 .fg-metaphor-suppress .mtp-obj-paper { opacity: 0; }
 .fg-metaphor-suppress.is-figurative .mtp-obj-pool { opacity: 0; }
 .fg-metaphor-suppress.is-figurative .mtp-obj-paper { opacity: 1; }
 
 /* sense cards */
-.fg-metaphor-suppress .mtp-sense rect { fill: var(--panel); stroke-width: 1.5; transition: stroke 0.7s, opacity 0.7s; }
+.fg-metaphor-suppress .mtp-sense rect { fill: var(--panel); stroke-width: 1.5; transition: stroke var(--dur-slow), opacity var(--dur-slow); }
 .fg-metaphor-suppress .mtp-sense text { font-size: 12px; }
-.fg-metaphor-suppress .mtp-sense .mtp-strike { stroke: var(--hot); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-metaphor-suppress .mtp-sense .mtp-strike { stroke: var(--hot); stroke-width: 2; opacity: 0; transition: opacity var(--dur-slow); }
 .fg-metaphor-suppress .mtp-sense-lit rect { stroke: var(--ok); }
 .fg-metaphor-suppress .mtp-sense-lit text { fill: var(--text); }
 .fg-metaphor-suppress .mtp-sense-fig { opacity: 0.45; }
@@ -163,7 +183,7 @@
 
   <defs>
     <marker id="mtp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>

@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-component-overview .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-component-overview .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-component-overview .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-component-overview .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-component-overview .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-component-overview .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-component-overview .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-component-overview .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-component-overview .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-component-overview .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-component-overview .fg-fill-line) { fill: var(--line); }
+:where(.fg-component-overview .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-component-overview .fg-fill-border) { fill: var(--border); }
+:where(.fg-component-overview .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-component-overview .fg-fill-text) { fill: var(--text); }
+:where(.fg-component-overview .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-component-overview .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-component-overview .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-component-overview {
@@ -62,14 +82,14 @@
 
 .fg-component-overview .arhc-block {
   fill: var(--panel); stroke: var(--border); stroke-width: 2;
-  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+  transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
 .fg-component-overview .arhc-group { transition: transform var(--dur-fast) var(--ease); }
 .fg-component-overview .arhc-group:hover { transform: translateY(-2px); }
 .fg-component-overview .arhc-group:hover .arhc-block { fill: var(--panel-hover); }
 
 /* hover glow: pre-blurred halo behind the block, tinted to its stroke */
-.fg-component-overview .arhc-halo { filter: blur(9px); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.fg-component-overview .arhc-halo { filter: blur(9px); opacity: 0; transition: opacity var(--dur-quick); pointer-events: none; }
 .fg-component-overview .arhc-group:hover .arhc-halo { opacity: 0.4; }
 
 .fg-component-overview .arhc-cpu { stroke: var(--warn); }

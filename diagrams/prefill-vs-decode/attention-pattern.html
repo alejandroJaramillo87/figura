@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-attention-pattern .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-attention-pattern .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-attention-pattern .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-attention-pattern .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-attention-pattern .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-attention-pattern .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-attention-pattern .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-attention-pattern .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-attention-pattern .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-attention-pattern .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-attention-pattern .fg-fill-line) { fill: var(--line); }
+:where(.fg-attention-pattern .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-attention-pattern .fg-fill-border) { fill: var(--border); }
+:where(.fg-attention-pattern .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-attention-pattern .fg-fill-text) { fill: var(--text); }
+:where(.fg-attention-pattern .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-attention-pattern .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-attention-pattern .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-attention-pattern {
@@ -60,9 +80,9 @@
 
 .fg-attention-pattern .apf-cell {
   fill: var(--panel); stroke: var(--border); stroke-width: 1;
-  transition: fill var(--dur-fast) var(--ease), stroke 0.45s;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast);
 }
-.fg-attention-pattern .apf-cell.apf-masked { fill: transparent; stroke: #24314a; stroke-dasharray: 3 3; }
+.fg-attention-pattern .apf-cell.apf-masked { fill: transparent; stroke: var(--border); stroke-dasharray: 3 3; }
 
 /* Step states.
    0: empty. 1: prefill fills all causal cells of rows 0-3 at once (green).
@@ -97,7 +117,7 @@
 .fg-attention-pattern.is-step-4 .apf-r6 .apf-cell:not(.apf-masked) { stroke: var(--accent); stroke-width: 2; }
 
 /* phase captions */
-.fg-attention-pattern .apf-phase { opacity: 0; transition: opacity 0.45s; }
+.fg-attention-pattern .apf-phase { opacity: 0; transition: opacity var(--dur-fast); }
 .fg-attention-pattern.is-step-0 .apf-phase-idle,
 .fg-attention-pattern.is-step-1 .apf-phase-prefill,
 .fg-attention-pattern.is-step-2 .apf-phase-decode,
@@ -201,11 +221,11 @@
   </g>
 
   <g>
-    <rect x="60" y="510" width="16" height="16" rx="3" fill="var(--ok-dim)" stroke="#34d399"/>
+    <rect class="fg-stroke-ok" x="60" y="510" width="16" height="16" rx="3" fill="var(--ok-dim)"/>
     <text x="84" y="523" class="apf-sub">prefill (batched)</text>
-    <rect x="210" y="510" width="16" height="16" rx="3" fill="var(--warn-dim)" stroke="#fbbf24"/>
+    <rect class="fg-stroke-warn" x="210" y="510" width="16" height="16" rx="3" fill="var(--warn-dim)"/>
     <text x="234" y="523" class="apf-sub">decode (1 row / step)</text>
-    <rect x="390" y="510" width="16" height="16" rx="3" fill="none" stroke="#24314a" stroke-dasharray="3 3"/>
+    <rect class="fg-stroke-border" x="390" y="510" width="16" height="16" rx="3" fill="none" stroke-dasharray="3 3"/>
     <text x="414" y="523" class="apf-sub">masked (future)</text>
   </g>
 

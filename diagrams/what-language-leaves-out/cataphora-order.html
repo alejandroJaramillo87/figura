@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-cataphora-order .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-cataphora-order .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-cataphora-order .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-cataphora-order .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-cataphora-order .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-cataphora-order .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-cataphora-order .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-cataphora-order .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-cataphora-order .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-cataphora-order .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-cataphora-order .fg-fill-line) { fill: var(--line); }
+:where(.fg-cataphora-order .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-cataphora-order .fg-fill-border) { fill: var(--border); }
+:where(.fg-cataphora-order .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-cataphora-order .fg-fill-text) { fill: var(--text); }
+:where(.fg-cataphora-order .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-cataphora-order .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-cataphora-order .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-cataphora-order {
@@ -58,7 +78,7 @@
 .fg-cataphora-order .ctp-note { fill: var(--muted); font-size: 11px; }
 .fg-cataphora-order .ctp-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease);
+  transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease);
 }
 .fg-cataphora-order .ctp-word { fill: var(--text); font-size: 14px; text-anchor: middle; }
 
@@ -74,21 +94,21 @@
 /* causal mask: shading over not-yet-read tokens, slides right per step */
 .fg-cataphora-order .ctp-mask {
   fill: var(--bg); opacity: 0.78;
-  transition: transform 0.7s var(--ease), opacity 0.7s;
+  transition: transform var(--dur-slow) var(--ease), opacity var(--dur-slow);
 }
 .fg-cataphora-order.is-step-1 .ctp-mask { transform: translateX(72px); }
 .fg-cataphora-order.is-step-2 .ctp-mask { transform: translateX(216px); }
 .fg-cataphora-order.is-step-3 .ctp-mask { transform: translateX(420px); opacity: 0; }
 .fg-cataphora-order .ctp-maskline {
   stroke: var(--hot); stroke-width: 2; stroke-dasharray: 4 4;
-  transition: transform 0.7s var(--ease), opacity 0.7s;
+  transition: transform var(--dur-slow) var(--ease), opacity var(--dur-slow);
 }
 .fg-cataphora-order.is-step-1 .ctp-maskline { transform: translateX(72px); }
 .fg-cataphora-order.is-step-2 .ctp-maskline { transform: translateX(216px); }
 .fg-cataphora-order.is-step-3 .ctp-maskline { transform: translateX(420px); opacity: 0; }
 
 /* unresolved badge on "she": swaps to resolved */
-.fg-cataphora-order .ctp-badge { transition: opacity 0.7s; }
+.fg-cataphora-order .ctp-badge { transition: opacity var(--dur-slow); }
 .fg-cataphora-order .ctp-badge-open { opacity: 1; }
 .fg-cataphora-order .ctp-badge-done { opacity: 0; }
 .fg-cataphora-order.is-step-2 .ctp-badge-open, .fg-cataphora-order.is-step-3 .ctp-badge-open { opacity: 0; }
@@ -97,18 +117,18 @@
 /* the backward arc: Mary -> she, appears at step 2 */
 .fg-cataphora-order .ctp-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-cataphora-order.is-step-2 .ctp-arc, .fg-cataphora-order.is-step-3 .ctp-arc { opacity: 1; }
-.fg-cataphora-order .ctp-arclabel { opacity: 0; transition: opacity 0.7s; }
+.fg-cataphora-order .ctp-arclabel { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-cataphora-order.is-step-2 .ctp-arclabel, .fg-cataphora-order.is-step-3 .ctp-arclabel { opacity: 1; }
 
 /* no-forward-arc marker at steps 0-1 */
-.fg-cataphora-order .ctp-noarc { opacity: 1; transition: opacity 0.7s; }
+.fg-cataphora-order .ctp-noarc { opacity: 1; transition: opacity var(--dur-slow); }
 .fg-cataphora-order.is-step-2 .ctp-noarc, .fg-cataphora-order.is-step-3 .ctp-noarc { opacity: 0; }
 
 /* footer captions */
-.fg-cataphora-order .ctp-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-cataphora-order .ctp-cap { opacity: 0; transition: opacity var(--dur-fast); }
 .fg-cataphora-order.is-step-0 .ctp-cap-0, .fg-cataphora-order.is-step-1 .ctp-cap-1,
 .fg-cataphora-order.is-step-2 .ctp-cap-2, .fg-cataphora-order.is-step-3 .ctp-cap-3 { opacity: 1; }
 
@@ -161,21 +181,21 @@
   <path class="ctp-arc" d="M 272 96 C 250 62, 190 62, 158 90"
         marker-end="url(#ctp-arrow)"/>
   <g class="ctp-arclabel">
-    <text class="ctp-note" x="196" y="52" fill="#34d399">"Mary" attends back to "she"</text>
+    <text class="ctp-note fg-fill-ok" x="196" y="52">"Mary" attends back to "she"</text>
   </g>
 
   <g class="ctp-badge ctp-badge-open">
-    <text class="ctp-note" x="150" y="156" text-anchor="middle" fill="#fbbf24">she = ? (unresolved)</text>
+    <text class="ctp-note fg-fill-warn" x="150" y="156" text-anchor="middle">she = ? (unresolved)</text>
   </g>
   <g class="ctp-badge ctp-badge-done">
-    <text class="ctp-note" x="150" y="156" text-anchor="middle" fill="#34d399">she = Mary</text>
+    <text class="ctp-note fg-fill-ok" x="150" y="156" text-anchor="middle">she = Mary</text>
   </g>
 
   <g class="ctp-noarc">
-    <path d="M 168 180 C 200 196, 240 196, 268 184" fill="none" stroke="#f87171"
+    <path class="fg-stroke-hot" d="M 168 180 C 200 196, 240 196, 268 184" fill="none"
           stroke-width="2" stroke-dasharray="5 4"/>
-    <path d="M 208 176 L 226 200 M 226 176 L 208 200" stroke="#f87171" stroke-width="2"/>
-    <text class="ctp-note" x="290" y="196" fill="#f87171">no forward arc: the mask forbids it</text>
+    <path class="fg-stroke-hot" d="M 208 176 L 226 200 M 226 176 L 208 200" stroke-width="2"/>
+    <text class="ctp-note fg-fill-hot" x="290" y="196">no forward arc: the mask forbids it</text>
   </g>
 
   <rect class="ctp-mask" x="180" y="88" width="440" height="80" rx="4"/>
@@ -183,7 +203,7 @@
 
   <defs>
     <marker id="ctp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 

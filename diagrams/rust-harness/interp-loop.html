@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-interp-loop .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-interp-loop .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-interp-loop .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-interp-loop .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-interp-loop .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-interp-loop .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-interp-loop .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-interp-loop .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-interp-loop .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-interp-loop .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-interp-loop .fg-fill-line) { fill: var(--line); }
+:where(.fg-interp-loop .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-interp-loop .fg-fill-border) { fill: var(--border); }
+:where(.fg-interp-loop .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-interp-loop .fg-fill-text) { fill: var(--text); }
+:where(.fg-interp-loop .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-interp-loop .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-interp-loop .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-interp-loop {
@@ -95,7 +115,7 @@
      aria-label="Two lanes. Rust harness: activation-capture, harness --status --deep, harness --probe or --control-vector, harness --serve --interp-log. Interp: probe-train or steer-extract, probe-export, probe-eval, probe-monitor. A capture shard flows down from activation-capture to probe-train; a probe or vector flows up from probe-export to the status check and then into --probe; probe-eval sends HTTP requests to the served harness; the served-request log flows down from --serve to probe-monitor.">
   <defs>
     <marker id="iloop-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-      <path d="M0,0 L10,5 L0,10 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M0,0 L10,5 L0,10 z"/>
     </marker>
   </defs>
   <g class="iloop-rust"><rect class="iloop-lane" x="16" y="16" width="728" height="112" rx="10"/><text class="iloop-lane-label" x="30" y="36">RUST HARNESS</text></g>

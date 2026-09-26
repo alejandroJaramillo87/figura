@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-llama-cpu-build .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-llama-cpu-build .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-llama-cpu-build .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-llama-cpu-build .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-llama-cpu-build .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-llama-cpu-build .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-llama-cpu-build .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-llama-cpu-build .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-llama-cpu-build .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-llama-cpu-build .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-llama-cpu-build .fg-fill-line) { fill: var(--line); }
+:where(.fg-llama-cpu-build .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-llama-cpu-build .fg-fill-border) { fill: var(--border); }
+:where(.fg-llama-cpu-build .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-llama-cpu-build .fg-fill-text) { fill: var(--text); }
+:where(.fg-llama-cpu-build .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-llama-cpu-build .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-llama-cpu-build .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-llama-cpu-build {
@@ -57,22 +77,22 @@
 
 .fg-llama-cpu-build .lcb-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill var(--dur-fast) var(--ease), stroke 0.45s;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast);
 }
 .fg-llama-cpu-build .lcb-zone {
   fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
-  transition: stroke 0.45s;
+  transition: stroke var(--dur-fast);
 }
-.fg-llama-cpu-build .lcb-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
-.fg-llama-cpu-build .lcb-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; opacity: 0.8; transition: fill 0.45s; }
+.fg-llama-cpu-build .lcb-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill var(--dur-fast); }
+.fg-llama-cpu-build .lcb-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; opacity: 0.8; transition: fill var(--dur-fast); }
 .fg-llama-cpu-build .lcb-label { fill: var(--muted); font-size: 12px; }
 .fg-llama-cpu-build .lcb-conn {
   stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.4;
-  transition: stroke 0.45s, opacity 0.45s;
+  transition: stroke var(--dur-fast), opacity var(--dur-fast);
 }
 .fg-llama-cpu-build .lcb-copy {
   stroke: var(--line); stroke-width: 2.5; fill: none; opacity: 0.3;
-  transition: stroke 0.45s, opacity 0.45s;
+  transition: stroke var(--dur-fast), opacity var(--dur-fast);
 }
 
 .fg-llama-cpu-build.is-step-1 .lcb-s1 .lcb-box,
@@ -141,10 +161,10 @@
      aria-label="Multi-stage build of the llama-cpu image: both stages start from the same pinned debian:trixie-slim base. The builder stage installs gcc-14 with Zen 5 flags, clones llama.cpp at a pinned commit, and compiles llama-server with AVX-512 cmake flags. The runtime stage receives only the server binary and its shared libraries.">
   <defs>
     <marker id="lcb-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="lcb-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 

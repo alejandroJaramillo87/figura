@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-agreement-distance .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-agreement-distance .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-agreement-distance .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-agreement-distance .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-agreement-distance .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-agreement-distance .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-agreement-distance .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-agreement-distance .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-agreement-distance .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-agreement-distance .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-agreement-distance .fg-fill-line) { fill: var(--line); }
+:where(.fg-agreement-distance .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-agreement-distance .fg-fill-border) { fill: var(--border); }
+:where(.fg-agreement-distance .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-agreement-distance .fg-fill-text) { fill: var(--text); }
+:where(.fg-agreement-distance .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-agreement-distance .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-agreement-distance .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-agreement-distance {
@@ -58,8 +78,8 @@
 .fg-agreement-distance .agd-note { fill: var(--muted); font-size: 11px; }
 .fg-agreement-distance .agd-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease),
-              opacity 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease), fill var(--dur-slow) var(--ease),
+              opacity var(--dur-slow) var(--ease);
 }
 .fg-agreement-distance .agd-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 .fg-agreement-distance .agd-lab { font-size: 10px; text-anchor: middle; letter-spacing: 0.05em; }
@@ -69,18 +89,18 @@
 .fg-agreement-distance .agd-verb .agd-tok { stroke: var(--ok); }
 
 /* short state: distractor PP faded out entirely */
-.fg-agreement-distance .agd-mid { opacity: 0.15; transition: opacity 0.7s var(--ease); }
+.fg-agreement-distance .agd-mid { opacity: 0.15; transition: opacity var(--dur-slow) var(--ease); }
 .fg-agreement-distance.is-long .agd-mid { opacity: 1; }
 
 /* attractor flags only in long state */
-.fg-agreement-distance .agd-attractor { opacity: 0; transition: opacity 0.7s; }
+.fg-agreement-distance .agd-attractor { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-agreement-distance.is-long .agd-attractor { opacity: 1; }
 .fg-agreement-distance.is-long .agd-cab .agd-tok { stroke: var(--hot); }
 
 /* arcs: short hop vs long hop, cross-fade */
 .fg-agreement-distance .agd-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-agreement-distance .agd-arc-short { opacity: 1; }
 .fg-agreement-distance .agd-arc-long { opacity: 0; }
@@ -153,11 +173,11 @@
   <rect class="agd-tok" x="508" y="104" width="66" height="36" rx="6"/>
   <text class="agd-word" x="541" y="127">table.</text>
 
-  <text class="agd-lab" x="125" y="158" fill="#34d399">PLURAL</text>
+  <text class="agd-lab fg-fill-ok" x="125" y="158">PLURAL</text>
   <g class="agd-attractor">
-    <text class="agd-lab" x="303" y="158" fill="#f87171">SINGULAR &#8212; attractor</text>
+    <text class="agd-lab fg-fill-hot" x="303" y="158">SINGULAR &#8212; attractor</text>
   </g>
-  <text class="agd-lab" x="376" y="158" fill="#34d399">needs PLURAL</text>
+  <text class="agd-lab fg-fill-ok" x="376" y="158">needs PLURAL</text>
 
   <path class="agd-arc agd-arc-short" d="M 368 104 C 330 66, 180 66, 132 98" marker-end="url(#agd-arrow)"/>
   <path class="agd-arc agd-arc-long" d="M 368 104 C 320 44, 180 44, 132 98" marker-end="url(#agd-arrow)"/>
@@ -167,7 +187,7 @@
 
   <defs>
     <marker id="agd-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>

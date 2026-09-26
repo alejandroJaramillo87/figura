@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-winograd-toggle .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-winograd-toggle .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-winograd-toggle .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-winograd-toggle .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-winograd-toggle .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-winograd-toggle .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-winograd-toggle .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-winograd-toggle .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-winograd-toggle .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-winograd-toggle .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-winograd-toggle .fg-fill-line) { fill: var(--line); }
+:where(.fg-winograd-toggle .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-winograd-toggle .fg-fill-border) { fill: var(--border); }
+:where(.fg-winograd-toggle .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-winograd-toggle .fg-fill-text) { fill: var(--text); }
+:where(.fg-winograd-toggle .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-winograd-toggle .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-winograd-toggle .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-winograd-toggle {
@@ -57,7 +77,7 @@
 
 .fg-winograd-toggle .wgt-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease);
+  transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease);
 }
 .fg-winograd-toggle .wgt-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 .fg-winograd-toggle .wgt-note { fill: var(--muted); font-size: 11px; }
@@ -72,14 +92,14 @@
 .fg-winograd-toggle .wgt-pron .wgt-word { fill: var(--accent); font-weight: 600; }
 
 /* candidate antecedents: active one lights up per state */
-.fg-winograd-toggle .wgt-cand .wgt-tok { transition: fill 0.7s, stroke 0.7s; }
+.fg-winograd-toggle .wgt-cand .wgt-tok { transition: fill var(--dur-slow), stroke var(--dur-slow); }
 .fg-winograd-toggle:not(.is-advocated) .wgt-council .wgt-tok,
 .fg-winograd-toggle.is-advocated .wgt-demo .wgt-tok { stroke: var(--ok); fill: var(--panel-hover); }
 
 /* information-need arcs: one visible per state */
 .fg-winograd-toggle .wgt-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-winograd-toggle .wgt-arc-council { opacity: 1; }
 .fg-winograd-toggle .wgt-arc-demo { opacity: 0; }
@@ -87,8 +107,8 @@
 .fg-winograd-toggle.is-advocated .wgt-arc-demo { opacity: 1; }
 
 /* verb text swap */
-.fg-winograd-toggle .wgt-v-feared { opacity: 1; transition: opacity 0.35s; }
-.fg-winograd-toggle .wgt-v-advocated { opacity: 0; transition: opacity 0.35s; }
+.fg-winograd-toggle .wgt-v-feared { opacity: 1; transition: opacity var(--dur-quick); }
+.fg-winograd-toggle .wgt-v-advocated { opacity: 0; transition: opacity var(--dur-quick); }
 .fg-winograd-toggle.is-advocated .wgt-v-feared { opacity: 0; }
 .fg-winograd-toggle.is-advocated .wgt-v-advocated { opacity: 1; }
 
@@ -135,7 +155,7 @@
      aria-label="A Winograd sentence: The city councilmen refused the demonstrators a permit because they feared violence. An arc connects the pronoun they backward to its antecedent. Toggling the verb between feared and advocated moves the arc between the councilmen and the demonstrators, although every other token is unchanged.">
   <defs>
     <marker id="wgt-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 

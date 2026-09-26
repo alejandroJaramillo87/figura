@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-zero-anaphora .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-zero-anaphora .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-zero-anaphora .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-zero-anaphora .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-zero-anaphora .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-zero-anaphora .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-zero-anaphora .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-zero-anaphora .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-zero-anaphora .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-zero-anaphora .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-zero-anaphora .fg-fill-line) { fill: var(--line); }
+:where(.fg-zero-anaphora .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-zero-anaphora .fg-fill-border) { fill: var(--border); }
+:where(.fg-zero-anaphora .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-zero-anaphora .fg-fill-text) { fill: var(--text); }
+:where(.fg-zero-anaphora .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-zero-anaphora .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-zero-anaphora .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-zero-anaphora {
@@ -58,7 +78,7 @@
 .fg-zero-anaphora .zra-note { fill: var(--muted); font-size: 11px; }
 .fg-zero-anaphora .zra-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease), fill var(--dur-slow) var(--ease);
 }
 .fg-zero-anaphora .zra-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 
@@ -68,7 +88,7 @@
 .fg-zero-anaphora .zra-verb .zra-word { fill: var(--accent); font-weight: 600; }
 
 /* ghost empty-slot token */
-.fg-zero-anaphora .zra-ghost { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-zero-anaphora .zra-ghost { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-zero-anaphora.is-shown .zra-ghost { opacity: 1; }
 .fg-zero-anaphora .zra-ghost rect {
   fill: none; stroke: var(--warn); stroke-width: 1.5; stroke-dasharray: 6 4;
@@ -78,10 +98,10 @@
 /* arc from the empty slot back to Maria */
 .fg-zero-anaphora .zra-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-zero-anaphora.is-shown .zra-arc { opacity: 1; }
-.fg-zero-anaphora .zra-arclabel { opacity: 0; transition: opacity 0.7s; }
+.fg-zero-anaphora .zra-arclabel { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-zero-anaphora.is-shown .zra-arclabel { opacity: 1; }
 
 /* fg:begin toggle-bar v1 */
@@ -127,7 +147,7 @@
      aria-label="A Spanish mini-dialogue: question, And Maria? Answer: Llegó tarde — arrived late, with no subject word. A button reveals a dashed ghost slot before Llegó marked with the empty-set symbol, and a green arc from that empty slot back to Maria in the question. An English gloss line reads: she arrived late — English must insert the pronoun Spanish omits. The model must track a referent that has no surface token at all.">
   <defs>
     <marker id="zra-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
@@ -155,7 +175,7 @@
 
   <path class="zra-arc" d="M 70 140 C 85 118, 110 100, 135 88" marker-end="url(#zra-arrow)"/>
   <g class="zra-arclabel">
-    <text class="zra-note" x="150" y="118" fill="#34d399">the missing subject still points at Mar&#237;a</text>
+    <text class="zra-note fg-fill-ok" x="150" y="118">the missing subject still points at Mar&#237;a</text>
   </g>
 
   <text class="zra-note" x="40" y="222">The verb ending ("-&#243;", third person singular) narrows the field; the discourse picks the referent.</text>

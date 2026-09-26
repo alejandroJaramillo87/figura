@@ -181,10 +181,21 @@ function parseTokens() {
 }
 
 /* Render a palette block body: one rule declaring local var names on SCOPE. */
+/*
+ * Paint utilities stand in for fill="#hex" / stroke="#hex" attributes, which
+ * cannot reference a token. :where() keeps their specificity at zero, so any
+ * diagram rule still overrides them exactly as it overrode the attribute.
+ */
+const PAINT_TOKENS = ['accent', 'ok', 'warn', 'hot', 'violet', 'line', 'border', 'text', 'muted'];
+
 function renderPalette(name, scope) {
   const prefix = PALETTE_PREFIX[name];
   const lines = parseTokens().map(([k, v]) => `  --${k.slice(prefix.length)}: ${v};`);
-  return `${scope} {\n${lines.join('\n')}\n}\n`;
+  const paint = PAINT_TOKENS.flatMap((t) => [
+    `:where(${scope} .fg-fill-${t}) { fill: var(--${t}); }`,
+    `:where(${scope} .fg-stroke-${t}) { stroke: var(--${t}); }`,
+  ]);
+  return `${scope} {\n${lines.join('\n')}\n}\n${paint.join('\n')}\n`;
 }
 
 /* Resolve the canonical body for a managed block name.

@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-instruction-binding .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-instruction-binding .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-instruction-binding .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-instruction-binding .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-instruction-binding .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-instruction-binding .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-instruction-binding .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-instruction-binding .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-instruction-binding .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-instruction-binding .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-instruction-binding .fg-fill-line) { fill: var(--line); }
+:where(.fg-instruction-binding .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-instruction-binding .fg-fill-border) { fill: var(--border); }
+:where(.fg-instruction-binding .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-instruction-binding .fg-fill-text) { fill: var(--text); }
+:where(.fg-instruction-binding .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-instruction-binding .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-instruction-binding .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-instruction-binding {
@@ -60,7 +80,7 @@
 /* instruction header variants cross-fade */
 .fg-instruction-binding .isb-head rect { fill: var(--panel); stroke: var(--violet); stroke-width: 1.5; }
 .fg-instruction-binding .isb-head text { fill: var(--violet); font-size: 13px; font-weight: 600; }
-.fg-instruction-binding .isb-head { transition: opacity 0.7s var(--ease); }
+.fg-instruction-binding .isb-head { transition: opacity var(--dur-slow) var(--ease); }
 .fg-instruction-binding .isb-head-tr { opacity: 1; }
 .fg-instruction-binding .isb-head-ct { opacity: 0; }
 .fg-instruction-binding.is-count .isb-head-tr { opacity: 0; }
@@ -74,14 +94,14 @@
 .fg-instruction-binding .isb-pass text { fill: var(--text); font-size: 13px; }
 
 /* role tag on the passage flips */
-.fg-instruction-binding .isb-role { font-size: 10px; transition: opacity 0.7s; }
+.fg-instruction-binding .isb-role { font-size: 10px; transition: opacity var(--dur-slow); }
 .fg-instruction-binding .isb-role-tr { fill: var(--warn); opacity: 1; }
 .fg-instruction-binding .isb-role-ct { fill: var(--warn); opacity: 0; }
 .fg-instruction-binding.is-count .isb-role-tr { opacity: 0; }
 .fg-instruction-binding.is-count .isb-role-ct { opacity: 1; }
 
 /* ghost continuation flips */
-.fg-instruction-binding .isb-cont { transition: opacity 0.7s; }
+.fg-instruction-binding .isb-cont { transition: opacity var(--dur-slow); }
 .fg-instruction-binding .isb-cont rect { fill: var(--ok-dim); stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
 .fg-instruction-binding .isb-cont text { fill: var(--ok); font-size: 13px; font-family: var(--mono); }
 .fg-instruction-binding .isb-cont-tr { opacity: 1; }
@@ -163,15 +183,15 @@
   </g>
 
   <path class="isb-arc" d="M 500 168 C 620 140, 620 80, 486 58" marker-end="url(#isb-arrow)"/>
-  <text class="isb-note" x="596" y="112" fill="#34d399">the series'</text>
-  <text class="isb-note" x="596" y="126" fill="#34d399">longest arc</text>
+  <text class="isb-note fg-fill-ok" x="596" y="112">the series'</text>
+  <text class="isb-note fg-fill-ok" x="596" y="126">longest arc</text>
 
   <text class="isb-note" x="40" y="284">Where this binding weakens &#8212; instructions buried mid-context are used less reliably &#8212; the model</text>
   <text class="isb-note" x="40" y="300">drifts; where it inverts, text that should be data gets read as instructions: prompt injection.</text>
 
   <defs>
     <marker id="isb-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>

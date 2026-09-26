@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-storage-layout .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-storage-layout .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-storage-layout .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-storage-layout .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-storage-layout .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-storage-layout .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-storage-layout .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-storage-layout .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-storage-layout .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-storage-layout .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-storage-layout .fg-fill-line) { fill: var(--line); }
+:where(.fg-storage-layout .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-storage-layout .fg-fill-border) { fill: var(--border); }
+:where(.fg-storage-layout .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-storage-layout .fg-fill-text) { fill: var(--text); }
+:where(.fg-storage-layout .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-storage-layout .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-storage-layout .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-storage-layout {
@@ -61,11 +81,11 @@
 .fg-storage-layout .stl-drive-label { fill: var(--text); font-size: 14px; font-weight: 600; }
 .fg-storage-layout .stl-drive-sub   { fill: var(--muted); font-size: 11.5px; }
 
-.fg-storage-layout .stl-block { stroke-width: 1.5; transition: stroke-width 0.3s; cursor: pointer; }
+.fg-storage-layout .stl-block { stroke-width: 1.5; transition: stroke-width var(--dur-quick); cursor: pointer; }
 .fg-storage-layout .stl-group:hover .stl-block { stroke-width: 2.5; }
 
 /* hover glow: pre-blurred halo behind each block, opacity only */
-.fg-storage-layout .stl-halo { filter: blur(7px); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.fg-storage-layout .stl-halo { filter: blur(7px); opacity: 0; transition: opacity var(--dur-quick); pointer-events: none; }
 .fg-storage-layout .stl-group:hover .stl-halo { opacity: 0.5; }
 .fg-storage-layout .stl-os     { fill: var(--accent-dim); stroke: var(--accent); }
 .fg-storage-layout .stl-models { fill: var(--ok-dim); stroke: var(--ok); }
@@ -82,9 +102,9 @@
 .fg-storage-layout .stl-link {
   stroke: var(--line); stroke-width: 1.5; fill: none;
   stroke-dasharray: 4 4; opacity: 0.8;
-  transition: stroke 0.3s, opacity 0.3s;
+  transition: stroke var(--dur-quick), opacity var(--dur-quick);
 }
-.fg-storage-layout .stl-link-label { fill: var(--muted); font-size: 11px; text-anchor: middle; transition: fill 0.3s; }
+.fg-storage-layout .stl-link-label { fill: var(--muted); font-size: 11px; text-anchor: middle; transition: fill var(--dur-quick); }
 
 /* hovering /home/user or cache/ lights the symlink route */
 .fg-storage-layout.is-sym-hot .stl-link { stroke: var(--violet); opacity: 1; }

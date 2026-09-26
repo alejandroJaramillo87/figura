@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-one-anaphora .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-one-anaphora .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-one-anaphora .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-one-anaphora .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-one-anaphora .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-one-anaphora .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-one-anaphora .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-one-anaphora .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-one-anaphora .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-one-anaphora .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-one-anaphora .fg-fill-line) { fill: var(--line); }
+:where(.fg-one-anaphora .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-one-anaphora .fg-fill-border) { fill: var(--border); }
+:where(.fg-one-anaphora .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-one-anaphora .fg-fill-text) { fill: var(--text); }
+:where(.fg-one-anaphora .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-one-anaphora .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-one-anaphora .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-one-anaphora {
@@ -58,7 +78,7 @@
 .fg-one-anaphora .ona-note { fill: var(--muted); font-size: 11px; }
 .fg-one-anaphora .ona-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease), fill var(--dur-slow) var(--ease);
 }
 .fg-one-anaphora .ona-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 
@@ -69,7 +89,7 @@
 .fg-one-anaphora.is-revealed .ona-shirt .ona-tok { fill: var(--ok-dim); }
 
 /* ghost token: the elided noun materializing */
-.fg-one-anaphora .ona-ghost { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-one-anaphora .ona-ghost { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-one-anaphora.is-revealed .ona-ghost { opacity: 1; }
 .fg-one-anaphora .ona-ghost rect {
   fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4;
@@ -79,10 +99,10 @@
 /* copy-in arc */
 .fg-one-anaphora .ona-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-one-anaphora.is-revealed .ona-arc { opacity: 1; }
-.fg-one-anaphora .ona-arclabel { opacity: 0; transition: opacity 0.7s; }
+.fg-one-anaphora .ona-arclabel { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-one-anaphora.is-revealed .ona-arclabel { opacity: 1; }
 
 /* fg:begin toggle-bar v1 */
@@ -128,7 +148,7 @@
      aria-label="First utterance: Do you want the blue shirt or the red one question mark. Reply: I will take the red one. The word one is highlighted. A button reveals the elided noun: a dashed ghost token reading shirt appears after one, with a green copy-in arc from the earlier word shirt, showing that one is a placeholder whose content is copied in from the previous utterance.">
   <defs>
     <marker id="ona-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
@@ -157,7 +177,7 @@
 
   <path class="ona-arc" d="M 290 82 C 310 112, 300 128, 270 144" marker-end="url(#ona-arrow)"/>
   <g class="ona-arclabel">
-    <text class="ona-note" x="330" y="118" fill="#34d399">noun content copied in</text>
+    <text class="ona-note fg-fill-ok" x="330" y="118">noun content copied in</text>
   </g>
 
   <text class="ona-note" x="40" y="226">The elided noun can be arbitrarily rich: "the red one" may stand for "the red merino wool shirt".</text>

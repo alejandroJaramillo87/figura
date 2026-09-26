@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-deixis-chat .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-deixis-chat .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-deixis-chat .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-deixis-chat .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-deixis-chat .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-deixis-chat .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-deixis-chat .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-deixis-chat .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-deixis-chat .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-deixis-chat .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-deixis-chat .fg-fill-line) { fill: var(--line); }
+:where(.fg-deixis-chat .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-deixis-chat .fg-fill-border) { fill: var(--border); }
+:where(.fg-deixis-chat .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-deixis-chat .fg-fill-text) { fill: var(--text); }
+:where(.fg-deixis-chat .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-deixis-chat .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-deixis-chat .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-deixis-chat {
@@ -64,8 +84,8 @@
 .fg-deixis-chat .dxs-you { fill: var(--warn); font-weight: 600; }
 
 /* per-turn highlight + arcs, driven by is-turn-N on the root */
-.fg-deixis-chat .dxs-turn { transition: opacity 0.7s var(--ease); opacity: 0.45; }
-.fg-deixis-chat .dxs-arcs { transition: opacity 0.7s; opacity: 0; }
+.fg-deixis-chat .dxs-turn { transition: opacity var(--dur-slow) var(--ease); opacity: 0.45; }
+.fg-deixis-chat .dxs-arcs { transition: opacity var(--dur-slow); opacity: 0; }
 .fg-deixis-chat .dxs-arc-i { fill: none; stroke: var(--ok); stroke-width: 2; }
 .fg-deixis-chat .dxs-arc-you { fill: none; stroke: var(--warn); stroke-width: 2; }
 .fg-deixis-chat.is-turn-1 .dxs-turn-1, .fg-deixis-chat.is-turn-2 .dxs-turn-2,
@@ -153,10 +173,10 @@
 
   <defs>
     <marker id="dxs-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="dxs-arrow-warn" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#fbbf24"/>
+      <path class="fg-fill-warn" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>

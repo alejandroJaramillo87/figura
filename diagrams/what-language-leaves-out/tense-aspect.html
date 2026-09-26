@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-tense-aspect .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-tense-aspect .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-tense-aspect .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-tense-aspect .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-tense-aspect .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-tense-aspect .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-tense-aspect .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-tense-aspect .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-tense-aspect .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-tense-aspect .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-tense-aspect .fg-fill-line) { fill: var(--line); }
+:where(.fg-tense-aspect .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-tense-aspect .fg-fill-border) { fill: var(--border); }
+:where(.fg-tense-aspect .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-tense-aspect .fg-fill-text) { fill: var(--text); }
+:where(.fg-tense-aspect .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-tense-aspect .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-tense-aspect .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-tense-aspect {
@@ -62,7 +82,7 @@
 .fg-tense-aspect .tns-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
 
 /* sentence variants cross-fade */
-.fg-tense-aspect .tns-sent { transition: opacity 0.7s var(--ease); }
+.fg-tense-aspect .tns-sent { transition: opacity var(--dur-slow) var(--ease); }
 .fg-tense-aspect .tns-sent text { fill: var(--text); font-size: 14px; }
 .fg-tense-aspect .tns-sent .tns-verb { fill: var(--warn); }
 .fg-tense-aspect .tns-sent-perf { opacity: 1; }
@@ -73,13 +93,13 @@
 /* timeline */
 .fg-tense-aspect .tns-axis { stroke: var(--line); stroke-width: 1.5; }
 .fg-tense-aspect .tns-now { stroke: var(--accent); stroke-width: 2; }
-.fg-tense-aspect .tns-state { transition: opacity 0.7s; }
+.fg-tense-aspect .tns-state { transition: opacity var(--dur-slow); }
 .fg-tense-aspect .tns-state rect { fill: var(--ok-dim); stroke: var(--ok); stroke-width: 1.5; }
 .fg-tense-aspect .tns-state-perf { opacity: 1; }
 .fg-tense-aspect .tns-state-past { opacity: 0; }
 .fg-tense-aspect.is-past .tns-state-perf { opacity: 0; }
 .fg-tense-aspect.is-past .tns-state-past { opacity: 1; }
-.fg-tense-aspect .tns-gloss { transition: opacity 0.7s; font-size: 12px; fill: var(--ok); }
+.fg-tense-aspect .tns-gloss { transition: opacity var(--dur-slow); font-size: 12px; fill: var(--ok); }
 .fg-tense-aspect .tns-gloss-perf { opacity: 1; }
 .fg-tense-aspect .tns-gloss-past { opacity: 0; }
 .fg-tense-aspect.is-past .tns-gloss-perf { opacity: 0; }
@@ -139,7 +159,7 @@
 
   <line class="tns-axis" x1="100" y1="120" x2="600" y2="120"/>
   <line class="tns-now" x1="520" y1="102" x2="520" y2="138"/>
-  <text class="tns-note" x="520" y="94" text-anchor="middle" fill="#38bdf8">NOW</text>
+  <text class="tns-note fg-fill-accent" x="520" y="94" text-anchor="middle">NOW</text>
   <text class="tns-note" x="100" y="144">past</text>
   <text class="tns-note" x="600" y="144" text-anchor="end">future</text>
 
@@ -179,7 +199,7 @@
 
   <defs>
     <marker id="tns-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>

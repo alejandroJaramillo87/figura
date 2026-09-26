@@ -43,6 +43,8 @@
 
   /* Shape & motion */
   --fg-radius: 12px;
-  --fg-dur-fast: 0.45s;
+  --fg-dur-quick: 0.3s;   /* hover and focus feedback */
+  --fg-dur-fast: 0.45s;   /* state transitions */
+  --fg-dur-slow: 0.7s;    /* draw-in and step cadence effects */
   --fg-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }

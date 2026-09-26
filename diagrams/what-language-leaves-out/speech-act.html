@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-speech-act .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-speech-act .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-speech-act .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-speech-act .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-speech-act .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-speech-act .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-speech-act .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-speech-act .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-speech-act .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-speech-act .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-speech-act .fg-fill-line) { fill: var(--line); }
+:where(.fg-speech-act .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-speech-act .fg-fill-border) { fill: var(--border); }
+:where(.fg-speech-act .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-speech-act .fg-fill-text) { fill: var(--text); }
+:where(.fg-speech-act .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-speech-act .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-speech-act .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-speech-act {
@@ -62,11 +82,11 @@
 .fg-speech-act .spa-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
 
 /* the two dispatch targets */
-.fg-speech-act .spa-card { transition: opacity 0.7s var(--ease); }
+.fg-speech-act .spa-card { transition: opacity var(--dur-slow) var(--ease); }
 .fg-speech-act .spa-card rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
 .fg-speech-act .spa-card .spa-head { font-size: 11px; text-anchor: middle; fill: var(--violet); }
 .fg-speech-act .spa-card .spa-body { font-size: 13px; text-anchor: middle; fill: var(--text); }
-.fg-speech-act .spa-arc { fill: none; stroke-width: 2; transition: opacity 0.7s; }
+.fg-speech-act .spa-arc { fill: none; stroke-width: 2; transition: opacity var(--dur-slow); }
 
 /* question state: literal card active, request dimmed */
 .fg-speech-act .spa-card-lit { opacity: 1; }
@@ -74,7 +94,7 @@
 .fg-speech-act .spa-arc-lit { stroke: var(--hot); opacity: 1; }
 .fg-speech-act .spa-card-req { opacity: 0.35; }
 .fg-speech-act .spa-arc-req { stroke: var(--ok); opacity: 0; }
-.fg-speech-act .spa-clash { transition: opacity 0.7s; opacity: 1; fill: var(--hot); font-size: 11px; }
+.fg-speech-act .spa-clash { transition: opacity var(--dur-slow); opacity: 1; fill: var(--hot); font-size: 11px; }
 
 /* request state */
 .fg-speech-act.is-request .spa-card-lit { opacity: 0.35; }
@@ -154,10 +174,10 @@
 
   <defs>
     <marker id="spa-arrow-hot" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171"/>
+      <path class="fg-fill-hot" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="spa-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>

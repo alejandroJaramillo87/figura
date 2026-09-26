@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-modal-flavor .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-modal-flavor .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-modal-flavor .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-modal-flavor .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-modal-flavor .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-modal-flavor .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-modal-flavor .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-modal-flavor .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-modal-flavor .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-modal-flavor .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-modal-flavor .fg-fill-line) { fill: var(--line); }
+:where(.fg-modal-flavor .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-modal-flavor .fg-fill-border) { fill: var(--border); }
+:where(.fg-modal-flavor .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-modal-flavor .fg-fill-text) { fill: var(--text); }
+:where(.fg-modal-flavor .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-modal-flavor .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-modal-flavor .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-modal-flavor {
@@ -63,7 +83,7 @@
 .fg-modal-flavor .mdf-must .mdf-tok { stroke: var(--warn); }
 
 /* context sentence cross-fades */
-.fg-modal-flavor .mdf-ctx { transition: opacity 0.7s var(--ease); }
+.fg-modal-flavor .mdf-ctx { transition: opacity var(--dur-slow) var(--ease); }
 .fg-modal-flavor .mdf-ctx text { fill: var(--text); font-size: 13px; }
 .fg-modal-flavor .mdf-ctx-inf { opacity: 1; }
 .fg-modal-flavor .mdf-ctx-obl { opacity: 0; }
@@ -71,7 +91,7 @@
 .fg-modal-flavor.is-deontic .mdf-ctx-obl { opacity: 1; }
 
 /* flavor tags */
-.fg-modal-flavor .mdf-tag { transition: opacity 0.7s; }
+.fg-modal-flavor .mdf-tag { transition: opacity var(--dur-slow); }
 .fg-modal-flavor .mdf-tag rect { stroke-width: 1.5; }
 .fg-modal-flavor .mdf-tag-inf { opacity: 1; }
 .fg-modal-flavor .mdf-tag-inf rect { fill: var(--ok-dim); stroke: var(--ok); }
@@ -124,7 +144,7 @@
      aria-label="The sentence: You must be tired, with must outlined in amber. Above it, a context line that a button swaps. With the context: You worked a double shift, the modal is tagged EPISTEMIC, an inference from evidence. With the context: Rules of the sleep study, it is tagged DEONTIC, an obligation imposed on you. A green arc runs from must up to the context line: the flavor is imported, not written in the word.">
   <defs>
     <marker id="mdf-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
   <text class="mdf-note" x="40" y="26">the same modal, two flavors &#8212; the surrounding discourse supplies the background</text>

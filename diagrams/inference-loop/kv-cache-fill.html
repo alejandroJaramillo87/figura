@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-kv-cache-fill .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-kv-cache-fill .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-kv-cache-fill .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-kv-cache-fill .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-kv-cache-fill .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-kv-cache-fill .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-kv-cache-fill .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-kv-cache-fill .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-kv-cache-fill .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-kv-cache-fill .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-kv-cache-fill .fg-fill-line) { fill: var(--line); }
+:where(.fg-kv-cache-fill .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-kv-cache-fill .fg-fill-border) { fill: var(--border); }
+:where(.fg-kv-cache-fill .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-kv-cache-fill .fg-fill-text) { fill: var(--text); }
+:where(.fg-kv-cache-fill .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-kv-cache-fill .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-kv-cache-fill .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-kv-cache-fill {
@@ -61,22 +81,22 @@
 .fg-kv-cache-fill .kvcf-mono { font-family: ui-monospace, Menlo, Consolas, monospace; }
 .fg-kv-cache-fill .kvcf-cell  {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill var(--dur-fast) var(--ease), stroke 0.45s;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast);
 }
 .fg-kv-cache-fill .kvcf-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.45s, stroke 0.45s;
+  transition: fill var(--dur-fast), stroke var(--dur-fast);
 }
-.fg-kv-cache-fill .kvcf-tok-t { fill: var(--muted); font-size: 13px; text-anchor: middle; transition: fill 0.45s; }
-.fg-kv-cache-fill .kvcf-arrow { stroke: var(--line); stroke-width: 2; fill: none; opacity: 0; transition: opacity 0.45s; }
-.fg-kv-cache-fill .kvcf-read  { stroke: var(--accent); stroke-width: 2; fill: none; stroke-dasharray: 5 4; opacity: 0; transition: opacity 0.45s; }
+.fg-kv-cache-fill .kvcf-tok-t { fill: var(--muted); font-size: 13px; text-anchor: middle; transition: fill var(--dur-fast); }
+.fg-kv-cache-fill .kvcf-arrow { stroke: var(--line); stroke-width: 2; fill: none; opacity: 0; transition: opacity var(--dur-fast); }
+.fg-kv-cache-fill .kvcf-read  { stroke: var(--accent); stroke-width: 2; fill: none; stroke-dasharray: 5 4; opacity: 0; transition: opacity var(--dur-fast); }
 
 /* --- step states ---------------------------------------------------
    Step 0: empty cache, prompt waiting.
    Step 1: prefill — all 4 prompt rows fill at once.
    Steps 2-4: decode — one generated token appended per step,
               attention reads over every filled row. */
-.fg-kv-cache-fill[class*="is-step-"] .kvcf-phase { transition: opacity 0.45s; }
+.fg-kv-cache-fill[class*="is-step-"] .kvcf-phase { transition: opacity var(--dur-fast); }
 
 .fg-kv-cache-fill.is-step-1 .kvcf-row-p .kvcf-cell,
 .fg-kv-cache-fill.is-step-2 .kvcf-row-p .kvcf-cell,
@@ -158,7 +178,7 @@
 
   <defs>
     <marker id="kvcf-arrowhead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
   <g>

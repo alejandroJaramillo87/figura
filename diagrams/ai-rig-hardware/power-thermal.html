@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-power-thermal .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-power-thermal .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-power-thermal .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-power-thermal .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-power-thermal .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-power-thermal .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-power-thermal .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-power-thermal .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-power-thermal .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-power-thermal .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-power-thermal .fg-fill-line) { fill: var(--line); }
+:where(.fg-power-thermal .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-power-thermal .fg-fill-border) { fill: var(--border); }
+:where(.fg-power-thermal .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-power-thermal .fg-fill-text) { fill: var(--text); }
+:where(.fg-power-thermal .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-power-thermal .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-power-thermal .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-power-thermal {
@@ -63,7 +83,7 @@
 .fg-power-thermal .arht-rail { fill: none; stroke: var(--border); stroke-width: 2; }
 .fg-power-thermal .arht-seg {
   transform: scaleX(0); transform-box: fill-box; transform-origin: left center;
-  transition: transform 0.7s var(--ease);
+  transition: transform var(--dur-slow) var(--ease);
 }
 .fg-power-thermal .arht-seg-base { fill: var(--violet); }
 .fg-power-thermal .arht-seg-gpu  { fill: var(--accent); }
@@ -85,7 +105,7 @@
 .fg-power-thermal .arht-fan-out { stroke: var(--hot); }
 
 /* glow: a pre-blurred duplicate, only its opacity animates */
-.fg-power-thermal .arht-halo { filter: blur(8px); opacity: 0; transition: opacity 0.6s var(--ease); }
+.fg-power-thermal .arht-halo { filter: blur(8px); opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 
 .fg-power-thermal .arht-air {
   fill: none; stroke: var(--line); stroke-width: 1.5; opacity: 0;
@@ -183,7 +203,7 @@
      aria-label="A five-step power and thermal budget. A bar scaled to the 1200W power supply fills in stages: about 55W of board, drives and fans at idle, then 575W for the RTX 5090, then 170W for the Ryzen 9950X, reaching roughly 800W with both compute paths loaded and about 400W of headroom left. The final step shows the case airflow: six intake fans — three in the front panel and three in the side panel beside them — against three top and one rear exhaust fan carrying the heat out.">
   <defs>
     <marker id="arht-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 

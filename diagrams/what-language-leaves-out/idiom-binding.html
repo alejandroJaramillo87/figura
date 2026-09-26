@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-idiom-binding .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-idiom-binding .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-idiom-binding .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-idiom-binding .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-idiom-binding .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-idiom-binding .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-idiom-binding .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-idiom-binding .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-idiom-binding .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-idiom-binding .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-idiom-binding .fg-fill-line) { fill: var(--line); }
+:where(.fg-idiom-binding .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-idiom-binding .fg-fill-border) { fill: var(--border); }
+:where(.fg-idiom-binding .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-idiom-binding .fg-fill-text) { fill: var(--text); }
+:where(.fg-idiom-binding .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-idiom-binding .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-idiom-binding .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-idiom-binding {
@@ -57,16 +77,16 @@
 
 .fg-idiom-binding .idb-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease);
+  transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease);
 }
 .fg-idiom-binding .idb-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 .fg-idiom-binding .idb-note { fill: var(--muted); font-size: 11px; }
 .fg-idiom-binding .idb-gloss { fill: var(--muted); font-size: 11px; text-anchor: middle;
-  transition: opacity 0.7s var(--ease); }
+  transition: opacity var(--dur-slow) var(--ease); }
 
 /* literal state (default): per-token compositional glosses */
-.fg-idiom-binding .idb-lit { opacity: 1; transition: opacity 0.7s var(--ease); }
-.fg-idiom-binding .idb-idio { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-idiom-binding .idb-lit { opacity: 1; transition: opacity var(--dur-slow) var(--ease); }
+.fg-idiom-binding .idb-idio { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-idiom-binding.is-idiom .idb-lit { opacity: 0; }
 .fg-idiom-binding.is-idiom .idb-idio { opacity: 1; }
 
@@ -121,7 +141,7 @@
      aria-label="The sentence: The old farmer kicked the bucket. In the literal reading each token carries its own compositional gloss: foot strikes, a pail. In the idiomatic reading the three tokens kicked, the, and bucket fuse into one bracketed green unit glossed died, with binding arcs between the parts. A toggle switches between the readings.">
   <defs>
     <marker id="idb-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
@@ -152,7 +172,7 @@
 
   <g class="idb-idio">
     <path class="idb-bind" d="M 250 88 L 250 74 L 506 74 L 506 88" />
-    <text class="idb-gloss" x="378" y="64" style="fill:#34d399">one unit: "died"</text>
+    <text class="idb-gloss" x="378" y="64" style="fill: var(--ok)">one unit: "died"</text>
     <path class="idb-bind" d="M 300 134 C 320 156, 350 156, 368 140" marker-end="url(#idb-arrow)"/>
     <path class="idb-bind" d="M 452 134 C 430 162, 330 162, 300 142" marker-end="url(#idb-arrow)"/>
     <text class="idb-gloss" x="374" y="196">each part is evidence for the others: "kicked" beside "the bucket" is not about kicking at all</text>

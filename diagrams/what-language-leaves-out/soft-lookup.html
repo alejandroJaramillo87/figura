@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-soft-lookup .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-soft-lookup .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-soft-lookup .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-soft-lookup .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-soft-lookup .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-soft-lookup .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-soft-lookup .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-soft-lookup .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-soft-lookup .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-soft-lookup .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-soft-lookup .fg-fill-line) { fill: var(--line); }
+:where(.fg-soft-lookup .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-soft-lookup .fg-fill-border) { fill: var(--border); }
+:where(.fg-soft-lookup .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-soft-lookup .fg-fill-text) { fill: var(--text); }
+:where(.fg-soft-lookup .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-soft-lookup .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-soft-lookup .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-soft-lookup {
@@ -56,7 +76,7 @@
 
 
 .fg-soft-lookup .sfl-note { fill: var(--muted); font-size: 11px; }
-.fg-soft-lookup .sfl-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s var(--ease), stroke 0.7s var(--ease); }
+.fg-soft-lookup .sfl-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease); }
 .fg-soft-lookup .sfl-tok text { fill: var(--text); font-size: 13px; text-anchor: middle; }
 
 /* the pronoun */
@@ -64,25 +84,25 @@
 .fg-soft-lookup .sfl-they text { fill: var(--accent); font-weight: 600; }
 
 /* step 1: query badge */
-.fg-soft-lookup .sfl-query { opacity: 0; transition: opacity 0.7s; }
+.fg-soft-lookup .sfl-query { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-soft-lookup .sfl-query rect { fill: var(--bg); stroke: var(--accent); stroke-width: 1.5; }
 .fg-soft-lookup .sfl-query text { fill: var(--accent); font-size: 11px; text-anchor: middle; }
 .fg-soft-lookup.is-step-1 .sfl-query, .fg-soft-lookup.is-step-2 .sfl-query,
 .fg-soft-lookup.is-step-3 .sfl-query { opacity: 1; }
 
 /* step 2: keys light with graded strength — several, none exclusive */
-.fg-soft-lookup .sfl-match { transition: opacity 0.7s; opacity: 0; pointer-events: none; }
+.fg-soft-lookup .sfl-match { transition: opacity var(--dur-slow); opacity: 0; pointer-events: none; }
 .fg-soft-lookup.is-step-2 .sfl-match, .fg-soft-lookup.is-step-3 .sfl-match { opacity: 1; }
 .fg-soft-lookup .sfl-match rect { fill: var(--ok); }
 .fg-soft-lookup .sfl-mlabel { fill: var(--ok); font-size: 10px; text-anchor: middle; }
 
 /* step 3: weighted arcs converge on the pronoun; widths encode weight */
-.fg-soft-lookup .sfl-arc { fill: none; stroke: var(--ok); opacity: 0; transition: opacity 0.7s; }
+.fg-soft-lookup .sfl-arc { fill: none; stroke: var(--ok); opacity: 0; transition: opacity var(--dur-slow); }
 .fg-soft-lookup.is-step-3 .sfl-arc { opacity: 1; }
 .fg-soft-lookup.is-step-3 .sfl-they rect { fill: var(--ok-dim); stroke: var(--ok); }
 
 /* fixed footer caption slot */
-.fg-soft-lookup .sfl-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-soft-lookup .sfl-cap { opacity: 0; transition: opacity var(--dur-fast); }
 .fg-soft-lookup.is-step-0 .sfl-cap-0, .fg-soft-lookup.is-step-1 .sfl-cap-1,
 .fg-soft-lookup.is-step-2 .sfl-cap-2, .fg-soft-lookup.is-step-3 .sfl-cap-3 { opacity: 1; }
 

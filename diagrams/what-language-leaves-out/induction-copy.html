@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-induction-copy .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-induction-copy .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-induction-copy .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-induction-copy .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-induction-copy .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-induction-copy .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-induction-copy .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-induction-copy .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-induction-copy .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-induction-copy .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-induction-copy .fg-fill-line) { fill: var(--line); }
+:where(.fg-induction-copy .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-induction-copy .fg-fill-border) { fill: var(--border); }
+:where(.fg-induction-copy .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-induction-copy .fg-fill-text) { fill: var(--text); }
+:where(.fg-induction-copy .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-induction-copy .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-induction-copy .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-induction-copy {
@@ -56,14 +76,14 @@
 
 
 .fg-induction-copy .idc-note { fill: var(--muted); font-size: 11px; }
-.fg-induction-copy .idc-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s var(--ease), stroke 0.7s var(--ease); }
+.fg-induction-copy .idc-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease); }
 .fg-induction-copy .idc-tok text { fill: var(--text); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
 
 /* current token: violet ring throughout */
 .fg-induction-copy .idc-cur rect { stroke: var(--violet); stroke-width: 2; }
 
 /* step 1: the previous occurrence lights violet (match) */
-.fg-induction-copy .idc-prev rect { transition: fill 0.7s, stroke 0.7s; }
+.fg-induction-copy .idc-prev rect { transition: fill var(--dur-slow), stroke var(--dur-slow); }
 .fg-induction-copy.is-step-1 .idc-prev rect, .fg-induction-copy.is-step-2 .idc-prev rect,
 .fg-induction-copy.is-step-3 .idc-prev rect { stroke: var(--violet); fill: var(--violet-dim); }
 .fg-induction-copy.is-step-1 .idc-prev text, .fg-induction-copy.is-step-2 .idc-prev text,
@@ -75,23 +95,23 @@
 
 /* step 3: prediction fills the slot */
 .fg-induction-copy .idc-slot rect { stroke-dasharray: 6 4; stroke: var(--line); fill: none; }
-.fg-induction-copy .idc-slot .idc-q { fill: var(--muted); font-size: 14px; text-anchor: middle; font-family: var(--mono); transition: opacity 0.7s; }
-.fg-induction-copy .idc-pred { opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy .idc-slot .idc-q { fill: var(--muted); font-size: 14px; text-anchor: middle; font-family: var(--mono); transition: opacity var(--dur-slow); }
+.fg-induction-copy .idc-pred { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-induction-copy .idc-pred rect { stroke: var(--ok); fill: var(--ok-dim); stroke-width: 1.5; }
 .fg-induction-copy .idc-pred text { fill: var(--ok); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
 .fg-induction-copy.is-step-3 .idc-pred { opacity: 1; }
 .fg-induction-copy.is-step-3 .idc-slot .idc-q { opacity: 0; }
 
 /* glow halo behind the prediction (static blur, opacity only) */
-.fg-induction-copy .idc-halo { filter: blur(6px); opacity: 0; fill: var(--ok); transition: opacity 0.7s; }
+.fg-induction-copy .idc-halo { filter: blur(6px); opacity: 0; fill: var(--ok); transition: opacity var(--dur-slow); }
 .fg-induction-copy.is-step-3 .idc-halo { opacity: 0.35; }
 
 /* hop arc prev -> succ, shown from step 2 */
-.fg-induction-copy .idc-hop { fill: none; stroke: var(--ok); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy .idc-hop { fill: none; stroke: var(--ok); stroke-width: 2; opacity: 0; transition: opacity var(--dur-slow); }
 .fg-induction-copy.is-step-2 .idc-hop, .fg-induction-copy.is-step-3 .idc-hop { opacity: 1; }
 
 /* lookback arc cur -> prev, shown from step 1 */
-.fg-induction-copy .idc-back { fill: none; stroke: var(--violet); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy .idc-back { fill: none; stroke: var(--violet); stroke-width: 2; opacity: 0; transition: opacity var(--dur-slow); }
 .fg-induction-copy.is-step-1 .idc-back, .fg-induction-copy.is-step-2 .idc-back,
 .fg-induction-copy.is-step-3 .idc-back { opacity: 1; }
 
@@ -101,7 +121,7 @@
 .fg-induction-copy.is-step-3 .idc-comet-copy { opacity: 1; }
 
 /* step labels */
-.fg-induction-copy .idc-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-induction-copy .idc-cap { opacity: 0; transition: opacity var(--dur-fast); }
 .fg-induction-copy.is-step-0 .idc-cap-0, .fg-induction-copy.is-step-1 .idc-cap-1,
 .fg-induction-copy.is-step-2 .idc-cap-2, .fg-induction-copy.is-step-3 .idc-cap-3 { opacity: 1; }
 

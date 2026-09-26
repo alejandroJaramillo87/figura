@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-bridging-implicit .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-bridging-implicit .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-bridging-implicit .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-bridging-implicit .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-bridging-implicit .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-bridging-implicit .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-bridging-implicit .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-bridging-implicit .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-bridging-implicit .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-bridging-implicit .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-bridging-implicit .fg-fill-line) { fill: var(--line); }
+:where(.fg-bridging-implicit .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-bridging-implicit .fg-fill-border) { fill: var(--border); }
+:where(.fg-bridging-implicit .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-bridging-implicit .fg-fill-text) { fill: var(--text); }
+:where(.fg-bridging-implicit .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-bridging-implicit .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-bridging-implicit .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-bridging-implicit {
@@ -58,7 +78,7 @@
 .fg-bridging-implicit .brg-note { fill: var(--muted); font-size: 11px; }
 .fg-bridging-implicit .brg-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease), fill var(--dur-slow) var(--ease);
 }
 .fg-bridging-implicit .brg-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 
@@ -68,7 +88,7 @@
 .fg-bridging-implicit .brg-bnoun .brg-word { fill: var(--accent); font-weight: 600; }
 
 /* bridging-noun variants cross-fade */
-.fg-bridging-implicit .brg-v { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-bridging-implicit .brg-v { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-bridging-implicit.is-ceiling .brg-v-ceiling,
 .fg-bridging-implicit.is-windows .brg-v-windows,
 .fg-bridging-implicit.is-door .brg-v-door { opacity: 1; }
@@ -86,7 +106,7 @@
 .fg-bridging-implicit .brg-chip { cursor: pointer; }
 .fg-bridging-implicit .brg-chip rect {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.3s, fill 0.3s;
+  transition: stroke var(--dur-quick), fill var(--dur-quick);
 }
 .fg-bridging-implicit .brg-chip:hover rect { stroke: var(--accent); fill: var(--panel-hover); }
 .fg-bridging-implicit .brg-chip.is-active rect { stroke: var(--accent); }
@@ -135,10 +155,10 @@
      aria-label="Two sentences: I entered the room, then The ceiling was high. The word room is highlighted as the anchor. The bridging noun — ceiling, and selectable variants windows or door — was never mentioned; a dashed ghost node between them reads rooms have ceilings, part-of knowledge, and a dashed arc routes the reference from the bridging noun through the ghost node back to room. Buttons switch the bridging noun among ceiling, windows, and door.">
   <defs>
     <marker id="brg-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="brg-arrow-v" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#a78bfa"/>
+      <path class="fg-fill-violet" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
@@ -186,7 +206,7 @@
 
   <path class="brg-arc brg-arc-ghost" d="M 170 148 C 250 120, 310 112, 374 110" marker-end="url(#brg-arrow-v)"/>
   <path class="brg-arc brg-arc-ghost" d="M 380 96 C 330 76, 300 70, 274 66" marker-end="url(#brg-arrow-v)"/>
-  <text class="brg-note" x="300" y="180" fill="#a78bfa">the arc routes through knowledge, not text</text>
+  <text class="brg-note fg-fill-violet" x="300" y="180">the arc routes through knowledge, not text</text>
 
   <g class="brg-chip" data-fg="chip" data-variant="ceiling">
     <rect x="40" y="230" width="100" height="30" rx="15"/>

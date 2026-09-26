@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-coref-chain .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-coref-chain .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-coref-chain .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-coref-chain .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-coref-chain .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-coref-chain .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-coref-chain .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-coref-chain .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-coref-chain .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-coref-chain .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-coref-chain .fg-fill-line) { fill: var(--line); }
+:where(.fg-coref-chain .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-coref-chain .fg-fill-border) { fill: var(--border); }
+:where(.fg-coref-chain .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-coref-chain .fg-fill-text) { fill: var(--text); }
+:where(.fg-coref-chain .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-coref-chain .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-coref-chain .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-coref-chain {
@@ -58,14 +78,14 @@
 .fg-coref-chain .crc-note { fill: var(--muted); font-size: 11px; }
 .fg-coref-chain .crc-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease), fill var(--dur-slow) var(--ease);
 }
 .fg-coref-chain .crc-word { fill: var(--text); font-size: 13px; text-anchor: middle; }
 .fg-coref-chain .crc-mtype { fill: var(--muted); font-size: 10px; text-anchor: middle;
-  transition: fill 0.7s; }
+  transition: fill var(--dur-slow); }
 
 /* mentions light cumulatively per step (mention k lights at step k) */
-.fg-coref-chain .crc-m .crc-tok { transition: stroke 0.7s, fill 0.7s; }
+.fg-coref-chain .crc-m .crc-tok { transition: stroke var(--dur-slow), fill var(--dur-slow); }
 .fg-coref-chain.is-step-1 .crc-m1 .crc-tok,
 .fg-coref-chain.is-step-2 .crc-m1 .crc-tok, .fg-coref-chain.is-step-2 .crc-m2 .crc-tok,
 .fg-coref-chain.is-step-3 .crc-m1 .crc-tok, .fg-coref-chain.is-step-3 .crc-m2 .crc-tok, .fg-coref-chain.is-step-3 .crc-m3 .crc-tok,
@@ -75,22 +95,22 @@
 /* chain links appear per step */
 .fg-coref-chain .crc-link {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-coref-chain.is-step-2 .crc-l1,
 .fg-coref-chain.is-step-3 .crc-l1, .fg-coref-chain.is-step-3 .crc-l2,
 .fg-coref-chain.is-step-4 .crc-l1, .fg-coref-chain.is-step-4 .crc-l2, .fg-coref-chain.is-step-4 .crc-l3 { opacity: 1; }
 
 /* entity node: appears at final step */
-.fg-coref-chain .crc-entity { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-coref-chain .crc-entity { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-coref-chain.is-step-4 .crc-entity { opacity: 1; }
 .fg-coref-chain .crc-entity rect { fill: var(--ok-dim); stroke: var(--ok); stroke-width: 1.5; }
 .fg-coref-chain .crc-spoke { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 4 4;
-  opacity: 0; transition: opacity 0.7s var(--ease); }
+  opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-coref-chain.is-step-4 .crc-spoke { opacity: 0.8; }
 
 /* footer captions */
-.fg-coref-chain .crc-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-coref-chain .crc-cap { opacity: 0; transition: opacity var(--dur-fast); }
 .fg-coref-chain.is-step-0 .crc-cap-0, .fg-coref-chain.is-step-1 .crc-cap-1,
 .fg-coref-chain.is-step-2 .crc-cap-2, .fg-coref-chain.is-step-3 .crc-cap-3,
 .fg-coref-chain.is-step-4 .crc-cap-4 { opacity: 1; }
@@ -120,7 +140,7 @@
      aria-label="A short paragraph laid out as token blocks: Dr. Smith examined the scans. She frowned. The doctor ordered another test. Her patient waited. Step by step, each mention of the same person lights green — Dr. Smith, a name; she, a pronoun; the doctor, a definite description; her, a possessive — with green chain links connecting each mention back to the previous one. At the final step an entity node labeled one entity, four aliases appears below, with dashed spokes to all four mentions.">
   <defs>
     <marker id="crc-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
@@ -163,7 +183,7 @@
   <g class="crc-entity">
     <rect x="230" y="230" width="260" height="44" rx="8"/>
     <text class="crc-word" x="360" y="249" font-weight="600">one entity &#8212; four aliases</text>
-    <text class="crc-mtype" x="360" y="266" fill="#34d399">like four variables aliasing one heap object</text>
+    <text class="crc-mtype fg-fill-ok" x="360" y="266">like four variables aliasing one heap object</text>
   </g>
   <path class="crc-spoke" d="M 93 96 C 120 180, 200 220, 260 230"/>
   <path class="crc-spoke" d="M 390 96 C 390 150, 380 200, 370 230"/>

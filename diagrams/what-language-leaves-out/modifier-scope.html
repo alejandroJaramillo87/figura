@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-modifier-scope .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-modifier-scope .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-modifier-scope .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-modifier-scope .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-modifier-scope .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-modifier-scope .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-modifier-scope .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-modifier-scope .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-modifier-scope .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-modifier-scope .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-modifier-scope .fg-fill-line) { fill: var(--line); }
+:where(.fg-modifier-scope .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-modifier-scope .fg-fill-border) { fill: var(--border); }
+:where(.fg-modifier-scope .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-modifier-scope .fg-fill-text) { fill: var(--text); }
+:where(.fg-modifier-scope .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-modifier-scope .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-modifier-scope .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-modifier-scope {
@@ -58,7 +78,7 @@
 .fg-modifier-scope .mds-note { fill: var(--muted); font-size: 11px; }
 .fg-modifier-scope .mds-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease), fill var(--dur-slow) var(--ease);
 }
 .fg-modifier-scope .mds-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 .fg-modifier-scope .mds-only .mds-tok { stroke: var(--warn); }
@@ -69,7 +89,7 @@
 .fg-modifier-scope.is-object .mds-cake .mds-tok { stroke: var(--ok); fill: var(--ok-dim); }
 
 /* brackets cross-fade */
-.fg-modifier-scope .mds-br { transition: opacity 0.7s var(--ease); }
+.fg-modifier-scope .mds-br { transition: opacity var(--dur-slow) var(--ease); }
 .fg-modifier-scope .mds-br path { fill: none; stroke: var(--ok); stroke-width: 2; }
 .fg-modifier-scope .mds-br-verb { opacity: 1; }
 .fg-modifier-scope .mds-br-obj { opacity: 0; }
@@ -77,7 +97,7 @@
 .fg-modifier-scope.is-object .mds-br-obj { opacity: 1; }
 
 /* glosses cross-fade */
-.fg-modifier-scope .mds-gloss { transition: opacity 0.7s; font-size: 12px; fill: var(--ok); }
+.fg-modifier-scope .mds-gloss { transition: opacity var(--dur-slow); font-size: 12px; fill: var(--ok); }
 .fg-modifier-scope .mds-gloss-verb { opacity: 1; }
 .fg-modifier-scope .mds-gloss-obj { opacity: 0; }
 .fg-modifier-scope.is-object .mds-gloss-verb { opacity: 0; }

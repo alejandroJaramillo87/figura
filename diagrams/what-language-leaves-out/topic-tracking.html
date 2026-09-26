@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-topic-tracking .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-topic-tracking .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-topic-tracking .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-topic-tracking .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-topic-tracking .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-topic-tracking .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-topic-tracking .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-topic-tracking .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-topic-tracking .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-topic-tracking .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-topic-tracking .fg-fill-line) { fill: var(--line); }
+:where(.fg-topic-tracking .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-topic-tracking .fg-fill-border) { fill: var(--border); }
+:where(.fg-topic-tracking .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-topic-tracking .fg-fill-text) { fill: var(--text); }
+:where(.fg-topic-tracking .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-topic-tracking .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-topic-tracking .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-topic-tracking {
@@ -60,16 +80,16 @@
 .fg-topic-tracking .tpf-it { fill: var(--warn); font-weight: 600; }
 
 /* opening sentence variants cross-fade */
-.fg-topic-tracking .tpf-open { transition: opacity 0.7s var(--ease); }
+.fg-topic-tracking .tpf-open { transition: opacity var(--dur-slow) var(--ease); }
 .fg-topic-tracking .tpf-open-bridge { opacity: 1; }
 .fg-topic-tracking .tpf-open-river { opacity: 0; }
 .fg-topic-tracking.is-river .tpf-open-bridge { opacity: 0; }
 .fg-topic-tracking.is-river .tpf-open-river { opacity: 1; }
 
 /* entity chips */
-.fg-topic-tracking .tpf-ent rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: stroke 0.7s, fill 0.7s; }
+.fg-topic-tracking .tpf-ent rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: stroke var(--dur-slow), fill var(--dur-slow); }
 .fg-topic-tracking .tpf-ent text { fill: var(--text); font-size: 12px; text-anchor: middle; }
-.fg-topic-tracking .tpf-topictag { font-size: 10px; fill: var(--violet); text-anchor: middle; transition: opacity 0.7s; }
+.fg-topic-tracking .tpf-topictag { font-size: 10px; fill: var(--violet); text-anchor: middle; transition: opacity var(--dur-slow); }
 .fg-topic-tracking .tpf-ent-bridge rect { stroke: var(--ok); fill: var(--ok-dim); }
 .fg-topic-tracking .tpf-tag-bridge { opacity: 1; }
 .fg-topic-tracking .tpf-tag-river { opacity: 0; }
@@ -79,7 +99,7 @@
 .fg-topic-tracking.is-river .tpf-tag-river { opacity: 1; }
 
 /* the pronoun's arc re-points */
-.fg-topic-tracking .tpf-arc { fill: none; stroke: var(--ok); stroke-width: 2; transition: opacity 0.7s; }
+.fg-topic-tracking .tpf-arc { fill: none; stroke: var(--ok); stroke-width: 2; transition: opacity var(--dur-slow); }
 .fg-topic-tracking .tpf-arc-bridge { opacity: 1; }
 .fg-topic-tracking .tpf-arc-river { opacity: 0; }
 .fg-topic-tracking.is-river .tpf-arc-bridge { opacity: 0; }
@@ -159,7 +179,7 @@
 
   <defs>
     <marker id="tpf-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>

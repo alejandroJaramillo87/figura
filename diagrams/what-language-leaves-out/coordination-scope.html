@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-coordination-scope .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-coordination-scope .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-coordination-scope .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-coordination-scope .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-coordination-scope .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-coordination-scope .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-coordination-scope .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-coordination-scope .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-coordination-scope .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-coordination-scope .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-coordination-scope .fg-fill-line) { fill: var(--line); }
+:where(.fg-coordination-scope .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-coordination-scope .fg-fill-border) { fill: var(--border); }
+:where(.fg-coordination-scope .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-coordination-scope .fg-fill-text) { fill: var(--text); }
+:where(.fg-coordination-scope .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-coordination-scope .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-coordination-scope .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-coordination-scope {
@@ -58,13 +78,13 @@
 .fg-coordination-scope .cds-note { fill: var(--muted); font-size: 11px; }
 .fg-coordination-scope .cds-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease), fill var(--dur-slow) var(--ease);
 }
 .fg-coordination-scope .cds-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 .fg-coordination-scope .cds-old .cds-tok { stroke: var(--warn); }
 
 /* brackets cross-fade: wide = old [men and women], narrow = [old men] and women */
-.fg-coordination-scope .cds-br { transition: opacity 0.7s var(--ease); }
+.fg-coordination-scope .cds-br { transition: opacity var(--dur-slow) var(--ease); }
 .fg-coordination-scope .cds-br path { fill: none; stroke: var(--ok); stroke-width: 2; }
 .fg-coordination-scope .cds-br text { fill: var(--ok); }
 .fg-coordination-scope .cds-br-wide { opacity: 1; }
@@ -75,9 +95,9 @@
 /* membership cards: who ends up old */
 .fg-coordination-scope .cds-card rect {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s, fill 0.7s;
+  transition: stroke var(--dur-slow), fill var(--dur-slow);
 }
-.fg-coordination-scope .cds-card text { fill: var(--muted); font-size: 12px; text-anchor: middle; transition: fill 0.7s; }
+.fg-coordination-scope .cds-card text { fill: var(--muted); font-size: 12px; text-anchor: middle; transition: fill var(--dur-slow); }
 .fg-coordination-scope .cds-card-menold rect { stroke: var(--warn); }
 .fg-coordination-scope .cds-card-menold text { fill: var(--text); }
 .fg-coordination-scope .cds-card-womenold rect { stroke: var(--warn); }
@@ -85,7 +105,7 @@
 .fg-coordination-scope.is-narrow .cds-card-womenold rect { stroke: var(--border); }
 .fg-coordination-scope.is-narrow .cds-card-womenold text { fill: var(--muted); }
 
-.fg-coordination-scope .cds-cardnote { transition: opacity 0.7s; }
+.fg-coordination-scope .cds-cardnote { transition: opacity var(--dur-slow); }
 .fg-coordination-scope .cds-cardnote-wide { opacity: 1; }
 .fg-coordination-scope .cds-cardnote-narrow { opacity: 0; }
 .fg-coordination-scope.is-narrow .cds-cardnote-wide { opacity: 0; }

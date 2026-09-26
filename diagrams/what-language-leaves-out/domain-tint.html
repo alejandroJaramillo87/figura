@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-domain-tint .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-domain-tint .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-domain-tint .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-domain-tint .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-domain-tint .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-domain-tint .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-domain-tint .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-domain-tint .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-domain-tint .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-domain-tint .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-domain-tint .fg-fill-line) { fill: var(--line); }
+:where(.fg-domain-tint .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-domain-tint .fg-fill-border) { fill: var(--border); }
+:where(.fg-domain-tint .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-domain-tint .fg-fill-text) { fill: var(--text); }
+:where(.fg-domain-tint .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-domain-tint .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-domain-tint .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-domain-tint {
@@ -58,19 +78,19 @@
 .fg-domain-tint .dmt-note { fill: var(--muted); font-size: 11px; }
 .fg-domain-tint .dmt-doc {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease);
 }
 .fg-domain-tint .dmt-title { fill: var(--text); font-size: 12px; font-weight: 600; }
 .fg-domain-tint .dmt-line { fill: var(--muted); font-size: 11px; }
-.fg-domain-tint .dmt-cue { transition: fill 0.7s var(--ease); }
+.fg-domain-tint .dmt-cue { transition: fill var(--dur-slow) var(--ease); }
 
 /* the shared sentence */
 .fg-domain-tint .dmt-sent rect {
   fill: var(--panel-hover); stroke: var(--accent); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease);
 }
 .fg-domain-tint .dmt-sent text { fill: var(--text); font-size: 13px; }
-.fg-domain-tint .dmt-positive { font-weight: 600; transition: fill 0.7s var(--ease); }
+.fg-domain-tint .dmt-positive { font-weight: 600; transition: fill var(--dur-slow) var(--ease); }
 
 /* states: is-review tints good; default (medical) tints bad */
 .fg-domain-tint .dmt-doc-med { stroke: var(--hot); }
@@ -85,7 +105,7 @@
 
 /* verdict labels */
 .fg-domain-tint .dmt-verdict { font-size: 12px; font-weight: 600; text-anchor: middle;
-  transition: opacity 0.7s var(--ease); }
+  transition: opacity var(--dur-slow) var(--ease); }
 .fg-domain-tint .dmt-verdict-bad { fill: var(--hot); opacity: 1; }
 .fg-domain-tint .dmt-verdict-good { fill: var(--ok); opacity: 0; }
 .fg-domain-tint.is-review .dmt-verdict-bad { opacity: 0; }
@@ -94,7 +114,7 @@
 /* diffuse info-need arcs: from "positive" to cues scattered through the active doc */
 .fg-domain-tint .dmt-arc {
   fill: none; stroke-width: 2; stroke-dasharray: 3 4;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-domain-tint .dmt-arc-med { stroke: var(--hot); opacity: 0.85; }
 .fg-domain-tint .dmt-arc-rev { stroke: var(--ok); opacity: 0; }

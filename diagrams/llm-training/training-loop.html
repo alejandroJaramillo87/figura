@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-training-loop .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-training-loop .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-training-loop .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-training-loop .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-training-loop .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-training-loop .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-training-loop .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-training-loop .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-training-loop .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-training-loop .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-training-loop .fg-fill-line) { fill: var(--line); }
+:where(.fg-training-loop .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-training-loop .fg-fill-border) { fill: var(--border); }
+:where(.fg-training-loop .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-training-loop .fg-fill-text) { fill: var(--text); }
+:where(.fg-training-loop .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-training-loop .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-training-loop .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-training-loop {
@@ -55,7 +75,7 @@
 }
 
 
-.fg-training-loop .trl-node { fill: var(--panel); stroke: var(--border); stroke-width: 2; transition: stroke 0.4s, fill 0.4s; }
+.fg-training-loop .trl-node { fill: var(--panel); stroke: var(--border); stroke-width: 2; transition: stroke var(--dur-quick), fill var(--dur-quick); }
 .fg-training-loop .trl-title { fill: var(--text); font-size: 14px; font-weight: 600; text-anchor: middle; }
 .fg-training-loop .trl-sub   { fill: var(--muted); font-size: 11px; text-anchor: middle; }
 .fg-training-loop .trl-lab   { fill: var(--muted); font-size: 12px; }
@@ -64,7 +84,7 @@
 .fg-training-loop .trl-fwd {
   stroke: var(--accent); stroke-width: 2; fill: none; stroke-linecap: round;
   stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.35;
-  transition: stroke-dashoffset 0.7s var(--ease), opacity 0.4s;
+  transition: stroke-dashoffset var(--dur-slow) var(--ease), opacity var(--dur-quick);
 }
 .fg-training-loop.is-step-1 .trl-fwd,
 .fg-training-loop.is-step-2 .trl-fwd { stroke-dashoffset: 0; opacity: 0.9; }
@@ -79,25 +99,25 @@
 .fg-training-loop .trl-bwd {
   stroke: var(--hot); stroke-width: 2; fill: none; stroke-linecap: round;
   stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0.35;
-  transition: stroke-dashoffset 1.1s var(--ease), opacity 0.4s;
+  transition: stroke-dashoffset calc(var(--dur-slow) * 1.6) var(--ease), opacity var(--dur-quick);
 }
 .fg-training-loop.is-step-3 .trl-bwd,
 .fg-training-loop.is-step-4 .trl-bwd { stroke-dashoffset: 0; opacity: 0.9; }
 .fg-training-loop.is-step-4 .trl-bwd { opacity: 0.25; }
 
 /* comets: hidden except in their step; SMIL is kicked by JS */
-.fg-training-loop .trl-comet-fwd, .fg-training-loop .trl-comet-bwd { opacity: 0; transition: opacity 0.3s; }
+.fg-training-loop .trl-comet-fwd, .fg-training-loop .trl-comet-bwd { opacity: 0; transition: opacity var(--dur-quick); }
 .fg-training-loop.is-step-1 .trl-comet-fwd { opacity: 1; }
 .fg-training-loop.is-step-3 .trl-comet-bwd { opacity: 1; }
 
 /* loss glow: pre-blurred halo, opacity pulse only during step 2 */
-.fg-training-loop .trl-loss-halo { filter: blur(7px); opacity: 0; transition: opacity 0.4s; }
+.fg-training-loop .trl-loss-halo { filter: blur(7px); opacity: 0; transition: opacity var(--dur-quick); }
 .fg-training-loop.is-step-2 .trl-loss-halo { animation: fg-trl-glow 1.4s var(--ease) infinite alternate; }
 @keyframes fg-trl-glow { from { opacity: 0.3; } to { opacity: 0.85; } }
 .fg-training-loop.is-step-2 .trl-loss-node { stroke: var(--warn); }
 .fg-training-loop.is-step-2 .trl-loss-edge { opacity: 0.9; }
 .fg-training-loop .trl-loss-edge {
-  stroke: var(--warn); stroke-width: 2; fill: none; stroke-dasharray: 4 4; opacity: 0.25; transition: opacity 0.4s;
+  stroke: var(--warn); stroke-width: 2; fill: none; stroke-dasharray: 4 4; opacity: 0.25; transition: opacity var(--dur-quick);
 }
 
 /* logits flash on step 2 */
@@ -129,7 +149,7 @@
 }
 
 /* phase captions */
-.fg-training-loop .trl-phase { opacity: 0; transition: opacity 0.45s; }
+.fg-training-loop .trl-phase { opacity: 0; transition: opacity var(--dur-fast); }
 .fg-training-loop.is-step-0 .trl-phase-0, .fg-training-loop.is-step-1 .trl-phase-1,
 .fg-training-loop.is-step-2 .trl-phase-2, .fg-training-loop.is-step-3 .trl-phase-3,
 .fg-training-loop.is-step-4 .trl-phase-4 { opacity: 1; }

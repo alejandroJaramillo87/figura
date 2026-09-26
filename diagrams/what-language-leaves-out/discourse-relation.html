@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-discourse-relation .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-discourse-relation .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-discourse-relation .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-discourse-relation .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-discourse-relation .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-discourse-relation .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-discourse-relation .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-discourse-relation .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-discourse-relation .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-discourse-relation .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-discourse-relation .fg-fill-line) { fill: var(--line); }
+:where(.fg-discourse-relation .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-discourse-relation .fg-fill-border) { fill: var(--border); }
+:where(.fg-discourse-relation .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-discourse-relation .fg-fill-text) { fill: var(--text); }
+:where(.fg-discourse-relation .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-discourse-relation .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-discourse-relation .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-discourse-relation {
@@ -60,14 +80,14 @@
 .fg-discourse-relation .dsr-block text { fill: var(--text); font-size: 14px; text-anchor: middle; }
 
 /* second sentence variants cross-fade */
-.fg-discourse-relation .dsr-s2 { transition: opacity 0.7s var(--ease); }
+.fg-discourse-relation .dsr-s2 { transition: opacity var(--dur-slow) var(--ease); }
 .fg-discourse-relation .dsr-s2-cause { opacity: 1; }
 .fg-discourse-relation .dsr-s2-seq { opacity: 0; }
 .fg-discourse-relation.is-sequence .dsr-s2-cause { opacity: 0; }
 .fg-discourse-relation.is-sequence .dsr-s2-seq { opacity: 1; }
 
 /* ghost edge between the blocks */
-.fg-discourse-relation .dsr-edge { transition: opacity 0.7s; }
+.fg-discourse-relation .dsr-edge { transition: opacity var(--dur-slow); }
 .fg-discourse-relation .dsr-edge path { fill: none; stroke-width: 2; stroke-dasharray: 6 4; }
 .fg-discourse-relation .dsr-edge rect { fill: var(--bg); stroke-width: 1.5; stroke-dasharray: 6 4; }
 .fg-discourse-relation .dsr-edge text { font-size: 12px; text-anchor: middle; font-weight: 600; }
@@ -158,10 +178,10 @@
 
   <defs>
     <marker id="dsr-arrow-hot" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171"/>
+      <path class="fg-fill-hot" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="dsr-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>

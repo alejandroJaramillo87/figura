@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-garden-path .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-garden-path .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-garden-path .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-garden-path .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-garden-path .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-garden-path .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-garden-path .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-garden-path .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-garden-path .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-garden-path .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-garden-path .fg-fill-line) { fill: var(--line); }
+:where(.fg-garden-path .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-garden-path .fg-fill-border) { fill: var(--border); }
+:where(.fg-garden-path .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-garden-path .fg-fill-text) { fill: var(--text); }
+:where(.fg-garden-path .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-garden-path .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-garden-path .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-garden-path {
@@ -58,20 +78,20 @@
 .fg-garden-path .gdp-note { fill: var(--muted); font-size: 11px; }
 .fg-garden-path .gdp-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease),
-              opacity 0.7s var(--ease);
+  transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease),
+              opacity var(--dur-slow) var(--ease);
 }
 .fg-garden-path .gdp-word { fill: var(--text); font-size: 14px; text-anchor: middle; }
 
 /* tokens stream in: hidden until their step */
-.fg-garden-path .gdp-t3, .fg-garden-path .gdp-t4 { opacity: 0.18; transition: opacity 0.7s; }
+.fg-garden-path .gdp-t3, .fg-garden-path .gdp-t4 { opacity: 0.18; transition: opacity var(--dur-slow); }
 .fg-garden-path.is-step-1 .gdp-t3, .fg-garden-path.is-step-2 .gdp-t3,
 .fg-garden-path.is-step-3 .gdp-t3, .fg-garden-path.is-step-4 .gdp-t3 { opacity: 1; }
 .fg-garden-path.is-step-2 .gdp-t4, .fg-garden-path.is-step-3 .gdp-t4,
 .fg-garden-path.is-step-4 .gdp-t4 { opacity: 1; }
 
 /* first-pass labels: SUBJECT / MAIN VERB */
-.fg-garden-path .gdp-lab { font-size: 10px; text-anchor: middle; letter-spacing: 0.06em; transition: opacity 0.7s, fill 0.7s; }
+.fg-garden-path .gdp-lab { font-size: 10px; text-anchor: middle; letter-spacing: 0.06em; transition: opacity var(--dur-slow), fill var(--dur-slow); }
 .fg-garden-path .gdp-lab-subj { fill: var(--accent); }
 .fg-garden-path .gdp-lab-mv { fill: var(--accent); }
 .fg-garden-path.is-step-3 .gdp-lab-mv, .fg-garden-path.is-step-4 .gdp-lab-mv { opacity: 0; }
@@ -88,11 +108,11 @@
 .fg-garden-path.is-step-3 .gdp-fell .gdp-tok, .fg-garden-path.is-step-4 .gdp-fell .gdp-tok { stroke: var(--ok); fill: var(--ok-dim); }
 
 /* contradiction badge at step 2 only */
-.fg-garden-path .gdp-clash { opacity: 0; transition: opacity 0.7s; }
+.fg-garden-path .gdp-clash { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-garden-path.is-step-2 .gdp-clash { opacity: 1; }
 
 /* reduced-relative bracket over "raced past the barn", step 3+ */
-.fg-garden-path .gdp-rrbracket { opacity: 0; transition: opacity 0.7s; }
+.fg-garden-path .gdp-rrbracket { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-garden-path.is-step-3 .gdp-rrbracket, .fg-garden-path.is-step-4 .gdp-rrbracket { opacity: 1; }
 .fg-garden-path .gdp-rrbracket path { fill: none; stroke: var(--violet); stroke-width: 2; }
 .fg-garden-path .gdp-rrbracket text { fill: var(--violet); }
@@ -100,14 +120,14 @@
 /* resolving arc fell -> horse, step 3+ */
 .fg-garden-path .gdp-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-garden-path.is-step-3 .gdp-arc, .fg-garden-path.is-step-4 .gdp-arc { opacity: 1; }
-.fg-garden-path .gdp-arclabel { opacity: 0; transition: opacity 0.7s; }
+.fg-garden-path .gdp-arclabel { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-garden-path.is-step-4 .gdp-arclabel { opacity: 1; }
 
 /* footer captions */
-.fg-garden-path .gdp-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-garden-path .gdp-cap { opacity: 0; transition: opacity var(--dur-fast); }
 .fg-garden-path.is-step-0 .gdp-cap-0, .fg-garden-path.is-step-1 .gdp-cap-1,
 .fg-garden-path.is-step-2 .gdp-cap-2, .fg-garden-path.is-step-3 .gdp-cap-3,
 .fg-garden-path.is-step-4 .gdp-cap-4 { opacity: 1; }
@@ -162,11 +182,11 @@
 
   <text class="gdp-lab gdp-lab-subj" x="129" y="166">SUBJECT</text>
   <text class="gdp-lab gdp-lab-mv" x="203" y="166">MAIN VERB</text>
-  <text class="gdp-lab gdp-lab-rr" x="203" y="166" dy="14" fill="#a78bfa">participle</text>
-  <text class="gdp-lab gdp-lab-mv2" x="460" y="166" fill="#34d399">MAIN VERB</text>
+  <text class="gdp-lab gdp-lab-rr fg-fill-violet" x="203" y="166" dy="14">participle</text>
+  <text class="gdp-lab gdp-lab-mv2 fg-fill-ok" x="460" y="166">MAIN VERB</text>
 
   <g class="gdp-clash">
-    <text class="gdp-note" x="460" y="96" text-anchor="middle" fill="#f87171">a second finite verb &#8212; no slot for it</text>
+    <text class="gdp-note fg-fill-hot" x="460" y="96" text-anchor="middle">a second finite verb &#8212; no slot for it</text>
   </g>
 
   <g class="gdp-rrbracket">
@@ -176,12 +196,12 @@
 
   <path class="gdp-arc" d="M 448 110 C 400 44, 200 44, 137 104" marker-end="url(#gdp-arrow)"/>
   <g class="gdp-arclabel">
-    <text class="gdp-note" x="250" y="40" fill="#34d399">"fell" attends back to its real subject</text>
+    <text class="gdp-note fg-fill-ok" x="250" y="40">"fell" attends back to its real subject</text>
   </g>
 
   <defs>
     <marker id="gdp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 

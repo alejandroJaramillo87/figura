@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-metonymy-standin .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-metonymy-standin .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-metonymy-standin .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-metonymy-standin .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-metonymy-standin .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-metonymy-standin .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-metonymy-standin .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-metonymy-standin .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-metonymy-standin .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-metonymy-standin .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-metonymy-standin .fg-fill-line) { fill: var(--line); }
+:where(.fg-metonymy-standin .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-metonymy-standin .fg-fill-border) { fill: var(--border); }
+:where(.fg-metonymy-standin .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-metonymy-standin .fg-fill-text) { fill: var(--text); }
+:where(.fg-metonymy-standin .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-metonymy-standin .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-metonymy-standin .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-metonymy-standin {
@@ -63,21 +83,21 @@
 .fg-metonymy-standin .mtn-wh .mtn-tok { stroke: var(--warn); }
 
 /* literal node: fine by default, flagged hot when dereferenced view shows the clash */
-.fg-metonymy-standin .mtn-building rect { fill: var(--panel); stroke: var(--warn); stroke-width: 1.5; transition: opacity 0.7s; }
+.fg-metonymy-standin .mtn-building rect { fill: var(--panel); stroke: var(--warn); stroke-width: 1.5; transition: opacity var(--dur-slow); }
 .fg-metonymy-standin .mtn-building text { fill: var(--text); font-size: 12px; text-anchor: middle; }
-.fg-metonymy-standin .mtn-clash { opacity: 0; transition: opacity 0.7s; }
+.fg-metonymy-standin .mtn-clash { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-metonymy-standin .mtn-clash text { fill: var(--hot); font-size: 11px; text-anchor: middle; }
 .fg-metonymy-standin.is-deref .mtn-clash { opacity: 1; }
 .fg-metonymy-standin.is-deref .mtn-building rect { opacity: 0.45; }
 
 /* ghost referent node, revealed on dereference */
-.fg-metonymy-standin .mtn-ghost { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-metonymy-standin .mtn-ghost { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-metonymy-standin.is-deref .mtn-ghost { opacity: 1; }
 .fg-metonymy-standin .mtn-ghost rect { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
 .fg-metonymy-standin .mtn-ghost text { fill: var(--ok); font-size: 12px; text-anchor: middle; }
 
 /* hand-off arc */
-.fg-metonymy-standin .mtn-arc { fill: none; stroke: var(--ok); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-metonymy-standin .mtn-arc { fill: none; stroke: var(--ok); stroke-width: 2; opacity: 0; transition: opacity var(--dur-slow); }
 .fg-metonymy-standin.is-deref .mtn-arc { opacity: 1; }
 
 /* fg:begin toggle-bar v1 */
@@ -155,7 +175,7 @@
 
   <defs>
     <marker id="mtn-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>

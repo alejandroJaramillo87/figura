@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-inference-topology .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-inference-topology .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-inference-topology .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-inference-topology .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-inference-topology .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-inference-topology .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-inference-topology .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-inference-topology .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-inference-topology .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-inference-topology .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-inference-topology .fg-fill-line) { fill: var(--line); }
+:where(.fg-inference-topology .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-inference-topology .fg-fill-border) { fill: var(--border); }
+:where(.fg-inference-topology .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-inference-topology .fg-fill-text) { fill: var(--text); }
+:where(.fg-inference-topology .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-inference-topology .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-inference-topology .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-inference-topology {
@@ -57,12 +77,12 @@
 
 .fg-inference-topology .ift-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+  transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
 .fg-inference-topology .ift-group:hover .ift-box { fill: var(--accent-dim); stroke: var(--accent); }
 .fg-inference-topology .ift-group.ift-ok:hover .ift-box { fill: var(--ok-dim); stroke: var(--ok); }
 .fg-inference-topology .ift-group:hover .ift-sub { fill: var(--text); }
-.fg-inference-topology .ift-sub { transition: fill 0.3s; }
+.fg-inference-topology .ift-sub { transition: fill var(--dur-quick); }
 
 /* glow pattern: halo rects are blurred once, statically; only opacity animates */
 .fg-inference-topology .ift-halo {
@@ -74,7 +94,7 @@
 .fg-inference-topology .ift-halo-ok  { fill: var(--ok); }
 .fg-inference-topology .ift-zone {
   fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
-  transition: stroke 0.3s; cursor: pointer;
+  transition: stroke var(--dur-quick); cursor: pointer;
 }
 .fg-inference-topology .ift-group:hover .ift-zone { stroke: var(--accent); }
 .fg-inference-topology .ift-wall {
@@ -149,13 +169,13 @@
      aria-label="Inference network topology: the outside network is walled off; four services inside the host bind only to 127.0.0.1 — Open WebUI on port 3000, llama-cpu on 8001, llama-gpu on 8002, and vllm-gpu on 8003 — and talk to each other over the isolated ai-network Docker bridge. Models mount read-only from /mnt/ai-data.">
   <defs>
     <marker id="ift-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="ift-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="ift-arrow-hot" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171"/>
+      <path class="fg-fill-hot" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <linearGradient id="ift-sweep-grad" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0"   style="stop-color: var(--hot)" stop-opacity="0"/>
