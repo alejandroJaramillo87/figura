@@ -1,4 +1,4 @@
-let step = 0, timer = null;
+let step = 0, timer = null, held = false; // held: the reader paused; autoplay stays off
 function apply() {
   for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
   root.classList.add('is-step-' + step);
@@ -14,9 +14,9 @@ const tl = {
   pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
 };
 const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
-btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
-btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
-btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+btn('prev').addEventListener('click', () => { held = true; tl.pause(); tl.prev(); });
+btn('next').addEventListener('click', () => { held = true; tl.pause(); tl.next(); });
+btn('play').addEventListener('click', () => { held = tl.playing; held ? tl.pause() : tl.play(); });
 const counter = btn('counter');
 function sync() {
   if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
