@@ -1,5 +1,5 @@
 /*
- * fragment.js — shared parsing helpers for the figura build/validate scripts.
+ * Fragment parsing, managed-block expansion and the block tables shared by the scripts.
  *
  * A diagram file contains one embed fragment between the markers
  * <!-- fg:embed-start --> and <!-- fg:embed-end -->. Inside the fragment,
@@ -166,7 +166,7 @@ const BLOCK_AFTER = {
   'caption-core': ['caption-box'],
 };
 
-/* --- palette generation from tokens.css --------------------------------- */
+/* Palette generation from tokens.css */
 
 /* Local (unprefixed) names diagrams use, mapped from the tokens.css names. */
 const PALETTE_PREFIX = { 'palette-classic': '--fg-' };

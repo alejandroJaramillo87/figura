@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * validate.js — contract linter for the CLAUDE.md hard rules.
+ * Contract linter for the hard rules in .styles/DIAGRAM_STYLE.md.
  *
  * Checks every diagram fragment for: exactly one pair of embed markers,
  * well-formed managed blocks at their canonical versions, the blocks its
@@ -29,13 +29,59 @@ const { report: summarize } = require('./lib/report');
 
 const USAGE = 'usage: node scripts/validate.js [--warn]';
 
+/*
+ * Every rule id this linter reports, with the one line that states it.
+ * .styles/DIAGRAM_STYLE.md cites these ids beside the rules they enforce;
+ * tests/check-contract.mjs fails when an id here goes uncited or the guide
+ * cites one that does not exist, and tests/docs.mjs renders this table as
+ * the guide's rules roster.
+ */
+const RULES = {
+  'embed-markers': 'exactly one fg:embed-start / fg:embed-end pair, in order',
+  'sentinel': 'managed-block sentinels are well formed, paired and not nested',
+  'block-unknown': 'every managed block names a source under shared/runtime/ or the palette',
+  'block-version': 'every managed block carries its canonical interface version',
+  'block-required': 'the fragment carries every block its manifest kind requires',
+  'block-order': 'required blocks appear in dependency order',
+  'block-duplicate': 'no managed block appears twice',
+  'root-class': 'the root element carries fg-diagram fg-<file stem>',
+  'css-scope': 'every selector, including inside at-rules, starts with the root class',
+  'keyframes': 'keyframe names carry the fg-<abbr>- prefix',
+  'global-name': 'no keyframe name or SVG id is defined by another diagram',
+  'id-prefix': 'SVG ids carry a per-diagram prefix',
+  'id-ref': 'every url(#id) and href="#id" names an id the fragment defines',
+  'instance-ids': 'SMIL syncbase timing requires the instance-ids block',
+  'js-scope': 'one bare <script> holding one IIFE, rooted at currentScript, with no globals, DOMContentLoaded or getElementById',
+  'js-syntax': 'every script parses',
+  'self-contained': 'no external or relative URLs, imports, linked CSS or JS, or webfonts',
+  'absolute-path': 'no absolute filesystem paths',
+  'html-comment': 'no HTML comments inside the fragment',
+  'color-token': 'no literal colours outside managed blocks',
+  'dim-token': 'active fills use the --*-dim tokens, never hand-mixed hexes',
+  'motion-token': 'easing and transition durations come from palette tokens',
+  'font-token': 'monospace text uses var(--mono)',
+  'font-size': 'no font-size below 11px',
+  'reduced-motion': 'a prefers-reduced-motion rule covers the fragment',
+  'smil-gate': 'every SMIL element sits inside an element hidden under reduced motion',
+  'a11y': 'the SVG carries role="img" and an aria-label',
+  'static-script': 'a static diagram carries no script',
+  'static-smil': 'a static diagram carries no SMIL element',
+  'static-motion': 'a static diagram carries no keyframes, animation or transition outside managed blocks',
+  'static-chrome': 'a static diagram carries no controls or caption markup',
+  'scaffold': 'no TODO left in the fragment, and no unfilled manifest description',
+  'title': 'the page <title> and <h1> match the manifest title, which uses typographic quotes',
+  'manifest': 'manifest.json and diagrams/ list the same files, with every required field',
+  'manifest-id': 'a manifest id equals its file stem',
+};
+
 const findings = [];
 function report(file, rule, msg) {
+  if (!(rule in RULES)) throw new Error(`validate.js reports undeclared rule "${rule}"`);
   const rel = file ? F.relPath(file) : '(repo)';
   findings.push({ rel, rule, msg });
 }
 
-/* --- CSS checks ---------------------------------------------------------- */
+/* CSS checks */
 
 function stripCssComments(css) {
   return css.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -304,7 +350,7 @@ function checkFile(file, kind) {
   }
 }
 
-/* --- manifest checks ----------------------------------------------------- */
+/* Manifest checks */
 
 const KINDS = Object.keys(F.KIND_BLOCKS);
 
@@ -383,4 +429,6 @@ function main() {
   summarize('validate', lines, files.length);
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = { RULES };

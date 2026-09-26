@@ -1,5 +1,5 @@
 /*
- * cli.js — argument parsing and exit handling shared by the figura scripts.
+ * Argument parsing and usage errors shared by the figura scripts.
  *
  * Every script accepts only the options it declares: an unknown flag or a
  * missing option value is a usage error (exit 2). Hand-rolled parsing ignored

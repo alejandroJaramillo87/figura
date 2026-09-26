@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * build.js — re-expand managed blocks in every diagram from canonical sources.
+ * Re-expands the managed blocks in every diagram from their canonical sources.
  *
  * Managed blocks (see scripts/lib/fragment.js for the sentinel syntax) are
  * owned by this script: their contents are replaced from shared/runtime/

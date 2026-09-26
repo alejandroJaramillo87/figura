@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * new-diagram.js — scaffold a new diagram with managed blocks pre-expanded.
+ * Scaffolds a new diagram from its kind's template, with managed blocks expanded.
  *
  * Usage:
  *   node scripts/new-diagram.js <consumer-dir>/<kebab-name> \

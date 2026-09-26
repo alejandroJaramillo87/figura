@@ -1,5 +1,5 @@
 /*
- * snippets.js — copy-source helpers for step-triggered effects.
+ * Copy-source helpers for step-triggered effects.
  *
  * This file is never loaded at runtime. Timelines, hover and step captions,
  * toggles and per-copy ids are managed blocks under shared/runtime/, stamped

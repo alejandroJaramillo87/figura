@@ -10,7 +10,8 @@
     "new": "node scripts/new-diagram.js",
     "export": "node scripts/export-svg.js",
     "quality": "node tests/quality.mjs",
-    "quality:full": "node tests/quality.mjs --full"
+    "quality:full": "node tests/quality.mjs --full",
+    "docs": "node tests/docs.mjs"
   },
   "engines": {
     "node": ">=22"

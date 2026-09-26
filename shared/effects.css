@@ -1,16 +1,16 @@
 /*
- * effects.css — the effects catalog: copy-source animation patterns for
+ * The effects catalog: copy-source animation patterns for
  * figura diagrams.
  *
- * NEVER linked at runtime. Copy the rules you need into the diagram's
+ * Never linked at runtime. Copy the rules you need into the diagram's
  * scoped <style>, prefix every selector with the diagram's root class,
  * and rename every `fg-XX-*` keyframe to the diagram's abbreviation
  * (e.g. `fg-trl-comet-fade`). The canonical live demonstration of every
  * effect is diagrams/effects-sampler/effects-sampler.html.
  *
- * Two hard rules that apply to every effect here (also in CLAUDE.md):
+ * Two hard rules that apply to every effect here (also in .styles/DIAGRAM_STYLE.md):
  *
- *  1. NEVER animate SVG filter primitives (feGaussianBlur stdDeviation,
+ *  1. Never animate SVG filter primitives (feGaussianBlur stdDeviation,
  *     animated `filter:` values, …) — filters re-render per frame and
  *     jank. Blur once, statically; animate only opacity/transform.
  *
@@ -24,9 +24,9 @@
  * sake reads as noise on a technical blog.
  */
 
-/* =====================================================================
- * GLOW — a node lights up (activation, loss, hot spot)
- * =====================================================================
+/*
+ * Glow: a node lights up (activation, loss, hot spot)
+ *
  * Markup: duplicate the shape BEHIND the original; the duplicate is the
  * halo, statically blurred once. Animate only its opacity.
  *
@@ -43,9 +43,9 @@
   .fg-scope .XX-glow-halo { animation: none; opacity: 0.5; } /* frozen halo */
 }
 
-/* =====================================================================
- * HIGHLIGHT SWEEP — a sheen passes across a region (emphasis, scan)
- * =====================================================================
+/*
+ * Highlight sweep: a sheen passes across a region (emphasis, scan)
+ *
  * Markup: a narrow bright rect clipped to the region, driven by
  * translateX (compositable — never animate gradient attributes).
  *
@@ -68,9 +68,9 @@
   .fg-scope .XX-sweep { display: none; }
 }
 
-/* =====================================================================
- * COMET — a particle with a fading tail travels along a path (dataflow)
- * =====================================================================
+/*
+ * Comet: a particle with a fading tail travels along a path (dataflow)
+ *
  * Technique: SMIL <animateMotion> with <mpath> — geometry stays in SVG,
  * and trail staggering is free via negative begin offsets:
  *
@@ -101,9 +101,9 @@
   .fg-scope .XX-comet { display: none; }
 }
 
-/* =====================================================================
- * DRAW-IN — an edge/path draws itself into existence
- * =====================================================================
+/*
+ * Draw-in: an edge/path draws itself into existence
+ *
  * Markup: give the path pathLength="1" so dash math needs no measuring:
  *   <path class="XX-draw" pathLength="1" d="M ..."/>
  * Trigger by step class on the root (transition) or ambient (keyframes).
@@ -118,9 +118,9 @@
   .fg-scope .XX-draw { stroke-dashoffset: 0; transition: none; }
 }
 
-/* =====================================================================
- * PULSE / RIPPLE — expanding fading rings (in-place update, emission)
- * =====================================================================
+/*
+ * Pulse / ripple: expanding fading rings (in-place update, emission)
+ *
  * Markup: 2–3 concentric circles on the node center:
  *   <circle class="XX-ripple" cx=... cy=... r="14" fill="none" stroke="ACCENT"/>
  *   <circle class="XX-ripple XX-ripple-2" .../>
@@ -141,9 +141,9 @@
   .fg-scope .XX-ripple-2 { opacity: 0; }
 }
 
-/* =====================================================================
- * SHIMMER — subtle moving sheen on a panel/cell (alive, loading)
- * =====================================================================
+/*
+ * Shimmer: subtle moving sheen on a panel/cell (alive, loading)
+ *
  * Markup: diagonal translucent stripe overlaying the panel, clipped to it.
  * Keep it QUIET: opacity ≤ 0.12 on dark panels, ≤ 0.35 on light ones.
  *
@@ -164,9 +164,9 @@
   .fg-scope .XX-shimmer { display: none; }
 }
 
-/* =====================================================================
- * FLASH — one-shot color blink (accept/reject, weight applied)
- * =====================================================================
+/*
+ * Flash: one-shot color blink (accept/reject, weight applied)
+ *
  * Trigger by adding .is-flashing to the element (restart via
  * restartAnimation() in snippets.js). End state = base color; for a
  * persistent state change, also swap a state class.

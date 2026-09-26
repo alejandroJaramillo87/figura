@@ -24,6 +24,11 @@ const RETIRED = [
   ["shared/runtime/hero-start.js", "shared/runtime/timeline-start.js"],
   ["shared/runtime/panel-base-light.css", "shared/runtime/panel-base.css (one palette)"],
   ["tools/heroes", "nothing (the hero kind was removed)"],
+  ["docs/architecture.md", "docs/architecture/overview.md"],
+  ["docs/authoring.md", "docs/authoring/guide.md"],
+  ["docs/blog-integration.md", "docs/consumers/blog.md"],
+  ["docs/development.md", "docs/development/workflow.md"],
+  ["CLAUDE.md#classic-dark-tokens", ".styles/DIAGRAM_STYLE.md#tokens"],
   ["dist/<slug>/<name>.svg", "exports/<slug>/<name>.svg (committed, held by export --check)"],
 ];
 

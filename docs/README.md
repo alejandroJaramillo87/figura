@@ -1,22 +1,21 @@
 # Documentation
 
-Project documentation for figura. These docs are the human-oriented
-explanation of how the library works and why; the terse, enforced
-generation contract that diagram authors (human or agent) must follow
-lives in the repo root's [CLAUDE.md](../CLAUDE.md).
+How figura works and how to work in it, one directory per topic; the diagram contract itself is
+[.styles/DIAGRAM_STYLE.md](../.styles/DIAGRAM_STYLE.md).
 
-- [architecture.md](architecture.md) — how the repo is coded: the
-  one-file-per-diagram model, the embed fragment, the managed-blocks
-  system, the scripts pipeline, `manifest.json`, and the gallery.
-- [blog-integration.md](blog-integration.md) — how figura plugs into
-  the Curiosity Chronicles blog: the git submodule, the Hugo `diagram`
-  shortcode, the release/bump flow, and the shared design language.
-- [development.md](development.md) — creating, editing, checking, and
-  previewing diagrams; the CI pipeline; troubleshooting validator and
-  drift-check failures.
-- [authoring.md](authoring.md) — the visual language: palette
-  semantics, the effects catalog, interaction kinds, accessibility and
-  motion rules, and taste guidelines.
+<!-- inventory:dirs:start -->
 
-See also the repo root: [README.md](../README.md) (quick start) and
-[CLAUDE.md](../CLAUDE.md) (the generation contract).
+| Directory | Holds |
+|-----------|-------|
+| [agents/](agents/README.md) | How agents work in this repository: the tooling under `.claude/` and the contract it works within. |
+| [architecture/](architecture/README.md) | How the library is built: the fragment, the managed blocks, the scripts pipeline and the checks that hold it together. |
+| [authoring/](authoring/README.md) | How to design a diagram that explains: choosing a kind, what the palette hues mean, and effect taste, which no check can judge. |
+| [consumers/](consumers/README.md) | How the two repositories that use figura take its diagrams and its palette, and what a change here owes each of them. |
+| [development/](development/README.md) | Setting up, the day-to-day commands, previewing, CI and troubleshooting. |
+| [testing/](testing/README.md) | What the quality gate checks, how each tier runs, and how to read a failure. |
+
+<!-- inventory:dirs:end -->
+
+Read [architecture/](architecture/README.md) for the mechanism, [authoring/](authoring/README.md)
+before a first diagram, and [consumers/](consumers/README.md) before changing a token, renaming
+a diagram or touching a static one.
