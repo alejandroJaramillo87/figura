@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * export-svg.js — write each static diagram as a standalone SVG image.
+ * Writes each static diagram as a standalone SVG image under exports/.
  *
  * A consumer that cannot inline HTML or run script (a Docusaurus site, a
  * README, a GitHub preview) references the exported file as an image. The
@@ -11,13 +11,15 @@
  * The fragment's root <div> supplies the panel (background, radius, padding)
  * in the blog; here a <rect> supplies it, the <style> moves inside the
  * <svg>, and the root class moves onto the <svg> so every scoped selector
- * still matches. Output is deterministic: a re-export after a diagram edit
- * is a reviewable diff for whichever repo committed the copy.
+ * still matches. Output is deterministic, and exports/ is committed, so a
+ * diagram edit shows its image diff in the same pull request, and the
+ * manifest's consumers list names each repository that must re-copy it.
  *
  * Usage:
- *   node scripts/export-svg.js                    # every static diagram -> dist/
+ *   node scripts/export-svg.js                    # every static diagram -> exports/
+ *   node scripts/export-svg.js --check            # fail if exports/ is stale
  *   node scripts/export-svg.js --file diagrams/<slug>/<name>.html
- *   node scripts/export-svg.js --out <dir>        # default: dist/
+ *   node scripts/export-svg.js --out <dir>        # default: exports/
  */
 'use strict';
 
@@ -25,14 +27,15 @@ const fs = require('fs');
 const path = require('path');
 const F = require('./lib/fragment');
 const cli = require('./lib/cli');
+const { report } = require('./lib/report');
 
-const USAGE = 'usage: node scripts/export-svg.js [--file diagrams/<slug>/<name>.html] [--out <dir>]';
+const USAGE = 'usage: node scripts/export-svg.js [--check] [--file diagrams/<slug>/<name>.html] [--out <dir>]';
 
 const PAD = 16;   // matches the root padding the static template sets
 
 const fail = cli.fail;
 
-function exportFile(file, entry, outDir) {
+function renderFile(file, entry) {
   const source = fs.readFileSync(file, 'utf8');
   const parts = F.splitEmbed(source);
   if (!parts) fail(F.relPath(file) + ': missing embed markers');
@@ -78,12 +81,18 @@ function exportFile(file, entry, outDir) {
   ].join('\n'));
   const problem = wellFormed(out);
   if (problem) fail(F.relPath(file) + ': export is not well-formed XML: ' + problem);
+  return out;
+}
 
-  const rel = path.relative(F.DIAGRAMS_DIR, file).replace(/\.html$/, '.svg');
-  const dest = path.join(outDir, rel);
-  fs.mkdirSync(path.dirname(dest), { recursive: true });
-  fs.writeFileSync(dest, out);
-  console.log('[OK] ' + path.relative(F.REPO_ROOT, dest));
+/* diagrams/<slug>/<name>.html -> <outDir>/<slug>/<name>.svg */
+function exportPath(file, outDir) {
+  return path.join(outDir, path.relative(F.DIAGRAMS_DIR, file).replace(/\.html$/, '.svg'));
+}
+
+function listSvgs(dir) {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+    e.isDirectory() ? listSvgs(path.join(dir, e.name)) : e.name.endsWith('.svg') ? [path.join(dir, e.name)] : []);
 }
 
 function escapeXml(s, attr = false) {
@@ -133,13 +142,17 @@ function wellFormed(xml) {
 }
 
 function main() {
-  const { values } = cli.parse(USAGE, { file: { type: 'string' }, out: { type: 'string' } });
+  const { values } = cli.parse(USAGE, { check: { type: 'boolean' }, file: { type: 'string' }, out: { type: 'string' } });
+  const check = !!values.check;
   const fileArg = values.file || null;
-  const outDir = path.resolve(F.REPO_ROOT, values.out || 'dist');
+  if (check && (fileArg || values.out)) cli.usageError(USAGE, '--check compares the whole exports/ tree; it takes no --file or --out');
+  const outDir = path.resolve(F.REPO_ROOT, values.out || 'exports');
 
   const byPath = new Map(F.loadManifest().map((e) => [e.path, e]));
   const files = fileArg ? [path.resolve(F.REPO_ROOT, fileArg)] : F.listDiagramFiles();
-  let n = 0;
+  const failures = [];
+  const expected = new Set();
+  let written = 0;
   for (const file of files) {
     const entry = byPath.get(F.relPath(file));
     if (!entry) fail(F.relPath(file) + ': not in manifest');
@@ -147,10 +160,28 @@ function main() {
       if (fileArg) fail(F.relPath(file) + ': kind is not static; only static diagrams export');
       continue;
     }
-    exportFile(file, entry, outDir);
-    n++;
+    const out = renderFile(file, entry);
+    const dest = exportPath(file, outDir);
+    const rel = path.relative(F.REPO_ROOT, dest);
+    expected.add(dest);
+    if (check) {
+      if (!fs.existsSync(dest)) failures.push(`${rel}: missing (run npm run export)`);
+      else if (fs.readFileSync(dest, 'utf8') !== out) failures.push(`${rel}: differs from ${F.relPath(file)} (run npm run export)`);
+    } else {
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.writeFileSync(dest, out);
+      console.log('[OK] ' + rel);
+      written++;
+    }
   }
-  console.log(`export-svg: ${n} static diagram${n === 1 ? '' : 's'} written to ${path.relative(F.REPO_ROOT, outDir) || '.'}/`);
+  if (check) {
+    // An export whose diagram was removed or is no longer static is stale too.
+    for (const svg of listSvgs(outDir)) {
+      if (!expected.has(svg)) failures.push(`${path.relative(F.REPO_ROOT, svg)}: no static diagram exports here (delete it)`);
+    }
+    report('export --check', failures, expected.size);
+  }
+  console.log(`export-svg: ${written} static diagram${written === 1 ? '' : 's'} written to ${path.relative(F.REPO_ROOT, outDir) || '.'}/`);
 }
 
 main();

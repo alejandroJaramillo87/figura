@@ -174,7 +174,7 @@ is inlined into the blog. Everything the diagram needs must live inside it.
   `.fg-controls` or `.fg-caption` markup. State is encoded with the palette
   hues, not motion. The kind exists for consumers that cannot inline HTML or
   run script: `node scripts/export-svg.js` writes each static diagram to
-  `dist/<slug>/<name>.svg` as a standalone image, and the consuming repo
+  `exports/<slug>/<name>.svg` as a standalone image, and the consuming repo
   commits a copy. The validator enforces all of it.
 
 ## Visual language

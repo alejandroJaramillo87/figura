@@ -146,7 +146,7 @@ argument parser: an unknown flag is a usage error, not a no-op.
 - **`scripts/build.js`** (`npm run build`) is the block expander
   described above.
 - **`scripts/export-svg.js`** (`npm run export`) writes every static
-  diagram to `dist/<slug>/<name>.svg`: the fragment's `<style>` moves
+  diagram to `exports/<slug>/<name>.svg`: the fragment's `<style>` moves
   inside an outer `<svg>` that carries the root class, a `<rect>` supplies
   the panel, and the body is translated in by the panel padding. HTML
   named entities become numeric references, and every export passes a

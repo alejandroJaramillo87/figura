@@ -37,6 +37,7 @@ if (declared.length && !existsSync(join(ROOT, "package-lock.json"))) {
 const steps = [
   ["managed blocks", "node", ["scripts/build.js", "--check"]],
   ["contract", "node", ["scripts/validate.js"]],
+  ["exports", "node", ["scripts/export-svg.js", "--check"]],
   ["retired names", "node", ["tests/check-retired-names.mjs"]],
   ["code blocks", "node", ["tests/check-command-prompts.mjs"]],
   ["links", "node", ["tests/check-links.mjs"]],

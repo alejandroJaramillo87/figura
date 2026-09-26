@@ -51,7 +51,7 @@ scripts/
   build.js       re-expand managed blocks (--check fails on drift)
   validate.js    contract linter: block sets per kind, scoping, tokens,
                  ids, reduced motion, a11y, self-containment, manifest sync
-  export-svg.js  write static diagrams to dist/ as standalone SVG images
+  export-svg.js  write static diagrams to exports/ as standalone SVG images
   lib/fragment.js shared parsing helpers (embed split, block pairing,
                  block versions and kinds, palette generation)
   lib/cli.js     strict argument parsing shared by all four scripts

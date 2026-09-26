@@ -718,6 +718,7 @@
     "path": "diagrams/rust-harness/observability-grains.html",
     "title": "Five observability mechanisms, five grains",
     "consumers": [
+      "ai-experiments:site/static/img/diagrams/observability-grains.svg",
       "ai-experiments:site/docs/rust-harness/observability/index.md"
     ],
     "kind": "static",
@@ -728,6 +729,7 @@
     "path": "diagrams/ai-experiments/tier-loop.html",
     "title": "How the tiers exchange artifacts",
     "consumers": [
+      "ai-experiments:site/static/img/diagrams/tier-loop.svg",
       "ai-experiments:site/docs/index.md"
     ],
     "kind": "static",
@@ -738,6 +740,7 @@
     "path": "diagrams/rust-harness/interp-loop.html",
     "title": "The interp loop across the two tiers",
     "consumers": [
+      "ai-experiments:site/static/img/diagrams/interp-loop.svg",
       "ai-experiments:site/docs/interp/index.md"
     ],
     "kind": "static",
@@ -748,6 +751,7 @@
     "path": "diagrams/rust-harness/interp-observability-grains.html",
     "title": "Four interp observability mechanisms, four grains",
     "consumers": [
+      "ai-experiments:site/static/img/diagrams/interp-observability-grains.svg",
       "ai-experiments:site/docs/interp/observability/index.md"
     ],
     "kind": "static",

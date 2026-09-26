@@ -24,6 +24,7 @@ const RETIRED = [
   ["shared/runtime/hero-start.js", "shared/runtime/timeline-start.js"],
   ["shared/runtime/panel-base-light.css", "shared/runtime/panel-base.css (one palette)"],
   ["tools/heroes", "nothing (the hero kind was removed)"],
+  ["dist/<slug>/<name>.svg", "exports/<slug>/<name>.svg (committed, held by export --check)"],
 ];
 
 const EXEMPT = ["tests/check-retired-names.mjs"];
