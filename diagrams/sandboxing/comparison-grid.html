@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-comparison-grid .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-comparison-grid .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-comparison-grid .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-comparison-grid .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-comparison-grid .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-comparison-grid .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-comparison-grid .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-comparison-grid .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-comparison-grid .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-comparison-grid .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-comparison-grid .fg-fill-line) { fill: var(--line); }
+:where(.fg-comparison-grid .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-comparison-grid .fg-fill-border) { fill: var(--border); }
+:where(.fg-comparison-grid .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-comparison-grid .fg-fill-text) { fill: var(--text); }
+:where(.fg-comparison-grid .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-comparison-grid .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-comparison-grid .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-comparison-grid {
@@ -57,7 +77,7 @@
 
 .fg-comparison-grid .scg-cell {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+  transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
 .fg-comparison-grid .scg-group:hover .scg-cell { fill: var(--panel-hover); }
 .fg-comparison-grid .scg-group.scg-inf:hover .scg-cell { stroke: var(--accent); }
@@ -87,7 +107,7 @@
 .fg-comparison-grid .scg-group.scg-wbn:hover .scg-cell { fill: var(--ok-dim); }
 .fg-comparison-grid .scg-group.scg-agt:hover .scg-cell { fill: var(--violet-dim); }
 .fg-comparison-grid .scg-group:hover .scg-vsub { fill: var(--text); }
-.fg-comparison-grid .scg-vsub { transition: fill 0.3s; }
+.fg-comparison-grid .scg-vsub { transition: fill var(--dur-quick); }
 
 /* shared floor: hover state in --ok, plus a slow ambient sheen (the floor is
    the thesis of the post — the one effect this diagram keeps running) */
@@ -109,18 +129,25 @@
 .fg-comparison-grid .scg-htitle { fill: var(--text); font-size: 15px; font-weight: 600; text-anchor: middle; pointer-events: none; }
 .fg-comparison-grid .scg-hsub   { fill: var(--muted); font-size: 11px; text-anchor: middle; pointer-events: none; }
 .fg-comparison-grid .scg-val    { fill: var(--text); font-size: 12.5px; text-anchor: middle; pointer-events: none; }
-.fg-comparison-grid .scg-vsub   { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-comparison-grid .scg-vsub   { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
 .fg-comparison-grid .scg-row    { fill: var(--muted); font-size: 12px; font-weight: 600; }
 .fg-comparison-grid .scg-q      { fill: var(--accent); font-size: 11px; font-style: italic; }
 
+/* fg:begin caption-box v1 */
 .fg-comparison-grid .fg-caption {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  /* tall enough for the longest data-info at column width: no page reflow on hover */
-  color: var(--muted); font-size: 13px; min-height: 5.4em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-comparison-grid .fg-caption.fg-cap-grid { display: grid; }
+.fg-comparison-grid .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-comparison-grid .fg-cap-live { grid-area: 1 / 1; }
+.fg-comparison-grid [data-info]:focus { outline: none; }
+.fg-comparison-grid [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-comparison-grid .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
 .fg-comparison-grid .fg-caption.is-active { color: var(--text); }
 .fg-comparison-grid .fg-caption strong { color: var(--accent); font-weight: 600; }
 .fg-comparison-grid .fg-caption code {
@@ -150,7 +177,6 @@
     <clipPath id="scg-sweep-clip"><rect x="180" y="380" width="708" height="48" rx="6"/></clipPath>
   </defs>
 
-  <!-- column headers -->
   <g class="scg-group scg-inf" data-fg="head" data-title="Inference" data-info="Three llama.cpp and vLLM servers: fixed-function appliances that load a model and serve an API. The most constrained workload — it needs to change almost nothing, so almost everything can be locked.">
     <rect class="scg-halo scg-halo-inf" x="180" y="16" width="168" height="56" rx="8"/>
     <rect class="scg-head scg-head-inf" x="180" y="16" width="168" height="56" rx="8"/>
@@ -176,7 +202,6 @@
     <text class="scg-hsub" x="804" y="58">Claude Code · OpenCode</text>
   </g>
 
-  <!-- row: writes -->
   <text class="scg-row" x="16" y="106">What must</text>
   <text class="scg-row" x="16" y="122">it write?</text>
   <g class="scg-group scg-inf" data-title="Inference: writes" data-info="Read-only rootfs, models mounted :ro from /mnt/ai-data/models. The only durable writable path is a bind-mounted log directory; the GPU servers get a bounded tmpfs /tmp (4GB) for the CUDA JIT cache. A compromised server has nowhere to persist.">
@@ -200,7 +225,6 @@
     <text class="scg-vsub" x="804" y="128">recoverable via git</text>
   </g>
 
-  <!-- row: network -->
   <text class="scg-row" x="16" y="178">Where must</text>
   <text class="scg-row" x="16" y="194">it talk?</text>
   <g class="scg-group scg-inf" data-title="Inference: network" data-info="Inbound is the risk: every port (8001, 8002, 8003) binds to 127.0.0.1 only, so nothing off the machine can reach the servers. Outbound stays open on the bridge network for image and model pulls.">
@@ -224,7 +248,6 @@
     <text class="scg-vsub" x="804" y="200">deny-by-default proxy</text>
   </g>
 
-  <!-- row: GPU -->
   <text class="scg-row" x="16" y="258">GPU?</text>
   <g class="scg-group scg-inf" data-title="Inference: GPU" data-info="Two of the three servers reserve the RTX 5090 through the NVIDIA container runtime; the CPU server gets pinned cores (0-15) and a hard 96GB memory limit instead.">
     <rect class="scg-cell" x="180" y="228" width="168" height="60" rx="6"/>
@@ -247,7 +270,6 @@
     <text class="scg-vsub" x="804" y="272">smaller escape surface</text>
   </g>
 
-  <!-- row: lifecycle -->
   <text class="scg-row" x="16" y="330">Lifecycle</text>
   <g class="scg-group scg-inf" data-title="Inference: lifecycle" data-info="A long-lived service: restart: unless-stopped, healthchecks every 30s, long start periods for model loading. The container is meant to be up whenever the machine is.">
     <rect class="scg-cell" x="180" y="300" width="168" height="60" rx="6"/>
@@ -270,7 +292,6 @@
     <text class="scg-vsub" x="804" y="344">one scoped secret</text>
   </g>
 
-  <!-- shared baseline -->
   <g class="scg-group scg-flr" data-title="Shared baseline" data-info="Every sandbox starts from the same four lines before it diverges: cap_drop: ALL, no-new-privileges, read_only rootfs, and a non-root user. None of them cost measurable performance, so they are unconditional — the differences above are deltas on this common floor.">
     <rect class="scg-halo scg-halo-ok" x="180" y="380" width="708" height="48" rx="6"/>
     <rect class="scg-cell" x="180" y="380" width="708" height="48" rx="6"/>
@@ -287,22 +308,58 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const DEFAULT = 'Hover over any cell to see why each sandbox answers the question that way.';
-  root.querySelectorAll('.scg-group[data-info]').forEach((g) => {
-    g.addEventListener('mouseenter', () => {
-      caption.innerHTML = '';
-      const strong = document.createElement('strong');
-      strong.textContent = g.getAttribute('data-title');
-      caption.appendChild(strong);
-      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
-      caption.classList.add('is-active');
-    });
-    g.addEventListener('mouseleave', () => {
-      caption.textContent = DEFAULT;
-      caption.classList.remove('is-active');
-    });
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin hover-caption v1
+  // Targets carry data-info (plain text), optionally data-title (shown bold
+  // before it) and data-code (shown as inline code after it). Focus reaches
+  // the same readout as the pointer; fg:hover lets a diagram add its own
+  // highlight classes.
+  const hoverTargets = [...root.querySelectorAll('[data-info]')];
+  function hoverHtml(el) {
+    const title = el.getAttribute('data-title');
+    const code = el.getAttribute('data-code');
+    return (title ? '<strong>' + escHtml(title) + '</strong> — ' : '') + escHtml(el.getAttribute('data-info')) +
+      (code ? ' <code>' + escHtml(code) + '</code>' : '');
+  }
+  reserveCaption(hoverTargets.map(hoverHtml));
+  hoverTargets.forEach((el, index) => {
+    el.setAttribute('tabindex', '0');
+    const set = (on) => {
+      setCaption(on ? hoverHtml(el) : captionInitial);
+      if (caption) caption.classList.toggle('is-active', on);
+      root.dispatchEvent(new CustomEvent('fg:hover', { detail: { el, index, on } }));
+    };
+    el.addEventListener('mouseenter', () => set(true));
+    el.addEventListener('focus', () => set(true));
+    el.addEventListener('mouseleave', () => set(false));
+    el.addEventListener('blur', () => set(false));
   });
+  // fg:end hover-caption
 })();</script>
 </div>
 <!-- fg:embed-end -->

@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-interp-workbench .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-interp-workbench .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-interp-workbench .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-interp-workbench .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-interp-workbench .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-interp-workbench .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-interp-workbench .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-interp-workbench .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-interp-workbench .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-interp-workbench .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-interp-workbench .fg-fill-line) { fill: var(--line); }
+:where(.fg-interp-workbench .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-interp-workbench .fg-fill-border) { fill: var(--border); }
+:where(.fg-interp-workbench .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-interp-workbench .fg-fill-text) { fill: var(--text); }
+:where(.fg-interp-workbench .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-interp-workbench .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-interp-workbench .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-interp-workbench {
@@ -57,7 +77,7 @@
 /* --- diagram-specific styling ------------------------------------- */
 .fg-interp-workbench .ipw-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+  transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
 .fg-interp-workbench .ipw-group:hover .ipw-box { fill: var(--accent-dim); stroke: var(--accent); }
 .fg-interp-workbench .ipw-group.ipw-ok:hover .ipw-box { fill: var(--ok-dim); stroke: var(--ok); }
@@ -75,7 +95,7 @@
 .fg-interp-workbench .ipw-halo-warn { fill: var(--warn); }
 .fg-interp-workbench .ipw-zone {
   fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
-  transition: stroke 0.3s; cursor: pointer;
+  transition: stroke var(--dur-quick); cursor: pointer;
 }
 .fg-interp-workbench .ipw-group:hover .ipw-zone { stroke: var(--accent); }
 .fg-interp-workbench .ipw-wall {
@@ -96,9 +116,9 @@
   stroke: var(--hot); stroke-width: 2; fill: none; stroke-dasharray: 4 4;
 }
 .fg-interp-workbench .ipw-title { fill: var(--text); font-size: 13.5px; font-weight: 600; text-anchor: middle; pointer-events: none; }
-.fg-interp-workbench .ipw-sub   { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; transition: fill 0.3s; }
+.fg-interp-workbench .ipw-sub   { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; transition: fill var(--dur-quick); }
 .fg-interp-workbench .ipw-label { fill: var(--muted); font-size: 12px; }
-.fg-interp-workbench .ipw-port  { fill: var(--ok); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-interp-workbench .ipw-port  { fill: var(--ok); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
 .fg-interp-workbench .ipw-deny  { fill: var(--hot); font-size: 11px; font-weight: 600; text-anchor: middle; }
 .fg-interp-workbench .ipw-flow {
   stroke: var(--line); stroke-width: 2; fill: none;
@@ -120,6 +140,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-interp-workbench .fg-caption.fg-cap-grid { display: grid; }
+.fg-interp-workbench .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-interp-workbench .fg-cap-live { grid-area: 1 / 1; }
+.fg-interp-workbench [data-info]:focus { outline: none; }
+.fg-interp-workbench [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 
 /* fg:begin reduced-motion v1 */
@@ -137,10 +162,10 @@
      aria-label="Mech Interp sandbox: JupyterLab binds to 127.0.0.1:8888 only, token-authenticated, with remote access over an SSH tunnel. The interp container keeps the shared hardening floor — cap_drop ALL, no-new-privileges, read-only rootfs, non-root — on its own interp-network bridge with one reserved GPU. Four mounts attach: the repository read-write at /workspace, a writable artifact tree at /mnt/ai-data/interp, models read-only, and a writable harvest seam into /mnt/ai-data/training.">
   <defs>
     <marker id="ipw-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="ipw-arrow-hot" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171"/>
+      <path class="fg-fill-hot" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <linearGradient id="ipw-sweep-grad" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0"   style="stop-color: var(--hot)" stop-opacity="0"/>
@@ -150,7 +175,6 @@
     <clipPath id="ipw-sweep-clip"><rect x="20" y="40" width="720" height="8"/></clipPath>
   </defs>
 
-  <!-- the outside world, walled off at loopback -->
   <text class="ipw-label" x="20" y="30">rest of the network / internet</text>
   <g class="ipw-group" data-info="The wall: 127.0.0.1:8888 — Jupyter is a shell on the machine, so its port never leaves loopback. JUPYTER_TOKEN is generated fresh per launch by make interp-up; remote access rides an SSH tunnel, never a wider bind.">
     <line class="ipw-wall" x1="20" y1="44" x2="740" y2="44"/>
@@ -161,7 +185,6 @@
     <text class="ipw-deny" x="380" y="66">inbound blocked — JupyterLab binds to 127.0.0.1 only, token required</text>
   </g>
 
-  <!-- host zone -->
   <g class="ipw-group" data-info="Host (localhost) — the browser reaches JupyterLab through loopback only; nothing on the LAN can see the port. A remote laptop gets in by SSH-tunneling to the workstation, which keeps authentication on SSH keys.">
     <rect class="ipw-zone" x="20" y="80" width="720" height="72" rx="10"/>
   </g>
@@ -176,7 +199,6 @@
   <path class="ipw-flow ipw-flow-ok" d="M 380 152 L 380 188" marker-end="url(#ipw-arrow-ok)"/>
   <text class="ipw-port" x="404" y="176">:8888</text>
 
-  <!-- interp-network zone -->
   <g class="ipw-group" data-info="interp-network — the Mech Interp container's own bridge. It never joins ai-network: the GPU inference stack and the Mech Interp session are never up at the same time, so there is nothing to be adjacent to.">
     <rect class="ipw-zone" x="20" y="192" width="720" height="128" rx="10"/>
   </g>
@@ -198,7 +220,6 @@
   </g>
   <path class="ipw-link" d="M 460 268 L 516 268"/>
 
-  <!-- mounts -->
   <path class="ipw-link" d="M 105 348 L 105 308"/>
   <path class="ipw-link" d="M 296 348 L 296 308"/>
   <path class="ipw-link" d="M 482 348 L 460 296"/>
@@ -235,18 +256,56 @@
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
 
-  // fg:begin hover-caption v1
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const captionDefault = caption.textContent;
-  root.querySelectorAll('[data-info]').forEach((el) => {
-    el.addEventListener('mouseenter', () => {
-      caption.textContent = el.getAttribute('data-info');
-      caption.classList.add('is-active');
-    });
-    el.addEventListener('mouseleave', () => {
-      caption.textContent = captionDefault;
-      caption.classList.remove('is-active');
-    });
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin hover-caption v1
+  // Targets carry data-info (plain text), optionally data-title (shown bold
+  // before it) and data-code (shown as inline code after it). Focus reaches
+  // the same readout as the pointer; fg:hover lets a diagram add its own
+  // highlight classes.
+  const hoverTargets = [...root.querySelectorAll('[data-info]')];
+  function hoverHtml(el) {
+    const title = el.getAttribute('data-title');
+    const code = el.getAttribute('data-code');
+    return (title ? '<strong>' + escHtml(title) + '</strong> — ' : '') + escHtml(el.getAttribute('data-info')) +
+      (code ? ' <code>' + escHtml(code) + '</code>' : '');
+  }
+  reserveCaption(hoverTargets.map(hoverHtml));
+  hoverTargets.forEach((el, index) => {
+    el.setAttribute('tabindex', '0');
+    const set = (on) => {
+      setCaption(on ? hoverHtml(el) : captionInitial);
+      if (caption) caption.classList.toggle('is-active', on);
+      root.dispatchEvent(new CustomEvent('fg:hover', { detail: { el, index, on } }));
+    };
+    el.addEventListener('mouseenter', () => set(true));
+    el.addEventListener('focus', () => set(true));
+    el.addEventListener('mouseleave', () => set(false));
+    el.addEventListener('blur', () => set(false));
   });
   // fg:end hover-caption
 })();</script>

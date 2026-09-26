@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Genre and register</h1>
+<h1>Register: the document conditions every token</h1>
 <p>The same sentence inside a statute and inside a physics paper — the document's register re-glosses its words wholesale.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-register-frame .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-register-frame .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-register-frame .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-register-frame .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-register-frame .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-register-frame .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-register-frame .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-register-frame .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-register-frame .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-register-frame .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-register-frame .fg-fill-line) { fill: var(--line); }
+:where(.fg-register-frame .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-register-frame .fg-fill-border) { fill: var(--border); }
+:where(.fg-register-frame .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-register-frame .fg-fill-text) { fill: var(--text); }
+:where(.fg-register-frame .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-register-frame .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-register-frame .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-register-frame {
@@ -59,9 +79,9 @@
 
 /* document frame */
 .fg-register-frame .rgs-doc rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
-.fg-register-frame .rgs-head { transition: opacity 0.7s var(--ease); }
+.fg-register-frame .rgs-head { transition: opacity var(--dur-slow) var(--ease); }
 .fg-register-frame .rgs-head text { font-size: 12px; fill: var(--violet); }
-.fg-register-frame .rgs-cue { transition: opacity 0.7s; }
+.fg-register-frame .rgs-cue { transition: opacity var(--dur-slow); }
 .fg-register-frame .rgs-cue text { font-size: 11px; fill: var(--muted); font-style: italic; }
 .fg-register-frame .rgs-head-law, .fg-register-frame .rgs-cue-law { opacity: 1; }
 .fg-register-frame .rgs-head-phys, .fg-register-frame .rgs-cue-phys { opacity: 0; }
@@ -73,7 +93,7 @@
 .fg-register-frame .rgs-key { fill: var(--warn); font-weight: 600; }
 
 /* glosses cross-fade */
-.fg-register-frame .rgs-gloss { transition: opacity 0.7s; }
+.fg-register-frame .rgs-gloss { transition: opacity var(--dur-slow); }
 .fg-register-frame .rgs-gloss text { font-size: 12px; fill: var(--ok); }
 .fg-register-frame .rgs-gloss-law { opacity: 1; }
 .fg-register-frame .rgs-gloss-phys { opacity: 0; }
@@ -83,13 +103,17 @@
 /* diffuse arcs from the key tokens to register cues */
 .fg-register-frame .rgs-arc { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 3 5; }
 
-.fg-register-frame .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-register-frame .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-register-frame .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-register-frame .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-register-frame .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-register-frame .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-register-frame .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-register-frame .fg-caption {
@@ -99,6 +123,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-register-frame .fg-caption.fg-cap-grid { display: grid; }
+.fg-register-frame .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-register-frame .fg-cap-live { grid-area: 1 / 1; }
+.fg-register-frame [data-info]:focus { outline: none; }
+.fg-register-frame [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-register-frame .fg-caption strong { color: var(--ok); font-weight: 600; }
 
@@ -113,7 +142,6 @@
      aria-label="A document panel whose header a button flips between: Title 4, section 12 — Obligations of the parties, and: Physical Review — thermodynamics of driven systems. Inside sits the fixed sentence: The state changes when notice is given, with state and notice in amber. Below, glosses cross-fade: in the statute, state means legal status and notice means formal notification; in the paper, state means thermodynamic state and notice reads as an odd word choice. Dashed arcs run from the amber words to register cues in the header and footer — the whole document conditions every token.">
   <text class="rgs-note" x="40" y="24">not one word's sense this time &#8212; the register re-glosses the whole sentence at once</text>
 
-  <!-- document frame -->
   <g class="rgs-doc">
     <rect x="60" y="40" width="600" height="160" rx="10"/>
   </g>
@@ -124,10 +152,8 @@
     <text x="84" y="66">PHYS. REV. E &#8212; THERMODYNAMICS OF DRIVEN SYSTEMS</text>
   </g>
 
-  <!-- shared sentence -->
   <text class="rgs-sent" x="84" y="118">"The <tspan class="rgs-key">state</tspan> changes when <tspan class="rgs-key">notice</tspan> is given."</text>
 
-  <!-- register cue lines (document body flavor) -->
   <g class="rgs-cue rgs-cue-law">
     <text x="84" y="156">&#8230; the party of the first part shall &#8230;</text>
     <text x="84" y="180">&#8230; pursuant to subsection (b) &#8230;</text>
@@ -137,13 +163,11 @@
     <text x="84" y="180">&#8230; where T denotes temperature &#8230;</text>
   </g>
 
-  <!-- diffuse arcs: key tokens -> cues above and below -->
   <path class="rgs-arc" d="M 130 104 C 120 90, 110 80, 100 70"/>
   <path class="rgs-arc" d="M 130 124 C 120 136, 110 144, 100 152"/>
   <path class="rgs-arc" d="M 300 124 C 290 140, 260 160, 230 176"/>
   <path class="rgs-arc" d="M 310 104 C 340 92, 380 76, 420 68"/>
 
-  <!-- glosses -->
   <g class="rgs-gloss rgs-gloss-law">
     <text x="84" y="234">"state" = legal status of the agreement &#160;&#183;&#160; "notice" = formal written notification</text>
   </g>
@@ -163,17 +187,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Legal register</strong> — inside a statute, "state" is a legal status and "notice" is a formal act, because everything around the sentence says so. Post 2\'s domain effect, scaled up: not one word\'s sense, but the interpretive frame for all of them.', label: 'Move to the physics paper' },
+    { cls: 'is-physics', cap: '<strong>Physics register</strong> — the same tokens inside a paper: "state" snaps to thermodynamic state, and "notice" starts to feel like the wrong word entirely. The conditioning context is the most diffuse in the series: the whole document, all at once.', label: 'Move to the statute' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    law: '<strong>Legal register</strong> — inside a statute, "state" is a legal status and "notice" is a formal act, because everything around the sentence says so. Post 2\'s domain effect, scaled up: not one word\'s sense, but the interpretive frame for all of them.',
-    phys: '<strong>Physics register</strong> — the same tokens inside a paper: "state" snaps to thermodynamic state, and "notice" starts to feel like the wrong word entirely. The conditioning context is the most diffuse in the series: the whole document, all at once.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const phys = root.classList.toggle('is-physics');
-    caption.innerHTML = phys ? CAP.phys : CAP.law;
-    btn.textContent = phys ? 'Move to the statute' : 'Move to the physics paper';
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

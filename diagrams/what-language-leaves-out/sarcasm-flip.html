@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Irony and sarcasm</h1>
+<h1>Sarcasm: the polarity is not in the word</h1>
 <p>"Great, another meeting." — whether "great" means great depends entirely on the discourse around it.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-sarcasm-flip .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-sarcasm-flip .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-sarcasm-flip .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-sarcasm-flip .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-sarcasm-flip .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-sarcasm-flip .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-sarcasm-flip .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-sarcasm-flip .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-sarcasm-flip .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-sarcasm-flip .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-sarcasm-flip .fg-fill-line) { fill: var(--line); }
+:where(.fg-sarcasm-flip .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-sarcasm-flip .fg-fill-border) { fill: var(--border); }
+:where(.fg-sarcasm-flip .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-sarcasm-flip .fg-fill-text) { fill: var(--text); }
+:where(.fg-sarcasm-flip .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-sarcasm-flip .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-sarcasm-flip .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-sarcasm-flip {
@@ -63,7 +83,7 @@
 .fg-sarcasm-flip .src-great .src-tok { stroke: var(--warn); }
 
 /* context lines cross-fade */
-.fg-sarcasm-flip .src-ctx { transition: opacity 0.7s var(--ease); }
+.fg-sarcasm-flip .src-ctx { transition: opacity var(--dur-slow) var(--ease); }
 .fg-sarcasm-flip .src-ctx text { fill: var(--text); font-size: 13px; }
 .fg-sarcasm-flip .src-ctx-pos { opacity: 1; }
 .fg-sarcasm-flip .src-ctx-neg { opacity: 0; }
@@ -71,7 +91,7 @@
 .fg-sarcasm-flip.is-sarcastic .src-ctx-neg { opacity: 1; }
 
 /* sentiment tag flips */
-.fg-sarcasm-flip .src-sent { transition: opacity 0.7s; }
+.fg-sarcasm-flip .src-sent { transition: opacity var(--dur-slow); }
 .fg-sarcasm-flip .src-sent rect { stroke-width: 1.5; }
 .fg-sarcasm-flip .src-sent text { font-size: 11px; text-anchor: middle; }
 .fg-sarcasm-flip .src-sent-pos { opacity: 1; }
@@ -86,13 +106,17 @@
 /* arc from great to the context line */
 .fg-sarcasm-flip .src-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
 
-.fg-sarcasm-flip .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-sarcasm-flip .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-sarcasm-flip .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-sarcasm-flip .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-sarcasm-flip .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-sarcasm-flip .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-sarcasm-flip .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-sarcasm-flip .fg-caption {
@@ -102,6 +126,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-sarcasm-flip .fg-caption.fg-cap-grid { display: grid; }
+.fg-sarcasm-flip .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-sarcasm-flip .fg-cap-live { grid-area: 1 / 1; }
+.fg-sarcasm-flip [data-info]:focus { outline: none; }
+.fg-sarcasm-flip [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-sarcasm-flip .fg-caption strong { color: var(--ok); font-weight: 600; }
 
@@ -116,7 +145,6 @@
      aria-label="A context line a button swaps between: We just landed the client, and: Back-to-back calls since eight. Below it, the fixed sentence: Great, another meeting, with the word Great outlined in amber. A sentiment tag above Great flips between a green POSITIVE chip and a red NEGATIVE chip as the context changes. A green arc runs from Great up to the context line. No token in the target sentence changes.">
   <text class="src-note" x="40" y="26">the polarity of "great" is computed from the discourse, not from "great"</text>
 
-  <!-- context lines -->
   <g class="src-ctx src-ctx-pos">
     <text x="90" y="66">"We just landed the client &#8212;</text>
   </g>
@@ -124,10 +152,8 @@
     <text x="90" y="66">"Back-to-back calls since eight &#8212;</text>
   </g>
 
-  <!-- arc: great -> context -->
   <path class="src-arc" d="M 130 118 C 110 100, 100 90, 96 74" marker-end="url(#src-arrow)"/>
 
-  <!-- target sentence -->
   <g class="src-great">
     <rect class="src-tok" x="110" y="122" width="66" height="36" rx="6"/>
     <text class="src-word" x="143" y="145">Great,</text>
@@ -137,7 +163,6 @@
   <rect class="src-tok" x="268" y="122" width="86" height="36" rx="6"/>
   <text class="src-word" x="311" y="145">meeting."</text>
 
-  <!-- sentiment tags -->
   <g class="src-sent src-sent-pos">
     <rect x="400" y="122" width="110" height="26" rx="13"/>
     <text x="455" y="139">POSITIVE</text>
@@ -153,7 +178,7 @@
 
   <defs>
     <marker id="src-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>
@@ -166,16 +191,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Sincere</strong> — after "We just landed the client," a meeting is good news and "Great" means great. The word\'s dictionary polarity and its polarity in use agree.' },
+    { cls: 'is-sarcastic', cap: '<strong>Sarcastic</strong> — after "Back-to-back calls since eight," the same "Great" inverts to a complaint. The polarity flipped without a single token of the sentence changing; the cue lives one line up, in the discourse.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    pos: '<strong>Sincere</strong> — after "We just landed the client," a meeting is good news and "Great" means great. The word\'s dictionary polarity and its polarity in use agree.',
-    neg: '<strong>Sarcastic</strong> — after "Back-to-back calls since eight," the same "Great" inverts to a complaint. The polarity flipped without a single token of the sentence changing; the cue lives one line up, in the discourse.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const sar = root.classList.toggle('is-sarcastic');
-    caption.innerHTML = sar ? CAP.neg : CAP.pos;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Discourse relations</h1>
+<h1>Discourse relations: the connective with no token</h1>
 <p>"He fell. He was pushed." (cause) vs "He fell. He got up." (sequence) — the relation between sentences is inferred, not written.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-discourse-relation .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-discourse-relation .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-discourse-relation .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-discourse-relation .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-discourse-relation .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-discourse-relation .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-discourse-relation .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-discourse-relation .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-discourse-relation .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-discourse-relation .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-discourse-relation .fg-fill-line) { fill: var(--line); }
+:where(.fg-discourse-relation .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-discourse-relation .fg-fill-border) { fill: var(--border); }
+:where(.fg-discourse-relation .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-discourse-relation .fg-fill-text) { fill: var(--text); }
+:where(.fg-discourse-relation .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-discourse-relation .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-discourse-relation .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-discourse-relation {
@@ -60,14 +80,14 @@
 .fg-discourse-relation .dsr-block text { fill: var(--text); font-size: 14px; text-anchor: middle; }
 
 /* second sentence variants cross-fade */
-.fg-discourse-relation .dsr-s2 { transition: opacity 0.7s var(--ease); }
+.fg-discourse-relation .dsr-s2 { transition: opacity var(--dur-slow) var(--ease); }
 .fg-discourse-relation .dsr-s2-cause { opacity: 1; }
 .fg-discourse-relation .dsr-s2-seq { opacity: 0; }
 .fg-discourse-relation.is-sequence .dsr-s2-cause { opacity: 0; }
 .fg-discourse-relation.is-sequence .dsr-s2-seq { opacity: 1; }
 
 /* ghost edge between the blocks */
-.fg-discourse-relation .dsr-edge { transition: opacity 0.7s; }
+.fg-discourse-relation .dsr-edge { transition: opacity var(--dur-slow); }
 .fg-discourse-relation .dsr-edge path { fill: none; stroke-width: 2; stroke-dasharray: 6 4; }
 .fg-discourse-relation .dsr-edge rect { fill: var(--bg); stroke-width: 1.5; stroke-dasharray: 6 4; }
 .fg-discourse-relation .dsr-edge text { font-size: 12px; text-anchor: middle; font-weight: 600; }
@@ -82,13 +102,17 @@
 .fg-discourse-relation.is-sequence .dsr-edge-cause { opacity: 0; }
 .fg-discourse-relation.is-sequence .dsr-edge-seq { opacity: 1; }
 
-.fg-discourse-relation .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-discourse-relation .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-discourse-relation .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-discourse-relation .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-discourse-relation .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-discourse-relation .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-discourse-relation .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-discourse-relation .fg-caption {
@@ -98,10 +122,15 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-discourse-relation .fg-caption.fg-cap-grid { display: grid; }
+.fg-discourse-relation .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-discourse-relation .fg-cap-live { grid-area: 1 / 1; }
+.fg-discourse-relation [data-info]:focus { outline: none; }
+.fg-discourse-relation [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-discourse-relation .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-discourse-relation .fg-caption code {
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--mono);
   font-size: 12px; color: var(--warn);
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
@@ -117,13 +146,11 @@
      aria-label="Two sentence blocks. The first reads: He fell. The second flips between: He was pushed, and: He got up. Between the blocks a dashed labeled edge materializes — BECAUSE, in red, pointing backward when the second sentence is the cause; THEN, in green, pointing forward when it is the next event. The edge is dashed because no token in either sentence carries the relation.">
   <text class="dsr-note" x="40" y="26">two sentences side by side &#8212; the reader supplies the edge between them</text>
 
-  <!-- sentence 1 -->
   <g class="dsr-block">
     <rect x="80" y="70" width="180" height="46" rx="8"/>
     <text x="170" y="99">"He fell."</text>
   </g>
 
-  <!-- sentence 2 variants -->
   <g class="dsr-block dsr-s2 dsr-s2-cause">
     <rect x="440" y="70" width="200" height="46" rx="8"/>
     <text x="540" y="99">"He was pushed."</text>
@@ -133,13 +160,11 @@
     <text x="540" y="99">"He got up."</text>
   </g>
 
-  <!-- cause edge: second sentence explains the first, arrow points back -->
   <g class="dsr-edge dsr-edge-cause">
     <path d="M 436 93 L 272 93" marker-end="url(#dsr-arrow-hot)"/>
     <rect x="302" y="78" width="96" height="30" rx="15"/>
     <text x="350" y="98">BECAUSE</text>
   </g>
-  <!-- sequence edge: second sentence follows the first, arrow points forward -->
   <g class="dsr-edge dsr-edge-seq">
     <path d="M 264 93 L 428 93" marker-end="url(#dsr-arrow-ok)"/>
     <rect x="314" y="78" width="72" height="30" rx="15"/>
@@ -153,10 +178,10 @@
 
   <defs>
     <marker id="dsr-arrow-hot" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171"/>
+      <path class="fg-fill-hot" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="dsr-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>
@@ -169,16 +194,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Cause</strong> — "He fell. He was pushed." The second sentence explains the first: fell <code>because</code> pushed. The edge points backward in time, and nothing in either sentence\'s tokens says so.' },
+    { cls: 'is-sequence', cap: '<strong>Sequence</strong> — "He fell. He got up." Now the second sentence is simply the next event: fell, <code>then</code> got up. Same first sentence, same juxtaposition; the inferred edge — and the timeline it implies — changed with the content.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    cause: '<strong>Cause</strong> — "He fell. He was pushed." The second sentence explains the first: fell <code>because</code> pushed. The edge points backward in time, and nothing in either sentence\'s tokens says so.',
-    seq: '<strong>Sequence</strong> — "He fell. He got up." Now the second sentence is simply the next event: fell, <code>then</code> got up. Same first sentence, same juxtaposition; the inferred edge — and the timeline it implies — changed with the content.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const seq = root.classList.toggle('is-sequence');
-    caption.innerHTML = seq ? CAP.seq : CAP.cause;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

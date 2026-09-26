@@ -1,48 +1,57 @@
 /*
- * tokens.css — reference design tokens for figura diagrams.
+ * The design tokens for every figura diagram, and their source of truth.
  *
- * IMPORTANT: diagrams do NOT link this file. Each diagram copies the values
- * it needs into its own scoped <style> block so the embed fragment stays
- * fully self-contained (see CLAUDE.md). This file is the single source of
- * truth for the palette; update here first, then use in new diagrams.
+ * Diagrams never link this file. scripts/build.js stamps these values into
+ * each diagram's palette-classic managed block, so the embed fragment stays
+ * self-contained: change a value here, run npm run build, and every diagram
+ * picks it up. Each token's trailing comment is its use; tests/docs.mjs
+ * renders the token table in .styles/DIAGRAM_STYLE.md from them.
+ *
+ * Two repositories mirror some of these values, so a change here names its
+ * follow-ups (docs/consumers/tokens.md):
+ * - curiosity-chronicles mirrors eleven for its code panels, and its
+ *   tests/check-figura-tokens.mjs fails at the next submodule bump until the
+ *   mirror matches.
+ * - ai-experiments mirrors the same values in site/src/css/custom.css.
  */
 
 :root {
-  /* Surfaces (dark slate panel — matches the blog's mermaid diagrams) */
-  --fg-bg: #0f172a;
-  --fg-panel: #1e293b;
-  --fg-panel-hover: #334155;
-  --fg-border: #334155;
+  /* Surfaces (dark slate panel) */
+  --fg-bg: #0f172a;          /* panel background */
+  --fg-panel: #1e293b;       /* blocks, cells */
+  --fg-panel-hover: #334155; /* hover fill */
+  --fg-border: #334155;      /* strokes */
 
   /* Text */
-  --fg-text: #f8fafc;
-  --fg-muted: #94a3b8;
+  --fg-text: #f8fafc;        /* primary labels */
+  --fg-muted: #94a3b8;       /* secondary labels */
 
-  /* Accent + semantic colors */
-  --fg-accent: #38bdf8;   /* primary highlight, active flow lines */
-  --fg-ok: #34d399;       /* success / filled / cached */
-  --fg-warn: #fbbf24;     /* attention / in-progress / hot path */
-  --fg-hot: #f87171;      /* bottleneck / eviction / error */
-  --fg-violet: #a78bfa;   /* secondary series (e.g. K vs V, head 2) */
+  /* Accent and semantic hues */
+  --fg-accent: #38bdf8;      /* highlights, active flow lines */
+  --fg-ok: #34d399;          /* filled, cached, residual */
+  --fg-warn: #fbbf24;        /* in progress, decode, hot path */
+  --fg-hot: #f87171;         /* bottleneck, eviction, error */
+  --fg-violet: #a78bfa;      /* secondary series (K against V, a second head) */
 
-  /* Dim state fills — accent/semantic hues at ~15% over the panel bg.
-     Use for is-step-N active box fills so a tokens.css accent change
-     propagates to step states (never hand-mix these hexes in diagrams). */
-  --fg-accent-dim: #0c3550;
-  --fg-ok-dim: #0e4429;
-  --fg-warn-dim: #4a3608;
-  --fg-hot-dim: #4a1d1d;
-  --fg-violet-dim: #2a2350;
+  /* Dim state fills: each hue at about 15% over the panel, for is-step-N
+     active box fills, so a hue change here reaches every step state. */
+  --fg-accent-dim: #0c3550;  /* active box fill for accent */
+  --fg-ok-dim: #0e4429;      /* active box fill for ok */
+  --fg-warn-dim: #4a3608;    /* active box fill for warn */
+  --fg-hot-dim: #4a1d1d;     /* active box fill for hot */
+  --fg-violet-dim: #2a2350;  /* active box fill for violet */
 
   /* Lines */
-  --fg-line: #64748b;
+  --fg-line: #64748b;        /* connectors, arrowheads */
 
-  /* Typography (system stack — no webfont fetches inside diagrams) */
-  --fg-font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --fg-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  /* Typography: system stacks, never a fetched webfont */
+  --fg-font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif; /* all text */
+  --fg-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;    /* code, numbers */
 
-  /* Shape & motion */
-  --fg-radius: 12px;
-  --fg-dur-fast: 0.45s;
-  --fg-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Shape and motion */
+  --fg-radius: 12px;         /* panel corners */
+  --fg-dur-quick: 0.3s;      /* hover and focus feedback */
+  --fg-dur-fast: 0.45s;      /* state transitions */
+  --fg-dur-slow: 0.7s;       /* draw-in and step cadence effects */
+  --fg-ease: cubic-bezier(0.4, 0, 0.2, 1); /* every transition */
 }

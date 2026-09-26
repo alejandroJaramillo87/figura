@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>The ladder against depth</h1>
+<h1>The ladder revisited: levels against model depth</h1>
 <p>The series' six levels beside a model-depth column: where each level's resolution tends to settle — soft bands, because these are tendencies, not an org chart.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-ladder-depth .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-ladder-depth .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-ladder-depth .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-ladder-depth .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-ladder-depth .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-ladder-depth .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-ladder-depth .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-ladder-depth .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-ladder-depth .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-ladder-depth .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-ladder-depth .fg-fill-line) { fill: var(--line); }
+:where(.fg-ladder-depth .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-ladder-depth .fg-fill-border) { fill: var(--border); }
+:where(.fg-ladder-depth .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-ladder-depth .fg-fill-text) { fill: var(--text); }
+:where(.fg-ladder-depth .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-ladder-depth .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-ladder-depth .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-ladder-depth {
@@ -51,13 +71,12 @@
 .fg-ladder-depth text { font-family: inherit; }
 /* fg:end panel-base */
 .fg-ladder-depth {
-  --text: #f8f8fc;
   padding: 16px;
 }
 
 
 .fg-ladder-depth .lddm-note { fill: var(--muted); font-size: 11px; }
-.fg-ladder-depth .lddm-rung rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.3s, stroke 0.3s; cursor: pointer; }
+.fg-ladder-depth .lddm-rung rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer; }
 .fg-ladder-depth .lddm-level:hover .lddm-rung rect { fill: var(--panel-hover); }
 .fg-ladder-depth .lddm-l1:hover .lddm-rung rect { stroke: var(--ok); }
 .fg-ladder-depth .lddm-l2:hover .lddm-rung rect { stroke: var(--accent); }
@@ -72,19 +91,26 @@
 .fg-ladder-depth .lddm-band { fill: var(--muted); font-size: 11px; text-anchor: middle; }
 
 /* soft connector bands: translucent, deliberately fuzzy */
-.fg-ladder-depth .lddm-conn { opacity: 0.16; transition: opacity 0.3s; pointer-events: none; }
+.fg-ladder-depth .lddm-conn { opacity: 0.16; transition: opacity var(--dur-quick); pointer-events: none; }
 .fg-ladder-depth .lddm-l1:hover ~ .lddm-conn-1, .fg-ladder-depth .lddm-l2:hover ~ .lddm-conn-2,
 .fg-ladder-depth .lddm-l3:hover ~ .lddm-conn-3, .fg-ladder-depth .lddm-l4:hover ~ .lddm-conn-4,
 .fg-ladder-depth .lddm-l5:hover ~ .lddm-conn-5, .fg-ladder-depth .lddm-l6:hover ~ .lddm-conn-6 { opacity: 0.45; }
 
+/* fg:begin caption-box v1 */
 .fg-ladder-depth .fg-caption {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  /* reserve height for the longest hover text: no page reflow */
-  color: var(--muted); font-size: 13px; min-height: 6.6em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-ladder-depth .fg-caption.fg-cap-grid { display: grid; }
+.fg-ladder-depth .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-ladder-depth .fg-cap-live { grid-area: 1 / 1; }
+.fg-ladder-depth [data-info]:focus { outline: none; }
+.fg-ladder-depth [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-ladder-depth .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
 .fg-ladder-depth .fg-caption.is-active { color: var(--text); }
 .fg-ladder-depth .fg-caption strong { color: var(--accent); font-weight: 600; }
 
@@ -99,7 +125,6 @@
      aria-label="The series' ambiguity ladder — lexical, referential, syntactic, semantic, pragmatic, plus the LLM-structural column — beside a model-depth column divided into early, middle, and late layer bands. Soft translucent bands, deliberately fuzzy rather than crisp arrows, connect each level to the depth range where its resolution tends to settle: lexical to early layers, referential and syntactic to the lower middle, semantic to the upper middle and late, pragmatic smeared across everything with no band of its own, and structural dependencies like induction appearing strikingly early and crisply. A label reads: tendencies, not an org chart.">
   <text class="lddm-note" x="40" y="24">where the levels tend to resolve &#8212; soft bands on purpose: tendencies, not an org chart</text>
 
-  <!-- ladder rungs (left) -->
   <g class="lddm-level lddm-l5" data-info="Pragmatic — the level that never got a band. Probing finds no discourse-intent layer; sarcasm, speech acts, and register resolve, when they resolve, as distributed adjustments across the stack. The escalation arc's endpoint: the most diffuse context, the most diffuse machinery.">
     <g class="lddm-rung"><rect x="56" y="44" width="240" height="46" rx="8"/></g>
     <text class="lddm-name" x="74" y="72">5 &#183; Pragmatic</text>
@@ -125,26 +150,24 @@
     <text class="lddm-name" x="74" y="362">&#8951; Structural (LLM)</text>
   </g>
 
-  <!-- depth column (right) -->
   <g class="lddm-depth">
     <rect x="500" y="44" width="160" height="336" rx="8"/>
-    <line x1="500" y1="156" x2="660" y2="156" stroke="#334155" stroke-width="1.5"/>
-    <line x1="500" y1="268" x2="660" y2="268" stroke="#334155" stroke-width="1.5"/>
+    <line class="fg-stroke-border" x1="500" y1="156" x2="660" y2="156" stroke-width="1.5"/>
+    <line class="fg-stroke-border" x1="500" y1="268" x2="660" y2="268" stroke-width="1.5"/>
   </g>
   <text class="lddm-band" x="580" y="80">early layers</text>
-  <text class="lddm-band" x="580" y="104" font-size="10">tokens in, fragments bound</text>
+  <text class="lddm-band" x="580" y="104" font-size="11">tokens in, fragments bound</text>
   <text class="lddm-band" x="580" y="196">middle layers</text>
-  <text class="lddm-band" x="580" y="220" font-size="10">structure and reference</text>
+  <text class="lddm-band" x="580" y="220" font-size="11">structure and reference</text>
   <text class="lddm-band" x="580" y="308">late layers</text>
-  <text class="lddm-band" x="580" y="332" font-size="10">propositions, prediction</text>
+  <text class="lddm-band" x="580" y="332" font-size="11">propositions, prediction</text>
 
-  <!-- soft connector bands (after levels so hover sibling selector works) -->
-  <polygon class="lddm-conn lddm-conn-1" points="296,276 296,322 500,268 500,156" fill="#34d399"/>
-  <polygon class="lddm-conn lddm-conn-2" points="296,218 296,264 500,268 500,160" fill="#38bdf8"/>
-  <polygon class="lddm-conn lddm-conn-3" points="296,160 296,206 500,264 500,158" fill="#fbbf24"/>
-  <polygon class="lddm-conn lddm-conn-4" points="296,102 296,148 500,376 500,200" fill="#a78bfa"/>
-  <polygon class="lddm-conn lddm-conn-5" points="296,44 296,90 500,380 500,48" fill="#f87171"/>
-  <polygon class="lddm-conn lddm-conn-6" points="296,334 296,380 500,150 500,60" fill="#38bdf8"/>
+  <polygon class="lddm-conn lddm-conn-1 fg-fill-ok" points="296,276 296,322 500,268 500,156"/>
+  <polygon class="lddm-conn lddm-conn-2 fg-fill-accent" points="296,218 296,264 500,268 500,160"/>
+  <polygon class="lddm-conn lddm-conn-3 fg-fill-warn" points="296,160 296,206 500,264 500,158"/>
+  <polygon class="lddm-conn lddm-conn-4 fg-fill-violet" points="296,102 296,148 500,376 500,200"/>
+  <polygon class="lddm-conn lddm-conn-5 fg-fill-hot" points="296,44 296,90 500,380 500,48"/>
+  <polygon class="lddm-conn lddm-conn-6 fg-fill-accent" points="296,334 296,380 500,150 500,60"/>
 
   <text class="lddm-note" x="40" y="406">Hover a level. The pragmatic band spans the whole column &#8212; that is the finding, not a rendering choice.</text>
 </svg>
@@ -153,18 +176,58 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const DEFAULT = 'Hover a level to see where its resolution tends to settle in the stack — and the caveat that comes with each claim. The bands are translucent and overlapping on purpose: every one of these is a tendency read off probes and ablations, not a module boundary.';
-  root.querySelectorAll('.lddm-level[data-info]').forEach((el) => {
-    el.addEventListener('mouseenter', () => {
-      caption.textContent = el.getAttribute('data-info');
-      caption.classList.add('is-active');
-    });
-    el.addEventListener('mouseleave', () => {
-      caption.textContent = DEFAULT;
-      caption.classList.remove('is-active');
-    });
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin hover-caption v1
+  // Targets carry data-info (plain text), optionally data-title (shown bold
+  // before it) and data-code (shown as inline code after it). Focus reaches
+  // the same readout as the pointer; fg:hover lets a diagram add its own
+  // highlight classes.
+  const hoverTargets = [...root.querySelectorAll('[data-info]')];
+  function hoverHtml(el) {
+    const title = el.getAttribute('data-title');
+    const code = el.getAttribute('data-code');
+    return (title ? '<strong>' + escHtml(title) + '</strong> — ' : '') + escHtml(el.getAttribute('data-info')) +
+      (code ? ' <code>' + escHtml(code) + '</code>' : '');
+  }
+  reserveCaption(hoverTargets.map(hoverHtml));
+  hoverTargets.forEach((el, index) => {
+    el.setAttribute('tabindex', '0');
+    const set = (on) => {
+      setCaption(on ? hoverHtml(el) : captionInitial);
+      if (caption) caption.classList.toggle('is-active', on);
+      root.dispatchEvent(new CustomEvent('fg:hover', { detail: { el, index, on } }));
+    };
+    el.addEventListener('mouseenter', () => set(true));
+    el.addEventListener('focus', () => set(true));
+    el.addEventListener('mouseleave', () => set(false));
+    el.addEventListener('blur', () => set(false));
   });
+  // fg:end hover-caption
 })();</script>
 </div>
 <!-- fg:embed-end -->

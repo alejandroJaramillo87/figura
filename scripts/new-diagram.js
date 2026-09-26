@@ -1,88 +1,96 @@
 #!/usr/bin/env node
 /*
- * new-diagram.js — scaffold a new diagram with managed blocks pre-expanded.
+ * Scaffolds a new diagram from its kind's template, with managed blocks expanded.
  *
  * Usage:
- *   node scripts/new-diagram.js <post-slug>/<kebab-name> \
- *     --kind step-timeline|hover-inspect|ambient|static \
- *     --palette classic \
- *     --abbr <short-prefix> \
- *     [--title "Human-readable title"]
+ *   node scripts/new-diagram.js <consumer-dir>/<kebab-name> \
+ *     --kind step-timeline|hover-inspect|toggle|ambient|static \
+ *     --abbr <2-6 char prefix> \
+ *     [--title "Human-readable title"] [--palette classic]
  *
- * Creates diagrams/<post-slug>/<kebab-name>.html from templates/<kind>.html,
- * expands all managed blocks, and appends a manifest.json entry. The author
- * then fills in the TODO regions: SVG, step CSS, and step handlers.
+ * Creates diagrams/<consumer-dir>/<kebab-name>.html from templates/<kind>.html
+ * with every managed block expanded, and appends a manifest.json entry whose
+ * consumers list starts empty: add "<repo>:<path>" for each page that embeds
+ * or copies the diagram once it does. The
+ * author then fills in the TODO regions, which the validator refuses until
+ * they are gone. Nothing is written unless every input is valid and the
+ * blocks expand; the manifest is replaced atomically, and the new file is
+ * removed again if that fails.
  */
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
 const F = require('./lib/fragment');
+const cli = require('./lib/cli');
+const { expandSource } = require('./build');
 
-function arg(name, fallback) {
-  const i = process.argv.indexOf('--' + name);
-  return i !== -1 ? process.argv[i + 1] : fallback;
-}
+const USAGE = `usage: node scripts/new-diagram.js <consumer-dir>/<kebab-name> --kind <${Object.keys(F.KIND_BLOCKS).join('|')}> --abbr <2-6 chars> [--title "..."] [--palette classic]`;
+const PALETTE_BLOCK = { classic: 'palette-classic' };
 
-function fail(msg) {
-  console.error('[ERROR] ' + msg);
-  process.exit(2);
-}
+const { values, positionals } = cli.parse(USAGE, {
+  kind: { type: 'string' },
+  abbr: { type: 'string' },
+  title: { type: 'string' },
+  palette: { type: 'string', default: 'classic' },
+}, { positionals: true });
 
-const target = process.argv[2];
-if (!target || !/^[a-z0-9-]+\/[a-z0-9-]+$/.test(target)) {
-  fail('first argument must be <post-slug>/<kebab-name>');
+const target = positionals[0];
+if (positionals.length !== 1 || !/^[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(target)) {
+  cli.usageError(USAGE, 'first argument must be <consumer-dir>/<kebab-name>, lowercase kebab-case');
 }
 const [slug, name] = target.split('/');
-const kind = arg('kind', 'step-timeline');
-const paletteArg = arg('palette', 'classic');
-const abbr = arg('abbr', null);
-const title = arg('title', name.replace(/-/g, ' '));
+const { kind, abbr } = values;
+const title = values.title || name.replace(/-/g, ' ');
 
-const PALETTE_BLOCK = {
-  classic: 'palette-classic',
-};
-if (!PALETTE_BLOCK[paletteArg]) fail('unknown palette: ' + paletteArg);
-if (!abbr || !/^[a-z0-9]{2,6}$/.test(abbr)) fail('--abbr <2-6 char prefix> is required (e.g. kvcf)');
-
-const tplPath = path.join(F.REPO_ROOT, 'templates', kind + '.html');
-if (!fs.existsSync(tplPath)) fail('unknown kind: ' + kind);
+if (!kind || !(kind in F.KIND_BLOCKS)) cli.usageError(USAGE, '--kind must be one of ' + Object.keys(F.KIND_BLOCKS).join(', '));
+if (!PALETTE_BLOCK[values.palette]) cli.fail('unknown palette: ' + values.palette);
+if (!abbr || !/^[a-z0-9]{2,6}$/.test(abbr)) cli.usageError(USAGE, '--abbr <2-6 lowercase chars> is required (e.g. kvcf)');
+if (/[<>"&]/.test(title)) cli.fail('--title may not contain <, >, " or &');
 
 const outPath = path.join(F.DIAGRAMS_DIR, slug, name + '.html');
-if (fs.existsSync(outPath)) fail('already exists: ' + F.relPath(outPath));
+if (fs.existsSync(outPath)) cli.fail('already exists: ' + F.relPath(outPath));
 
-const panel = 'panel-base';
-function instantiate(p) {
-  return fs.readFileSync(p, 'utf8')
-    .replaceAll('{{NAME}}', name)
-    .replaceAll('{{TITLE}}', title)
-    .replaceAll('{{ABBR}}', abbr)
-    .replaceAll('{{PALETTE}}', PALETTE_BLOCK[paletteArg])
-    .replaceAll('{{PANEL}}', panel);
+const manifest = F.loadManifest();
+if (manifest.some((e) => e.id === name)) cli.fail(`manifest id "${name}" is already taken`);
+
+// the abbreviation prefixes ids and keyframes, which are page-global
+for (const file of F.listDiagramFiles()) {
+  const src = fs.readFileSync(file, 'utf8');
+  if (new RegExp(`\\bid="${abbr}-|@keyframes fg-${abbr}-|class="${abbr}-`).test(src)) {
+    cli.fail(`abbreviation "${abbr}" is already used by ${F.relPath(file)}`);
+  }
 }
 
-fs.mkdirSync(path.dirname(outPath), { recursive: true });
-fs.writeFileSync(outPath, instantiate(tplPath));
+const tpl = fs.readFileSync(path.join(F.REPO_ROOT, 'templates', kind + '.html'), 'utf8')
+  .replaceAll('{{NAME}}', name)
+  .replaceAll('{{TITLE}}', title)
+  .replaceAll('{{ABBR}}', abbr)
+  .replaceAll('{{PALETTE}}', PALETTE_BLOCK[values.palette])
+  .replaceAll('{{PANEL}}', 'panel-base');
+const r = expandSource(tpl);
+if (r.error || r.unknown.length) cli.fail('template did not expand: ' + (r.error || 'unknown blocks ' + r.unknown.join(', ')));
 
-// expand managed blocks in the new file
-execFileSync(process.execPath, [path.join(__dirname, 'build.js'), '--file', F.relPath(outPath)], {
-  cwd: F.REPO_ROOT, stdio: 'inherit',
-});
-
-// append manifest entry
-const manifest = F.loadManifest();
 manifest.push({
   id: name,
   path: F.relPath(outPath),
   title,
-  post: slug,
+  consumers: [],
   kind,
   description: 'TODO: one-sentence description for the gallery.',
 });
-fs.writeFileSync(F.MANIFEST_PATH, JSON.stringify(manifest, null, 2) + '\n');
+
+fs.mkdirSync(path.dirname(outPath), { recursive: true });
+fs.writeFileSync(outPath, r.rebuilt, { flag: 'wx' });
+try {
+  const tmp = F.MANIFEST_PATH + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(manifest, null, 2) + '\n');
+  fs.renameSync(tmp, F.MANIFEST_PATH);
+} catch (e) {
+  fs.unlinkSync(outPath);
+  cli.fail('manifest.json not updated, scaffold removed: ' + e.message);
+}
 
 console.log('[OK] created ' + F.relPath(outPath));
 console.log('[OK] manifest entry appended (fill in the description)');
-console.log('Next: author the SVG and step CSS, then run:');
-console.log('  node scripts/build.js --check && node scripts/validate.js');
+console.log('Next: author the SVG and styles, then run: npm run check');

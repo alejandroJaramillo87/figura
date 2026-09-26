@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(exports/**)",
+      "Write(exports/**)",
+      "Edit(node_modules/**)",
+      "Write(node_modules/**)",
+      "Read(**/.env*)"
+    ],
+    "allow": [
+      "Read(**)",
+      "Grep(**)",
+      "Glob(**)",
+      "Bash(npm run check*)",
+      "Bash(npm run quality*)",
+      "Bash(npm run docs*)",
+      "Bash(npm run build*)",
+      "Bash(npm run export*)",
+      "Bash(npm run new*)",
+      "Bash(node scripts/*)",
+      "Bash(node tests/*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:developer.mozilla.org)"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Edit(shared/tokens.css)",
+      "Write(shared/tokens.css)",
+      "WebFetch"
+    ]
+  }
+}

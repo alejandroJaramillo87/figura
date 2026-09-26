@@ -11,10 +11,10 @@
 <p>Hover either path: the old from-source Blackwell build versus the current single-stage wheel install, and the upstream change that made compilation unnecessary.</p>
 
 <!-- fg:embed-start -->
-<div class="fg-diagram fg-vllm-build-wheel">
+<div class="fg-diagram fg-vllm-build-vs-wheel">
 <style>
 /* fg:begin palette-classic v1 */
-.fg-vllm-build-wheel {
+.fg-vllm-build-vs-wheel {
   --bg: #0f172a;
   --panel: #1e293b;
   --panel-hover: #334155;
@@ -35,67 +35,94 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-vllm-build-vs-wheel .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-vllm-build-vs-wheel .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-vllm-build-vs-wheel .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-vllm-build-vs-wheel .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-vllm-build-vs-wheel .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-vllm-build-vs-wheel .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-vllm-build-vs-wheel .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-vllm-build-vs-wheel .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-vllm-build-vs-wheel .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-vllm-build-vs-wheel .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-vllm-build-vs-wheel .fg-fill-line) { fill: var(--line); }
+:where(.fg-vllm-build-vs-wheel .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-vllm-build-vs-wheel .fg-fill-border) { fill: var(--border); }
+:where(.fg-vllm-build-vs-wheel .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-vllm-build-vs-wheel .fg-fill-text) { fill: var(--text); }
+:where(.fg-vllm-build-vs-wheel .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-vllm-build-vs-wheel .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-vllm-build-vs-wheel .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
-.fg-vllm-build-wheel {
+.fg-vllm-build-vs-wheel {
   background: var(--bg);
   border-radius: var(--radius);
   font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.fg-vllm-build-wheel svg { display: block; width: 100%; height: auto; }
-.fg-vllm-build-wheel text { font-family: inherit; }
+.fg-vllm-build-vs-wheel svg { display: block; width: 100%; height: auto; }
+.fg-vllm-build-vs-wheel text { font-family: inherit; }
 /* fg:end panel-base */
-.fg-vllm-build-wheel {
+.fg-vllm-build-vs-wheel {
   padding: 16px;
 }
 
 
-.fg-vllm-build-wheel .vbw-box {
+.fg-vllm-build-vs-wheel .vbw-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+  transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
-.fg-vllm-build-wheel .vbw-group:hover .vbw-box { fill: var(--panel-hover); stroke: var(--accent); }
-.fg-vllm-build-wheel .vbw-old .vbw-box { stroke: var(--hot); opacity: 0.75; }
-.fg-vllm-build-wheel .vbw-new .vbw-box { stroke: var(--ok); }
-.fg-vllm-build-wheel .vbw-pivot .vbw-box { stroke: var(--warn); }
-.fg-vllm-build-wheel .vbw-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
-.fg-vllm-build-wheel .vbw-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
-.fg-vllm-build-wheel .vbw-label { fill: var(--muted); font-size: 12px; }
-.fg-vllm-build-wheel .vbw-retired { fill: var(--hot); font-size: 11.5px; font-weight: 600; }
+.fg-vllm-build-vs-wheel .vbw-group:hover .vbw-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-vllm-build-vs-wheel .vbw-old .vbw-box { stroke: var(--hot); opacity: 0.75; }
+.fg-vllm-build-vs-wheel .vbw-new .vbw-box { stroke: var(--ok); }
+.fg-vllm-build-vs-wheel .vbw-pivot .vbw-box { stroke: var(--warn); }
+.fg-vllm-build-vs-wheel .vbw-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-vllm-build-vs-wheel .vbw-sub { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-vllm-build-vs-wheel .vbw-label { fill: var(--muted); font-size: 12px; }
+.fg-vllm-build-vs-wheel .vbw-retired { fill: var(--hot); font-size: 11.5px; font-weight: 600; }
 
-.fg-vllm-build-wheel .vbw-strike {
+.fg-vllm-build-vs-wheel .vbw-strike {
   stroke: var(--hot); stroke-width: 2.5; opacity: 0.7;
 }
-.fg-vllm-build-wheel .vbw-flow {
+.fg-vllm-build-vs-wheel .vbw-flow {
   stroke: var(--line); stroke-width: 2; fill: none;
   stroke-dasharray: 5 4; animation: fg-vbw-flow 1.4s linear infinite;
 }
 @keyframes fg-vbw-flow { to { stroke-dashoffset: -18; } }
-.fg-vllm-build-wheel .vbw-flow-ok { stroke: var(--ok); }
+.fg-vllm-build-vs-wheel .vbw-flow-ok { stroke: var(--ok); }
 
-.fg-vllm-build-wheel .fg-caption {
+/* fg:begin caption-box v1 */
+.fg-vllm-build-vs-wheel .fg-caption {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  /* tall enough for the longest data-info at column width: no page reflow on hover */
-  color: var(--muted); font-size: 13px; min-height: 5.4em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
-.fg-vllm-build-wheel .fg-caption.is-active { color: var(--text); }
-.fg-vllm-build-wheel .fg-caption strong { color: var(--accent); font-weight: 600; }
-.fg-vllm-build-wheel .fg-caption code {
+.fg-vllm-build-vs-wheel .fg-caption.fg-cap-grid { display: grid; }
+.fg-vllm-build-vs-wheel .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-vllm-build-vs-wheel .fg-cap-live { grid-area: 1 / 1; }
+.fg-vllm-build-vs-wheel [data-info]:focus { outline: none; }
+.fg-vllm-build-vs-wheel [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-vllm-build-vs-wheel .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
+.fg-vllm-build-vs-wheel .fg-caption.is-active { color: var(--text); }
+.fg-vllm-build-vs-wheel .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-vllm-build-vs-wheel .fg-caption code {
   font-family: var(--mono); font-size: 12px; color: var(--warn);
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
 
 /* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-vllm-build-wheel, .fg-vllm-build-wheel * { transition: none !important; animation: none !important; }
+  .fg-vllm-build-vs-wheel, .fg-vllm-build-vs-wheel * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
 </style>
@@ -104,10 +131,10 @@
      aria-label="Two paths to Blackwell kernels for vLLM. The retired path: clone the source, install the CUDA devel toolchain, and compile sm_120 kernels locally over multiple hours. The current path: since vLLM 0.20.0, official cu130 wheels ship sm_120 binaries, so a single-stage image installs vllm 0.25.0 with a pinned uv binary plus FlashInfer kernels, with no compiler in the image.">
   <defs>
     <marker id="vbw-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="vbw-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
@@ -120,7 +147,6 @@
   <path class="vbw-flow" d="M 280 68 L 190 104" marker-end="url(#vbw-arrow)"/>
   <path class="vbw-flow vbw-flow-ok" d="M 440 68 L 530 104" marker-end="url(#vbw-arrow-ok)"/>
 
-  <!-- old path -->
   <text class="vbw-retired" x="60" y="100">retired path: compile locally</text>
   <g class="vbw-group vbw-old" data-title="Old: clone and toolchain" data-info="Before upstream shipped Blackwell wheels: clone the vLLM source, install the full CUDA devel toolchain, gcc, ninja, and ccache into a builder stage — gigabytes of toolchain for one binary artifact.">
     <rect class="vbw-box" x="40" y="112" width="280" height="52" rx="8"/>
@@ -142,7 +168,6 @@
   </g>
   <path class="vbw-flow vbw-flow-ok" d="M 320 284 C 380 284, 380 220, 416 200" marker-end="url(#vbw-arrow-ok)"/>
 
-  <!-- new path -->
   <text class="vbw-label" x="420" y="100">current path: install the wheel</text>
   <g class="vbw-group vbw-new" data-title="Pinned uv binary" data-info="uv 0.11.28 is copied from its official image (ghcr.io/astral-sh/uv) via a named stage — replacing an unpinned curl-pipe-sh installer. The installer version is a build arg like every other pin.">
     <rect class="vbw-box" x="420" y="112" width="280" height="52" rx="8"/>
@@ -179,22 +204,58 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const DEFAULT = 'Hover over either path to see why one retired and one won.';
-  root.querySelectorAll('.vbw-group[data-info]').forEach((g) => {
-    g.addEventListener('mouseenter', () => {
-      caption.innerHTML = '';
-      const strong = document.createElement('strong');
-      strong.textContent = g.getAttribute('data-title');
-      caption.appendChild(strong);
-      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
-      caption.classList.add('is-active');
-    });
-    g.addEventListener('mouseleave', () => {
-      caption.textContent = DEFAULT;
-      caption.classList.remove('is-active');
-    });
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin hover-caption v1
+  // Targets carry data-info (plain text), optionally data-title (shown bold
+  // before it) and data-code (shown as inline code after it). Focus reaches
+  // the same readout as the pointer; fg:hover lets a diagram add its own
+  // highlight classes.
+  const hoverTargets = [...root.querySelectorAll('[data-info]')];
+  function hoverHtml(el) {
+    const title = el.getAttribute('data-title');
+    const code = el.getAttribute('data-code');
+    return (title ? '<strong>' + escHtml(title) + '</strong> — ' : '') + escHtml(el.getAttribute('data-info')) +
+      (code ? ' <code>' + escHtml(code) + '</code>' : '');
+  }
+  reserveCaption(hoverTargets.map(hoverHtml));
+  hoverTargets.forEach((el, index) => {
+    el.setAttribute('tabindex', '0');
+    const set = (on) => {
+      setCaption(on ? hoverHtml(el) : captionInitial);
+      if (caption) caption.classList.toggle('is-active', on);
+      root.dispatchEvent(new CustomEvent('fg:hover', { detail: { el, index, on } }));
+    };
+    el.addEventListener('mouseenter', () => set(true));
+    el.addEventListener('focus', () => set(true));
+    el.addEventListener('mouseleave', () => set(false));
+    el.addEventListener('blur', () => set(false));
   });
+  // fg:end hover-caption
 })();</script>
 </div>
 <!-- fg:embed-end -->

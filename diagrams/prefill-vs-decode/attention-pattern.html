@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-attention-pattern .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-attention-pattern .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-attention-pattern .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-attention-pattern .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-attention-pattern .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-attention-pattern .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-attention-pattern .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-attention-pattern .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-attention-pattern .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-attention-pattern .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-attention-pattern .fg-fill-line) { fill: var(--line); }
+:where(.fg-attention-pattern .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-attention-pattern .fg-fill-border) { fill: var(--border); }
+:where(.fg-attention-pattern .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-attention-pattern .fg-fill-text) { fill: var(--text); }
+:where(.fg-attention-pattern .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-attention-pattern .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-attention-pattern .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-attention-pattern {
@@ -60,9 +80,9 @@
 
 .fg-attention-pattern .apf-cell {
   fill: var(--panel); stroke: var(--border); stroke-width: 1;
-  transition: fill var(--dur-fast) var(--ease), stroke 0.45s;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast);
 }
-.fg-attention-pattern .apf-cell.apf-masked { fill: transparent; stroke: #24314a; stroke-dasharray: 3 3; }
+.fg-attention-pattern .apf-cell.apf-masked { fill: transparent; stroke: var(--border); stroke-dasharray: 3 3; }
 
 /* Step states.
    0: empty. 1: prefill fills all causal cells of rows 0-3 at once (green).
@@ -97,7 +117,7 @@
 .fg-attention-pattern.is-step-4 .apf-r6 .apf-cell:not(.apf-masked) { stroke: var(--accent); stroke-width: 2; }
 
 /* phase captions */
-.fg-attention-pattern .apf-phase { opacity: 0; transition: opacity 0.45s; }
+.fg-attention-pattern .apf-phase { opacity: 0; transition: opacity var(--dur-fast); }
 .fg-attention-pattern.is-step-0 .apf-phase-idle,
 .fg-attention-pattern.is-step-1 .apf-phase-prefill,
 .fg-attention-pattern.is-step-2 .apf-phase-decode,
@@ -126,11 +146,9 @@
 
 <svg viewBox="0 0 620 560" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="A 7 by 7 causal attention matrix. Prefill fills the first four rows in one pass; each decode step adds one more row along the causal mask.">
-  <!-- axis labels -->
   <text x="300" y="26" class="apf-lab">keys (attended-to positions) →</text>
   <text x="30" y="300" class="apf-lab" transform="rotate(-90 30 300)">queries (rows) →</text>
 
-  <!-- 7x7 causal grid, authored statically so the fragment stays portable -->
   <g class="apf-r0">
     <rect class="apf-cell" x="72" y="44" width="56" height="56" rx="6"/>
     <rect class="apf-cell apf-masked" x="134" y="44" width="56" height="56" rx="6"/>
@@ -202,26 +220,24 @@
     <text class="apf-sub" x="64" y="448" text-anchor="end">.</text>
   </g>
 
-  <!-- legend -->
   <g>
-    <rect x="60" y="510" width="16" height="16" rx="3" fill="var(--ok-dim)" stroke="#34d399"/>
+    <rect class="fg-stroke-ok" x="60" y="510" width="16" height="16" rx="3" fill="var(--ok-dim)"/>
     <text x="84" y="523" class="apf-sub">prefill (batched)</text>
-    <rect x="210" y="510" width="16" height="16" rx="3" fill="var(--warn-dim)" stroke="#fbbf24"/>
+    <rect class="fg-stroke-warn" x="210" y="510" width="16" height="16" rx="3" fill="var(--warn-dim)"/>
     <text x="234" y="523" class="apf-sub">decode (1 row / step)</text>
-    <rect x="390" y="510" width="16" height="16" rx="3" fill="none" stroke="#24314a" stroke-dasharray="3 3"/>
+    <rect class="fg-stroke-border" x="390" y="510" width="16" height="16" rx="3" fill="none" stroke-dasharray="3 3"/>
     <text x="414" y="523" class="apf-sub">masked (future)</text>
   </g>
 
-  <!-- phase captions -->
   <text x="60" y="552" class="apf-sub apf-phase apf-phase-idle">Nothing computed yet — 7 positions: 4 prompt, 3 to generate.</text>
   <text x="60" y="552" class="apf-sub apf-phase apf-phase-prefill">Prefill: rows 0–3 computed in one matmul — arithmetic-intensity heaven.</text>
   <text x="60" y="552" class="apf-sub apf-phase apf-phase-decode">Decode: one query row per step — a skinny matvec against all cached keys.</text>
 </svg>
 
 <div class="fg-controls">
-  <button data-fg="prev" aria-label="Previous step">‹</button>
-  <button data-fg="play" aria-label="Play or pause">▶</button>
-  <button data-fg="next" aria-label="Next step">›</button>
+  <button type="button" data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button type="button" data-fg="play" aria-label="Play or pause" aria-pressed="false">&#9654;&#xFE0E;</button>
+  <button type="button" data-fg="next" aria-label="Next step">&#8250;</button>
   <span data-fg="counter"></span>
 </div>
 
@@ -230,7 +246,7 @@
   const TOTAL = 4, STEP_MS = 1400;
 
   // fg:begin timeline-core v1
-  let step = 0, timer = null;
+  let step = 0, timer = null, held = false; // held: the reader paused; autoplay stays off
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
@@ -246,13 +262,14 @@
     pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
-  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
-  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
-  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  btn('prev').addEventListener('click', () => { held = true; tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { held = true; tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => { held = tl.playing; held ? tl.pause() : tl.play(); });
   const counter = btn('counter');
   function sync() {
     if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
-    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+    btn('play').textContent = tl.playing ? '\u275A\u275A' : '\u25B6\uFE0E'; // FE0E: text glyph, not emoji
+    btn('play').setAttribute('aria-pressed', String(tl.playing));
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
@@ -265,7 +282,12 @@
     tl.go(TOTAL); // show final state, manual stepping still available
   } else {
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      // The first callback reports any overlap as intersecting, so test the
+      // ratio; a reader who paused keeps control until they press play.
+      (entries) => entries.forEach((e) => {
+        if (e.intersectionRatio < 0.3) tl.pause();
+        else if (!held) tl.play();
+      }),
       { threshold: 0.3 }
     );
     io.observe(root);

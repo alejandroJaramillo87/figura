@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Indirect answers and implicature</h1>
+<h1>Implicature: the answer that dodges is the answer</h1>
 <p>"Did you like the movie?" — "The popcorn was good." The literal content is not the message.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-implicature-gap .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-implicature-gap .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-implicature-gap .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-implicature-gap .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-implicature-gap .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-implicature-gap .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-implicature-gap .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-implicature-gap .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-implicature-gap .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-implicature-gap .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-implicature-gap .fg-fill-line) { fill: var(--line); }
+:where(.fg-implicature-gap .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-implicature-gap .fg-fill-border) { fill: var(--border); }
+:where(.fg-implicature-gap .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-implicature-gap .fg-fill-text) { fill: var(--text); }
+:where(.fg-implicature-gap .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-implicature-gap .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-implicature-gap .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-implicature-gap {
@@ -62,24 +82,28 @@
 .fg-implicature-gap .imp-movie rect { stroke: var(--warn); }
 
 /* literal reading: popcorn statement highlighted, nothing more */
-.fg-implicature-gap .imp-lit { transition: opacity 0.7s var(--ease); opacity: 1; }
+.fg-implicature-gap .imp-lit { transition: opacity var(--dur-slow) var(--ease); opacity: 1; }
 .fg-implicature-gap.is-implicated .imp-lit { opacity: 0; }
 
 /* implicated reading: ghost card + arc back to the question */
-.fg-implicature-gap .imp-ghost { transition: opacity 0.7s var(--ease); opacity: 0; }
+.fg-implicature-gap .imp-ghost { transition: opacity var(--dur-slow) var(--ease); opacity: 0; }
 .fg-implicature-gap .imp-ghost rect { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 6 4; }
 .fg-implicature-gap .imp-ghost text { fill: var(--ok); font-size: 12px; text-anchor: middle; }
-.fg-implicature-gap .imp-arc { fill: none; stroke: var(--ok); stroke-width: 2; transition: opacity 0.7s; opacity: 0; }
+.fg-implicature-gap .imp-arc { fill: none; stroke: var(--ok); stroke-width: 2; transition: opacity var(--dur-slow); opacity: 0; }
 .fg-implicature-gap.is-implicated .imp-ghost { opacity: 1; }
 .fg-implicature-gap.is-implicated .imp-arc { opacity: 1; }
 
-.fg-implicature-gap .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-implicature-gap .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-implicature-gap .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-implicature-gap .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-implicature-gap .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-implicature-gap .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-implicature-gap .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-implicature-gap .fg-caption {
@@ -89,6 +113,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-implicature-gap .fg-caption.fg-cap-grid { display: grid; }
+.fg-implicature-gap .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-implicature-gap .fg-cap-live { grid-area: 1 / 1; }
+.fg-implicature-gap [data-info]:focus { outline: none; }
+.fg-implicature-gap [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-implicature-gap .fg-caption strong { color: var(--ok); font-weight: 600; }
 
@@ -103,28 +132,23 @@
      aria-label="Two speech bubbles: Q: Did you like the movie? and A: The popcorn was good. A button flips between the literal reading — a true statement about popcorn — and the implicated reading, where a dashed green ghost card materializes reading: the movie was not good, with an arc from the answer back to the question it pointedly failed to address.">
   <text class="imp-note" x="40" y="26">the message lives in the gap between what was asked and what was answered</text>
 
-  <!-- question row -->
   <g class="imp-row imp-movie">
     <rect x="80" y="46" width="330" height="38" rx="8"/>
     <text x="96" y="70"><tspan class="imp-tag">Q:</tspan>  "Did you like the movie?"</text>
   </g>
 
-  <!-- answer row -->
   <g class="imp-row">
     <rect x="170" y="104" width="330" height="38" rx="8"/>
     <text x="186" y="128"><tspan class="imp-tag">A:</tspan>  "The popcorn was good."</text>
   </g>
 
-  <!-- literal reading marker -->
   <g class="imp-lit">
     <text class="imp-note" x="520" y="128">literal content: a true</text>
     <text class="imp-note" x="520" y="144">claim about popcorn</text>
   </g>
 
-  <!-- arc: answer -> the question it dodged -->
   <path class="imp-arc" d="M 250 100 C 220 92, 200 90, 180 88" marker-end="url(#imp-arrow)"/>
 
-  <!-- implicated ghost card -->
   <g class="imp-ghost">
     <rect x="200" y="170" width="270" height="40" rx="8"/>
     <text x="335" y="195">implicated: "the movie was not good"</text>
@@ -135,7 +159,7 @@
 
   <defs>
     <marker id="imp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>
@@ -148,17 +172,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Literal reading</strong> — taken at face value, the answer is an unrelated true statement about concessions. A system that only computes literal content stops here, with the actual question unanswered.', label: 'Read the implicature' },
+    { cls: 'is-implicated', cap: '<strong>Implicated reading</strong> — because the speaker conspicuously answered a different question, the verdict on the movie arrives anyway: not good. The meaning is computed from the mismatch between question and answer — information carried by no token in either sentence.', label: 'Back to the literal' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    lit: '<strong>Literal reading</strong> — taken at face value, the answer is an unrelated true statement about concessions. A system that only computes literal content stops here, with the actual question unanswered.',
-    imp: '<strong>Implicated reading</strong> — because the speaker conspicuously answered a different question, the verdict on the movie arrives anyway: not good. The meaning is computed from the mismatch between question and answer — information carried by no token in either sentence.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const imp = root.classList.toggle('is-implicated');
-    caption.innerHTML = imp ? CAP.imp : CAP.lit;
-    btn.textContent = imp ? 'Back to the literal' : 'Read the implicature';
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

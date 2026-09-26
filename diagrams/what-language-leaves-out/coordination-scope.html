@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Coordination scope</h1>
+<h1>Coordination scope: are the women old?</h1>
 <p>"old men and women" — does "old" apply to both conjuncts or only the first? The grouping is not in the tokens.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-coordination-scope .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-coordination-scope .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-coordination-scope .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-coordination-scope .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-coordination-scope .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-coordination-scope .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-coordination-scope .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-coordination-scope .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-coordination-scope .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-coordination-scope .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-coordination-scope .fg-fill-line) { fill: var(--line); }
+:where(.fg-coordination-scope .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-coordination-scope .fg-fill-border) { fill: var(--border); }
+:where(.fg-coordination-scope .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-coordination-scope .fg-fill-text) { fill: var(--text); }
+:where(.fg-coordination-scope .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-coordination-scope .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-coordination-scope .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-coordination-scope {
@@ -58,13 +78,13 @@
 .fg-coordination-scope .cds-note { fill: var(--muted); font-size: 11px; }
 .fg-coordination-scope .cds-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease), fill var(--dur-slow) var(--ease);
 }
 .fg-coordination-scope .cds-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 .fg-coordination-scope .cds-old .cds-tok { stroke: var(--warn); }
 
 /* brackets cross-fade: wide = old [men and women], narrow = [old men] and women */
-.fg-coordination-scope .cds-br { transition: opacity 0.7s var(--ease); }
+.fg-coordination-scope .cds-br { transition: opacity var(--dur-slow) var(--ease); }
 .fg-coordination-scope .cds-br path { fill: none; stroke: var(--ok); stroke-width: 2; }
 .fg-coordination-scope .cds-br text { fill: var(--ok); }
 .fg-coordination-scope .cds-br-wide { opacity: 1; }
@@ -75,9 +95,9 @@
 /* membership cards: who ends up old */
 .fg-coordination-scope .cds-card rect {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s, fill 0.7s;
+  transition: stroke var(--dur-slow), fill var(--dur-slow);
 }
-.fg-coordination-scope .cds-card text { fill: var(--muted); font-size: 12px; text-anchor: middle; transition: fill 0.7s; }
+.fg-coordination-scope .cds-card text { fill: var(--muted); font-size: 12px; text-anchor: middle; transition: fill var(--dur-slow); }
 .fg-coordination-scope .cds-card-menold rect { stroke: var(--warn); }
 .fg-coordination-scope .cds-card-menold text { fill: var(--text); }
 .fg-coordination-scope .cds-card-womenold rect { stroke: var(--warn); }
@@ -85,19 +105,23 @@
 .fg-coordination-scope.is-narrow .cds-card-womenold rect { stroke: var(--border); }
 .fg-coordination-scope.is-narrow .cds-card-womenold text { fill: var(--muted); }
 
-.fg-coordination-scope .cds-cardnote { transition: opacity 0.7s; }
+.fg-coordination-scope .cds-cardnote { transition: opacity var(--dur-slow); }
 .fg-coordination-scope .cds-cardnote-wide { opacity: 1; }
 .fg-coordination-scope .cds-cardnote-narrow { opacity: 0; }
 .fg-coordination-scope.is-narrow .cds-cardnote-wide { opacity: 0; }
 .fg-coordination-scope.is-narrow .cds-cardnote-narrow { opacity: 1; }
 
-.fg-coordination-scope .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-coordination-scope .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-coordination-scope .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-coordination-scope .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-coordination-scope .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-coordination-scope .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-coordination-scope .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-coordination-scope .fg-caption {
@@ -107,6 +131,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-coordination-scope .fg-caption.fg-cap-grid { display: grid; }
+.fg-coordination-scope .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-coordination-scope .fg-cap-live { grid-area: 1 / 1; }
+.fg-coordination-scope [data-info]:focus { outline: none; }
+.fg-coordination-scope [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-coordination-scope .fg-caption strong { color: var(--ok); font-weight: 600; }
 
@@ -121,7 +150,6 @@
      aria-label="The phrase old men and women as token blocks, with the adjective old outlined in amber. A button flips between two groupings drawn as brackets. In the wide reading the bracket spans men and women — both groups are old. In the narrow reading the bracket spans only old men — the women's age is unstated. Two cards below show who ends up described as old under each reading.">
   <text class="cds-note" x="40" y="26">the conjunction is one token &#8212; the grouping it builds is not written anywhere</text>
 
-  <!-- token row -->
   <g class="cds-old">
     <rect class="cds-tok" x="130" y="100" width="52" height="36" rx="6"/>
     <text class="cds-word" x="156" y="123">old</text>
@@ -133,18 +161,15 @@
   <rect class="cds-tok" x="316" y="100" width="84" height="36" rx="6"/>
   <text class="cds-word" x="358" y="123">women</text>
 
-  <!-- wide bracket: old [men and women] -->
   <g class="cds-br cds-br-wide">
     <path d="M 192 90 L 192 80 L 398 80 L 398 90"/>
     <text class="cds-note" x="295" y="70" text-anchor="middle">"old" scopes over the whole conjunction</text>
   </g>
-  <!-- narrow bracket: [old men] and women -->
   <g class="cds-br cds-br-narrow">
     <path d="M 132 90 L 132 80 L 246 80 L 246 90"/>
     <text class="cds-note" x="189" y="70" text-anchor="middle">"old" stops at "men"</text>
   </g>
 
-  <!-- membership cards -->
   <g class="cds-card cds-card-menold">
     <rect x="150" y="164" width="140" height="34" rx="6"/>
     <text x="220" y="186">men: old</text>
@@ -167,16 +192,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Wide scope</strong> — old [men and women]: the adjective distributes over the conjunction, so both groups are old. This is the reading most contexts favor — but nothing in the four tokens requires it.' },
+    { cls: 'is-narrow', cap: '<strong>Narrow scope</strong> — [old men] and women: the adjective binds tight to "men" and the women\'s age is simply unstated. Missing parentheses in an expression the reader has to bracket alone.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    wide: '<strong>Wide scope</strong> — old [men and women]: the adjective distributes over the conjunction, so both groups are old. This is the reading most contexts favor — but nothing in the four tokens requires it.',
-    narrow: '<strong>Narrow scope</strong> — [old men] and women: the adjective binds tight to "men" and the women\'s age is simply unstated. Missing parentheses in an expression the reader has to bracket alone.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const narrow = root.classList.toggle('is-narrow');
-    caption.innerHTML = narrow ? CAP.narrow : CAP.wide;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

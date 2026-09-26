@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Idiom binding</h1>
+<h1>Idiom binding: when the unit of meaning is bigger than the token</h1>
 <p>"Kicked the bucket" read compositionally is foot-strikes-pail; read as an idiom, three tokens fuse into a single unit meaning "died". The compositional reading is a decoy built from the same parts.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-idiom-binding .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-idiom-binding .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-idiom-binding .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-idiom-binding .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-idiom-binding .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-idiom-binding .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-idiom-binding .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-idiom-binding .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-idiom-binding .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-idiom-binding .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-idiom-binding .fg-fill-line) { fill: var(--line); }
+:where(.fg-idiom-binding .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-idiom-binding .fg-fill-border) { fill: var(--border); }
+:where(.fg-idiom-binding .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-idiom-binding .fg-fill-text) { fill: var(--text); }
+:where(.fg-idiom-binding .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-idiom-binding .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-idiom-binding .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-idiom-binding {
@@ -57,16 +77,16 @@
 
 .fg-idiom-binding .idb-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease);
+  transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease);
 }
 .fg-idiom-binding .idb-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 .fg-idiom-binding .idb-note { fill: var(--muted); font-size: 11px; }
 .fg-idiom-binding .idb-gloss { fill: var(--muted); font-size: 11px; text-anchor: middle;
-  transition: opacity 0.7s var(--ease); }
+  transition: opacity var(--dur-slow) var(--ease); }
 
 /* literal state (default): per-token compositional glosses */
-.fg-idiom-binding .idb-lit { opacity: 1; transition: opacity 0.7s var(--ease); }
-.fg-idiom-binding .idb-idio { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-idiom-binding .idb-lit { opacity: 1; transition: opacity var(--dur-slow) var(--ease); }
+.fg-idiom-binding .idb-idio { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-idiom-binding.is-idiom .idb-lit { opacity: 0; }
 .fg-idiom-binding.is-idiom .idb-idio { opacity: 1; }
 
@@ -78,13 +98,17 @@
   fill: none; stroke: var(--ok); stroke-width: 2;
 }
 
-.fg-idiom-binding .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-idiom-binding .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-idiom-binding .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-idiom-binding .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-idiom-binding .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-idiom-binding .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-idiom-binding .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-idiom-binding .fg-caption {
@@ -94,6 +118,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-idiom-binding .fg-caption.fg-cap-grid { display: grid; }
+.fg-idiom-binding .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-idiom-binding .fg-cap-live { grid-area: 1 / 1; }
+.fg-idiom-binding [data-info]:focus { outline: none; }
+.fg-idiom-binding [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-idiom-binding .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-idiom-binding .fg-caption code {
@@ -112,13 +141,12 @@
      aria-label="The sentence: The old farmer kicked the bucket. In the literal reading each token carries its own compositional gloss: foot strikes, a pail. In the idiomatic reading the three tokens kicked, the, and bucket fuse into one bracketed green unit glossed died, with binding arcs between the parts. A toggle switches between the readings.">
   <defs>
     <marker id="idb-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
   <text class="idb-note" x="40" y="26">the idiom's parts vouch for each other &#8212; the unit of meaning is bigger than any one token</text>
 
-  <!-- tokens -->
   <rect class="idb-tok" x="40" y="96" width="100" height="38" rx="6"/>
   <text class="idb-word" x="90" y="120">The old</text>
   <rect class="idb-tok" x="152" y="96" width="86" height="38" rx="6"/>
@@ -136,17 +164,15 @@
     <text class="idb-word" x="459" y="120">bucket.</text>
   </g>
 
-  <!-- literal glosses -->
   <g class="idb-lit">
     <text class="idb-gloss" x="293" y="160">struck with a foot</text>
     <text class="idb-gloss" x="459" y="160">a pail</text>
     <text class="idb-gloss" x="374" y="182">reading assembled token by token: a farmer, a foot, a pail &#8212; grammatical, vivid, wrong</text>
   </g>
 
-  <!-- idiomatic state: fused bracket + binding arcs -->
   <g class="idb-idio">
     <path class="idb-bind" d="M 250 88 L 250 74 L 506 74 L 506 88" />
-    <text class="idb-gloss" x="378" y="64" style="fill:#34d399">one unit: "died"</text>
+    <text class="idb-gloss" x="378" y="64" style="fill: var(--ok)">one unit: "died"</text>
     <path class="idb-bind" d="M 300 134 C 320 156, 350 156, 368 140" marker-end="url(#idb-arrow)"/>
     <path class="idb-bind" d="M 452 134 C 430 162, 330 162, 300 142" marker-end="url(#idb-arrow)"/>
     <text class="idb-gloss" x="374" y="196">each part is evidence for the others: "kicked" beside "the bucket" is not about kicking at all</text>
@@ -163,15 +189,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Literal</strong> — assemble the meaning token by token: a farmer, a foot, a pail. Perfectly grammatical, and almost never what the sentence means.' },
+    { cls: 'is-idiom', cap: '<strong>Idiomatic</strong> — <code>kicked the bucket</code> fuses into one unit meaning <strong>died</strong>. No kicking, no bucket. The compositional reading is a decoy built from the very same parts; the tokens must bind to each other to mean anything at all.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const CAP = {
-    lit: '<strong>Literal</strong> — assemble the meaning token by token: a farmer, a foot, a pail. Perfectly grammatical, and almost never what the sentence means.',
-    idiom: '<strong>Idiomatic</strong> — <code>kicked the bucket</code> fuses into one unit meaning <strong>died</strong>. No kicking, no bucket. The compositional reading is a decoy built from the very same parts; the tokens must bind to each other to mean anything at all.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  root.querySelector('[data-fg="toggle"]').addEventListener('click', () => {
-    const on = root.classList.toggle('is-idiom');
-    caption.innerHTML = on ? CAP.idiom : CAP.lit;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

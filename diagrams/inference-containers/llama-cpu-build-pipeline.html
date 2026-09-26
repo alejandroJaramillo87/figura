@@ -11,10 +11,10 @@
 <p>Step through the build: shared base, Zen 5 toolchain, pinned llama.cpp source, AVX-512 cmake configuration, and the minimal runtime stage that receives only the binaries.</p>
 
 <!-- fg:embed-start -->
-<div class="fg-diagram fg-llama-cpu-build">
+<div class="fg-diagram fg-llama-cpu-build-pipeline">
 <style>
 /* fg:begin palette-classic v1 */
-.fg-llama-cpu-build {
+.fg-llama-cpu-build-pipeline {
   --bg: #0f172a;
   --panel: #1e293b;
   --panel-hover: #334155;
@@ -35,88 +35,116 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-llama-cpu-build-pipeline .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-llama-cpu-build-pipeline .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-llama-cpu-build-pipeline .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-llama-cpu-build-pipeline .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-llama-cpu-build-pipeline .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-llama-cpu-build-pipeline .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-llama-cpu-build-pipeline .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-llama-cpu-build-pipeline .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-llama-cpu-build-pipeline .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-llama-cpu-build-pipeline .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-llama-cpu-build-pipeline .fg-fill-line) { fill: var(--line); }
+:where(.fg-llama-cpu-build-pipeline .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-llama-cpu-build-pipeline .fg-fill-border) { fill: var(--border); }
+:where(.fg-llama-cpu-build-pipeline .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-llama-cpu-build-pipeline .fg-fill-text) { fill: var(--text); }
+:where(.fg-llama-cpu-build-pipeline .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-llama-cpu-build-pipeline .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-llama-cpu-build-pipeline .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
-.fg-llama-cpu-build {
+.fg-llama-cpu-build-pipeline {
   background: var(--bg);
   border-radius: var(--radius);
   font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.fg-llama-cpu-build svg { display: block; width: 100%; height: auto; }
-.fg-llama-cpu-build text { font-family: inherit; }
+.fg-llama-cpu-build-pipeline svg { display: block; width: 100%; height: auto; }
+.fg-llama-cpu-build-pipeline text { font-family: inherit; }
 /* fg:end panel-base */
-.fg-llama-cpu-build {
+.fg-llama-cpu-build-pipeline {
   padding: 16px 16px 12px;
 }
 
 
-.fg-llama-cpu-build .lcb-box {
+.fg-llama-cpu-build-pipeline .lcb-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill var(--dur-fast) var(--ease), stroke 0.45s;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast);
 }
-.fg-llama-cpu-build .lcb-zone {
+.fg-llama-cpu-build-pipeline .lcb-zone {
   fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
-  transition: stroke 0.45s;
+  transition: stroke var(--dur-fast);
 }
-.fg-llama-cpu-build .lcb-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
-.fg-llama-cpu-build .lcb-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; opacity: 0.8; transition: fill 0.45s; }
-.fg-llama-cpu-build .lcb-label { fill: var(--muted); font-size: 12px; }
-.fg-llama-cpu-build .lcb-conn {
+.fg-llama-cpu-build-pipeline .lcb-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill var(--dur-fast); }
+.fg-llama-cpu-build-pipeline .lcb-sub { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; opacity: 0.8; transition: fill var(--dur-fast); }
+.fg-llama-cpu-build-pipeline .lcb-label { fill: var(--muted); font-size: 12px; }
+.fg-llama-cpu-build-pipeline .lcb-conn {
   stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.4;
-  transition: stroke 0.45s, opacity 0.45s;
+  transition: stroke var(--dur-fast), opacity var(--dur-fast);
 }
-.fg-llama-cpu-build .lcb-copy {
+.fg-llama-cpu-build-pipeline .lcb-copy {
   stroke: var(--line); stroke-width: 2.5; fill: none; opacity: 0.3;
-  transition: stroke 0.45s, opacity 0.45s;
+  transition: stroke var(--dur-fast), opacity var(--dur-fast);
 }
 
-.fg-llama-cpu-build.is-step-1 .lcb-s1 .lcb-box,
-.fg-llama-cpu-build.is-step-2 .lcb-s2 .lcb-box,
-.fg-llama-cpu-build.is-step-3 .lcb-s3 .lcb-box,
-.fg-llama-cpu-build.is-step-4 .lcb-s4 .lcb-box { fill: var(--accent-dim); stroke: var(--accent); }
-.fg-llama-cpu-build.is-step-5 .lcb-s5 .lcb-box { fill: var(--ok-dim); stroke: var(--ok); }
-.fg-llama-cpu-build.is-step-1 .lcb-s1 .lcb-title,
-.fg-llama-cpu-build.is-step-2 .lcb-s2 .lcb-title,
-.fg-llama-cpu-build.is-step-3 .lcb-s3 .lcb-title,
-.fg-llama-cpu-build.is-step-4 .lcb-s4 .lcb-title,
-.fg-llama-cpu-build.is-step-5 .lcb-s5 .lcb-title { fill: var(--text); }
+.fg-llama-cpu-build-pipeline.is-step-1 .lcb-s1 .lcb-box,
+.fg-llama-cpu-build-pipeline.is-step-2 .lcb-s2 .lcb-box,
+.fg-llama-cpu-build-pipeline.is-step-3 .lcb-s3 .lcb-box,
+.fg-llama-cpu-build-pipeline.is-step-4 .lcb-s4 .lcb-box { fill: var(--accent-dim); stroke: var(--accent); }
+.fg-llama-cpu-build-pipeline.is-step-5 .lcb-s5 .lcb-box { fill: var(--ok-dim); stroke: var(--ok); }
+.fg-llama-cpu-build-pipeline.is-step-1 .lcb-s1 .lcb-title,
+.fg-llama-cpu-build-pipeline.is-step-2 .lcb-s2 .lcb-title,
+.fg-llama-cpu-build-pipeline.is-step-3 .lcb-s3 .lcb-title,
+.fg-llama-cpu-build-pipeline.is-step-4 .lcb-s4 .lcb-title,
+.fg-llama-cpu-build-pipeline.is-step-5 .lcb-s5 .lcb-title { fill: var(--text); }
 
 /* stage-N done state: keep visited boxes lit */
-.fg-llama-cpu-build .lcb-stage.is-done .lcb-box { fill: var(--accent-dim); stroke: var(--line); }
-.fg-llama-cpu-build .lcb-stage.is-done .lcb-title { fill: var(--text); }
+.fg-llama-cpu-build-pipeline .lcb-stage.is-done .lcb-box { fill: var(--accent-dim); stroke: var(--line); }
+.fg-llama-cpu-build-pipeline .lcb-stage.is-done .lcb-title { fill: var(--text); }
 
 /* copy arrows light at step 5 */
-.fg-llama-cpu-build.is-step-5 .lcb-copy { stroke: var(--ok); opacity: 1; stroke-dasharray: 5 4; animation: fg-lcb-flow 1.2s linear infinite; }
+.fg-llama-cpu-build-pipeline.is-step-5 .lcb-copy { stroke: var(--ok); opacity: 1; stroke-dasharray: 5 4; animation: fg-lcb-flow 1.2s linear infinite; }
 @keyframes fg-lcb-flow { to { stroke-dashoffset: -18; } }
 
-.fg-llama-cpu-build .fg-caption {
-  margin-top: 10px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+/* fg:begin caption-box v1 */
+.fg-llama-cpu-build-pipeline .fg-caption {
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  color: var(--muted); font-size: 13px; min-height: 4.8em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
-.fg-llama-cpu-build .fg-caption.is-active { color: var(--text); }
-.fg-llama-cpu-build .fg-caption strong { color: var(--accent); font-weight: 600; }
-.fg-llama-cpu-build .fg-caption code {
+.fg-llama-cpu-build-pipeline .fg-caption.fg-cap-grid { display: grid; }
+.fg-llama-cpu-build-pipeline .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-llama-cpu-build-pipeline .fg-cap-live { grid-area: 1 / 1; }
+.fg-llama-cpu-build-pipeline [data-info]:focus { outline: none; }
+.fg-llama-cpu-build-pipeline [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-llama-cpu-build-pipeline .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
+.fg-llama-cpu-build-pipeline .fg-caption.is-active { color: var(--text); }
+.fg-llama-cpu-build-pipeline .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-llama-cpu-build-pipeline .fg-caption code {
   font-family: var(--mono); font-size: 12px; color: var(--warn);
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
 
 /* fg:begin controls-bar v1 */
-.fg-llama-cpu-build .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-.fg-llama-cpu-build .fg-controls button {
+.fg-llama-cpu-build-pipeline .fg-controls { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.fg-llama-cpu-build-pipeline .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 6px; width: 34px; height: 28px; font-size: 13px;
   cursor: pointer; padding: 0; line-height: 1;
 }
-.fg-llama-cpu-build .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
-.fg-llama-cpu-build .fg-controls [data-fg="counter"] {
+.fg-llama-cpu-build-pipeline .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); }
+.fg-llama-cpu-build-pipeline .fg-controls [data-fg="counter"] {
   color: var(--muted); font-size: 12px; margin-left: 4px;
   font-variant-numeric: tabular-nums;
 }
@@ -124,7 +152,7 @@
 
 /* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-llama-cpu-build, .fg-llama-cpu-build * { transition: none !important; animation: none !important; }
+  .fg-llama-cpu-build-pipeline, .fg-llama-cpu-build-pipeline * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
 </style>
@@ -133,14 +161,13 @@
      aria-label="Multi-stage build of the llama-cpu image: both stages start from the same pinned debian:trixie-slim base. The builder stage installs gcc-14 with Zen 5 flags, clones llama.cpp at a pinned commit, and compiles llama-server with AVX-512 cmake flags. The runtime stage receives only the server binary and its shared libraries.">
   <defs>
     <marker id="lcb-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="lcb-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
-  <!-- shared base -->
   <g class="lcb-stage lcb-s1">
     <rect class="lcb-box" x="210" y="16" width="300" height="52" rx="8"/>
     <text class="lcb-title" x="360" y="38">debian:trixie-slim (pinned digest)</text>
@@ -149,7 +176,6 @@
   <path class="lcb-conn" d="M 280 68 L 200 100" marker-end="url(#lcb-arrow)"/>
   <path class="lcb-conn" d="M 440 68 L 540 288" marker-end="url(#lcb-arrow)"/>
 
-  <!-- builder zone -->
   <rect class="lcb-zone" x="16" y="96" width="420" height="240" rx="10"/>
   <text class="lcb-label" x="30" y="118">stage 1: builder</text>
 
@@ -169,7 +195,6 @@
     <text class="lcb-sub" x="226" y="308">AVX512 VNNI VBMI BF16 · LTO · target llama-server</text>
   </g>
 
-  <!-- runtime zone -->
   <rect class="lcb-zone" x="456" y="96" width="248" height="240" rx="10"/>
   <text class="lcb-label" x="470" y="118">stage 2: runtime</text>
 
@@ -190,15 +215,14 @@
 <div class="fg-caption" data-fg="caption">Press play or step through the build.</div>
 
 <div class="fg-controls">
-  <button data-fg="prev" aria-label="Previous step">‹</button>
-  <button data-fg="play" aria-label="Play or pause">▶</button>
-  <button data-fg="next" aria-label="Next step">›</button>
+  <button type="button" data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button type="button" data-fg="play" aria-label="Play or pause" aria-pressed="false">&#9654;&#xFE0E;</button>
+  <button type="button" data-fg="next" aria-label="Next step">&#8250;</button>
   <span data-fg="counter"></span>
 </div>
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
-  const caption = root.querySelector('[data-fg="caption"]');
   const TOTAL = 5, STEP_MS = 2800;
 
   const CAPTIONS = [
@@ -211,7 +235,7 @@
   ];
 
   // fg:begin timeline-core v1
-  let step = 0, timer = null;
+  let step = 0, timer = null, held = false; // held: the reader paused; autoplay stays off
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
@@ -227,13 +251,14 @@
     pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
-  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
-  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
-  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  btn('prev').addEventListener('click', () => { held = true; tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { held = true; tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => { held = tl.playing; held ? tl.pause() : tl.play(); });
   const counter = btn('counter');
   function sync() {
     if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
-    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+    btn('play').textContent = tl.playing ? '\u275A\u275A' : '\u25B6\uFE0E'; // FE0E: text glyph, not emoji
+    btn('play').setAttribute('aria-pressed', String(tl.playing));
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
@@ -245,19 +270,47 @@
     root.querySelectorAll('.lcb-stage').forEach((g, i) => {
       g.classList.toggle('is-done', i + 1 < s);
     });
-    const c = CAPTIONS[s];
-    caption.innerHTML = '';
-    if (Array.isArray(c)) {
-      const strong = document.createElement('strong');
-      strong.textContent = s + '. ' + c[0];
-      caption.appendChild(strong);
-      caption.appendChild(document.createTextNode(' — ' + c[1]));
-      caption.classList.add('is-active');
-    } else {
-      caption.textContent = c;
-      caption.classList.remove('is-active');
-    }
   });
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
+  const caption = root.querySelector('[data-fg="caption"]');
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin step-caption v1
+  // CAPTIONS[step] is plain text, or [title, text] shown as "N. title — text"
+  // with the caption marked active.
+  function stepCaptionHtml(s) {
+    const c = CAPTIONS[s];
+    return Array.isArray(c) ? '<strong>' + escHtml(s + '. ' + c[0]) + '</strong> \u2014 ' + escHtml(c[1]) : escHtml(c);
+  }
+  reserveCaption(CAPTIONS.map((c, s) => stepCaptionHtml(s)));
+  root.addEventListener('fg:step', (e) => {
+    setCaption(stepCaptionHtml(e.detail.step));
+    if (caption) caption.classList.toggle('is-active', Array.isArray(CAPTIONS[e.detail.step]));
+  });
+  // fg:end step-caption
 
   // fg:begin timeline-start v1
   apply();
@@ -265,7 +318,12 @@
     tl.go(TOTAL); // show final state, manual stepping still available
   } else {
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      // The first callback reports any overlap as intersecting, so test the
+      // ratio; a reader who paused keeps control until they press play.
+      (entries) => entries.forEach((e) => {
+        if (e.intersectionRatio < 0.3) tl.pause();
+        else if (!held) tl.play();
+      }),
       { threshold: 0.3 }
     );
     io.observe(root);

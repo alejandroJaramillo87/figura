@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Entity flip</h1>
+<h1>Entity flip: Turkey the country, turkey the dinner</h1>
 <p>"Turkey was dry." At sentence start, capitalization is forced — so nothing in the token says whether it names a country or a roast. The preceding context decides.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-entity-flip .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-entity-flip .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-entity-flip .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-entity-flip .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-entity-flip .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-entity-flip .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-entity-flip .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-entity-flip .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-entity-flip .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-entity-flip .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-entity-flip .fg-fill-line) { fill: var(--line); }
+:where(.fg-entity-flip .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-entity-flip .fg-fill-border) { fill: var(--border); }
+:where(.fg-entity-flip .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-entity-flip .fg-fill-text) { fill: var(--text); }
+:where(.fg-entity-flip .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-entity-flip .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-entity-flip .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-entity-flip {
@@ -57,7 +77,7 @@
 
 .fg-entity-flip .etf-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease);
+  transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease);
 }
 .fg-entity-flip .etf-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 .fg-entity-flip .etf-note { fill: var(--muted); font-size: 11px; }
@@ -67,8 +87,8 @@
 .fg-entity-flip .etf-turkey .etf-word { fill: var(--accent); font-weight: 600; }
 
 /* context states: dinner (default) / summit */
-.fg-entity-flip .etf-c-dinner { opacity: 1; transition: opacity 0.7s var(--ease); }
-.fg-entity-flip .etf-c-summit { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-entity-flip .etf-c-dinner { opacity: 1; transition: opacity var(--dur-slow) var(--ease); }
+.fg-entity-flip .etf-c-summit { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-entity-flip.is-summit .etf-c-dinner { opacity: 0; }
 .fg-entity-flip.is-summit .etf-c-summit { opacity: 1; }
 
@@ -79,9 +99,9 @@
 /* label cards under the token */
 .fg-entity-flip .etf-card rect {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s, stroke 0.7s, opacity 0.7s;
+  transition: fill var(--dur-slow), stroke var(--dur-slow), opacity var(--dur-slow);
 }
-.fg-entity-flip .etf-card { transition: opacity 0.7s; }
+.fg-entity-flip .etf-card { transition: opacity var(--dur-slow); }
 .fg-entity-flip:not(.is-summit) .etf-card-dinner rect,
 .fg-entity-flip.is-summit .etf-card-summit rect { stroke: var(--ok); fill: var(--ok-dim); }
 .fg-entity-flip:not(.is-summit) .etf-card-summit,
@@ -90,18 +110,22 @@
 /* information-need arcs */
 .fg-entity-flip .etf-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-entity-flip:not(.is-summit) .etf-arc-dinner { opacity: 1; }
 .fg-entity-flip.is-summit .etf-arc-summit { opacity: 1; }
 
-.fg-entity-flip .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-entity-flip .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-entity-flip .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-entity-flip .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-entity-flip .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-entity-flip .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-entity-flip .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-entity-flip .fg-caption {
@@ -111,6 +135,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-entity-flip .fg-caption.fg-cap-grid { display: grid; }
+.fg-entity-flip .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-entity-flip .fg-cap-live { grid-area: 1 / 1; }
+.fg-entity-flip [data-info]:focus { outline: none; }
+.fg-entity-flip [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-entity-flip .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-entity-flip .fg-caption code {
@@ -129,13 +158,12 @@
      aria-label="The sentence: Turkey was dry. — preceded by one of two toggled contexts: Thanksgiving went badly this year, or The summit communique was blunt. Below the capitalized word Turkey sit two cards, common noun the roast and named entity the country; the matching card lights per context, and an arc connects Turkey back to the cue word. A note marks that sentence-initial capitalization is forced and therefore uninformative.">
   <defs>
     <marker id="etf-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
   <text class="etf-note" x="40" y="26">sentence-initial position forces the capital &#8212; the usual entity cue is neutralized</text>
 
-  <!-- context line -->
   <g class="etf-c-dinner">
     <g class="etf-cue-dinner">
       <rect class="etf-tok" x="40" y="48" width="140" height="34" rx="6"/>
@@ -155,7 +183,6 @@
     <text class="etf-word" x="363" y="70">was blunt.</text>
   </g>
 
-  <!-- target sentence -->
   <g class="etf-turkey">
     <rect class="etf-tok" x="40" y="118" width="86" height="34" rx="6"/>
     <text class="etf-word" x="83" y="140">Turkey</text>
@@ -163,11 +190,9 @@
   <rect class="etf-tok" x="134" y="118" width="100" height="34" rx="6"/>
   <text class="etf-word" x="184" y="140">was dry.</text>
 
-  <!-- arcs -->
   <path class="etf-arc etf-arc-dinner" d="M 85 118 C 90 100, 98 92, 106 86" marker-end="url(#etf-arrow)"/>
   <path class="etf-arc etf-arc-summit" d="M 100 118 C 120 102, 155 96, 185 86" marker-end="url(#etf-arrow)"/>
 
-  <!-- cards -->
   <g class="etf-card etf-card-dinner">
     <rect x="120" y="200" width="210" height="56" rx="8"/>
     <text class="etf-word" x="225" y="224" font-weight="600">common noun</text>
@@ -190,15 +215,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Common noun</strong> — after "Thanksgiving went badly", <code>Turkey</code> is the roast. The capital letter is just sentence-initial convention; the entity decision came from the previous sentence.' },
+    { cls: 'is-summit', cap: '<strong>Named entity</strong> — after "The summit communiqué was blunt", the same capitalized token names a country. Capitalization helps mid-sentence, but here it is forced — so it carries no information at all.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const CAP = {
-    dinner: '<strong>Common noun</strong> — after "Thanksgiving went badly", <code>Turkey</code> is the roast. The capital letter is just sentence-initial convention; the entity decision came from the previous sentence.',
-    summit: '<strong>Named entity</strong> — after "The summit communiqué was blunt", the same capitalized token names a country. Capitalization helps mid-sentence, but here it is forced — so it carries no information at all.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  root.querySelector('[data-fg="toggle"]').addEventListener('click', () => {
-    const on = root.classList.toggle('is-summit');
-    caption.innerHTML = on ? CAP.summit : CAP.dinner;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

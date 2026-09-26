@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Quantifier scope</h1>
+<h1>Quantifier scope: one book, or one each?</h1>
 <p>"Every student read a book." One shared book, or one per student? Same tokens, same parse — two different worlds.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-quantifier-scope .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-quantifier-scope .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-quantifier-scope .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-quantifier-scope .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-quantifier-scope .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-quantifier-scope .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-quantifier-scope .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-quantifier-scope .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-quantifier-scope .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-quantifier-scope .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-quantifier-scope .fg-fill-line) { fill: var(--line); }
+:where(.fg-quantifier-scope .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-quantifier-scope .fg-fill-border) { fill: var(--border); }
+:where(.fg-quantifier-scope .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-quantifier-scope .fg-fill-text) { fill: var(--text); }
+:where(.fg-quantifier-scope .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-quantifier-scope .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-quantifier-scope .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-quantifier-scope {
@@ -70,7 +90,7 @@
 .fg-quantifier-scope .qts-book text { fill: var(--text); font-size: 11px; text-anchor: middle; }
 
 /* reading states cross-fade */
-.fg-quantifier-scope .qts-view { transition: opacity 0.7s var(--ease); }
+.fg-quantifier-scope .qts-view { transition: opacity var(--dur-slow) var(--ease); }
 .fg-quantifier-scope .qts-view-shared { opacity: 1; }
 .fg-quantifier-scope .qts-view-each { opacity: 0; }
 .fg-quantifier-scope.is-each .qts-view-shared { opacity: 0; }
@@ -79,19 +99,23 @@
 .fg-quantifier-scope .qts-map { fill: none; stroke: var(--ok); stroke-width: 2; }
 
 /* glosses cross-fade */
-.fg-quantifier-scope .qts-gloss { transition: opacity 0.7s; font-size: 12px; fill: var(--ok); }
+.fg-quantifier-scope .qts-gloss { transition: opacity var(--dur-slow); font-size: 12px; fill: var(--ok); }
 .fg-quantifier-scope .qts-gloss-shared { opacity: 1; }
 .fg-quantifier-scope .qts-gloss-each { opacity: 0; }
 .fg-quantifier-scope.is-each .qts-gloss-shared { opacity: 0; }
 .fg-quantifier-scope.is-each .qts-gloss-each { opacity: 1; }
 
-.fg-quantifier-scope .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-quantifier-scope .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-quantifier-scope .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-quantifier-scope .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-quantifier-scope .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-quantifier-scope .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-quantifier-scope .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-quantifier-scope .fg-caption {
@@ -101,10 +125,15 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-quantifier-scope .fg-caption.fg-cap-grid { display: grid; }
+.fg-quantifier-scope .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-quantifier-scope .fg-cap-live { grid-area: 1 / 1; }
+.fg-quantifier-scope [data-info]:focus { outline: none; }
+.fg-quantifier-scope [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-quantifier-scope .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-quantifier-scope .fg-caption code {
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--mono);
   font-size: 12px; color: var(--warn);
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
@@ -120,7 +149,6 @@
      aria-label="The sentence: Every student read a book, as token blocks, with every outlined in violet and a book outlined in amber. Below, three student circles and book icons. A button flips between the two readings. Shared reading: all three students' arrows converge on a single book. One-each reading: each student pairs with their own book. The tokens and the parse are identical in both; the number of books in the world is not.">
   <text class="qts-note" x="40" y="26">same tokens, same tree &#8212; the readings differ in which quantifier takes the outer loop</text>
 
-  <!-- token row -->
   <g class="qts-every">
     <rect class="qts-tok" x="120" y="46" width="60" height="34" rx="6"/>
     <text class="qts-word" x="150" y="68">Every</text>
@@ -136,14 +164,12 @@
     <text class="qts-word" x="403" y="68">book.</text>
   </g>
 
-  <!-- students (shared by both views) -->
   <g class="qts-stud">
     <circle cx="150" cy="140" r="16"/><text x="150" y="145">S1</text>
     <circle cx="150" cy="185" r="16"/><text x="150" y="190">S2</text>
     <circle cx="150" cy="230" r="16"/><text x="150" y="235">S3</text>
   </g>
 
-  <!-- shared-book view -->
   <g class="qts-view qts-view-shared">
     <g class="qts-book">
       <rect x="420" y="169" width="54" height="32" rx="6"/><text x="447" y="189">book</text>
@@ -153,7 +179,6 @@
     <path class="qts-map" d="M 170 230 C 280 230, 340 200, 416 190"/>
   </g>
 
-  <!-- one-each view -->
   <g class="qts-view qts-view-each">
     <g class="qts-book">
       <rect x="420" y="124" width="54" height="32" rx="6"/><text x="447" y="144">book&#8321;</text>
@@ -165,7 +190,6 @@
     <path class="qts-map" d="M 170 230 L 416 230"/>
   </g>
 
-  <!-- glosses -->
   <text class="qts-gloss qts-gloss-shared" x="510" y="180">one book, three readers</text>
   <text class="qts-gloss qts-gloss-each" x="510" y="180">three books, one reader each</text>
 
@@ -180,16 +204,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Shared book</strong> — "a book" takes wide scope: <code>book = pick(); for s in students: read(s, book)</code>. One object exists; the inner loop reuses it. Often the classroom reading.' },
+    { cls: 'is-each', cap: '<strong>One each</strong> — "every student" takes wide scope: <code>for s in students: read(s, pick())</code>. The picking moved inside the loop, so three books exist. Same tokens; different loop order; different world.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    shared: '<strong>Shared book</strong> — "a book" takes wide scope: <code>book = pick(); for s in students: read(s, book)</code>. One object exists; the inner loop reuses it. Often the classroom reading.',
-    each: '<strong>One each</strong> — "every student" takes wide scope: <code>for s in students: read(s, pick())</code>. The picking moved inside the loop, so three books exist. Same tokens; different loop order; different world.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const each = root.classList.toggle('is-each');
-    caption.innerHTML = each ? CAP.each : CAP.shared;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-training-job-lifecycle .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-training-job-lifecycle .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-training-job-lifecycle .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-training-job-lifecycle .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-training-job-lifecycle .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-training-job-lifecycle .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-training-job-lifecycle .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-training-job-lifecycle .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-training-job-lifecycle .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-training-job-lifecycle .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-training-job-lifecycle .fg-fill-line) { fill: var(--line); }
+:where(.fg-training-job-lifecycle .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-training-job-lifecycle .fg-fill-border) { fill: var(--border); }
+:where(.fg-training-job-lifecycle .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-training-job-lifecycle .fg-fill-text) { fill: var(--text); }
+:where(.fg-training-job-lifecycle .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-training-job-lifecycle .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-training-job-lifecycle .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-training-job-lifecycle {
@@ -57,19 +77,19 @@
 
 .fg-training-job-lifecycle .tjl-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill var(--dur-fast) var(--ease), stroke 0.45s, opacity 0.45s;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast), opacity var(--dur-fast);
 }
-.fg-training-job-lifecycle .tjl-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
-.fg-training-job-lifecycle .tjl-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; opacity: 0.75; transition: fill 0.45s, opacity 0.45s; }
+.fg-training-job-lifecycle .tjl-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill var(--dur-fast); }
+.fg-training-job-lifecycle .tjl-sub { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; opacity: 0.75; transition: fill var(--dur-fast), opacity var(--dur-fast); }
 .fg-training-job-lifecycle .tjl-label { fill: var(--muted); font-size: 12px; }
 .fg-training-job-lifecycle .tjl-mount {
   stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.35;
-  transition: stroke 0.45s, opacity 0.45s;
+  transition: stroke var(--dur-fast), opacity var(--dur-fast);
 }
-.fg-training-job-lifecycle .tjl-mount-label { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); opacity: 0.5; transition: fill 0.45s, opacity 0.45s; }
+.fg-training-job-lifecycle .tjl-mount-label { fill: var(--muted); font-size: 11px; font-family: var(--mono); opacity: 0.5; transition: fill var(--dur-fast), opacity var(--dur-fast); }
 
 /* the container itself: appears at step 1, hardens at 2, active 3-4, gone at 5 */
-.fg-training-job-lifecycle .tjl-container { opacity: 0.25; transition: opacity 0.45s; }
+.fg-training-job-lifecycle .tjl-container { opacity: 0.25; transition: opacity var(--dur-fast); }
 .fg-training-job-lifecycle.is-step-1 .tjl-container, .fg-training-job-lifecycle.is-step-2 .tjl-container,
 .fg-training-job-lifecycle.is-step-3 .tjl-container, .fg-training-job-lifecycle.is-step-4 .tjl-container
   { opacity: 1; }
@@ -92,7 +112,7 @@
 /* draw-in: mount connectors draw themselves at step 2, staggered per mount */
 .fg-training-job-lifecycle .tjl-draw {
   stroke-dasharray: 1; stroke-dashoffset: 1;
-  transition: stroke-dashoffset 0.9s var(--ease) var(--d, 0s), stroke 0.45s, opacity 0.45s;
+  transition: stroke-dashoffset calc(var(--dur-slow) * 1.3) var(--ease) var(--d, 0s), stroke var(--dur-fast), opacity var(--dur-fast);
 }
 .fg-training-job-lifecycle.is-step-2 .tjl-draw, .fg-training-job-lifecycle.is-step-3 .tjl-draw,
 .fg-training-job-lifecycle.is-step-4 .tjl-draw, .fg-training-job-lifecycle.is-step-5 .tjl-draw
@@ -106,7 +126,7 @@
   { opacity: 1; fill: var(--text); }
 
 /* checkpoint write path lights at step 4 */
-.fg-training-job-lifecycle .tjl-ckpt { stroke: var(--line); stroke-width: 2.5; fill: none; opacity: 0.3; transition: stroke 0.45s, opacity 0.45s; }
+.fg-training-job-lifecycle .tjl-ckpt { stroke: var(--line); stroke-width: 2.5; fill: none; opacity: 0.3; transition: stroke var(--dur-fast), opacity var(--dur-fast); }
 .fg-training-job-lifecycle.is-step-4 .tjl-ckpt { stroke: var(--ok); opacity: 1; stroke-dasharray: 5 4; animation: fg-tjl-flow 1.2s linear infinite; }
 @keyframes fg-tjl-flow { to { stroke-dashoffset: -18; } }
 
@@ -124,13 +144,21 @@
 .fg-training-job-lifecycle.is-step-5 .tjl-persist .tjl-box { stroke: var(--ok); }
 .fg-training-job-lifecycle.is-step-5 .tjl-persist .tjl-title { fill: var(--text); }
 
+/* fg:begin caption-box v1 */
 .fg-training-job-lifecycle .fg-caption {
-  margin-top: 10px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  color: var(--muted); font-size: 13px; min-height: 4.8em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-training-job-lifecycle .fg-caption.fg-cap-grid { display: grid; }
+.fg-training-job-lifecycle .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-training-job-lifecycle .fg-cap-live { grid-area: 1 / 1; }
+.fg-training-job-lifecycle [data-info]:focus { outline: none; }
+.fg-training-job-lifecycle [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-training-job-lifecycle .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
 .fg-training-job-lifecycle .fg-caption.is-active { color: var(--text); }
 .fg-training-job-lifecycle .fg-caption strong { color: var(--accent); font-weight: 600; }
 .fg-training-job-lifecycle .fg-caption code {
@@ -166,14 +194,13 @@
      aria-label="Lifecycle of one training job: docker compose run creates an ephemeral hardened container; the model, recipe, and code mounts attach read-only alongside the writable training root and a narrow read-write window for exported GGUFs; the job trains against the reserved GPU; checkpoints stream to the training root; the container is removed and the GPU released while the data mounts persist.">
   <defs>
     <marker id="tjl-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="tjl-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
-  <!-- invocation -->
   <g class="tjl-stage tjl-s1">
     <rect class="tjl-box" x="20" y="24" width="300" height="56" rx="8"/>
     <text class="tjl-title" x="170" y="48">docker compose run --rm training</text>
@@ -181,7 +208,6 @@
   </g>
   <path class="tjl-mount" d="M 170 80 L 170 116" marker-end="url(#tjl-arrow)"/>
 
-  <!-- the ephemeral container -->
   <g class="tjl-container">
     <g class="tjl-stage tjl-s2">
       <rect class="tjl-box" x="20" y="120" width="440" height="140" rx="10"/>
@@ -196,7 +222,6 @@
     </g>
   </g>
 
-  <!-- GPU -->
   <g class="tjl-stage tjl-gpu">
     <rect class="tjl-box" x="520" y="140" width="180" height="56" rx="8"/>
     <text class="tjl-title" x="610" y="164">RTX 5090</text>
@@ -204,7 +229,6 @@
   </g>
   <path class="tjl-mount tjl-draw" pathLength="1" d="M 460 176 L 516 172" marker-end="url(#tjl-arrow)"/>
 
-  <!-- mounts: three read-only, the training root, and the narrow export window -->
   <g class="tjl-stage tjl-s2b">
     <rect class="tjl-box" x="20" y="296" width="160" height="56" rx="8"/>
     <text class="tjl-title" x="100" y="318">/mnt/ai-data/models</text>
@@ -237,15 +261,14 @@
   <path class="tjl-mount tjl-draw" pathLength="1" style="--d: 0.45s" d="M 629 292 L 456 250"/>
   <text class="tjl-mount-label" x="540" y="280">ro</text>
 
-  <!-- step-4 comet: a checkpoint traveling the write path -->
   <g class="tjl-comet">
-    <circle class="tjl-comet-head" r="5" fill="#34d399">
+    <circle class="tjl-comet-head fg-fill-ok" r="5">
       <animateMotion id="tjl-comet-run" dur="1.2s" begin="indefinite" repeatCount="2"><mpath href="#tjl-ckpt-route"/></animateMotion>
     </circle>
-    <circle r="3.5" fill="#34d399" opacity="0.5">
+    <circle class="fg-fill-ok" r="3.5" opacity="0.5">
       <animateMotion dur="1.2s" begin="tjl-comet-run.begin+0.1s" repeatCount="2"><mpath href="#tjl-ckpt-route"/></animateMotion>
     </circle>
-    <circle r="2.5" fill="#34d399" opacity="0.3">
+    <circle class="fg-fill-ok" r="2.5" opacity="0.3">
       <animateMotion dur="1.2s" begin="tjl-comet-run.begin+0.2s" repeatCount="2"><mpath href="#tjl-ckpt-route"/></animateMotion>
     </circle>
   </g>
@@ -256,15 +279,39 @@
 <div class="fg-caption" data-fg="caption">Press play or step through one training job.</div>
 
 <div class="fg-controls">
-  <button data-fg="prev" aria-label="Previous step">‹</button>
-  <button data-fg="play" aria-label="Play or pause">▶</button>
-  <button data-fg="next" aria-label="Next step">›</button>
+  <button type="button" data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button type="button" data-fg="play" aria-label="Play or pause" aria-pressed="false">&#9654;&#xFE0E;</button>
+  <button type="button" data-fg="next" aria-label="Next step">&#8250;</button>
   <span data-fg="counter"></span>
 </div>
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
-  const caption = root.querySelector('[data-fg="caption"]');
+  // fg:begin instance-ids v1
+  // Ids are page-global once inlined. In the second and later copies of this
+  // diagram on one page, suffix every id and rewrite the references to them
+  // (href, url(#...), SMIL syncbase begin/end), so animation timing binds to
+  // this copy's own elements instead of the first copy's.
+  {
+    const copies = [...document.querySelectorAll('.fg-diagram.' + root.classList[1])];
+    const nth = copies.indexOf(root);
+    if (nth > 0) {
+      const sfx = '-i' + nth;
+      const ids = new Set();
+      root.querySelectorAll('[id]').forEach((el) => { ids.add(el.id); el.id += sfx; });
+      root.querySelectorAll('*').forEach((el) => {
+        for (const a of [...el.attributes]) {
+          let v = a.value;
+          if ((a.name === 'href' || a.name === 'xlink:href') && v[0] === '#' && ids.has(v.slice(1))) v += sfx;
+          else if (a.name === 'begin' || a.name === 'end') {
+            v = v.replace(/([\w-]+)\.(begin|end)/g, (m, id, e) => (ids.has(id) ? id + sfx + '.' + e : m));
+          } else v = v.replace(/url\(#([\w-]+)\)/g, (m, id) => (ids.has(id) ? 'url(#' + id + sfx + ')' : m));
+          if (v !== a.value) el.setAttribute(a.name, v);
+        }
+      });
+    }
+  }
+  // fg:end instance-ids
   const TOTAL = 5, STEP_MS = 2800;
 
   const CAPTIONS = [
@@ -277,7 +324,7 @@
   ];
 
   // fg:begin timeline-core v1
-  let step = 0, timer = null;
+  let step = 0, timer = null, held = false; // held: the reader paused; autoplay stays off
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
@@ -293,34 +340,19 @@
     pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
-  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
-  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
-  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  btn('prev').addEventListener('click', () => { held = true; tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { held = true; tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => { held = tl.playing; held ? tl.pause() : tl.play(); });
   const counter = btn('counter');
   function sync() {
     if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
-    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+    btn('play').textContent = tl.playing ? '\u275A\u275A' : '\u25B6\uFE0E'; // FE0E: text glyph, not emoji
+    btn('play').setAttribute('aria-pressed', String(tl.playing));
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // fg:end timeline-core
-
-  root.addEventListener('fg:step', (e) => {
-    const s = e.detail.step;
-    const c = CAPTIONS[s];
-    caption.innerHTML = '';
-    if (Array.isArray(c)) {
-      const strong = document.createElement('strong');
-      strong.textContent = s + '. ' + c[0];
-      caption.appendChild(strong);
-      caption.appendChild(document.createTextNode(' — ' + c[1]));
-      caption.classList.add('is-active');
-    } else {
-      caption.textContent = c;
-      caption.classList.remove('is-active');
-    }
-  });
 
   // step-triggered comet: kick only the head; trails chain via syncbase timing
   root.addEventListener('fg:step', (e) => {
@@ -329,13 +361,58 @@
     }
   });
 
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
+  const caption = root.querySelector('[data-fg="caption"]');
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin step-caption v1
+  // CAPTIONS[step] is plain text, or [title, text] shown as "N. title — text"
+  // with the caption marked active.
+  function stepCaptionHtml(s) {
+    const c = CAPTIONS[s];
+    return Array.isArray(c) ? '<strong>' + escHtml(s + '. ' + c[0]) + '</strong> \u2014 ' + escHtml(c[1]) : escHtml(c);
+  }
+  reserveCaption(CAPTIONS.map((c, s) => stepCaptionHtml(s)));
+  root.addEventListener('fg:step', (e) => {
+    setCaption(stepCaptionHtml(e.detail.step));
+    if (caption) caption.classList.toggle('is-active', Array.isArray(CAPTIONS[e.detail.step]));
+  });
+  // fg:end step-caption
+
   // fg:begin timeline-start v1
   apply();
   if (reduced) {
     tl.go(TOTAL); // show final state, manual stepping still available
   } else {
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      // The first callback reports any overlap as intersecting, so test the
+      // ratio; a reader who paused keeps control until they press play.
+      (entries) => entries.forEach((e) => {
+        if (e.intersectionRatio < 0.3) tl.pause();
+        else if (!held) tl.play();
+      }),
       { threshold: 0.3 }
     );
     io.observe(root);

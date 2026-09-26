@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Tense and aspect interpretation</h1>
+<h1>Tense and aspect: does the state persist?</h1>
 <p>"I've lived here for years" vs "I lived here for years" — and in Mandarin, tense has no tokens at all.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-tense-aspect .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-tense-aspect .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-tense-aspect .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-tense-aspect .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-tense-aspect .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-tense-aspect .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-tense-aspect .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-tense-aspect .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-tense-aspect .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-tense-aspect .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-tense-aspect .fg-fill-line) { fill: var(--line); }
+:where(.fg-tense-aspect .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-tense-aspect .fg-fill-border) { fill: var(--border); }
+:where(.fg-tense-aspect .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-tense-aspect .fg-fill-text) { fill: var(--text); }
+:where(.fg-tense-aspect .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-tense-aspect .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-tense-aspect .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-tense-aspect {
@@ -62,7 +82,7 @@
 .fg-tense-aspect .tns-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
 
 /* sentence variants cross-fade */
-.fg-tense-aspect .tns-sent { transition: opacity 0.7s var(--ease); }
+.fg-tense-aspect .tns-sent { transition: opacity var(--dur-slow) var(--ease); }
 .fg-tense-aspect .tns-sent text { fill: var(--text); font-size: 14px; }
 .fg-tense-aspect .tns-sent .tns-verb { fill: var(--warn); }
 .fg-tense-aspect .tns-sent-perf { opacity: 1; }
@@ -73,13 +93,13 @@
 /* timeline */
 .fg-tense-aspect .tns-axis { stroke: var(--line); stroke-width: 1.5; }
 .fg-tense-aspect .tns-now { stroke: var(--accent); stroke-width: 2; }
-.fg-tense-aspect .tns-state { transition: opacity 0.7s; }
+.fg-tense-aspect .tns-state { transition: opacity var(--dur-slow); }
 .fg-tense-aspect .tns-state rect { fill: var(--ok-dim); stroke: var(--ok); stroke-width: 1.5; }
 .fg-tense-aspect .tns-state-perf { opacity: 1; }
 .fg-tense-aspect .tns-state-past { opacity: 0; }
 .fg-tense-aspect.is-past .tns-state-perf { opacity: 0; }
 .fg-tense-aspect.is-past .tns-state-past { opacity: 1; }
-.fg-tense-aspect .tns-gloss { transition: opacity 0.7s; font-size: 12px; fill: var(--ok); }
+.fg-tense-aspect .tns-gloss { transition: opacity var(--dur-slow); font-size: 12px; fill: var(--ok); }
 .fg-tense-aspect .tns-gloss-perf { opacity: 1; }
 .fg-tense-aspect .tns-gloss-past { opacity: 0; }
 .fg-tense-aspect.is-past .tns-gloss-perf { opacity: 0; }
@@ -91,13 +111,17 @@
 .fg-tense-aspect .tns-cue .tns-tok { stroke: var(--ok); fill: var(--ok-dim); }
 .fg-tense-aspect .tns-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
 
-.fg-tense-aspect .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-tense-aspect .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-tense-aspect .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-tense-aspect .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-tense-aspect .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-tense-aspect .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-tense-aspect .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-tense-aspect .fg-caption {
@@ -107,6 +131,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-tense-aspect .fg-caption.fg-cap-grid { display: grid; }
+.fg-tense-aspect .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-tense-aspect .fg-cap-live { grid-area: 1 / 1; }
+.fg-tense-aspect [data-info]:focus { outline: none; }
+.fg-tense-aspect [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-tense-aspect .fg-caption strong { color: var(--ok); font-weight: 600; }
 
@@ -121,7 +150,6 @@
      aria-label="Top: a sentence a button flips between I've lived here for years and I lived here for years, above a timeline running from the past to a NOW marker. In the perfect version, a green state bar reaches all the way to NOW: the living continues. In the simple past, the bar stops short of NOW: it is over. Below, a second row shows Mandarin: wo zhu zai zheli, with a dashed empty tense slot on the verb and a green arc from a context word, mingtian, tomorrow, that supplies the time reference — tense inferred entirely from context tokens.">
   <text class="tns-note" x="40" y="26">two English aspect markings, one Mandarin sentence with none &#8212; the timeline is imported either way</text>
 
-  <!-- sentence variants -->
   <g class="tns-sent tns-sent-perf">
     <text x="120" y="64">"I<tspan class="tns-verb">'ve lived</tspan> here for years."</text>
   </g>
@@ -129,10 +157,9 @@
     <text x="120" y="64">"I <tspan class="tns-verb">lived</tspan> here for years."</text>
   </g>
 
-  <!-- timeline -->
   <line class="tns-axis" x1="100" y1="120" x2="600" y2="120"/>
   <line class="tns-now" x1="520" y1="102" x2="520" y2="138"/>
-  <text class="tns-note" x="520" y="94" text-anchor="middle" fill="#38bdf8">NOW</text>
+  <text class="tns-note fg-fill-accent" x="520" y="94" text-anchor="middle">NOW</text>
   <text class="tns-note" x="100" y="144">past</text>
   <text class="tns-note" x="600" y="144" text-anchor="end">future</text>
 
@@ -145,7 +172,6 @@
   <text class="tns-gloss tns-gloss-perf" x="120" y="172">the state reaches NOW &#8212; I still live here</text>
   <text class="tns-gloss tns-gloss-past" x="120" y="172">the state ended before NOW &#8212; I moved away</text>
 
-  <!-- mandarin row -->
   <g class="tns-cue">
     <rect class="tns-tok" x="80" y="216" width="92" height="36" rx="6"/>
     <text class="tns-word" x="126" y="239">m&#237;ngti&#257;n</text>
@@ -163,7 +189,6 @@
   <rect class="tns-tok" x="418" y="216" width="58" height="36" rx="6"/>
   <text class="tns-word" x="447" y="239">zh&#232;l&#464;</text>
 
-  <!-- arc: tense slot -> context cue -->
   <path class="tns-arc" d="M 310 212 C 270 188, 190 190, 140 210" marker-end="url(#tns-arrow)"/>
 
   <text class="tns-note" x="490" y="232">"tomorrow I live here"</text>
@@ -174,7 +199,7 @@
 
   <defs>
     <marker id="tns-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>
@@ -187,16 +212,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Present perfect</strong> — "I\'ve lived here for years": the state bar reaches NOW. In English this reading is carried by two extra tokens (\'ve + participle); in many languages even that much is left to context.' },
+    { cls: 'is-past', cap: '<strong>Simple past</strong> — "I lived here for years": the bar stops short of NOW. I moved away. One auxiliary token vanished and the present flipped from inhabited to vacated — and whether the implication holds at all can still shift with context.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    perf: '<strong>Present perfect</strong> — "I\'ve lived here for years": the state bar reaches NOW. In English this reading is carried by two extra tokens (\'ve + participle); in many languages even that much is left to context.',
-    past: '<strong>Simple past</strong> — "I lived here for years": the bar stops short of NOW. I moved away. One auxiliary token vanished and the present flipped from inhabited to vacated — and whether the implication holds at all can still shift with context.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const past = root.classList.toggle('is-past');
-    caption.innerHTML = past ? CAP.past : CAP.perf;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

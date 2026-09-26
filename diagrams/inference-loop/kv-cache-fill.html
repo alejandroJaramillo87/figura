@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-kv-cache-fill .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-kv-cache-fill .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-kv-cache-fill .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-kv-cache-fill .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-kv-cache-fill .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-kv-cache-fill .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-kv-cache-fill .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-kv-cache-fill .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-kv-cache-fill .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-kv-cache-fill .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-kv-cache-fill .fg-fill-line) { fill: var(--line); }
+:where(.fg-kv-cache-fill .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-kv-cache-fill .fg-fill-border) { fill: var(--border); }
+:where(.fg-kv-cache-fill .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-kv-cache-fill .fg-fill-text) { fill: var(--text); }
+:where(.fg-kv-cache-fill .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-kv-cache-fill .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-kv-cache-fill .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-kv-cache-fill {
@@ -58,25 +78,25 @@
 /* --- static styling ------------------------------------------------ */
 .fg-kv-cache-fill .kvcf-label { fill: var(--text); font-size: 15px; font-weight: 600; }
 .fg-kv-cache-fill .kvcf-sub   { fill: var(--muted); font-size: 12px; }
-.fg-kv-cache-fill .kvcf-mono { font-family: ui-monospace, Menlo, Consolas, monospace; }
+.fg-kv-cache-fill .kvcf-mono { font-family: var(--mono); }
 .fg-kv-cache-fill .kvcf-cell  {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill var(--dur-fast) var(--ease), stroke 0.45s;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast);
 }
 .fg-kv-cache-fill .kvcf-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.45s, stroke 0.45s;
+  transition: fill var(--dur-fast), stroke var(--dur-fast);
 }
-.fg-kv-cache-fill .kvcf-tok-t { fill: var(--muted); font-size: 13px; text-anchor: middle; transition: fill 0.45s; }
-.fg-kv-cache-fill .kvcf-arrow { stroke: var(--line); stroke-width: 2; fill: none; opacity: 0; transition: opacity 0.45s; }
-.fg-kv-cache-fill .kvcf-read  { stroke: var(--accent); stroke-width: 2; fill: none; stroke-dasharray: 5 4; opacity: 0; transition: opacity 0.45s; }
+.fg-kv-cache-fill .kvcf-tok-t { fill: var(--muted); font-size: 13px; text-anchor: middle; transition: fill var(--dur-fast); }
+.fg-kv-cache-fill .kvcf-arrow { stroke: var(--line); stroke-width: 2; fill: none; opacity: 0; transition: opacity var(--dur-fast); }
+.fg-kv-cache-fill .kvcf-read  { stroke: var(--accent); stroke-width: 2; fill: none; stroke-dasharray: 5 4; opacity: 0; transition: opacity var(--dur-fast); }
 
 /* --- step states ---------------------------------------------------
    Step 0: empty cache, prompt waiting.
    Step 1: prefill — all 4 prompt rows fill at once.
    Steps 2-4: decode — one generated token appended per step,
               attention reads over every filled row. */
-.fg-kv-cache-fill[class*="is-step-"] .kvcf-phase { transition: opacity 0.45s; }
+.fg-kv-cache-fill[class*="is-step-"] .kvcf-phase { transition: opacity var(--dur-fast); }
 
 .fg-kv-cache-fill.is-step-1 .kvcf-row-p .kvcf-cell,
 .fg-kv-cache-fill.is-step-2 .kvcf-row-p .kvcf-cell,
@@ -144,7 +164,6 @@
 
 <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="Animation of the KV cache filling: prefill writes four prompt rows at once, then each decode step appends one row while attention reads all cached rows.">
-  <!-- Token stream (left) -->
   <text x="30" y="40" class="kvcf-label">Tokens</text>
   <g class="kvcf-tok-row">
     <rect class="kvcf-tok kvcf-tok-p" x="30"  y="60" width="58" height="34" rx="6"/><text class="kvcf-tok-t" x="59"  y="82">The</text>
@@ -157,10 +176,9 @@
   </g>
   <text x="30" y="230" class="kvcf-sub">prompt ↑ · generated ↓</text>
 
-  <!-- Write arrows token → cache row -->
   <defs>
     <marker id="kvcf-arrowhead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
   <g>
@@ -173,12 +191,10 @@
     <path class="kvcf-arrow kvcf-arrow-d2" d="M 96 339 L 268 339" marker-end="url(#kvcf-arrowhead)"/>
   </g>
 
-  <!-- KV cache grid: 7 rows (seq positions) x 2 groups (K | V) x 4 cells (head dim, symbolic) -->
   <text x="280" y="40" class="kvcf-label">KV cache</text>
   <text x="280" y="56" class="kvcf-sub kvcf-mono">K</text>
   <text x="460" y="56" class="kvcf-sub kvcf-mono">V</text>
   <g>
-    <!-- Rows are authored statically (not generated) so the fragment stays portable -->
     <g class="kvcf-row-p">
       <rect class="kvcf-cell" x="280" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="324" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="368" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="412" y="63"  width="40" height="28" rx="4"/>
       <rect class="kvcf-cell" x="460" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="504" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="548" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="592" y="63"  width="40" height="28" rx="4"/>
@@ -203,20 +219,18 @@
     </g>
   </g>
 
-  <!-- Attention read sweep (decode steps): bracket over cached region -->
   <path class="kvcf-read" d="M 650 63 L 662 63 L 662 353 L 650 353"/>
   <text x="672" y="200" class="kvcf-sub" transform="rotate(90 672 200)">attention reads all cached rows</text>
 
-  <!-- Phase captions -->
   <text x="30" y="400" class="kvcf-sub kvcf-phase kvcf-phase-idle">Cache empty — prompt tokenized, nothing computed yet.</text>
   <text x="30" y="400" class="kvcf-sub kvcf-phase kvcf-phase-prefill">Prefill: one batched pass writes K/V for every prompt token (compute-bound).</text>
   <text x="30" y="400" class="kvcf-sub kvcf-phase kvcf-phase-decode">Decode: each step appends one K/V row, then reads the whole cache (memory-bound).</text>
 </svg>
 
 <div class="fg-controls">
-  <button data-fg="prev" aria-label="Previous step">‹</button>
-  <button data-fg="play" aria-label="Play or pause">▶</button>
-  <button data-fg="next" aria-label="Next step">›</button>
+  <button type="button" data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button type="button" data-fg="play" aria-label="Play or pause" aria-pressed="false">&#9654;&#xFE0E;</button>
+  <button type="button" data-fg="next" aria-label="Next step">&#8250;</button>
   <span data-fg="counter"></span>
 </div>
 
@@ -224,7 +238,7 @@
   const root = document.currentScript.closest('.fg-diagram');
   const TOTAL = 4, STEP_MS = 1400;
   // fg:begin timeline-core v1
-  let step = 0, timer = null;
+  let step = 0, timer = null, held = false; // held: the reader paused; autoplay stays off
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
@@ -240,13 +254,14 @@
     pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
-  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
-  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
-  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  btn('prev').addEventListener('click', () => { held = true; tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { held = true; tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => { held = tl.playing; held ? tl.pause() : tl.play(); });
   const counter = btn('counter');
   function sync() {
     if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
-    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+    btn('play').textContent = tl.playing ? '\u275A\u275A' : '\u25B6\uFE0E'; // FE0E: text glyph, not emoji
+    btn('play').setAttribute('aria-pressed', String(tl.playing));
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
@@ -258,7 +273,12 @@
     tl.go(TOTAL); // show final state, manual stepping still available
   } else {
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      // The first callback reports any overlap as intersecting, so test the
+      // ratio; a reader who paused keeps control until they press play.
+      (entries) => entries.forEach((e) => {
+        if (e.intersectionRatio < 0.3) tl.pause();
+        else if (!held) tl.play();
+      }),
       { threshold: 0.3 }
     );
     io.observe(root);

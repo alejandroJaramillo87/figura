@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Comparative ellipsis</h1>
+<h1>Comparative ellipsis: two ways to fill the gap</h1>
 <p>"I like her more than John." More than John does? Or more than I like John? The elided clause has two reconstructions.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-comparative-ellipsis .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-comparative-ellipsis .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-comparative-ellipsis .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-comparative-ellipsis .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-comparative-ellipsis .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-comparative-ellipsis .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-comparative-ellipsis .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-comparative-ellipsis .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-comparative-ellipsis .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-comparative-ellipsis .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-comparative-ellipsis .fg-fill-line) { fill: var(--line); }
+:where(.fg-comparative-ellipsis .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-comparative-ellipsis .fg-fill-border) { fill: var(--border); }
+:where(.fg-comparative-ellipsis .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-comparative-ellipsis .fg-fill-text) { fill: var(--text); }
+:where(.fg-comparative-ellipsis .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-comparative-ellipsis .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-comparative-ellipsis .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-comparative-ellipsis {
@@ -63,7 +83,7 @@
 .fg-comparative-ellipsis .cpe-john .cpe-tok { stroke: var(--warn); }
 
 /* the two reconstructions cross-fade */
-.fg-comparative-ellipsis .cpe-view { transition: opacity 0.7s var(--ease); }
+.fg-comparative-ellipsis .cpe-view { transition: opacity var(--dur-slow) var(--ease); }
 .fg-comparative-ellipsis .cpe-view-subj { opacity: 1; }
 .fg-comparative-ellipsis .cpe-view-obj { opacity: 0; }
 .fg-comparative-ellipsis.is-object .cpe-view-subj { opacity: 0; }
@@ -80,13 +100,17 @@
 .fg-comparative-ellipsis .cpe-role-subj { fill: var(--violet); }
 .fg-comparative-ellipsis .cpe-role-obj { fill: var(--violet); }
 
-.fg-comparative-ellipsis .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-comparative-ellipsis .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-comparative-ellipsis .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-comparative-ellipsis .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-comparative-ellipsis .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-comparative-ellipsis .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-comparative-ellipsis .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-comparative-ellipsis .fg-caption {
@@ -96,6 +120,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-comparative-ellipsis .fg-caption.fg-cap-grid { display: grid; }
+.fg-comparative-ellipsis .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-comparative-ellipsis .fg-cap-live { grid-area: 1 / 1; }
+.fg-comparative-ellipsis [data-info]:focus { outline: none; }
+.fg-comparative-ellipsis [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-comparative-ellipsis .fg-caption strong { color: var(--ok); font-weight: 600; }
 
@@ -110,7 +139,6 @@
      aria-label="The sentence: I like her more than John, as token blocks with John outlined in amber. Below, a button flips between two reconstructions of the elided clause. Subject reading: than John likes her, with John as a rival admirer. Object reading: than I like John, with John as the one being compared against. Dashed green ghost tokens show the different material each reading copies back in. The surface tokens are identical; the elided clause is not.">
   <text class="cpe-note" x="40" y="26">the than-clause was elided &#8212; and there are two different clauses it could have been</text>
 
-  <!-- token row -->
   <rect class="cpe-tok" x="80" y="50" width="26" height="36" rx="6"/>
   <text class="cpe-word" x="93" y="73">I</text>
   <rect class="cpe-tok" x="114" y="50" width="48" height="36" rx="6"/>
@@ -126,7 +154,6 @@
     <text class="cpe-word" x="380" y="73">John.</text>
   </g>
 
-  <!-- subject reading reconstruction -->
   <g class="cpe-view cpe-view-subj">
     <text class="cpe-role cpe-role-subj" x="380" y="106">John = rival admirer</text>
     <g class="cpe-plain">
@@ -140,7 +167,6 @@
     <text class="cpe-note" x="380" y="152">John is the subject of the missing clause</text>
   </g>
 
-  <!-- object reading reconstruction -->
   <g class="cpe-view cpe-view-obj">
     <text class="cpe-role cpe-role-obj" x="380" y="106">John = the comparison target</text>
     <g class="cpe-plain">
@@ -168,16 +194,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Subject reading</strong> — "… more than John [likes her]." John is a rival: we both like her, and I like her more. The elided clause borrowed "likes her" from the main clause and swapped in John as its subject.' },
+    { cls: 'is-object', cap: '<strong>Object reading</strong> — "… more than [I like] John." John is the yardstick: I like both of them, her more. Same borrowed verb, but John now fills the object slot. One surface string, two reconstructed clauses.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    subj: '<strong>Subject reading</strong> — "… more than John [likes her]." John is a rival: we both like her, and I like her more. The elided clause borrowed "likes her" from the main clause and swapped in John as its subject.',
-    obj: '<strong>Object reading</strong> — "… more than [I like] John." John is the yardstick: I like both of them, her more. Same borrowed verb, but John now fills the object slot. One surface string, two reconstructed clauses.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const obj = root.classList.toggle('is-object');
-    caption.innerHTML = obj ? CAP.obj : CAP.subj;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

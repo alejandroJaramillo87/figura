@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Negation scope: what does "not" negate?</title>
+<title>Negation scope: what does “not” negate?</title>
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Scope of negation</h1>
+<h1>Negation scope: what does “not” negate?</h1>
 <p>"I didn't leave because I was angry." Did I stay? Or did I leave — for another reason? The scope of "not" is not written down.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-negation-scope .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-negation-scope .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-negation-scope .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-negation-scope .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-negation-scope .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-negation-scope .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-negation-scope .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-negation-scope .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-negation-scope .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-negation-scope .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-negation-scope .fg-fill-line) { fill: var(--line); }
+:where(.fg-negation-scope .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-negation-scope .fg-fill-border) { fill: var(--border); }
+:where(.fg-negation-scope .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-negation-scope .fg-fill-text) { fill: var(--text); }
+:where(.fg-negation-scope .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-negation-scope .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-negation-scope .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-negation-scope {
@@ -58,7 +78,7 @@
 .fg-negation-scope .ngs-note { fill: var(--muted); font-size: 11px; }
 .fg-negation-scope .ngs-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease), fill var(--dur-slow) var(--ease);
 }
 .fg-negation-scope .ngs-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
 .fg-negation-scope .ngs-not .ngs-tok { stroke: var(--hot); }
@@ -69,7 +89,7 @@
 .fg-negation-scope.is-wide .ngs-because .ngs-tok { stroke: var(--hot); fill: var(--hot-dim); }
 
 /* brackets cross-fade */
-.fg-negation-scope .ngs-br { transition: opacity 0.7s var(--ease); }
+.fg-negation-scope .ngs-br { transition: opacity var(--dur-slow) var(--ease); }
 .fg-negation-scope .ngs-br path { fill: none; stroke: var(--hot); stroke-width: 2; }
 .fg-negation-scope .ngs-br text { fill: var(--hot); }
 .fg-negation-scope .ngs-br-verb { opacity: 1; }
@@ -78,9 +98,9 @@
 .fg-negation-scope.is-wide .ngs-br-wide { opacity: 1; }
 
 /* outcome cards */
-.fg-negation-scope .ngs-card rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: stroke 0.7s, opacity 0.7s; }
+.fg-negation-scope .ngs-card rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: stroke var(--dur-slow), opacity var(--dur-slow); }
 .fg-negation-scope .ngs-card text { fill: var(--text); font-size: 12px; }
-.fg-negation-scope .ngs-card { transition: opacity 0.7s; }
+.fg-negation-scope .ngs-card { transition: opacity var(--dur-slow); }
 .fg-negation-scope .ngs-card-stay { opacity: 1; }
 .fg-negation-scope .ngs-card-stay rect { stroke: var(--ok); }
 .fg-negation-scope .ngs-card-left { opacity: 0.45; }
@@ -89,13 +109,17 @@
 .fg-negation-scope.is-wide .ngs-card-left { opacity: 1; }
 .fg-negation-scope.is-wide .ngs-card-left rect { stroke: var(--ok); }
 
-.fg-negation-scope .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-negation-scope .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-negation-scope .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-negation-scope .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-negation-scope .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-negation-scope .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-negation-scope .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-negation-scope .fg-caption {
@@ -105,10 +129,15 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-negation-scope .fg-caption.fg-cap-grid { display: grid; }
+.fg-negation-scope .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-negation-scope .fg-cap-live { grid-area: 1 / 1; }
+.fg-negation-scope [data-info]:focus { outline: none; }
+.fg-negation-scope [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-negation-scope .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-negation-scope .fg-caption code {
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--mono);
   font-size: 12px; color: var(--warn);
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
@@ -124,7 +153,6 @@
      aria-label="The sentence: I didn't leave because I was angry, as token blocks with didn't outlined in red. A button slides a red NOT bracket between two scopes. Narrow scope over leave means the leaving is denied: I stayed, and anger was why. Wide scope over the whole because-clause means only the causal link is denied: I did leave, but not because of anger. Two outcome cards, I stayed and I left, light up according to the reading.">
   <text class="ngs-note" x="40" y="26">"not" needs a constituent to negate &#8212; and the sentence never says which one</text>
 
-  <!-- token row -->
   <rect class="ngs-tok" x="60" y="96" width="26" height="36" rx="6"/>
   <text class="ngs-word" x="73" y="119">I</text>
   <g class="ngs-not">
@@ -146,18 +174,15 @@
     <text class="ngs-word" x="436" y="119">angry.</text>
   </g>
 
-  <!-- narrow bracket -->
   <g class="ngs-br ngs-br-verb">
     <path d="M 166 88 L 166 78 L 220 78 L 220 88"/>
     <text class="ngs-note" x="193" y="68" text-anchor="middle">not [leave]</text>
   </g>
-  <!-- wide bracket: over leave-because-clause as a unit -->
   <g class="ngs-br ngs-br-wide">
     <path d="M 166 88 L 166 78 L 468 78 L 468 88"/>
     <text class="ngs-note" x="317" y="68" text-anchor="middle">not [leave because &#8230; angry]</text>
   </g>
 
-  <!-- outcome cards -->
   <g class="ngs-card ngs-card-stay">
     <rect x="80" y="168" width="250" height="48" rx="8"/>
     <text x="94" y="188">I stayed.</text>
@@ -180,16 +205,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Narrow scope</strong> — not [leave]: the leaving itself is denied, and the because-clause explains the not-leaving. <code>!leave, cause: anger</code>. I stayed, and anger is the reason.' },
+    { cls: 'is-wide', cap: '<strong>Wide scope</strong> — not [leave because angry]: the whole causal claim is denied. <code>!(leave because anger)</code>. I did leave — just not for that reason. The parenthesis moved; the fact of leaving flipped.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    narrow: '<strong>Narrow scope</strong> — not [leave]: the leaving itself is denied, and the because-clause explains the not-leaving. <code>!leave, cause: anger</code>. I stayed, and anger is the reason.',
-    wide: '<strong>Wide scope</strong> — not [leave because angry]: the whole causal claim is denied. <code>!(leave because anger)</code>. I did leave — just not for that reason. The parenthesis moved; the fact of leaving flipped.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const wide = root.classList.toggle('is-wide');
-    caption.innerHTML = wide ? CAP.wide : CAP.narrow;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

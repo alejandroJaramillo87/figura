@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-component-overview .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-component-overview .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-component-overview .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-component-overview .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-component-overview .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-component-overview .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-component-overview .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-component-overview .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-component-overview .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-component-overview .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-component-overview .fg-fill-line) { fill: var(--line); }
+:where(.fg-component-overview .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-component-overview .fg-fill-border) { fill: var(--border); }
+:where(.fg-component-overview .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-component-overview .fg-fill-text) { fill: var(--text); }
+:where(.fg-component-overview .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-component-overview .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-component-overview .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-component-overview {
@@ -62,14 +82,14 @@
 
 .fg-component-overview .arhc-block {
   fill: var(--panel); stroke: var(--border); stroke-width: 2;
-  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+  transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
 .fg-component-overview .arhc-group { transition: transform var(--dur-fast) var(--ease); }
 .fg-component-overview .arhc-group:hover { transform: translateY(-2px); }
 .fg-component-overview .arhc-group:hover .arhc-block { fill: var(--panel-hover); }
 
 /* hover glow: pre-blurred halo behind the block, tinted to its stroke */
-.fg-component-overview .arhc-halo { filter: blur(9px); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.fg-component-overview .arhc-halo { filter: blur(9px); opacity: 0; transition: opacity var(--dur-quick); pointer-events: none; }
 .fg-component-overview .arhc-group:hover .arhc-halo { opacity: 0.4; }
 
 .fg-component-overview .arhc-cpu { stroke: var(--warn); }
@@ -110,14 +130,21 @@
   100% { transform: scale(2.4); opacity: 0; }
 }
 
+/* fg:begin caption-box v1 */
 .fg-component-overview .fg-caption {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  /* tall enough for the longest data-info at column width: no page reflow on hover */
-  color: var(--muted); font-size: 13px; min-height: 6.4em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-component-overview .fg-caption.fg-cap-grid { display: grid; }
+.fg-component-overview .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-component-overview .fg-cap-live { grid-area: 1 / 1; }
+.fg-component-overview [data-info]:focus { outline: none; }
+.fg-component-overview [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-component-overview .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
 .fg-component-overview .fg-caption.is-active { color: var(--text); }
 .fg-component-overview .fg-caption strong { color: var(--accent); font-weight: 600; }
 .fg-component-overview .fg-caption code {
@@ -145,7 +172,6 @@
   <rect class="arhc-board" x="30" y="24" width="660" height="422" rx="10"/>
   <text class="arhc-board-label" x="44" y="44">X870E · AM5</text>
 
-  <!-- CPU ↔ RAM: the DDR5 seam -->
   <path class="arhc-link" d="M 300 148 L 356 148"/>
   <text class="arhc-link-label" x="308" y="140">DDR5</text>
   <g class="arhc-seam arhc-seam-ddr">
@@ -153,7 +179,6 @@
     <circle class="arhc-seam-dot" cx="328" cy="148" r="3"/>
   </g>
 
-  <!-- CPU → GPU: the PCIe seam -->
   <path class="arhc-link" d="M 175 232 L 175 292"/>
   <text class="arhc-link-label" x="185" y="268">PCIe 5.0 x16</text>
   <g class="arhc-seam arhc-seam-pcie">
@@ -161,7 +186,6 @@
     <circle class="arhc-seam-dot" cx="175" cy="262" r="3"/>
   </g>
 
-  <!-- CPU → NVMe: the M.2 seam -->
   <path class="arhc-link" d="M 545 232 L 545 292"/>
   <text class="arhc-link-label" x="555" y="268">M.2 x4</text>
   <g class="arhc-seam arhc-seam-m2">
@@ -169,7 +193,7 @@
     <circle class="arhc-seam-dot" cx="545" cy="262" r="3"/>
   </g>
 
-  <g class="arhc-group" data-info="16 Zen 5 cores and 32 threads at 170W. The core count sets how many small models can be served from RAM at once, and how fast a dataset preprocesses while the GPU is busy. It is also the part that has to keep a 32GB GPU fed without becoming the bottleneck. Verify: lscpu | grep -E 'Model name|CPU\(s\)'">
+  <g class="arhc-group" data-info="16 Zen 5 cores and 32 threads at 170W. The core count sets how many small models can be served from RAM at once, and how fast a dataset preprocesses while the GPU is busy. It is also the part that has to keep a 32GB GPU fed without becoming the bottleneck. Verify:" data-title="Ryzen 9 9950X" data-code="lscpu | grep -E &#x27;Model name|CPU\(s\)&#x27;">
     <rect class="arhc-halo" x="60" y="64" width="240" height="168" rx="10" fill="var(--warn)"/>
     <rect class="arhc-block arhc-cpu" x="60" y="64" width="240" height="168" rx="10"/>
     <rect class="arhc-die" x="100" y="102" width="22" height="22" rx="3"/>
@@ -185,7 +209,7 @@
     <text class="arhc-bound" x="96" y="88">bounds: CPU-side throughput</text>
   </g>
 
-  <g class="arhc-group" data-info="128GB of DDR5-6000 as two 64GB modules. System RAM bounds three different things at once: how many models can be resident for CPU inference, how large an activation capture an interpretability sweep can hold, and how much dataset can be staged for a training run. It is the cheapest headroom on the machine and the hardest to add later. Verify: sudo dmidecode --type 17 | grep -E 'Size|Speed'">
+  <g class="arhc-group" data-info="128GB of DDR5-6000 as two 64GB modules. System RAM bounds three different things at once: how many models can be resident for CPU inference, how large an activation capture an interpretability sweep can hold, and how much dataset can be staged for a training run. It is the cheapest headroom on the machine and the hardest to add later. Verify:" data-title="128GB DDR5-6000" data-code="sudo dmidecode --type 17 | grep -E &#x27;Size|Speed&#x27;">
     <rect class="arhc-halo" x="356" y="64" width="304" height="168" rx="10" fill="var(--violet)"/>
     <rect class="arhc-block arhc-ram" x="356" y="64" width="304" height="168" rx="10"/>
     <rect class="arhc-stick" x="392" y="100" width="30" height="60" rx="3"/>
@@ -195,7 +219,7 @@
     <text class="arhc-bound" x="392" y="88">bounds: what fits outside VRAM</text>
   </g>
 
-  <g class="arhc-group" data-info="32GB of GDDR7 at 896 GB/s. VRAM is the hardest ceiling in the machine: it decides which model sits resident for low-latency inference, and whether a fine-tune fits once optimizer states and activations are added on top of the weights. Everything else can be worked around; running out of VRAM cannot. Verify: nvidia-smi --query-gpu=name,memory.total --format=csv">
+  <g class="arhc-group" data-info="32GB of GDDR7 at 896 GB/s. VRAM is the hardest ceiling in the machine: it decides which model sits resident for low-latency inference, and whether a fine-tune fits once optimizer states and activations are added on top of the weights. Everything else can be worked around; running out of VRAM cannot. Verify:" data-title="RTX 5090" data-code="nvidia-smi --query-gpu=name,memory.total --format=csv">
     <rect class="arhc-halo" x="60" y="292" width="400" height="118" rx="10" fill="var(--accent)"/>
     <rect class="arhc-block arhc-gpu" x="60" y="292" width="400" height="118" rx="10"/>
     <text class="arhc-title" x="92" y="342">RTX 5090</text>
@@ -210,7 +234,7 @@
     <rect class="arhc-vram" x="408" y="362" width="30" height="18" rx="3"/>
   </g>
 
-  <g class="arhc-group" data-info="Two NVMe drives with one job each: a 1TB OS drive and a 2TB drive mounted at /mnt/ai-data holding models, datasets and caches. Sequential read gates how long a model takes to reach memory, which is felt on every container restart. The split means an OS reinstall never touches the weights. Verify: lsblk -o NAME,SIZE,MODEL,MOUNTPOINT">
+  <g class="arhc-group" data-info="Two NVMe drives with one job each: a 1TB OS drive and a 2TB drive mounted at /mnt/ai-data holding models, datasets and caches. Sequential read gates how long a model takes to reach memory, which is felt on every container restart. The split means an OS reinstall never touches the weights. Verify:" data-title="2 × NVMe" data-code="lsblk -o NAME,SIZE,MODEL,MOUNTPOINT">
     <rect class="arhc-halo" x="490" y="292" width="170" height="118" rx="10" fill="var(--ok)"/>
     <rect class="arhc-block arhc-ssd" x="490" y="292" width="170" height="118" rx="10"/>
     <rect class="arhc-m2" x="516" y="318" width="118" height="16" rx="3"/>
@@ -226,33 +250,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
-  const caption = root.querySelector('[data-fg="caption"]');
-  const DEFAULT = 'Hover a component to see the spec and the limit it sets.';
-  root.querySelectorAll('.arhc-group[data-info]').forEach((g, idx) => {
-    g.addEventListener('mouseenter', () => {
-      root.classList.add('is-hover-' + (idx + 1));
-      caption.innerHTML = '';
-      const strong = document.createElement('strong');
-      strong.textContent = g.querySelector('.arhc-title').textContent;
-      caption.appendChild(strong);
-      const info = g.getAttribute('data-info');
-      // render a trailing "Verify: <cmd>" as inline code
-      const m = info.match(/^(.*?)(?:\s*Verify(?:\s[^:]*)?:\s*(.+))?$/s);
-      caption.appendChild(document.createTextNode(' — ' + (m[1] || info)));
-      if (m[2]) {
-        caption.appendChild(document.createTextNode(' Verify: '));
-        const code = document.createElement('code');
-        code.textContent = m[2];
-        caption.appendChild(code);
-      }
-      caption.classList.add('is-active');
-    });
-    g.addEventListener('mouseleave', () => {
-      root.classList.remove('is-hover-' + (idx + 1));
-      caption.textContent = DEFAULT;
-      caption.classList.remove('is-active');
-    });
+  root.addEventListener('fg:hover', (e) => {
+    root.classList.toggle('is-hover-' + (e.detail.index + 1), e.detail.on);
   });
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
+  const caption = root.querySelector('[data-fg="caption"]');
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin hover-caption v1
+  // Targets carry data-info (plain text), optionally data-title (shown bold
+  // before it) and data-code (shown as inline code after it). Focus reaches
+  // the same readout as the pointer; fg:hover lets a diagram add its own
+  // highlight classes.
+  const hoverTargets = [...root.querySelectorAll('[data-info]')];
+  function hoverHtml(el) {
+    const title = el.getAttribute('data-title');
+    const code = el.getAttribute('data-code');
+    return (title ? '<strong>' + escHtml(title) + '</strong> — ' : '') + escHtml(el.getAttribute('data-info')) +
+      (code ? ' <code>' + escHtml(code) + '</code>' : '');
+  }
+  reserveCaption(hoverTargets.map(hoverHtml));
+  hoverTargets.forEach((el, index) => {
+    el.setAttribute('tabindex', '0');
+    const set = (on) => {
+      setCaption(on ? hoverHtml(el) : captionInitial);
+      if (caption) caption.classList.toggle('is-active', on);
+      root.dispatchEvent(new CustomEvent('fg:hover', { detail: { el, index, on } }));
+    };
+    el.addEventListener('mouseenter', () => set(true));
+    el.addEventListener('focus', () => set(true));
+    el.addEventListener('mouseleave', () => set(false));
+    el.addEventListener('blur', () => set(false));
+  });
+  // fg:end hover-caption
 })();</script>
 </div>
 <!-- fg:embed-end -->

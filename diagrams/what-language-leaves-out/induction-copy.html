@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Induction and copying</h1>
+<h1>Induction: look back, hop forward, copy</h1>
 <p>[A][B] &hellip; [A] &rarr; [B]: find the previous occurrence of the current token, look one position past it, and predict what followed last time — the induction-head mechanism.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-induction-copy .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-induction-copy .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-induction-copy .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-induction-copy .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-induction-copy .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-induction-copy .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-induction-copy .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-induction-copy .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-induction-copy .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-induction-copy .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-induction-copy .fg-fill-line) { fill: var(--line); }
+:where(.fg-induction-copy .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-induction-copy .fg-fill-border) { fill: var(--border); }
+:where(.fg-induction-copy .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-induction-copy .fg-fill-text) { fill: var(--text); }
+:where(.fg-induction-copy .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-induction-copy .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-induction-copy .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-induction-copy {
@@ -56,14 +76,14 @@
 
 
 .fg-induction-copy .idc-note { fill: var(--muted); font-size: 11px; }
-.fg-induction-copy .idc-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill 0.7s var(--ease), stroke 0.7s var(--ease); }
+.fg-induction-copy .idc-tok rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease); }
 .fg-induction-copy .idc-tok text { fill: var(--text); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
 
 /* current token: violet ring throughout */
 .fg-induction-copy .idc-cur rect { stroke: var(--violet); stroke-width: 2; }
 
 /* step 1: the previous occurrence lights violet (match) */
-.fg-induction-copy .idc-prev rect { transition: fill 0.7s, stroke 0.7s; }
+.fg-induction-copy .idc-prev rect { transition: fill var(--dur-slow), stroke var(--dur-slow); }
 .fg-induction-copy.is-step-1 .idc-prev rect, .fg-induction-copy.is-step-2 .idc-prev rect,
 .fg-induction-copy.is-step-3 .idc-prev rect { stroke: var(--violet); fill: var(--violet-dim); }
 .fg-induction-copy.is-step-1 .idc-prev text, .fg-induction-copy.is-step-2 .idc-prev text,
@@ -75,23 +95,23 @@
 
 /* step 3: prediction fills the slot */
 .fg-induction-copy .idc-slot rect { stroke-dasharray: 6 4; stroke: var(--line); fill: none; }
-.fg-induction-copy .idc-slot .idc-q { fill: var(--muted); font-size: 14px; text-anchor: middle; font-family: var(--mono); transition: opacity 0.7s; }
-.fg-induction-copy .idc-pred { opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy .idc-slot .idc-q { fill: var(--muted); font-size: 14px; text-anchor: middle; font-family: var(--mono); transition: opacity var(--dur-slow); }
+.fg-induction-copy .idc-pred { opacity: 0; transition: opacity var(--dur-slow); }
 .fg-induction-copy .idc-pred rect { stroke: var(--ok); fill: var(--ok-dim); stroke-width: 1.5; }
 .fg-induction-copy .idc-pred text { fill: var(--ok); font-size: 14px; text-anchor: middle; font-family: var(--mono); }
 .fg-induction-copy.is-step-3 .idc-pred { opacity: 1; }
 .fg-induction-copy.is-step-3 .idc-slot .idc-q { opacity: 0; }
 
 /* glow halo behind the prediction (static blur, opacity only) */
-.fg-induction-copy .idc-halo { filter: blur(6px); opacity: 0; fill: var(--ok); transition: opacity 0.7s; }
+.fg-induction-copy .idc-halo { filter: blur(6px); opacity: 0; fill: var(--ok); transition: opacity var(--dur-slow); }
 .fg-induction-copy.is-step-3 .idc-halo { opacity: 0.35; }
 
 /* hop arc prev -> succ, shown from step 2 */
-.fg-induction-copy .idc-hop { fill: none; stroke: var(--ok); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy .idc-hop { fill: none; stroke: var(--ok); stroke-width: 2; opacity: 0; transition: opacity var(--dur-slow); }
 .fg-induction-copy.is-step-2 .idc-hop, .fg-induction-copy.is-step-3 .idc-hop { opacity: 1; }
 
 /* lookback arc cur -> prev, shown from step 1 */
-.fg-induction-copy .idc-back { fill: none; stroke: var(--violet); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-induction-copy .idc-back { fill: none; stroke: var(--violet); stroke-width: 2; opacity: 0; transition: opacity var(--dur-slow); }
 .fg-induction-copy.is-step-1 .idc-back, .fg-induction-copy.is-step-2 .idc-back,
 .fg-induction-copy.is-step-3 .idc-back { opacity: 1; }
 
@@ -101,7 +121,7 @@
 .fg-induction-copy.is-step-3 .idc-comet-copy { opacity: 1; }
 
 /* step labels */
-.fg-induction-copy .idc-cap { opacity: 0; transition: opacity 0.45s; }
+.fg-induction-copy .idc-cap { opacity: 0; transition: opacity var(--dur-fast); }
 .fg-induction-copy.is-step-0 .idc-cap-0, .fg-induction-copy.is-step-1 .idc-cap-1,
 .fg-induction-copy.is-step-2 .idc-cap-2, .fg-induction-copy.is-step-3 .idc-cap-3 { opacity: 1; }
 
@@ -135,7 +155,6 @@
      aria-label="A token stream: wug, blue, dax, red, wug, then an empty dashed prediction slot. Step animation of the induction mechanism. Step 1: a violet comet travels backward from the current wug to its previous occurrence — match the current token against the past. Step 2: a green arc hops one position forward from the previous wug to blue — find what followed last time. Step 3: blue materializes in the prediction slot with a soft green glow — copy the successor as the prediction. The caption notes this look-back-hop-copy circuit, the induction head, is widely argued to underlie in-context learning: the prompt's own examples define the task.">
   <text class="idc-note" x="40" y="24">the pattern has no meaning &#8212; and that is the point: the mechanism is pure structure</text>
 
-  <!-- token stream -->
   <g class="idc-tok idc-prev">
     <rect x="56" y="80" width="76" height="40" rx="6"/>
     <text x="94" y="106">wug</text>
@@ -160,21 +179,16 @@
     <rect x="484" y="80" width="76" height="40" rx="6"/>
     <text class="idc-q" x="522" y="106">?</text>
   </g>
-  <!-- prediction (fills the slot at step 3) -->
   <rect class="idc-halo" x="484" y="80" width="76" height="40" rx="6"/>
   <g class="idc-pred">
     <rect x="484" y="80" width="76" height="40" rx="6"/>
     <text x="522" y="106">blue</text>
   </g>
 
-  <!-- lookback arc: current wug -> previous wug -->
   <path id="idc-route-back" class="idc-back" d="M 424 80 C 360 30, 160 30, 100 76" marker-end="url(#idc-arrow-violet)"/>
-  <!-- hop arc: previous wug -> blue -->
   <path class="idc-hop" d="M 110 124 C 130 150, 160 150, 178 128" marker-end="url(#idc-arrow-ok)"/>
-  <!-- copy route: blue -> slot (for the copy comet) -->
   <path id="idc-route-copy" d="M 182 76 C 260 10, 460 10, 522 74" fill="none" stroke="none"/>
 
-  <!-- comets (SMIL, begin=indefinite, kicked from the step handler) -->
   <g class="idc-comet-back">
     <circle r="5" fill="var(--violet)">
       <animateMotion id="idc-back-head" dur="1.1s" begin="indefinite" fill="freeze"><mpath href="#idc-route-back"/></animateMotion>
@@ -198,7 +212,6 @@
     </circle>
   </g>
 
-  <!-- fixed footer caption slot -->
   <text class="idc-note idc-cap idc-cap-0" x="40" y="216">Step 0 &#8212; the model sits at the second "wug" and must predict the next token. Nothing about "wug" says what follows.</text>
   <text class="idc-note idc-cap idc-cap-1" x="40" y="216">Step 1 &#8212; MATCH: attend backward to the previous occurrence of the current token. "Where have I seen this before?"</text>
   <text class="idc-note idc-cap idc-cap-2" x="40" y="216">Step 2 &#8212; SHIFT: hop one position past the match. "What came after it last time?" That token is the copy source.</text>
@@ -219,18 +232,43 @@
 </svg>
 
 <div class="fg-controls">
-  <button data-fg="prev" aria-label="Previous step">&#8249;</button>
-  <button data-fg="play" aria-label="Play or pause">&#9654;</button>
-  <button data-fg="next" aria-label="Next step">&#8250;</button>
+  <button type="button" data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button type="button" data-fg="play" aria-label="Play or pause" aria-pressed="false">&#9654;&#xFE0E;</button>
+  <button type="button" data-fg="next" aria-label="Next step">&#8250;</button>
   <span data-fg="counter"></span>
 </div>
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  // fg:begin instance-ids v1
+  // Ids are page-global once inlined. In the second and later copies of this
+  // diagram on one page, suffix every id and rewrite the references to them
+  // (href, url(#...), SMIL syncbase begin/end), so animation timing binds to
+  // this copy's own elements instead of the first copy's.
+  {
+    const copies = [...document.querySelectorAll('.fg-diagram.' + root.classList[1])];
+    const nth = copies.indexOf(root);
+    if (nth > 0) {
+      const sfx = '-i' + nth;
+      const ids = new Set();
+      root.querySelectorAll('[id]').forEach((el) => { ids.add(el.id); el.id += sfx; });
+      root.querySelectorAll('*').forEach((el) => {
+        for (const a of [...el.attributes]) {
+          let v = a.value;
+          if ((a.name === 'href' || a.name === 'xlink:href') && v[0] === '#' && ids.has(v.slice(1))) v += sfx;
+          else if (a.name === 'begin' || a.name === 'end') {
+            v = v.replace(/([\w-]+)\.(begin|end)/g, (m, id, e) => (ids.has(id) ? id + sfx + '.' + e : m));
+          } else v = v.replace(/url\(#([\w-]+)\)/g, (m, id) => (ids.has(id) ? 'url(#' + id + sfx + ')' : m));
+          if (v !== a.value) el.setAttribute(a.name, v);
+        }
+      });
+    }
+  }
+  // fg:end instance-ids
   const TOTAL = 3, STEP_MS = 2200;
 
   // fg:begin timeline-core v1
-  let step = 0, timer = null;
+  let step = 0, timer = null, held = false; // held: the reader paused; autoplay stays off
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
@@ -246,13 +284,14 @@
     pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
-  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
-  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
-  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  btn('prev').addEventListener('click', () => { held = true; tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { held = true; tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => { held = tl.playing; held ? tl.pause() : tl.play(); });
   const counter = btn('counter');
   function sync() {
     if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
-    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+    btn('play').textContent = tl.playing ? '\u275A\u275A' : '\u25B6\uFE0E'; // FE0E: text glyph, not emoji
+    btn('play').setAttribute('aria-pressed', String(tl.playing));
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
@@ -275,7 +314,12 @@
     tl.go(TOTAL); // show final state, manual stepping still available
   } else {
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      // The first callback reports any overlap as intersecting, so test the
+      // ratio; a reader who paused keeps control until they press play.
+      (entries) => entries.forEach((e) => {
+        if (e.intersectionRatio < 0.3) tl.pause();
+        else if (!held) tl.play();
+      }),
       { threshold: 0.3 }
     );
     io.observe(root);

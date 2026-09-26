@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Homograph voicing</h1>
+<h1>Homograph voicing: the audio cue text never carries</h1>
 <p>"Lead" is two words that sound different but spell the same. A listener gets the pronunciation for free; a text model has to reconstruct it from context.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-homograph-voicing .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-homograph-voicing .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-homograph-voicing .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-homograph-voicing .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-homograph-voicing .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-homograph-voicing .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-homograph-voicing .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-homograph-voicing .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-homograph-voicing .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-homograph-voicing .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-homograph-voicing .fg-fill-line) { fill: var(--line); }
+:where(.fg-homograph-voicing .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-homograph-voicing .fg-fill-border) { fill: var(--border); }
+:where(.fg-homograph-voicing .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-homograph-voicing .fg-fill-text) { fill: var(--text); }
+:where(.fg-homograph-voicing .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-homograph-voicing .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-homograph-voicing .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-homograph-voicing {
@@ -57,21 +77,21 @@
 
 .fg-homograph-voicing .hgv-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease);
+  transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease);
 }
 .fg-homograph-voicing .hgv-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none;
-  transition: opacity 0.7s var(--ease); }
+  transition: opacity var(--dur-slow) var(--ease); }
 .fg-homograph-voicing .hgv-note { fill: var(--muted); font-size: 11px; }
 .fg-homograph-voicing .hgv-ipa { font-family: var(--mono); font-size: 13px; text-anchor: middle;
-  transition: opacity 0.7s var(--ease); }
+  transition: opacity var(--dur-slow) var(--ease); }
 
 /* the homograph token */
 .fg-homograph-voicing .hgv-lead .hgv-tok { stroke: var(--accent); }
 .fg-homograph-voicing .hgv-lead .hgv-word { fill: var(--accent); font-weight: 600; }
 
 /* two context states: metal (default) / news */
-.fg-homograph-voicing .hgv-c-metal { opacity: 1; transition: opacity 0.7s var(--ease); }
-.fg-homograph-voicing .hgv-c-news { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-homograph-voicing .hgv-c-metal { opacity: 1; transition: opacity var(--dur-slow) var(--ease); }
+.fg-homograph-voicing .hgv-c-news { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-homograph-voicing.is-news .hgv-c-metal { opacity: 0; }
 .fg-homograph-voicing.is-news .hgv-c-news { opacity: 1; }
 
@@ -87,18 +107,22 @@
 /* information-need arc */
 .fg-homograph-voicing .hgv-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-homograph-voicing:not(.is-news) .hgv-arc-metal { opacity: 1; }
 .fg-homograph-voicing.is-news .hgv-arc-news { opacity: 1; }
 
-.fg-homograph-voicing .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-homograph-voicing .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-homograph-voicing .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-homograph-voicing .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-homograph-voicing .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-homograph-voicing .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-homograph-voicing .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-homograph-voicing .fg-caption {
@@ -108,6 +132,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-homograph-voicing .fg-caption.fg-cap-grid { display: grid; }
+.fg-homograph-voicing .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-homograph-voicing .fg-cap-live { grid-area: 1 / 1; }
+.fg-homograph-voicing [data-info]:focus { outline: none; }
+.fg-homograph-voicing [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-homograph-voicing .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-homograph-voicing .fg-caption code {
@@ -126,13 +155,12 @@
      aria-label="A sentence containing the word lead, with two toggled contexts: the pipes were made of lead, pronounced led, versus she wrote the lead for tomorrow's front page, pronounced leed. A listener's lane shows the pronunciation as available; the model's lane shows the pronunciation crossed out — text carries no audio, so the sense must be imported from surrounding words.">
   <defs>
     <marker id="hgv-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
   <text class="hgv-note" x="40" y="26">arc = information the reading of "lead" needs &#8212; a fact about the language, not about any attention head</text>
 
-  <!-- sentence, metal state -->
   <g class="hgv-c-metal">
     <rect class="hgv-tok" x="40" y="64" width="100" height="34" rx="6"/>
     <text class="hgv-word" x="90" y="86">The pipes</text>
@@ -141,7 +169,6 @@
       <text class="hgv-word" x="213" y="86">were made of</text>
     </g>
   </g>
-  <!-- sentence, news state -->
   <g class="hgv-c-news">
     <rect class="hgv-tok" x="40" y="64" width="100" height="34" rx="6"/>
     <text class="hgv-word" x="90" y="86">She wrote</text>
@@ -149,13 +176,11 @@
     <text class="hgv-word" x="174" y="86">the</text>
   </g>
 
-  <!-- shared homograph -->
   <g class="hgv-lead">
     <rect class="hgv-tok" x="286" y="64" width="72" height="34" rx="6"/>
     <text class="hgv-word" x="322" y="86">lead</text>
   </g>
 
-  <!-- tails -->
   <g class="hgv-c-metal">
     <rect class="hgv-tok" x="366" y="64" width="34" height="34" rx="6"/>
     <text class="hgv-word" x="383" y="86">.</text>
@@ -167,18 +192,15 @@
     </g>
   </g>
 
-  <!-- arcs from lead to the cue -->
   <path class="hgv-arc hgv-arc-metal" d="M 310 64 C 290 42, 250 38, 224 58" marker-end="url(#hgv-arrow)"/>
   <path class="hgv-arc hgv-arc-news" d="M 336 64 C 360 40, 420 38, 470 58" marker-end="url(#hgv-arrow)"/>
 
-  <!-- listener lane -->
   <text class="hgv-note" x="40" y="152">what a listener receives</text>
   <rect class="hgv-tok" x="240" y="132" width="160" height="32" rx="6"/>
   <g class="hgv-c-metal"><text class="hgv-ipa hgv-ipa-metal" x="320" y="153">/l&#603;d/ &#8212; rhymes with "bed"</text></g>
   <g class="hgv-c-news"><text class="hgv-ipa hgv-ipa-news" x="320" y="153">/li&#720;d/ &#8212; rhymes with "bead"</text></g>
   <text class="hgv-note" x="416" y="153">the sense arrives in the sound, free</text>
 
-  <!-- model lane -->
   <text class="hgv-note" x="40" y="212">what a text model receives</text>
   <rect class="hgv-tok" x="240" y="192" width="160" height="32" rx="6"/>
   <text class="hgv-word" x="320" y="213" style="font-family: var(--mono); font-size: 13px;">l e a d</text>
@@ -196,15 +218,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>/l&#603;d/, the metal</strong> — "The pipes were made of <code>lead</code>." A listener hears the sense; the model sees four letters and must recover the pronunciation’s work from "pipes" and "made of".' },
+    { cls: 'is-news', cap: '<strong>/liːd/, the opening paragraph</strong> — "She wrote the <code>lead</code> for tomorrow’s front page." Different word, different sound, identical spelling. The distinction lives entirely in the surrounding tokens.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const CAP = {
-    metal: '<strong>/l&#603;d/, the metal</strong> — "The pipes were made of <code>lead</code>." A listener hears the sense; the model sees four letters and must recover the pronunciation’s work from "pipes" and "made of".',
-    news: '<strong>/liːd/, the opening paragraph</strong> — "She wrote the <code>lead</code> for tomorrow’s front page." Different word, different sound, identical spelling. The distinction lives entirely in the surrounding tokens.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  root.querySelector('[data-fg="toggle"]').addEventListener('click', () => {
-    const on = root.classList.toggle('is-news');
-    caption.innerHTML = on ? CAP.news : CAP.metal;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

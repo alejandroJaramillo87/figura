@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Metaphor and figurative language</h1>
+<h1>Metaphor: suppressing the literal sense</h1>
 <p>"Drowning in paperwork." The literal water-sense must be actively suppressed — and only context says whether to suppress it.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-metaphor-suppress .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-metaphor-suppress .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-metaphor-suppress .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-metaphor-suppress .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-metaphor-suppress .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-metaphor-suppress .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-metaphor-suppress .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-metaphor-suppress .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-metaphor-suppress .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-metaphor-suppress .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-metaphor-suppress .fg-fill-line) { fill: var(--line); }
+:where(.fg-metaphor-suppress .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-metaphor-suppress .fg-fill-border) { fill: var(--border); }
+:where(.fg-metaphor-suppress .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-metaphor-suppress .fg-fill-text) { fill: var(--text); }
+:where(.fg-metaphor-suppress .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-metaphor-suppress .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-metaphor-suppress .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-metaphor-suppress {
@@ -63,16 +83,16 @@
 .fg-metaphor-suppress .mtp-drown .mtp-tok { stroke: var(--accent); }
 
 /* the object slot swaps */
-.fg-metaphor-suppress .mtp-obj { transition: opacity 0.7s var(--ease); }
+.fg-metaphor-suppress .mtp-obj { transition: opacity var(--dur-slow) var(--ease); }
 .fg-metaphor-suppress .mtp-obj-pool { opacity: 1; }
 .fg-metaphor-suppress .mtp-obj-paper { opacity: 0; }
 .fg-metaphor-suppress.is-figurative .mtp-obj-pool { opacity: 0; }
 .fg-metaphor-suppress.is-figurative .mtp-obj-paper { opacity: 1; }
 
 /* sense cards */
-.fg-metaphor-suppress .mtp-sense rect { fill: var(--panel); stroke-width: 1.5; transition: stroke 0.7s, opacity 0.7s; }
+.fg-metaphor-suppress .mtp-sense rect { fill: var(--panel); stroke-width: 1.5; transition: stroke var(--dur-slow), opacity var(--dur-slow); }
 .fg-metaphor-suppress .mtp-sense text { font-size: 12px; }
-.fg-metaphor-suppress .mtp-sense .mtp-strike { stroke: var(--hot); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
+.fg-metaphor-suppress .mtp-sense .mtp-strike { stroke: var(--hot); stroke-width: 2; opacity: 0; transition: opacity var(--dur-slow); }
 .fg-metaphor-suppress .mtp-sense-lit rect { stroke: var(--ok); }
 .fg-metaphor-suppress .mtp-sense-lit text { fill: var(--text); }
 .fg-metaphor-suppress .mtp-sense-fig { opacity: 0.45; }
@@ -88,13 +108,17 @@
 /* arc from drowning to its object */
 .fg-metaphor-suppress .mtp-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
 
-.fg-metaphor-suppress .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-metaphor-suppress .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-metaphor-suppress .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-metaphor-suppress .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-metaphor-suppress .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-metaphor-suppress .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-metaphor-suppress .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-metaphor-suppress .fg-caption {
@@ -104,6 +128,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-metaphor-suppress .fg-caption.fg-cap-grid { display: grid; }
+.fg-metaphor-suppress .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-metaphor-suppress .fg-cap-live { grid-area: 1 / 1; }
+.fg-metaphor-suppress [data-info]:focus { outline: none; }
+.fg-metaphor-suppress [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-metaphor-suppress .fg-caption strong { color: var(--ok); font-weight: 600; }
 
@@ -118,7 +147,6 @@
      aria-label="The phrase: I am drowning in, followed by an object a button swaps between the pool and paperwork. Two sense cards for drowning sit below: the literal water sense and the figurative overwhelmed-by-volume sense. With the pool, the literal card is lit. With paperwork, the literal card is struck through in red and the figurative card lights green: one noun forced the verb's whole meaning to be replaced.">
   <text class="mtp-note" x="40" y="26">one word downstream decides whether the verb means what the dictionary says</text>
 
-  <!-- token row -->
   <rect class="mtp-tok" x="60" y="56" width="42" height="36" rx="6"/>
   <text class="mtp-word" x="81" y="79">I'm</text>
   <g class="mtp-drown">
@@ -136,10 +164,8 @@
     <text class="mtp-word" x="306" y="79">paperwork.</text>
   </g>
 
-  <!-- arc: drowning -> object -->
   <path class="mtp-arc" d="M 290 52 C 260 34, 200 34, 165 52" marker-end="url(#mtp-arrow)"/>
 
-  <!-- sense cards -->
   <g class="mtp-sense mtp-sense-lit">
     <rect x="80" y="130" width="250" height="52" rx="8"/>
     <text x="96" y="150">LITERAL: submerged in liquid,</text>
@@ -157,7 +183,7 @@
 
   <defs>
     <marker id="mtp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>
@@ -170,16 +196,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Literal</strong> — "drowning in the pool" is an emergency, not an idiom. The water-sense applies exactly as the dictionary has it. Note that this is the same verb, in the same construction, as the figurative case.' },
+    { cls: 'is-figurative', cap: '<strong>Figurative</strong> — paperwork isn\'t a liquid, so the literal sense must be suppressed and a mapped one substituted: overwhelmed, behind, unable to keep up. The suppression is triggered entirely by one noun downstream.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    lit: '<strong>Literal</strong> — "drowning in the pool" is an emergency, not an idiom. The water-sense applies exactly as the dictionary has it. Note that this is the same verb, in the same construction, as the figurative case.',
-    fig: '<strong>Figurative</strong> — paperwork isn\'t a liquid, so the literal sense must be suppressed and a mapped one substituted: overwhelmed, behind, unable to keep up. The suppression is triggered entirely by one noun downstream.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const fig = root.classList.toggle('is-figurative');
-    caption.innerHTML = fig ? CAP.fig : CAP.lit;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

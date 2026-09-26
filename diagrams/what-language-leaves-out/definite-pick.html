@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Definite descriptions: which one is "the animal"?</title>
+<title>Definite descriptions: which one is “the animal”?</title>
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Definite pick</h1>
+<h1>Definite descriptions: which one is “the animal”?</h1>
 <p>"The animal fled." The definite article asserts you already know which animal — but the context introduced two. A later cue decides the pick.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-definite-pick .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-definite-pick .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-definite-pick .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-definite-pick .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-definite-pick .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-definite-pick .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-definite-pick .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-definite-pick .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-definite-pick .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-definite-pick .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-definite-pick .fg-fill-line) { fill: var(--line); }
+:where(.fg-definite-pick .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-definite-pick .fg-fill-border) { fill: var(--border); }
+:where(.fg-definite-pick .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-definite-pick .fg-fill-text) { fill: var(--text); }
+:where(.fg-definite-pick .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-definite-pick .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-definite-pick .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-definite-pick {
@@ -58,7 +78,7 @@
 .fg-definite-pick .dfp-note { fill: var(--muted); font-size: 11px; }
 .fg-definite-pick .dfp-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.7s var(--ease), stroke 0.7s var(--ease);
+  transition: fill var(--dur-slow) var(--ease), stroke var(--dur-slow) var(--ease);
 }
 .fg-definite-pick .dfp-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 
@@ -67,8 +87,8 @@
 .fg-definite-pick .dfp-target .dfp-word { fill: var(--accent); font-weight: 600; }
 
 /* toggled continuation of the target sentence */
-.fg-definite-pick .dfp-end-cat { opacity: 1; transition: opacity 0.7s var(--ease); }
-.fg-definite-pick .dfp-end-dog { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-definite-pick .dfp-end-cat { opacity: 1; transition: opacity var(--dur-slow) var(--ease); }
+.fg-definite-pick .dfp-end-dog { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-definite-pick.is-dog .dfp-end-cat { opacity: 0; }
 .fg-definite-pick.is-dog .dfp-end-dog { opacity: 1; }
 
@@ -79,18 +99,22 @@
 /* information-need arcs */
 .fg-definite-pick .dfp-arc {
   fill: none; stroke: var(--ok); stroke-width: 2.5; opacity: 0;
-  transition: opacity 0.7s var(--ease);
+  transition: opacity var(--dur-slow) var(--ease);
 }
 .fg-definite-pick:not(.is-dog) .dfp-arc-cat { opacity: 1; }
 .fg-definite-pick.is-dog .dfp-arc-dog { opacity: 1; }
 
-.fg-definite-pick .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-definite-pick .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-definite-pick .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-definite-pick .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-definite-pick .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-definite-pick .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-definite-pick .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-definite-pick .fg-caption {
@@ -100,6 +124,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-definite-pick .fg-caption.fg-cap-grid { display: grid; }
+.fg-definite-pick .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-definite-pick .fg-cap-live { grid-area: 1 / 1; }
+.fg-definite-pick [data-info]:focus { outline: none; }
+.fg-definite-pick [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-definite-pick .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-definite-pick .fg-caption code {
@@ -118,13 +147,12 @@
      aria-label="Context sentence: A dog was barking at a cat. Target sentence: The animal, followed by a toggled ending — fled up a tree, or strained at its leash. The definite description the animal must pick one of the two mentioned candidates; the matching candidate token lights green and an arc connects the animal back to it. Which candidate wins depends on world knowledge carried by the ending: cats climb trees, dogs wear leashes.">
   <defs>
     <marker id="dfp-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
   <text class="dfp-note" x="40" y="26">"the" asserts a known referent &#8212; but the context offered two candidates</text>
 
-  <!-- context sentence with two candidates -->
   <rect class="dfp-tok" x="40" y="48" width="36" height="34" rx="6"/>
   <text class="dfp-word" x="58" y="70">A</text>
   <g class="dfp-cand-dog">
@@ -140,7 +168,6 @@
     <text class="dfp-word" x="381" y="70">cat.</text>
   </g>
 
-  <!-- target sentence -->
   <g class="dfp-target">
     <rect class="dfp-tok" x="40" y="140" width="128" height="34" rx="6"/>
     <text class="dfp-word" x="104" y="162">The animal</text>
@@ -154,7 +181,6 @@
     <text class="dfp-word" x="271" y="162">strained at its leash.</text>
   </g>
 
-  <!-- arcs from "the animal" back to the winning candidate -->
   <path class="dfp-arc dfp-arc-cat" d="M 130 140 C 190 112, 310 104, 368 86" marker-end="url(#dfp-arrow)"/>
   <path class="dfp-arc dfp-arc-dog" d="M 100 140 C 96 122, 100 104, 108 86" marker-end="url(#dfp-arrow)"/>
 
@@ -170,15 +196,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Cat</strong> — "fled up a tree" makes <code>the animal</code> pick the cat: tree-climbing is cat behavior. The definite article demanded a lookup; world knowledge supplied the key.' },
+    { cls: 'is-dog', cap: '<strong>Dog</strong> — "strained at its leash" re-points the same description to the dog. Two identical noun phrases, two referents; the resolving information sits after the description and outside the grammar.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const CAP = {
-    cat: '<strong>Cat</strong> — "fled up a tree" makes <code>the animal</code> pick the cat: tree-climbing is cat behavior. The definite article demanded a lookup; world knowledge supplied the key.',
-    dog: '<strong>Dog</strong> — "strained at its leash" re-points the same description to the dog. Two identical noun phrases, two referents; the resolving information sits after the description and outside the grammar.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  root.querySelector('[data-fg="toggle"]').addEventListener('click', () => {
-    const on = root.classList.toggle('is-dog');
-    caption.innerHTML = on ? CAP.dog : CAP.cat;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

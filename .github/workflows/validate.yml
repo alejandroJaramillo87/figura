@@ -1,3 +1,4 @@
+# Runs the quality gate on every push to main and every pull request.
 name: validate
 
 on:
@@ -5,15 +6,37 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+# A newer push to the same pull request cancels its stale run; runs on main
+# always finish.
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  validate:
+  quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 22
-      - name: Managed blocks match canonical sources
-        run: node scripts/build.js --check
-      - name: Contract validator
-        run: node scripts/validate.js
+          node-version-file: .nvmrc
+      - name: Quality gate
+        run: node tests/quality.mjs
+
+  # The browser tier: the only job that installs anything. It drives the
+  # runner's preinstalled Chrome through the pinned playwright-core.
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci
+      - name: Render checks
+        run: node tests/render.test.mjs
+        env:
+          PLAYWRIGHT_CHROMIUM: /usr/bin/google-chrome

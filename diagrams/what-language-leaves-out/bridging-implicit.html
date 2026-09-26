@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Bridging</h1>
+<h1>Bridging reference: the referent was never mentioned</h1>
 <p>"I entered the room. The ceiling was high." No ceiling was ever mentioned — the definite reference is licensed by part–whole knowledge about rooms.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-bridging-implicit .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-bridging-implicit .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-bridging-implicit .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-bridging-implicit .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-bridging-implicit .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-bridging-implicit .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-bridging-implicit .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-bridging-implicit .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-bridging-implicit .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-bridging-implicit .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-bridging-implicit .fg-fill-line) { fill: var(--line); }
+:where(.fg-bridging-implicit .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-bridging-implicit .fg-fill-border) { fill: var(--border); }
+:where(.fg-bridging-implicit .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-bridging-implicit .fg-fill-text) { fill: var(--text); }
+:where(.fg-bridging-implicit .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-bridging-implicit .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-bridging-implicit .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-bridging-implicit {
@@ -58,7 +78,7 @@
 .fg-bridging-implicit .brg-note { fill: var(--muted); font-size: 11px; }
 .fg-bridging-implicit .brg-tok {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.7s var(--ease), fill 0.7s var(--ease);
+  transition: stroke var(--dur-slow) var(--ease), fill var(--dur-slow) var(--ease);
 }
 .fg-bridging-implicit .brg-word { fill: var(--text); font-size: 14px; text-anchor: middle; pointer-events: none; }
 
@@ -68,7 +88,7 @@
 .fg-bridging-implicit .brg-bnoun .brg-word { fill: var(--accent); font-weight: 600; }
 
 /* bridging-noun variants cross-fade */
-.fg-bridging-implicit .brg-v { opacity: 0; transition: opacity 0.7s var(--ease); }
+.fg-bridging-implicit .brg-v { opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 .fg-bridging-implicit.is-ceiling .brg-v-ceiling,
 .fg-bridging-implicit.is-windows .brg-v-windows,
 .fg-bridging-implicit.is-door .brg-v-door { opacity: 1; }
@@ -86,12 +106,23 @@
 .fg-bridging-implicit .brg-chip { cursor: pointer; }
 .fg-bridging-implicit .brg-chip rect {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: stroke 0.3s, fill 0.3s;
+  transition: stroke var(--dur-quick), fill var(--dur-quick);
 }
-.fg-bridging-implicit .brg-chip:hover rect, .fg-bridging-implicit .brg-chip:focus rect { stroke: var(--accent); fill: var(--panel-hover); }
+.fg-bridging-implicit .brg-chip:hover rect { stroke: var(--accent); fill: var(--panel-hover); }
 .fg-bridging-implicit .brg-chip.is-active rect { stroke: var(--accent); }
 .fg-bridging-implicit .brg-chip text { fill: var(--text); font-size: 12px; text-anchor: middle; pointer-events: none; }
-.fg-bridging-implicit .brg-chip:focus { outline: none; }
+
+/* fg:begin toggle-bar v1 */
+.fg-bridging-implicit .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.fg-bridging-implicit .fg-controls button {
+  background: var(--panel); color: var(--text); border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+.fg-bridging-implicit .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-bridging-implicit .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-bridging-implicit .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-bridging-implicit .fg-caption {
@@ -101,6 +132,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-bridging-implicit .fg-caption.fg-cap-grid { display: grid; }
+.fg-bridging-implicit .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-bridging-implicit .fg-cap-live { grid-area: 1 / 1; }
+.fg-bridging-implicit [data-info]:focus { outline: none; }
+.fg-bridging-implicit [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-bridging-implicit .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-bridging-implicit .fg-caption code {
@@ -119,16 +155,15 @@
      aria-label="Two sentences: I entered the room, then The ceiling was high. The word room is highlighted as the anchor. The bridging noun — ceiling, and selectable variants windows or door — was never mentioned; a dashed ghost node between them reads rooms have ceilings, part-of knowledge, and a dashed arc routes the reference from the bridging noun through the ghost node back to room. Buttons switch the bridging noun among ceiling, windows, and door.">
   <defs>
     <marker id="brg-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="brg-arrow-v" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#a78bfa"/>
+      <path class="fg-fill-violet" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
   <text class="brg-note" x="40" y="26">the referent is not in the text &#8212; it is inferred from what rooms have</text>
 
-  <!-- sentence 1 -->
   <rect class="brg-tok" x="40" y="48" width="110" height="34" rx="6"/>
   <text class="brg-word" x="95" y="70">I entered</text>
   <g class="brg-room">
@@ -136,7 +171,6 @@
     <text class="brg-word" x="213" y="70">the room.</text>
   </g>
 
-  <!-- sentence 2 with variable bridging noun -->
   <g class="brg-bnoun">
     <g class="brg-v brg-v-ceiling">
       <rect class="brg-tok" x="40" y="140" width="128" height="34" rx="6"/>
@@ -164,28 +198,25 @@
     <text class="brg-word" x="241" y="162">was locked.</text>
   </g>
 
-  <!-- ghost inference node -->
   <g class="brg-ghost">
     <rect x="380" y="86" width="240" height="52" rx="8"/>
     <text x="500" y="108" text-anchor="middle" font-size="12" font-weight="600">part-of knowledge</text>
     <text x="500" y="126" text-anchor="middle" font-size="11">rooms have ceilings, windows, doors</text>
   </g>
 
-  <!-- arcs: bridging noun -> ghost -> room -->
   <path class="brg-arc brg-arc-ghost" d="M 170 148 C 250 120, 310 112, 374 110" marker-end="url(#brg-arrow-v)"/>
   <path class="brg-arc brg-arc-ghost" d="M 380 96 C 330 76, 300 70, 274 66" marker-end="url(#brg-arrow-v)"/>
-  <text class="brg-note" x="300" y="180" fill="#a78bfa">the arc routes through knowledge, not text</text>
+  <text class="brg-note fg-fill-violet" x="300" y="180">the arc routes through knowledge, not text</text>
 
-  <!-- chips -->
-  <g class="brg-chip is-active" data-fg="chip" data-variant="ceiling" tabindex="0" role="button" aria-label="Use the ceiling as the bridging noun">
+  <g class="brg-chip" data-fg="chip" data-variant="ceiling">
     <rect x="40" y="230" width="100" height="30" rx="15"/>
     <text x="90" y="249">the ceiling</text>
   </g>
-  <g class="brg-chip" data-fg="chip" data-variant="windows" tabindex="0" role="button" aria-label="Use the windows as the bridging noun">
+  <g class="brg-chip" data-fg="chip" data-variant="windows">
     <rect x="152" y="230" width="110" height="30" rx="15"/>
     <text x="207" y="249">the windows</text>
   </g>
-  <g class="brg-chip" data-fg="chip" data-variant="door" tabindex="0" role="button" aria-label="Use the door as the bridging noun">
+  <g class="brg-chip" data-fg="chip" data-variant="door">
     <rect x="274" y="230" width="90" height="30" rx="15"/>
     <text x="319" y="249">the door</text>
   </g>
@@ -193,29 +224,77 @@
   <text class="brg-note" x="40" y="300">Same move: "I bought a book. The author is French." &#8212; books have authors.</text>
 </svg>
 
+<div class="fg-controls" role="group" aria-label="Choose the bridging noun">
+  <button type="button" data-fg="toggle" aria-pressed="true">the ceiling</button>
+  <button type="button" data-fg="toggle" aria-pressed="false">the windows</button>
+  <button type="button" data-fg="toggle" aria-pressed="false">the door</button>
+</div>
+
 <div class="fg-caption" data-fg="caption"><strong>The ceiling</strong> &#8212; definite on first mention, yet perfectly natural. Interpreting it means importing <code>room</code> from the previous sentence AND the unstated fact that rooms have ceilings.</div>
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
-  const caption = root.querySelector('[data-fg="caption"]');
-  const CAP = {
-    ceiling: '<strong>The ceiling</strong> — definite on first mention, yet perfectly natural. Interpreting it means importing <code>room</code> from the previous sentence AND the unstated fact that rooms have ceilings.',
-    windows: '<strong>The windows</strong> — the same bridge holds for any part of a room. The definite article is licensed by inference, not by a prior mention anywhere in the text.',
-    door: '<strong>The door</strong> — one anchor, many implicit referents. The information the interpretation needs is partly outside the document entirely: it lives in world knowledge.'
-  };
-  const chips = root.querySelectorAll('[data-fg="chip"]');
-  function select(variant) {
-    ['ceiling', 'windows', 'door'].forEach((v) => root.classList.toggle('is-' + v, v === variant));
-    chips.forEach((c) => c.classList.toggle('is-active', c.dataset.variant === variant));
-    caption.innerHTML = CAP[variant];
-  }
-  chips.forEach((c) => {
-    c.addEventListener('click', () => select(c.dataset.variant));
-    c.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(c.dataset.variant); }
-    });
+  const STATES = [
+    { cls: 'is-ceiling', cap: '<strong>The ceiling</strong> — definite on first mention, yet perfectly natural. Interpreting it means importing <code>room</code> from the previous sentence AND the unstated fact that rooms have ceilings.' },
+    { cls: 'is-windows', cap: '<strong>The windows</strong> — the same bridge holds for any part of a room. The definite article is licensed by inference, not by a prior mention anywhere in the text.' },
+    { cls: 'is-door', cap: '<strong>The door</strong> — one anchor, many implicit referents. The information the interpretation needs is partly outside the document entirely: it lives in world knowledge.' },
+  ];
+  const chips = [...root.querySelectorAll('[data-fg="chip"]')];
+  root.addEventListener('fg:toggle', (ev) => {
+    chips.forEach((c, i) => c.classList.toggle('is-active', i === ev.detail.state));
   });
-  select('ceiling');
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
+  const caption = root.querySelector('[data-fg="caption"]');
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
+  };
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
+  chips.forEach((c, i) => c.addEventListener('click', () => tg.show(i))); // pointer shortcut for the buttons
 })();</script>
 </div>
 <!-- fg:embed-end -->

@@ -8,9 +8,15 @@
     "check": "node scripts/build.js --check && node scripts/validate.js",
     "validate": "node scripts/validate.js",
     "new": "node scripts/new-diagram.js",
-    "export": "node scripts/export-svg.js"
+    "export": "node scripts/export-svg.js",
+    "quality": "node tests/quality.mjs",
+    "quality:full": "node tests/quality.mjs --full",
+    "docs": "node tests/docs.mjs"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "playwright-core": "1.61.1"
   }
 }

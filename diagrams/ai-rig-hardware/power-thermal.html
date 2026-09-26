@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-power-thermal .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-power-thermal .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-power-thermal .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-power-thermal .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-power-thermal .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-power-thermal .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-power-thermal .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-power-thermal .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-power-thermal .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-power-thermal .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-power-thermal .fg-fill-line) { fill: var(--line); }
+:where(.fg-power-thermal .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-power-thermal .fg-fill-border) { fill: var(--border); }
+:where(.fg-power-thermal .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-power-thermal .fg-fill-text) { fill: var(--text); }
+:where(.fg-power-thermal .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-power-thermal .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-power-thermal .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-power-thermal {
@@ -63,7 +83,7 @@
 .fg-power-thermal .arht-rail { fill: none; stroke: var(--border); stroke-width: 2; }
 .fg-power-thermal .arht-seg {
   transform: scaleX(0); transform-box: fill-box; transform-origin: left center;
-  transition: transform 0.7s var(--ease);
+  transition: transform var(--dur-slow) var(--ease);
 }
 .fg-power-thermal .arht-seg-base { fill: var(--violet); }
 .fg-power-thermal .arht-seg-gpu  { fill: var(--accent); }
@@ -85,7 +105,7 @@
 .fg-power-thermal .arht-fan-out { stroke: var(--hot); }
 
 /* glow: a pre-blurred duplicate, only its opacity animates */
-.fg-power-thermal .arht-halo { filter: blur(8px); opacity: 0; transition: opacity 0.6s var(--ease); }
+.fg-power-thermal .arht-halo { filter: blur(8px); opacity: 0; transition: opacity var(--dur-slow) var(--ease); }
 
 .fg-power-thermal .arht-air {
   fill: none; stroke: var(--line); stroke-width: 1.5; opacity: 0;
@@ -136,14 +156,21 @@
 .fg-power-thermal.is-step-5 .arht-air { opacity: 0.8; }
 .fg-power-thermal.is-step-5 .arht-comet { opacity: 1; visibility: visible; }
 
+/* fg:begin caption-box v1 */
 .fg-power-thermal .fg-caption {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  /* sized for the longest step caption at column width: stepping never reflows the page */
-  color: var(--muted); font-size: 13px; min-height: 5.2em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-power-thermal .fg-caption.fg-cap-grid { display: grid; }
+.fg-power-thermal .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-power-thermal .fg-cap-live { grid-area: 1 / 1; }
+.fg-power-thermal [data-info]:focus { outline: none; }
+.fg-power-thermal [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-power-thermal .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
 .fg-power-thermal .fg-caption.is-active { color: var(--text); }
 .fg-power-thermal .fg-caption strong { color: var(--accent); font-weight: 600; }
 
@@ -176,13 +203,12 @@
      aria-label="A five-step power and thermal budget. A bar scaled to the 1200W power supply fills in stages: about 55W of board, drives and fans at idle, then 575W for the RTX 5090, then 170W for the Ryzen 9950X, reaching roughly 800W with both compute paths loaded and about 400W of headroom left. The final step shows the case airflow: six intake fans — three in the front panel and three in the side panel beside them — against three top and one rear exhaust fan carrying the heat out.">
   <defs>
     <marker id="arht-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
   <text class="arht-heading" x="40" y="34">Sustained draw against a 1200W supply</text>
 
-  <!-- rail: 60 → 660 px spans 0 → 1200W, so 1W = 0.5px -->
   <rect class="arht-rail" x="60" y="52" width="600" height="40" rx="6"/>
   <rect class="arht-seg arht-seg-base" x="61" y="53" width="27" height="38"/>
   <rect class="arht-seg arht-seg-gpu"  x="88" y="53" width="288" height="38"/>
@@ -206,7 +232,6 @@
     <text x="466" y="118"><tspan class="arht-watts">~800W</tspan> drawn · ~400W headroom</text>
   </g>
 
-  <!-- the box itself: parts always visible, airflow revealed at the last step -->
   <rect class="arht-case" x="150" y="250" width="420" height="210" rx="8"/>
 
   <rect class="arht-halo arht-halo-cpu" x="250" y="292" width="120" height="56" rx="6" fill="var(--warn)"/>
@@ -223,9 +248,6 @@
   <circle class="arht-fan arht-fan-in" cx="150" cy="418" r="15"/>
   <text class="arht-mono" x="52" y="356">6 intake</text>
 
-  <!-- side-panel bank, drawn just inside the wall beside the front fans.
-       They blow toward the viewer, which a side section cannot show, so their
-       air is drawn merging into the front-to-back stream instead. -->
   <circle class="arht-fan arht-fan-in" cx="196" cy="292" r="15"/>
   <circle class="arht-fan arht-fan-in" cx="196" cy="355" r="15"/>
   <circle class="arht-fan arht-fan-in" cx="196" cy="418" r="15"/>
@@ -271,19 +293,43 @@
 <div class="fg-caption" data-fg="caption">Five steps: idle, GPU load, CPU load, the total against supply capacity, and where the heat leaves.</div>
 
 <div class="fg-controls">
-  <button data-fg="prev" aria-label="Previous step">‹</button>
-  <button data-fg="play" aria-label="Play or pause">▶</button>
-  <button data-fg="next" aria-label="Next step">›</button>
+  <button type="button" data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button type="button" data-fg="play" aria-label="Play or pause" aria-pressed="false">&#9654;&#xFE0E;</button>
+  <button type="button" data-fg="next" aria-label="Next step">&#8250;</button>
   <span data-fg="counter"></span>
 </div>
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
-  const caption = root.querySelector('[data-fg="caption"]');
+  // fg:begin instance-ids v1
+  // Ids are page-global once inlined. In the second and later copies of this
+  // diagram on one page, suffix every id and rewrite the references to them
+  // (href, url(#...), SMIL syncbase begin/end), so animation timing binds to
+  // this copy's own elements instead of the first copy's.
+  {
+    const copies = [...document.querySelectorAll('.fg-diagram.' + root.classList[1])];
+    const nth = copies.indexOf(root);
+    if (nth > 0) {
+      const sfx = '-i' + nth;
+      const ids = new Set();
+      root.querySelectorAll('[id]').forEach((el) => { ids.add(el.id); el.id += sfx; });
+      root.querySelectorAll('*').forEach((el) => {
+        for (const a of [...el.attributes]) {
+          let v = a.value;
+          if ((a.name === 'href' || a.name === 'xlink:href') && v[0] === '#' && ids.has(v.slice(1))) v += sfx;
+          else if (a.name === 'begin' || a.name === 'end') {
+            v = v.replace(/([\w-]+)\.(begin|end)/g, (m, id, e) => (ids.has(id) ? id + sfx + '.' + e : m));
+          } else v = v.replace(/url\(#([\w-]+)\)/g, (m, id) => (ids.has(id) ? 'url(#' + id + sfx + ')' : m));
+          if (v !== a.value) el.setAttribute(a.name, v);
+        }
+      });
+    }
+  }
+  // fg:end instance-ids
   const TOTAL = 5, STEP_MS = 3000;
 
   // fg:begin timeline-core v1
-  let step = 0, timer = null;
+  let step = 0, timer = null, held = false; // held: the reader paused; autoplay stays off
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
@@ -299,13 +345,14 @@
     pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
-  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
-  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
-  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  btn('prev').addEventListener('click', () => { held = true; tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { held = true; tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => { held = tl.playing; held ? tl.pause() : tl.play(); });
   const counter = btn('counter');
   function sync() {
     if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
-    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+    btn('play').textContent = tl.playing ? '\u275A\u275A' : '\u25B6\uFE0E'; // FE0E: text glyph, not emoji
+    btn('play').setAttribute('aria-pressed', String(tl.playing));
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
@@ -329,19 +376,47 @@
         if (a.beginElement) a.beginElement();
       });
     }
-    const c = CAPTIONS[s];
-    caption.innerHTML = '';
-    if (typeof c === 'string') {
-      caption.textContent = c;
-      caption.classList.remove('is-active');
-      return;
-    }
-    const strong = document.createElement('strong');
-    strong.textContent = s + '. ' + c[0];
-    caption.appendChild(strong);
-    caption.appendChild(document.createTextNode(' — ' + c[1]));
-    caption.classList.add('is-active');
   });
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
+  const caption = root.querySelector('[data-fg="caption"]');
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin step-caption v1
+  // CAPTIONS[step] is plain text, or [title, text] shown as "N. title — text"
+  // with the caption marked active.
+  function stepCaptionHtml(s) {
+    const c = CAPTIONS[s];
+    return Array.isArray(c) ? '<strong>' + escHtml(s + '. ' + c[0]) + '</strong> \u2014 ' + escHtml(c[1]) : escHtml(c);
+  }
+  reserveCaption(CAPTIONS.map((c, s) => stepCaptionHtml(s)));
+  root.addEventListener('fg:step', (e) => {
+    setCaption(stepCaptionHtml(e.detail.step));
+    if (caption) caption.classList.toggle('is-active', Array.isArray(CAPTIONS[e.detail.step]));
+  });
+  // fg:end step-caption
 
   // fg:begin timeline-start v1
   apply();
@@ -349,7 +424,12 @@
     tl.go(TOTAL); // show final state, manual stepping still available
   } else {
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      // The first callback reports any overlap as intersecting, so test the
+      // ratio; a reader who paused keeps control until they press play.
+      (entries) => entries.forEach((e) => {
+        if (e.intersectionRatio < 0.3) tl.pause();
+        else if (!held) tl.play();
+      }),
       { threshold: 0.3 }
     );
     io.observe(root);

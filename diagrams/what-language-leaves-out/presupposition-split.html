@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Presupposition and accommodation</h1>
+<h1>Presupposition: what negation cannot touch</h1>
 <p>"John stopped smoking" asserts the stopping and presupposes the smoking — negate it and only one of them flips.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-presupposition-split .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-presupposition-split .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-presupposition-split .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-presupposition-split .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-presupposition-split .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-presupposition-split .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-presupposition-split .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-presupposition-split .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-presupposition-split .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-presupposition-split .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-presupposition-split .fg-fill-line) { fill: var(--line); }
+:where(.fg-presupposition-split .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-presupposition-split .fg-fill-border) { fill: var(--border); }
+:where(.fg-presupposition-split .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-presupposition-split .fg-fill-text) { fill: var(--text); }
+:where(.fg-presupposition-split .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-presupposition-split .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-presupposition-split .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-presupposition-split {
@@ -58,7 +78,7 @@
 .fg-presupposition-split .psp-note { fill: var(--muted); font-size: 11px; }
 
 /* sentence variants cross-fade */
-.fg-presupposition-split .psp-sent { transition: opacity 0.7s var(--ease); }
+.fg-presupposition-split .psp-sent { transition: opacity var(--dur-slow) var(--ease); }
 .fg-presupposition-split .psp-sent text { fill: var(--text); font-size: 14px; }
 .fg-presupposition-split .psp-sent .psp-neg { fill: var(--hot); font-weight: 600; }
 .fg-presupposition-split .psp-sent-pos { opacity: 1; }
@@ -67,9 +87,9 @@
 .fg-presupposition-split.is-negated .psp-sent-neg { opacity: 1; }
 
 /* the two cards */
-.fg-presupposition-split .psp-card rect { stroke-width: 1.5; transition: fill 0.7s, stroke 0.7s; }
+.fg-presupposition-split .psp-card rect { stroke-width: 1.5; transition: fill var(--dur-slow), stroke var(--dur-slow); }
 .fg-presupposition-split .psp-card .psp-head { font-size: 11px; text-anchor: middle; fill: var(--violet); }
-.fg-presupposition-split .psp-card .psp-body { font-size: 13px; text-anchor: middle; fill: var(--text); transition: opacity 0.7s; }
+.fg-presupposition-split .psp-card .psp-body { font-size: 13px; text-anchor: middle; fill: var(--text); transition: opacity var(--dur-slow); }
 
 /* asserted card flips with negation */
 .fg-presupposition-split .psp-card-asrt rect { fill: var(--ok-dim); stroke: var(--ok); }
@@ -81,18 +101,22 @@
 
 /* presupposed card never flips */
 .fg-presupposition-split .psp-card-pre rect { fill: var(--ok-dim); stroke: var(--ok); }
-.fg-presupposition-split .psp-survive { transition: opacity 0.7s; opacity: 0; fill: var(--ok); font-size: 11px; }
+.fg-presupposition-split .psp-survive { transition: opacity var(--dur-slow); opacity: 0; fill: var(--ok); font-size: 11px; }
 .fg-presupposition-split.is-negated .psp-survive { opacity: 1; }
 
 .fg-presupposition-split .psp-arc { fill: none; stroke: var(--line); stroke-width: 1.5; }
 
-.fg-presupposition-split .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-presupposition-split .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-presupposition-split .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-presupposition-split .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-presupposition-split .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-presupposition-split .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-presupposition-split .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-presupposition-split .fg-caption {
@@ -102,6 +126,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-presupposition-split .fg-caption.fg-cap-grid { display: grid; }
+.fg-presupposition-split .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-presupposition-split .fg-cap-live { grid-area: 1 / 1; }
+.fg-presupposition-split [data-info]:focus { outline: none; }
+.fg-presupposition-split [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-presupposition-split .fg-caption strong { color: var(--ok); font-weight: 600; }
 
@@ -116,7 +145,6 @@
      aria-label="A sentence a button flips between: John stopped smoking, and: John didn't stop smoking. Below it the sentence splits into two cards. The ASSERTED card reads: he doesn't smoke now, and flips to red — he still smokes — when the sentence is negated. The PRESUPPOSED card reads: he used to smoke, stays green in both states, and gains the label: survives negation. Negation only reaches the asserted half.">
   <text class="psp-note" x="40" y="26">one sentence, two commitments &#8212; and only one of them is on the table</text>
 
-  <!-- sentence variants -->
   <g class="psp-sent psp-sent-pos">
     <text x="180" y="64">"John stopped smoking."</text>
   </g>
@@ -124,11 +152,9 @@
     <text x="180" y="64">"John <tspan class="psp-neg">didn't</tspan> stop smoking."</text>
   </g>
 
-  <!-- split arcs -->
   <path class="psp-arc" d="M 280 74 C 250 96, 220 108, 200 118"/>
   <path class="psp-arc" d="M 320 74 C 380 96, 440 108, 480 118"/>
 
-  <!-- asserted card -->
   <g class="psp-card psp-card-asrt">
     <rect x="80" y="122" width="250" height="66" rx="8"/>
     <text class="psp-head" x="205" y="142">ASSERTED</text>
@@ -136,7 +162,6 @@
     <text class="psp-body psp-asrt-neg" x="205" y="166">"he still smokes"</text>
   </g>
 
-  <!-- presupposed card -->
   <g class="psp-card psp-card-pre">
     <rect x="370" y="122" width="250" height="66" rx="8"/>
     <text class="psp-head" x="495" y="142">PRESUPPOSED</text>
@@ -156,17 +181,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Affirmative</strong> — "John stopped smoking." asserts that he doesn\'t smoke now, and smuggles in, as settled background, that he used to. Only the first half is being offered for agreement or challenge.', label: 'Negate the sentence' },
+    { cls: 'is-negated', cap: '<strong>Negated</strong> — "John didn\'t stop smoking." flips the asserted card: he still smokes. But the presupposed card is untouched — he used to smoke either way. Negation, questioning, and "if" all pass over presuppositions; that projection behavior is what marks them.', label: 'Back to the affirmative' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    pos: '<strong>Affirmative</strong> — "John stopped smoking." asserts that he doesn\'t smoke now, and smuggles in, as settled background, that he used to. Only the first half is being offered for agreement or challenge.',
-    neg: '<strong>Negated</strong> — "John didn\'t stop smoking." flips the asserted card: he still smokes. But the presupposed card is untouched — he used to smoke either way. Negation, questioning, and "if" all pass over presuppositions; that projection behavior is what marks them.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const neg = root.classList.toggle('is-negated');
-    caption.innerHTML = neg ? CAP.neg : CAP.pos;
-    btn.textContent = neg ? 'Back to the affirmative' : 'Negate the sentence';
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

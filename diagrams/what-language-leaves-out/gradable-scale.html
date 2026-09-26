@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Vagueness and gradable adjectives</h1>
+<h1>Gradable adjectives: the noun sets the scale</h1>
 <p>"A tall toddler" and "a tall building" share one adjective and no heights. The noun supplies the scale.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-gradable-scale .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-gradable-scale .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-gradable-scale .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-gradable-scale .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-gradable-scale .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-gradable-scale .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-gradable-scale .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-gradable-scale .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-gradable-scale .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-gradable-scale .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-gradable-scale .fg-fill-line) { fill: var(--line); }
+:where(.fg-gradable-scale .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-gradable-scale .fg-fill-border) { fill: var(--border); }
+:where(.fg-gradable-scale .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-gradable-scale .fg-fill-text) { fill: var(--text); }
+:where(.fg-gradable-scale .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-gradable-scale .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-gradable-scale .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-gradable-scale {
@@ -63,7 +83,7 @@
 .fg-gradable-scale .grd-tall .grd-tok { stroke: var(--warn); }
 
 /* head noun swaps */
-.fg-gradable-scale .grd-noun { transition: opacity 0.7s var(--ease); }
+.fg-gradable-scale .grd-noun { transition: opacity var(--dur-slow) var(--ease); }
 .fg-gradable-scale .grd-noun .grd-tok { stroke: var(--ok); fill: var(--ok-dim); }
 .fg-gradable-scale .grd-noun-tod { opacity: 1; }
 .fg-gradable-scale .grd-noun-bld { opacity: 0; }
@@ -74,7 +94,7 @@
 .fg-gradable-scale .grd-bar { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
 .fg-gradable-scale .grd-thresh { stroke: var(--warn); stroke-width: 2.5; }
 .fg-gradable-scale .grd-range { fill: var(--ok-dim); stroke: var(--ok); stroke-width: 1; }
-.fg-gradable-scale .grd-lab { transition: opacity 0.7s; }
+.fg-gradable-scale .grd-lab { transition: opacity var(--dur-slow); }
 .fg-gradable-scale .grd-lab text { fill: var(--muted); font-size: 11px; text-anchor: middle; }
 .fg-gradable-scale .grd-lab .grd-thlab { fill: var(--warn); }
 .fg-gradable-scale .grd-lab-tod { opacity: 1; }
@@ -85,13 +105,17 @@
 /* arc from tall to head noun */
 .fg-gradable-scale .grd-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
 
-.fg-gradable-scale .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-gradable-scale .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-gradable-scale .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-gradable-scale .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-gradable-scale .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-gradable-scale .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-gradable-scale .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-gradable-scale .fg-caption {
@@ -101,10 +125,15 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-gradable-scale .fg-caption.fg-cap-grid { display: grid; }
+.fg-gradable-scale .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-gradable-scale .fg-cap-live { grid-area: 1 / 1; }
+.fg-gradable-scale [data-info]:focus { outline: none; }
+.fg-gradable-scale [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-gradable-scale .fg-caption strong { color: var(--ok); font-weight: 600; }
 .fg-gradable-scale .fg-caption code {
-  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-family: var(--mono);
   font-size: 12px; color: var(--warn);
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
@@ -120,7 +149,6 @@
      aria-label="The phrase: a tall, followed by a head noun a button swaps between toddler and building. The token tall stays fixed, with a green arc pointing to the noun. Below, a horizontal scale bar with an amber threshold marker. With toddler, the scale runs to about 1.2 meters and the threshold sits near 1 meter. With building, the same bar re-labels to 300 meters with the threshold near 150. Same adjective; the noun re-anchored the entire scale.">
   <text class="grd-note" x="40" y="26">"tall" compares against a threshold &#8212; and the threshold comes from the noun, not the adjective</text>
 
-  <!-- token row -->
   <rect class="grd-tok" x="120" y="50" width="28" height="36" rx="6"/>
   <text class="grd-word" x="134" y="73">a</text>
   <g class="grd-tall">
@@ -136,22 +164,18 @@
     <text class="grd-word" x="253" y="73">building</text>
   </g>
 
-  <!-- arc: tall -> noun -->
   <path class="grd-arc" d="M 180 46 C 200 30, 230 30, 248 46" marker-end="url(#grd-arrow)"/>
   <text class="grd-note" x="320" y="72">the noun sets the scale</text>
 
-  <!-- scale bar -->
   <rect class="grd-bar" x="100" y="130" width="480" height="18" rx="4"/>
   <rect class="grd-range" x="340" y="130" width="240" height="18" rx="4"/>
   <line class="grd-thresh" x1="340" y1="120" x2="340" y2="158"/>
 
-  <!-- labels: toddler scale -->
   <g class="grd-lab grd-lab-tod">
     <text x="100" y="176">0 m</text>
     <text class="grd-thlab" x="340" y="176">~1 m: "tall" starts here</text>
     <text x="580" y="176">1.2 m</text>
   </g>
-  <!-- labels: building scale -->
   <g class="grd-lab grd-lab-bld">
     <text x="100" y="176">0 m</text>
     <text class="grd-thlab" x="340" y="176">~150 m: "tall" starts here</text>
@@ -163,7 +187,7 @@
 
   <defs>
     <marker id="grd-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>
@@ -176,16 +200,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Toddler scale</strong> — "tall" means <code>height &gt; threshold(toddlers)</code>, roughly a meter. The adjective ships the comparison; the comparison class — and with it the threshold — is read off the head noun.' },
+    { cls: 'is-building', cap: '<strong>Building scale</strong> — same token, new environment: <code>height &gt; threshold(buildings)</code>, on the order of 150 meters. The word "tall" did not change; the noun re-bound the free variable it compares against.' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    tod: '<strong>Toddler scale</strong> — "tall" means <code>height &gt; threshold(toddlers)</code>, roughly a meter. The adjective ships the comparison; the comparison class — and with it the threshold — is read off the head noun.',
-    bld: '<strong>Building scale</strong> — same token, new environment: <code>height &gt; threshold(buildings)</code>, on the order of 150 meters. The word "tall" did not change; the noun re-bound the free variable it compares against.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const bld = root.classList.toggle('is-building');
-    caption.innerHTML = bld ? CAP.bld : CAP.tod;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

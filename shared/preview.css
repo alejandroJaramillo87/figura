@@ -1,6 +1,6 @@
 /*
- * preview.css — page chrome for viewing diagrams standalone or in the
- * gallery. NEVER inlined into the blog: everything the blog needs lives
+ * Page chrome for viewing diagrams standalone or in the
+ * gallery. Never inlined into the blog: everything the blog needs lives
  * inside the diagram's own embed fragment.
  */
 

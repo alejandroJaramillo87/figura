@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-agent-egress-flow .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-agent-egress-flow .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-agent-egress-flow .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-agent-egress-flow .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-agent-egress-flow .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-agent-egress-flow .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-agent-egress-flow .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-agent-egress-flow .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-agent-egress-flow .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-agent-egress-flow .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-agent-egress-flow .fg-fill-line) { fill: var(--line); }
+:where(.fg-agent-egress-flow .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-agent-egress-flow .fg-fill-border) { fill: var(--border); }
+:where(.fg-agent-egress-flow .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-agent-egress-flow .fg-fill-text) { fill: var(--text); }
+:where(.fg-agent-egress-flow .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-agent-egress-flow .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-agent-egress-flow .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-agent-egress-flow {
@@ -57,26 +77,26 @@
 
 .fg-agent-egress-flow .aef-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill var(--dur-fast) var(--ease), stroke 0.45s;
+  transition: fill var(--dur-fast) var(--ease), stroke var(--dur-fast);
 }
 .fg-agent-egress-flow .aef-zone {
   fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
-  transition: stroke 0.45s;
+  transition: stroke var(--dur-fast);
 }
-.fg-agent-egress-flow .aef-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill 0.45s; }
-.fg-agent-egress-flow .aef-sub { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; opacity: 0.8; transition: fill 0.45s; }
+.fg-agent-egress-flow .aef-title { fill: var(--muted); font-size: 13px; font-weight: 600; text-anchor: middle; transition: fill var(--dur-fast); }
+.fg-agent-egress-flow .aef-sub { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; opacity: 0.8; transition: fill var(--dur-fast); }
 .fg-agent-egress-flow .aef-label { fill: var(--muted); font-size: 12px; }
-.fg-agent-egress-flow .aef-verdict { font-size: 11.5px; font-weight: 600; text-anchor: middle; opacity: 0; transition: opacity 0.45s; }
+.fg-agent-egress-flow .aef-verdict { font-size: 11.5px; font-weight: 600; text-anchor: middle; opacity: 0; transition: opacity var(--dur-fast); }
 .fg-agent-egress-flow .aef-allow { fill: var(--ok); }
 .fg-agent-egress-flow .aef-deny { fill: var(--hot); }
 
 .fg-agent-egress-flow .aef-path {
   stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.35;
-  transition: stroke 0.45s, opacity 0.45s;
+  transition: stroke var(--dur-fast), opacity var(--dur-fast);
 }
 .fg-agent-egress-flow .aef-nowall {
   stroke: var(--hot); stroke-width: 2.5; opacity: 0.35;
-  transition: opacity 0.45s;
+  transition: opacity var(--dur-fast);
 }
 
 /* step states */
@@ -98,15 +118,23 @@
 .fg-agent-egress-flow.is-step-5 .aef-p3 { stroke: var(--hot); opacity: 1; }
 .fg-agent-egress-flow.is-step-5 .aef-v-deny { opacity: 1; }
 @keyframes fg-aef-flow { to { stroke-dashoffset: -18; } }
-.fg-agent-egress-flow .aef-blocked { opacity: 0; transition: opacity 0.45s; }
+.fg-agent-egress-flow .aef-blocked { opacity: 0; transition: opacity var(--dur-fast); }
 
+/* fg:begin caption-box v1 */
 .fg-agent-egress-flow .fg-caption {
-  margin-top: 10px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  margin-top: 12px; padding: 10px 14px;
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  color: var(--muted); font-size: 13px; min-height: 4.8em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-agent-egress-flow .fg-caption.fg-cap-grid { display: grid; }
+.fg-agent-egress-flow .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-agent-egress-flow .fg-cap-live { grid-area: 1 / 1; }
+.fg-agent-egress-flow [data-info]:focus { outline: none; }
+.fg-agent-egress-flow [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-agent-egress-flow .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
 .fg-agent-egress-flow .fg-caption.is-active { color: var(--text); }
 .fg-agent-egress-flow .fg-caption strong { color: var(--accent); font-weight: 600; }
 .fg-agent-egress-flow .fg-caption code {
@@ -139,11 +167,10 @@
      aria-label="Agent egress flow: the agent container sits on an internal Docker network with no route to the internet. Its only outbound path is a Squid forward proxy bridging to the egress network. Requests to allowlisted domains such as the Anthropic API and GitHub are forwarded; every other destination is denied by default.">
   <defs>
     <marker id="aef-arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+      <path class="fg-fill-line" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 
-  <!-- internal network zone -->
   <rect class="aef-zone aef-zone-int" x="20" y="40" width="300" height="240" rx="10"/>
   <text class="aef-label" x="34" y="64">agent-internal · internal: true</text>
 
@@ -156,14 +183,12 @@
     <text class="aef-sub" x="170" y="180">one scoped secret</text>
   </g>
 
-  <!-- blocked direct route -->
   <g class="aef-blocked">
     <line class="aef-path aef-nowall" x1="170" y1="204" x2="170" y2="250"/>
     <line class="aef-path aef-nowall" x1="150" y1="230" x2="190" y2="230" transform="rotate(45 170 230)"/>
     <text class="aef-verdict aef-deny aef-v-block" x="170" y="270" style="opacity:inherit">no direct route to the internet</text>
   </g>
 
-  <!-- proxy -->
   <g class="aef-stage aef-s3">
     <rect class="aef-box" x="380" y="104" width="200" height="80" rx="8"/>
     <text class="aef-title" x="480" y="132">agent-proxy (Squid)</text>
@@ -172,11 +197,9 @@
   </g>
   <path class="aef-path aef-p1" d="M 292 144 L 376 144" marker-end="url(#aef-arrow)"/>
 
-  <!-- egress zone -->
   <rect class="aef-zone" x="360" y="40" width="340" height="240" rx="10"/>
   <text class="aef-label" x="374" y="64">agent-egress · real internet</text>
 
-  <!-- allowed destinations -->
   <g class="aef-stage aef-s4a">
     <rect class="aef-box" x="400" y="204" width="280" height="56" rx="8"/>
     <text class="aef-title" x="540" y="226">allowlisted domains</text>
@@ -185,7 +208,6 @@
   <path class="aef-path aef-p2" d="M 480 188 L 520 200" marker-end="url(#aef-arrow)"/>
   <text class="aef-verdict aef-allow aef-v-allow" x="452" y="204">200 forwarded</text>
 
-  <!-- denied destination -->
   <g class="aef-stage aef-s4b">
     <rect class="aef-box" x="400" y="300" width="280" height="56" rx="8"/>
     <text class="aef-title" x="540" y="322">everything else</text>
@@ -204,15 +226,14 @@
 <div class="fg-caption" data-fg="caption">Press play or step through the egress path.</div>
 
 <div class="fg-controls">
-  <button data-fg="prev" aria-label="Previous step">‹</button>
-  <button data-fg="play" aria-label="Play or pause">▶</button>
-  <button data-fg="next" aria-label="Next step">›</button>
+  <button type="button" data-fg="prev" aria-label="Previous step">&#8249;</button>
+  <button type="button" data-fg="play" aria-label="Play or pause" aria-pressed="false">&#9654;&#xFE0E;</button>
+  <button type="button" data-fg="next" aria-label="Next step">&#8250;</button>
   <span data-fg="counter"></span>
 </div>
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
-  const caption = root.querySelector('[data-fg="caption"]');
   const TOTAL = 5, STEP_MS = 2800;
 
   const CAPTIONS = [
@@ -225,7 +246,7 @@
   ];
 
   // fg:begin timeline-core v1
-  let step = 0, timer = null;
+  let step = 0, timer = null, held = false; // held: the reader paused; autoplay stays off
   function apply() {
     for (let i = 0; i <= TOTAL; i++) root.classList.remove('is-step-' + i);
     root.classList.add('is-step-' + step);
@@ -241,34 +262,59 @@
     pause() { clearInterval(timer); timer = null; root.classList.remove('is-playing'); },
   };
   const btn = (name) => root.querySelector('[data-fg="' + name + '"]');
-  btn('prev').addEventListener('click', () => { tl.pause(); tl.prev(); });
-  btn('next').addEventListener('click', () => { tl.pause(); tl.next(); });
-  btn('play').addEventListener('click', () => (tl.playing ? tl.pause() : tl.play()));
+  btn('prev').addEventListener('click', () => { held = true; tl.pause(); tl.prev(); });
+  btn('next').addEventListener('click', () => { held = true; tl.pause(); tl.next(); });
+  btn('play').addEventListener('click', () => { held = tl.playing; held ? tl.pause() : tl.play(); });
   const counter = btn('counter');
   function sync() {
     if (counter) counter.textContent = tl.step + ' / ' + TOTAL;
-    btn('play').textContent = tl.playing ? '❚❚' : '▶';
+    btn('play').textContent = tl.playing ? '\u275A\u275A' : '\u25B6\uFE0E'; // FE0E: text glyph, not emoji
+    btn('play').setAttribute('aria-pressed', String(tl.playing));
   }
   root.addEventListener('fg:step', sync);
   root.querySelectorAll('.fg-controls button').forEach((b) => b.addEventListener('click', sync));
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // fg:end timeline-core
 
-  root.addEventListener('fg:step', (e) => {
-    const s = e.detail.step;
-    const c = CAPTIONS[s];
-    caption.innerHTML = '';
-    if (Array.isArray(c)) {
-      const strong = document.createElement('strong');
-      strong.textContent = s + '. ' + c[0];
-      caption.appendChild(strong);
-      caption.appendChild(document.createTextNode(' — ' + c[1]));
-      caption.classList.add('is-active');
-    } else {
-      caption.textContent = c;
-      caption.classList.remove('is-active');
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
+  const caption = root.querySelector('[data-fg="caption"]');
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
     }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin step-caption v1
+  // CAPTIONS[step] is plain text, or [title, text] shown as "N. title — text"
+  // with the caption marked active.
+  function stepCaptionHtml(s) {
+    const c = CAPTIONS[s];
+    return Array.isArray(c) ? '<strong>' + escHtml(s + '. ' + c[0]) + '</strong> \u2014 ' + escHtml(c[1]) : escHtml(c);
+  }
+  reserveCaption(CAPTIONS.map((c, s) => stepCaptionHtml(s)));
+  root.addEventListener('fg:step', (e) => {
+    setCaption(stepCaptionHtml(e.detail.step));
+    if (caption) caption.classList.toggle('is-active', Array.isArray(CAPTIONS[e.detail.step]));
   });
+  // fg:end step-caption
 
   // fg:begin timeline-start v1
   apply();
@@ -276,7 +322,12 @@
     tl.go(TOTAL); // show final state, manual stepping still available
   } else {
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => (e.isIntersecting ? tl.play() : tl.pause())),
+      // The first callback reports any overlap as intersecting, so test the
+      // ratio; a reader who paused keeps control until they press play.
+      (entries) => entries.forEach((e) => {
+        if (e.intersectionRatio < 0.3) tl.pause();
+        else if (!held) tl.play();
+      }),
       { threshold: 0.3 }
     );
     io.observe(root);

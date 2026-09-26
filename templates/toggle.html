@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<link rel="stylesheet" href="../../shared/preview.css">
+</head>
+<body>
+<h1>{{TITLE}}</h1>
+<p>TODO: one-line description for standalone viewing.</p>
+
+<!-- fg:embed-start -->
+<div class="fg-diagram fg-{{NAME}}">
+<style>
+/* fg:begin {{PALETTE}} v1 */
+/* fg:end {{PALETTE}} */
+/* fg:begin {{PANEL}} v1 */
+/* fg:end {{PANEL}} */
+.fg-{{NAME}} {
+  padding: 16px 16px 12px;
+}
+
+/* --- diagram-specific styling ------------------------------------- */
+/* TODO: static styling for .{{ABBR}}-* elements, and the rules each state
+   class from STATES turns on (e.g. .fg-{{NAME}}.is-alt .{{ABBR}}-arc) */
+
+/* fg:begin toggle-bar v1 */
+/* fg:end toggle-bar */
+
+/* fg:begin caption-box v1 */
+/* fg:end caption-box */
+
+/* fg:begin reduced-motion v1 */
+/* fg:end reduced-motion */
+</style>
+
+<svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" role="img"
+     aria-label="TODO: describe both readings and what the toggle changes.">
+</svg>
+
+<div class="fg-controls">
+  <button type="button" data-fg="toggle" aria-label="TODO: what pressing the button changes">TODO: button text</button>
+</div>
+
+<div class="fg-caption" data-fg="caption">TODO: the first state's caption, identical to STATES[0].cap.</div>
+
+<script>(() => {
+  const root = document.currentScript.closest('.fg-diagram');
+  // One entry per state: the root class it sets ('' for none), its caption
+  // HTML, and optionally the button label while it is shown. Several
+  // data-fg="toggle" buttons select one state each instead of cycling.
+  const STATES = [
+    { cls: '', cap: 'TODO: first state caption' },
+    { cls: 'is-alt', cap: 'TODO: second state caption' },
+  ];
+
+  // fg:begin caption-core v1
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  // fg:end toggle-core
+})();</script>
+</div>
+<!-- fg:embed-end -->
+</body>
+</html>

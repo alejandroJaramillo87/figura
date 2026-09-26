@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-engine-comparison .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-engine-comparison .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-engine-comparison .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-engine-comparison .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-engine-comparison .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-engine-comparison .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-engine-comparison .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-engine-comparison .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-engine-comparison .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-engine-comparison .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-engine-comparison .fg-fill-line) { fill: var(--line); }
+:where(.fg-engine-comparison .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-engine-comparison .fg-fill-border) { fill: var(--border); }
+:where(.fg-engine-comparison .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-engine-comparison .fg-fill-text) { fill: var(--text); }
+:where(.fg-engine-comparison .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-engine-comparison .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-engine-comparison .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-engine-comparison {
@@ -57,7 +77,7 @@
 
 .fg-engine-comparison .iec-cell {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
-  transition: fill 0.3s, stroke 0.3s; cursor: pointer;
+  transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
 .fg-engine-comparison .iec-group:hover .iec-cell { fill: var(--panel-hover); }
 .fg-engine-comparison .iec-group.iec-cpu:hover .iec-cell { stroke: var(--ok); }
@@ -70,19 +90,26 @@
 .fg-engine-comparison .iec-head-vllm { stroke: var(--violet); }
 
 .fg-engine-comparison .iec-htitle { fill: var(--text); font-size: 15px; font-weight: 600; text-anchor: middle; pointer-events: none; }
-.fg-engine-comparison .iec-hsub   { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-engine-comparison .iec-hsub   { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
 .fg-engine-comparison .iec-val    { fill: var(--text); font-size: 12.5px; text-anchor: middle; pointer-events: none; }
-.fg-engine-comparison .iec-vsub   { fill: var(--muted); font-size: 10.5px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-engine-comparison .iec-vsub   { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
 .fg-engine-comparison .iec-row    { fill: var(--muted); font-size: 12px; font-weight: 600; }
 
+/* fg:begin caption-box v1 */
 .fg-engine-comparison .fg-caption {
   margin-top: 12px; padding: 10px 14px;
-  background: var(--panel); border-left: 3px solid var(--accent);
+  background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
-  /* tall enough for the longest data-info at column width: no page reflow on hover */
-  color: var(--muted); font-size: 13px; min-height: 5.4em;
-  transition: color 0.3s;
+  /* min-height reserves space for the longest caption: no page reflow */
+  color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-engine-comparison .fg-caption.fg-cap-grid { display: grid; }
+.fg-engine-comparison .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-engine-comparison .fg-cap-live { grid-area: 1 / 1; }
+.fg-engine-comparison [data-info]:focus { outline: none; }
+.fg-engine-comparison [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* fg:end caption-box */
+.fg-engine-comparison .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
 .fg-engine-comparison .fg-caption.is-active { color: var(--text); }
 .fg-engine-comparison .fg-caption strong { color: var(--accent); font-weight: 600; }
 .fg-engine-comparison .fg-caption code {
@@ -100,7 +127,6 @@
 <svg viewBox="0 0 720 420" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="Comparison of the three inference containers. llama-cpu runs llama.cpp on 16 Zen 5 cores, optimized for always-available low-latency inference, built from source in a multi-stage image. llama-gpu runs llama.cpp with CUDA on the RTX 5090, optimized for single-stream speed, built from source against sm_120. vllm-gpu runs vLLM on the same GPU, optimized for batch throughput, installed from the official cu130 wheel with no compilation.">
 
-  <!-- column headers -->
   <g class="iec-group iec-cpu" data-title="llama-cpu" data-info="llama.cpp compiled for the Ryzen 9950X. The port that is always available: it does not compete with GPU jobs, so it serves while training or benchmarks own the card. Port 8001.">
     <rect class="iec-head iec-head-cpu" x="180" y="16" width="168" height="56" rx="8"/>
     <text class="iec-htitle" x="264" y="40">llama-cpu</text>
@@ -117,7 +143,6 @@
     <text class="iec-hsub" x="624" y="58">vLLM · :8003</text>
   </g>
 
-  <!-- row: hardware -->
   <text class="iec-row" x="16" y="114">Hardware</text>
   <g class="iec-group iec-cpu" data-title="llama-cpu: hardware" data-info="16 Zen 5 cores (pinned 0-15) and up to 96GB of DDR5. The AVX-512 units are the compute engine; the build enables VNNI, VBMI, and BF16 paths explicitly.">
     <rect class="iec-cell" x="180" y="84" width="168" height="60" rx="6"/>
@@ -135,7 +160,6 @@
     <text class="iec-vsub" x="624" y="128">85% VRAM reserved</text>
   </g>
 
-  <!-- row: optimized for -->
   <text class="iec-row" x="16" y="186">Optimized for</text>
   <g class="iec-group iec-cpu" data-title="llama-cpu: optimized for" data-info="Availability and latency without the GPU. Handles smaller quantized models for interactive use, freeing the card — and it is the fallback when the GPU is busy with training or a benchmark.">
     <rect class="iec-cell" x="180" y="156" width="168" height="60" rx="6"/>
@@ -153,7 +177,6 @@
     <text class="iec-vsub" x="624" y="200">256 seqs · paged KV</text>
   </g>
 
-  <!-- row: image build -->
   <text class="iec-row" x="16" y="258">Image build</text>
   <g class="iec-group iec-cpu" data-title="llama-cpu: image build" data-info="Compiled from source in a multi-stage build on debian:trixie-slim: gcc-14 with -march=znver5, AVX-512 enabled via cmake flags, llama.cpp pinned by commit SHA. Compile because no published binary targets this CPU this precisely.">
     <rect class="iec-cell" x="180" y="228" width="168" height="60" rx="6"/>
@@ -171,7 +194,6 @@
     <text class="iec-vsub" x="624" y="272">no compilation</text>
   </g>
 
-  <!-- row: entrypoint -->
   <text class="iec-row" x="16" y="330">Entrypoint</text>
   <g class="iec-group iec-cpu" data-title="llama-cpu: entrypoint" data-info="A bash script that builds a CMD_ARGS array: four required variables fail fast if missing, feature flags append conditionally (MLOCK, CACHE_REUSE, NO_REPACK), then exec replaces the shell with the server.">
     <rect class="iec-cell" x="180" y="300" width="168" height="60" rx="6"/>
@@ -196,22 +218,58 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const DEFAULT = 'Hover over any cell to see the reasoning behind it.';
-  root.querySelectorAll('.iec-group[data-info]').forEach((g) => {
-    g.addEventListener('mouseenter', () => {
-      caption.innerHTML = '';
-      const strong = document.createElement('strong');
-      strong.textContent = g.getAttribute('data-title');
-      caption.appendChild(strong);
-      caption.appendChild(document.createTextNode(' — ' + g.getAttribute('data-info')));
-      caption.classList.add('is-active');
-    });
-    g.addEventListener('mouseleave', () => {
-      caption.textContent = DEFAULT;
-      caption.classList.remove('is-active');
-    });
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin hover-caption v1
+  // Targets carry data-info (plain text), optionally data-title (shown bold
+  // before it) and data-code (shown as inline code after it). Focus reaches
+  // the same readout as the pointer; fg:hover lets a diagram add its own
+  // highlight classes.
+  const hoverTargets = [...root.querySelectorAll('[data-info]')];
+  function hoverHtml(el) {
+    const title = el.getAttribute('data-title');
+    const code = el.getAttribute('data-code');
+    return (title ? '<strong>' + escHtml(title) + '</strong> — ' : '') + escHtml(el.getAttribute('data-info')) +
+      (code ? ' <code>' + escHtml(code) + '</code>' : '');
+  }
+  reserveCaption(hoverTargets.map(hoverHtml));
+  hoverTargets.forEach((el, index) => {
+    el.setAttribute('tabindex', '0');
+    const set = (on) => {
+      setCaption(on ? hoverHtml(el) : captionInitial);
+      if (caption) caption.classList.toggle('is-active', on);
+      root.dispatchEvent(new CustomEvent('fg:hover', { detail: { el, index, on } }));
+    };
+    el.addEventListener('mouseenter', () => set(true));
+    el.addEventListener('focus', () => set(true));
+    el.addEventListener('mouseleave', () => set(false));
+    el.addEventListener('blur', () => set(false));
   });
+  // fg:end hover-caption
 })();</script>
 </div>
 <!-- fg:embed-end -->

@@ -36,7 +36,9 @@ header p { color: #666; margin: 0; font-size: 0.95rem; }
   const main = document.getElementById('gallery');
   let manifest;
   try {
-    manifest = await (await fetch('manifest.json')).json();
+    const res = await fetch('manifest.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    manifest = await res.json();
   } catch (e) {
     main.innerHTML = '<p class="error">Could not load manifest.json — serve this page over HTTP.</p>';
     return;
@@ -45,7 +47,9 @@ header p { color: #666; margin: 0; font-size: 0.95rem; }
   const EMBED_RE = /<!-- fg:embed-start -->([\s\S]*?)<!-- fg:embed-end -->/;
 
   async function embed(container, path) {
-    const html = await (await fetch(path)).text();
+    const res = await fetch(path);
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' for ' + path);
+    const html = await res.text();
     const m = html.match(EMBED_RE);
     if (!m) throw new Error('no embed markers in ' + path);
     // Insert markup, then re-create scripts so they execute (innerHTML won't run them).
@@ -56,7 +60,14 @@ header p { color: #666; margin: 0; font-size: 0.95rem; }
       s.textContent = old.textContent;
       old.replaceWith(s);
     });
+    // Inserted scripts run synchronously and report failures to window, not
+    // to this function, so collect them for the duration of the insert.
+    const errors = [];
+    const onError = (ev) => errors.push(ev.message);
+    window.addEventListener('error', onError);
     container.appendChild(holder);
+    window.removeEventListener('error', onError);
+    if (errors.length) throw new Error('script error in ' + path + ': ' + errors.join('; '));
   }
 
   for (let i = 0; i < manifest.length; i++) {
@@ -64,10 +75,10 @@ header p { color: #666; margin: 0; font-size: 0.95rem; }
     const section = document.createElement('section');
     section.className = 'entry';
     section.innerHTML =
-      '<h2></h2><p class="meta"><code></code> · post: <span></span></p><p class="desc"></p>';
+      '<h2></h2><p class="meta"><code></code> · used by: <span></span></p><p class="desc"></p>';
     section.querySelector('h2').textContent = d.title;
     section.querySelector('code').textContent = d.path;
-    section.querySelector('.meta span').textContent = d.post;
+    section.querySelector('.meta span').textContent = d.consumers.length ? d.consumers.join(', ') : 'no consumer';
     section.querySelector('.desc').textContent = d.description;
     main.appendChild(section);
     try {

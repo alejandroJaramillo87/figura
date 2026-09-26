@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="../../shared/preview.css">
 </head>
 <body>
-<h1>Speech-act ambiguity</h1>
+<h1>Speech acts: what kind of response does this call for?</h1>
 <p>"Can you pass the salt?" is a request wearing a question's syntax. Answering the question is the wrong move.</p>
 
 <!-- fg:embed-start -->
@@ -35,9 +35,29 @@
   --font: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --radius: 12px;
+  --dur-quick: 0.3s;
   --dur-fast: 0.45s;
+  --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
+:where(.fg-speech-act .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-speech-act .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-speech-act .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-speech-act .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-speech-act .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-speech-act .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-speech-act .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-speech-act .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-speech-act .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-speech-act .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-speech-act .fg-fill-line) { fill: var(--line); }
+:where(.fg-speech-act .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-speech-act .fg-fill-border) { fill: var(--border); }
+:where(.fg-speech-act .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-speech-act .fg-fill-text) { fill: var(--text); }
+:where(.fg-speech-act .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-speech-act .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-speech-act .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
 .fg-speech-act {
@@ -62,11 +82,11 @@
 .fg-speech-act .spa-word { fill: var(--text); font-size: 13px; text-anchor: middle; pointer-events: none; }
 
 /* the two dispatch targets */
-.fg-speech-act .spa-card { transition: opacity 0.7s var(--ease); }
+.fg-speech-act .spa-card { transition: opacity var(--dur-slow) var(--ease); }
 .fg-speech-act .spa-card rect { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
 .fg-speech-act .spa-card .spa-head { font-size: 11px; text-anchor: middle; fill: var(--violet); }
 .fg-speech-act .spa-card .spa-body { font-size: 13px; text-anchor: middle; fill: var(--text); }
-.fg-speech-act .spa-arc { fill: none; stroke-width: 2; transition: opacity 0.7s; }
+.fg-speech-act .spa-arc { fill: none; stroke-width: 2; transition: opacity var(--dur-slow); }
 
 /* question state: literal card active, request dimmed */
 .fg-speech-act .spa-card-lit { opacity: 1; }
@@ -74,7 +94,7 @@
 .fg-speech-act .spa-arc-lit { stroke: var(--hot); opacity: 1; }
 .fg-speech-act .spa-card-req { opacity: 0.35; }
 .fg-speech-act .spa-arc-req { stroke: var(--ok); opacity: 0; }
-.fg-speech-act .spa-clash { transition: opacity 0.7s; opacity: 1; fill: var(--hot); font-size: 11px; }
+.fg-speech-act .spa-clash { transition: opacity var(--dur-slow); opacity: 1; fill: var(--hot); font-size: 11px; }
 
 /* request state */
 .fg-speech-act.is-request .spa-card-lit { opacity: 0.35; }
@@ -84,13 +104,17 @@
 .fg-speech-act.is-request .spa-arc-req { opacity: 1; }
 .fg-speech-act.is-request .spa-clash { opacity: 0; }
 
-.fg-speech-act .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-speech-act .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-speech-act .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-speech-act .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-speech-act .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-speech-act .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-speech-act .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-speech-act .fg-caption {
@@ -100,6 +124,11 @@
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
+.fg-speech-act .fg-caption.fg-cap-grid { display: grid; }
+.fg-speech-act .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-speech-act .fg-cap-live { grid-area: 1 / 1; }
+.fg-speech-act [data-info]:focus { outline: none; }
+.fg-speech-act [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
 .fg-speech-act .fg-caption strong { color: var(--ok); font-weight: 600; }
 
@@ -114,7 +143,6 @@
      aria-label="The sentence: Can you pass the salt, as token blocks. Below, two response cards a button dispatches between. The literal handler answers the question about ability: Yes, I can, marked in red with the note: technically responsive, socially broken. The request handler performs the action: the salt gets passed, marked in green. Same sentence, two different kinds of response.">
   <text class="spa-note" x="40" y="26">the syntax says question &#8212; but the right response is an action, not an answer</text>
 
-  <!-- token row -->
   <rect class="spa-tok" x="130" y="50" width="52" height="36" rx="6"/>
   <text class="spa-word" x="156" y="73">"Can</text>
   <rect class="spa-tok" x="190" y="50" width="48" height="36" rx="6"/>
@@ -126,11 +154,9 @@
   <rect class="spa-tok" x="362" y="50" width="60" height="36" rx="6"/>
   <text class="spa-word" x="392" y="73">salt?"</text>
 
-  <!-- dispatch arcs -->
   <path class="spa-arc spa-arc-lit" d="M 250 90 C 220 120, 190 130, 175 148" marker-end="url(#spa-arrow-hot)"/>
   <path class="spa-arc spa-arc-req" d="M 330 90 C 380 120, 430 130, 460 148" marker-end="url(#spa-arrow-ok)"/>
 
-  <!-- literal handler card -->
   <g class="spa-card spa-card-lit">
     <rect x="70" y="152" width="230" height="66" rx="8"/>
     <text class="spa-head" x="185" y="172">QUESTION HANDLER (literal)</text>
@@ -138,7 +164,6 @@
   </g>
   <text class="spa-clash" x="185" y="238" text-anchor="middle">technically responsive, socially broken</text>
 
-  <!-- request handler card -->
   <g class="spa-card spa-card-req">
     <rect x="380" y="152" width="230" height="66" rx="8"/>
     <text class="spa-head" x="495" y="172">REQUEST HANDLER (intended)</text>
@@ -149,10 +174,10 @@
 
   <defs>
     <marker id="spa-arrow-hot" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f87171"/>
+      <path class="fg-fill-hot" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
     <marker id="spa-arrow-ok" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M 0 1 L 10 5 L 0 9 z" fill="#34d399"/>
+      <path class="fg-fill-ok" d="M 0 1 L 10 5 L 0 9 z"/>
     </marker>
   </defs>
 </svg>
@@ -165,17 +190,61 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Literal dispatch</strong> — the surface form is a yes/no question about ability, so the question handler fires and answers it. Nothing in the tokens forbids this reading; it is just not what the speaker was doing.', label: 'Dispatch as request' },
+    { cls: 'is-request', cap: '<strong>Request dispatch</strong> — the same payload routed to the request handler: the salt gets passed. For a chat model this is the first decision on every message — what kind of response is being called for — and it is made before any content is generated.', label: 'Dispatch as question' },
+  ];
+
+  // fg:begin caption-core v1
+  // Captions change at runtime. Every variant is stacked invisibly in one
+  // grid cell, so the box takes the tallest variant's height at any column
+  // width and changing the caption never reflows the post.
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    lit: '<strong>Literal dispatch</strong> — the surface form is a yes/no question about ability, so the question handler fires and answers it. Nothing in the tokens forbids this reading; it is just not what the speaker was doing.',
-    req: '<strong>Request dispatch</strong> — the same payload routed to the request handler: the salt gets passed. For a chat model this is the first decision on every message — what kind of response is being called for — and it is made before any content is generated.'
+  const captionInitial = caption ? caption.innerHTML : '';
+  const captionText = document.createElement('span');
+  function reserveCaption(variants) {
+    if (!caption) return;
+    caption.textContent = '';
+    caption.classList.add('fg-cap-grid');
+    for (const html of [captionInitial, ...variants]) {
+      const ghost = document.createElement('span');
+      ghost.className = 'fg-cap-ghost';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.innerHTML = html;
+      caption.appendChild(ghost);
+    }
+    captionText.className = 'fg-cap-live';
+    captionText.setAttribute('aria-live', 'polite');
+    captionText.innerHTML = captionInitial;
+    caption.appendChild(captionText);
+  }
+  function setCaption(html) { captionText.innerHTML = html; }
+  function escHtml(t) { const s = document.createElement('span'); s.textContent = t; return s.innerHTML; }
+  // fg:end caption-core
+  // fg:begin toggle-core v1
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  reserveCaption(STATES.map((s) => s.cap || ''));
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (s.cap) setCaption(s.cap);
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const req = root.classList.toggle('is-request');
-    caption.innerHTML = req ? CAP.req : CAP.lit;
-    btn.textContent = req ? 'Dispatch as question' : 'Dispatch as request';
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->
