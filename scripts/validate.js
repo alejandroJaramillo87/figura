@@ -25,6 +25,7 @@ const fs = require('fs');
 const path = require('path');
 const F = require('./lib/fragment');
 const cli = require('./lib/cli');
+const { report: summarize } = require('./lib/report');
 
 const USAGE = 'usage: node scripts/validate.js [--warn]';
 
@@ -363,10 +364,6 @@ function checkManifest(manifest, files) {
 function main() {
   const warnOnly = !!cli.parse(USAGE, { warn: { type: 'boolean' } }).values.warn;
   const files = F.listDiagramFiles();
-  if (!files.length) {
-    console.error('[FAIL] validate: no diagram files found; nothing was checked');
-    process.exit(1);
-  }
   let manifest = null;
   try {
     manifest = F.loadManifest();
@@ -377,12 +374,13 @@ function main() {
   for (const f of files) checkFile(f, kindOf.get(F.relPath(f)));
   if (manifest) checkManifest(manifest, files);
 
-  for (const f of findings) console.error(`[${warnOnly ? 'WARN' : 'FAIL'}] ${f.rel} (${f.rule}): ${f.msg}`);
-  const byRule = {};
-  for (const f of findings) byRule[f.rule] = (byRule[f.rule] || 0) + 1;
-  console.error(`validate: ${files.length} files, ${findings.length} findings` +
-    (findings.length ? ` (${Object.entries(byRule).map(([k, v]) => `${k}: ${v}`).join(', ')})` : ''));
-  process.exit(warnOnly || !findings.length ? 0 : 1);
+  const lines = findings.map((f) => `${f.rel} (${f.rule}): ${f.msg}`);
+  if (warnOnly) {
+    for (const l of lines) console.error(`  WARN  ${l}`);
+    console.log(`WARN  validate: ${files.length} checked, ${lines.length} findings (not failing: --warn)`);
+    process.exit(0);
+  }
+  summarize('validate', lines, files.length);
 }
 
 main();

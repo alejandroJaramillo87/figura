@@ -87,7 +87,7 @@ provide changes, and the validator refuses a stale one.
 fails if any block drifted from its canonical source. Palette changes are
 made in `shared/tokens.css`, then `node scripts/build.js` propagates them
 to every diagram in the library. CI (`.github/workflows/validate.yml`) runs
-`build --check` and the validator on every push and PR.
+`npm run quality`, which includes both, on every push and PR.
 
 ## File anatomy
 

@@ -2,8 +2,9 @@
 
 ## Prerequisites
 
-- Node.js >= 18. That is all: the tooling is zero-dependency, so there
-  is no `npm install` step (`package.json` has no dependencies).
+- Node.js at the exact version in `.nvmrc` (`nvm use`). The gate refuses
+  any other version. The tooling is zero-dependency, so the fast gate has
+  no `npm install` step.
 - Python 3 (optional) for serving the gallery locally
   (`python3 -m http.server`). Nothing in the tooling needs it.
 
@@ -114,9 +115,11 @@ missing from the manifest.
 
 ## CI
 
-`.github/workflows/validate.yml` runs `node scripts/build.js --check`
-and `node scripts/validate.js` (the same commands as `npm run check`)
-on every push to `main` and every pull request, on Node 22.
+`.github/workflows/validate.yml` runs `node tests/quality.mjs` (the same
+command as `npm run quality`) on every push to `main` and every pull
+request, on the Node version in `.nvmrc`. Its actions are pinned by commit
+SHA, the token is read-only, and a newer push to a pull request cancels
+the stale run.
 
 ## Troubleshooting
 

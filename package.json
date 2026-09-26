@@ -8,9 +8,10 @@
     "check": "node scripts/build.js --check && node scripts/validate.js",
     "validate": "node scripts/validate.js",
     "new": "node scripts/new-diagram.js",
-    "export": "node scripts/export-svg.js"
+    "export": "node scripts/export-svg.js",
+    "quality": "node tests/quality.mjs"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22"
   }
 }

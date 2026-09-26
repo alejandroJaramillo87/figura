@@ -18,6 +18,7 @@ const fs = require('fs');
 const path = require('path');
 const F = require('./lib/fragment');
 const cli = require('./lib/cli');
+const { report } = require('./lib/report');
 
 const USAGE = 'usage: node scripts/build.js [--check] [--file diagrams/<slug>/<name>.html]';
 
@@ -71,27 +72,21 @@ function main() {
   if (fileArg && !fs.existsSync(path.resolve(F.REPO_ROOT, fileArg))) cli.fail('no such file: ' + fileArg);
 
   const files = fileArg ? [path.resolve(F.REPO_ROOT, fileArg)] : F.listDiagramFiles();
-  if (!files.length) {
-    console.error('[ERROR] build: no diagram files found; nothing was checked');
-    process.exit(1);
-  }
-  let drifted = 0, errors = 0, written = 0;
+  const failures = [];
+  let written = 0;
 
   for (const file of files) {
     const r = expandFile(file);
     if (r.error) {
-      console.error(`[ERROR] ${F.relPath(file)}: ${r.error}`);
-      errors++;
+      failures.push(`${F.relPath(file)}: ${r.error}`);
       continue;
     }
     for (const name of r.unknown) {
-      console.error(`[ERROR] ${F.relPath(file)}: unknown managed block "${name}"`);
-      errors++;
+      failures.push(`${F.relPath(file)}: unknown managed block "${name}"`);
     }
     if (!r.changed) continue;
     if (check) {
-      console.error(`[DRIFT] ${F.relPath(file)}: managed blocks differ from canonical source`);
-      drifted++;
+      failures.push(`${F.relPath(file)}: managed blocks differ from their canonical source (run npm run build)`);
     } else {
       fs.writeFileSync(file, r.rebuilt);
       console.log(`[OK] ${F.relPath(file)}: managed blocks re-expanded`);
@@ -99,13 +94,8 @@ function main() {
     }
   }
 
-  const total = files.length;
-  if (check) {
-    console.error(`build --check: ${total} files, ${drifted} drifted, ${errors} errors`);
-    process.exit(drifted || errors ? 1 : 0);
-  }
-  console.log(`build: ${total} files, ${written} updated, ${errors} errors`);
-  process.exit(errors ? 1 : 0);
+  if (!check) console.log(`build: ${written} of ${files.length} files updated`);
+  report(check ? 'build --check' : 'build', failures, files.length);
 }
 
 if (require.main === module) main();

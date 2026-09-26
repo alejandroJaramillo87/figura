@@ -61,8 +61,9 @@ templates/       step-timeline, hover-inspect, toggle, ambient, static scaffolds
 diagrams/<consumer-dir>/<kebab-name>.html
 ```
 
-Tooling is zero-dependency Node (>= 18): `npm run check` runs the drift
-check and the validator; CI runs the same on every push and pull request.
+Tooling is zero-dependency Node at the version in `.nvmrc`. `npm run check`
+runs the drift check and the validator while authoring; `npm run quality`
+is the gate that must pass before every push, and CI runs exactly it.
 
 ## Preview
 
