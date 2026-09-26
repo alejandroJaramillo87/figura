@@ -2,10 +2,15 @@
 /*
  * validate.js — contract linter for the CLAUDE.md hard rules.
  *
- * Checks every diagram fragment for: embed markers, root-class CSS scoping,
- * prefixed keyframes and SVG ids, scoped JS conventions, self-containment
- * (no external URLs, imports, or absolute paths), reduced-motion coverage,
- * SMIL comet gating, accessibility attributes, and manifest consistency.
+ * Checks every diagram fragment for: exactly one pair of embed markers,
+ * well-formed managed blocks at their canonical versions, the blocks its
+ * manifest kind requires (in dependency order, none duplicated), root-class
+ * CSS scoping (including inside @media, @supports, @container and @layer),
+ * prefixed keyframes and SVG ids that no other diagram defines, a single
+ * bare-<script> IIFE per script, self-containment (no external or relative
+ * URLs, imports, or absolute paths), reduced-motion coverage, a
+ * reduced-motion display:none gate around every SMIL element, accessibility
+ * attributes, leftover scaffold TODOs, and manifest consistency.
  * Diagrams the manifest marks kind "static" additionally carry no script,
  * no SMIL, no CSS motion, and no controls or caption chrome, so that the
  * fragment can be exported as a standalone SVG (scripts/export-svg.js).
@@ -43,7 +48,7 @@ function collectSelectors(css, out) {
     const brace = css.indexOf('{', i);
     if (brace === -1) break;
     const head = css.slice(i, brace).trim();
-    if (head.startsWith('@media')) {
+    if (/^@(?:media|supports|container|layer)\b/.test(head)) {
       // find matching closing brace of the media block
       let depth = 1, j = brace + 1;
       while (j < css.length && depth > 0) {
@@ -78,6 +83,36 @@ function collectSelectors(css, out) {
   }
 }
 
+/*
+ * SMIL ignores prefers-reduced-motion, so every animation element must sit
+ * inside (or be) an element whose class a reduced-motion media query hides
+ * with display: none. Classes are gathered per element from a tag stack.
+ */
+const SMIL_RE = /^(?:animate|animateMotion|animateTransform|set)$/;
+function checkSmilGate(file, frag, cls) {
+  const gated = new Set();
+  for (const m of frag.matchAll(/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?)\n\}/g)) {
+    for (const r of m[1].matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+      if (!/display:\s*none/.test(r[2])) continue;
+      for (const c of r[1].matchAll(/\.([a-zA-Z0-9_-]+)/g)) if (c[1] !== cls) gated.add(c[1]);
+    }
+  }
+  const stack = [];
+  for (const m of frag.matchAll(/<(\/?)([a-zA-Z][\w:-]*)([^>]*?)(\/?)>/g)) {
+    const [, close, tag, attrs, selfClose] = m;
+    if (close) {
+      while (stack.length && stack.pop().tag !== tag);
+      continue;
+    }
+    const classes = ((attrs.match(/\bclass="([^"]*)"/) || [, ''])[1]).split(/\s+/).filter(Boolean);
+    if (SMIL_RE.test(tag)) {
+      const covered = [...stack.flatMap((e) => e.classes), ...classes].some((c) => gated.has(c));
+      if (!covered) report(file, 'smil-gate', `<${tag}> is not inside an element hidden under prefers-reduced-motion`);
+    }
+    if (!selfClose) stack.push({ tag, classes });
+  }
+}
+
 function checkFile(file, kind) {
   const source = fs.readFileSync(file, 'utf8');
   const rel = F.relPath(file);
@@ -86,6 +121,9 @@ function checkFile(file, kind) {
     report(file, 'absolute-path', 'absolute path reference in file');
   }
 
+  const starts = source.split(F.EMBED_START).length - 1;
+  const ends = source.split(F.EMBED_END).length - 1;
+  if (starts > 1 || ends > 1) report(file, 'embed-markers', `${starts} embed-start and ${ends} embed-end markers (expected one each)`);
   const parts = F.splitEmbed(source);
   if (!parts) {
     report(file, 'embed-markers', 'missing or unbalanced fg:embed markers');
@@ -93,6 +131,7 @@ function checkFile(file, kind) {
   }
   const frag = parts.fragment;
 
+  indexGlobals(file, frag);
   const cls = F.rootClass(frag);
   if (!cls) {
     report(file, 'root-class', 'root element must carry class="fg-diagram fg-<name>"');
@@ -108,6 +147,13 @@ function checkFile(file, kind) {
     if (!u.includes('www.w3.org')) report(file, 'self-contained', `external URL ref: ${u}`);
   }
   if (/url\(\s*['"]?https?:/i.test(frag)) report(file, 'self-contained', 'external url() in CSS');
+  /* a relative reference resolves against the blog page, not this file */
+  for (const m of frag.matchAll(/\b(?:src|href|xlink:href)\s*=\s*"(?!#|(?:https?:)?\/\/)([^"]*)"/gi)) {
+    report(file, 'self-contained', `relative URL reference: "${m[1]}"`);
+  }
+  for (const m of frag.matchAll(/url\(\s*['"]?(?!#|https?:|data:)([^'")]+)/gi)) {
+    report(file, 'self-contained', `relative url() in CSS: "${m[1]}"`);
+  }
 
   /* CSS scoping */
   const styles = [...frag.matchAll(/<style>([\s\S]*?)<\/style>/g)].map((m) => m[1]);
@@ -134,6 +180,22 @@ function checkFile(file, kind) {
   } catch (e) {
     report(file, 'sentinel', e.message);
   }
+  const names = blocks.map((b) => b.name);
+  for (const b of blocks) {
+    const want = F.BLOCK_VERSIONS[b.name];
+    if (want === undefined) report(file, 'block-unknown', `unknown managed block "${b.name}"`);
+    else if (b.version !== want) report(file, 'block-version', `${b.name} v${b.version}, canonical is v${want}`);
+    if (names.indexOf(b.name) !== names.lastIndexOf(b.name)) report(file, 'block-duplicate', `${b.name} appears more than once`);
+    for (const dep of F.BLOCK_AFTER[b.name] || []) {
+      const at = names.indexOf(dep);
+      if (at === -1 || at > names.indexOf(b.name)) report(file, 'block-order', `${b.name} needs ${dep} before it`);
+    }
+  }
+  if (kind && F.KIND_BLOCKS[kind]) {
+    for (const need of [...F.BASE_BLOCKS, ...F.KIND_BLOCKS[kind]]) {
+      if (!names.includes(need)) report(file, 'block-required', `kind "${kind}" requires managed block ${need}`);
+    }
+  }
   let unmanaged = frag;
   for (const b of blocks.slice().reverse()) {
     unmanaged = unmanaged.slice(0, b.start) + unmanaged.slice(b.end);
@@ -155,11 +217,7 @@ function checkFile(file, kind) {
   if (!frag.includes('prefers-reduced-motion')) {
     report(file, 'reduced-motion', 'no prefers-reduced-motion handling in fragment');
   }
-  if (frag.includes('<animateMotion')) {
-    const media = [...frag.matchAll(/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*?)\n\}/g)];
-    const gated = media.some((m) => /display:\s*none/.test(m[1]));
-    if (!gated) report(file, 'smil-gate', '<animateMotion> present but no display:none reduced-motion gate');
-  }
+  checkSmilGate(file, frag, cls);
 
   /* SVG ids: prefixed and consistent within the file */
   const ids = [...frag.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);
@@ -175,6 +233,9 @@ function checkFile(file, kind) {
     if (!ids.includes(base)) report(file, 'id-ref', `reference to undefined id: "${base}"`);
   }
 
+  /* a scaffold left unfilled */
+  if (/\bTODO\b/.test(frag)) report(file, 'scaffold', 'TODO left in the fragment');
+
   /* accessibility */
   const svgTags = [...frag.matchAll(/<svg\b[^>]*>/g)].map((m) => m[0]);
   for (const tag of svgTags) {
@@ -183,10 +244,16 @@ function checkFile(file, kind) {
   }
 
   /* JS conventions */
-  const scripts = [...frag.matchAll(/<script>([\s\S]*?)<\/script>/g)].map((m) => m[1]);
+  for (const m of frag.matchAll(/<script\b[^>]*>/gi)) {
+    if (m[0] !== '<script>') report(file, 'js-scope', `script tag must be a bare <script>: ${m[0]}`);
+  }
+  const scripts = [...frag.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1]);
   for (const js of scripts) {
     if (!js.includes("document.currentScript.closest('.fg-diagram')")) {
       report(file, 'js-scope', 'script does not resolve root via document.currentScript.closest');
+    }
+    if (!/^\(\(\) => \{\n[\s\S]*\n\}\)\(\);$/.test(js)) {
+      report(file, 'js-scope', 'script body must be exactly one IIFE: (() => { ... })();');
     }
     if (js.includes('getElementById')) report(file, 'js-scope', 'getElementById used (query within root instead)');
     if (js.includes('DOMContentLoaded')) report(file, 'js-scope', 'DOMContentLoaded used (script sits after markup)');
@@ -216,7 +283,19 @@ function checkFile(file, kind) {
 
 /* --- manifest checks ----------------------------------------------------- */
 
-const KINDS = ['step-timeline', 'hover-inspect', 'ambient', 'static'];
+const KINDS = Object.keys(F.KIND_BLOCKS);
+
+/* ids and keyframe names are page-global once inlined: two diagrams on one
+   page must never define the same one */
+const globalNames = new Map();
+function indexGlobals(file, frag) {
+  const names = [...frag.matchAll(/\bid="([^"]+)"/g)].map((m) => 'id ' + m[1])
+    .concat([...frag.matchAll(/@keyframes\s+([\w-]+)/g)].map((m) => 'keyframes ' + m[1]));
+  for (const n of new Set(names)) {
+    if (globalNames.has(n)) report(file, 'global-name', `${n} also defined in ${globalNames.get(n)}`);
+    else globalNames.set(n, F.relPath(file));
+  }
+}
 
 function checkManifest(manifest, files) {
   const rels = new Set(files.map((f) => F.relPath(f)));
@@ -226,6 +305,8 @@ function checkManifest(manifest, files) {
     for (const k of ['id', 'path', 'title', 'post', 'description']) {
       if (!(k in entry)) report(null, 'manifest', `entry "${entry.id || entry.path}" missing field "${k}"`);
     }
+    if (!('kind' in entry)) report(null, 'manifest', `entry "${entry.id}" missing field "kind"`);
+    if (/^TODO\b/.test(entry.description || '')) report(null, 'scaffold', `entry "${entry.id}" description is unfilled`);
     if ('kind' in entry && !KINDS.includes(entry.kind)) {
       report(null, 'manifest', `entry "${entry.id}" has unknown kind "${entry.kind}"`);
     }

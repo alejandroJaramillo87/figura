@@ -135,6 +135,38 @@ function renderBlock(name, version, style, body) {
   return `${beginMarker(name, version, style)}\n${body}${endMarker(name, style)}`;
 }
 
+/*
+ * Canonical interface version of each managed block. A version changes only
+ * when what the host diagram must provide changes (TOTAL, STATES, CAPTIONS,
+ * markup hooks), so a diagram stamped with an older version is refused
+ * rather than silently re-expanded against a contract it does not meet.
+ */
+const BLOCK_VERSIONS = {
+  'palette-classic': 1, 'panel-base': 1, 'reduced-motion': 1,
+  'controls-bar': 1, 'timeline-core': 1, 'timeline-start': 1,
+  'caption-box': 1, 'caption-core': 1, 'hover-caption': 1, 'step-caption': 1,
+  'toggle-bar': 1, 'toggle-core': 1,
+};
+
+/* Managed blocks each manifest kind must carry, in addition to BASE_BLOCKS. */
+const BASE_BLOCKS = ['palette-classic', 'panel-base', 'reduced-motion'];
+const KIND_BLOCKS = {
+  'step-timeline': ['controls-bar', 'timeline-core', 'timeline-start'],
+  'hover-inspect': ['caption-box', 'caption-core', 'hover-caption'],
+  'toggle': ['toggle-bar', 'caption-box', 'caption-core', 'toggle-core'],
+  'ambient': [],
+  'static': [],
+};
+
+/* Blocks that must appear after another block in the same fragment. */
+const BLOCK_AFTER = {
+  'timeline-start': ['timeline-core'],
+  'hover-caption': ['caption-core'],
+  'toggle-core': ['caption-core'],
+  'step-caption': ['caption-core', 'timeline-core'],
+  'caption-core': ['caption-box'],
+};
+
 /* --- palette generation from tokens.css --------------------------------- */
 
 /* Local (unprefixed) names diagrams use, mapped from the tokens.css names. */
@@ -176,4 +208,6 @@ module.exports = {
   REPO_ROOT, DIAGRAMS_DIR, MANIFEST_PATH,
   listDiagramFiles, relPath, splitEmbed, rootClass,
   findBlocks, renderBlock, canonicalBody, loadManifest,
+  BLOCK_VERSIONS, BASE_BLOCKS, KIND_BLOCKS, BLOCK_AFTER,
+  EMBED_START, EMBED_END,
 };
