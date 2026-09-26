@@ -232,6 +232,10 @@ function checkFile(file, kind) {
     if (!ids.includes(base)) report(file, 'id-ref', `reference to undefined id: "${base}"`);
   }
 
+  /* the blog inlines the fragment verbatim, so an HTML comment ships to readers */
+  const comments = (frag.match(/<!--[\s\S]*?-->/g) || []).length;
+  if (comments) report(file, 'html-comment', `${comments} HTML comment(s) inside the fragment ship with the page`);
+
   /* a scaffold left unfilled */
   if (/\bTODO\b/.test(frag)) report(file, 'scaffold', 'TODO left in the fragment');
 

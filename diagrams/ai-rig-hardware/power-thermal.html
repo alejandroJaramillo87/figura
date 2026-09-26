@@ -189,7 +189,6 @@
 
   <text class="arht-heading" x="40" y="34">Sustained draw against a 1200W supply</text>
 
-  <!-- rail: 60 → 660 px spans 0 → 1200W, so 1W = 0.5px -->
   <rect class="arht-rail" x="60" y="52" width="600" height="40" rx="6"/>
   <rect class="arht-seg arht-seg-base" x="61" y="53" width="27" height="38"/>
   <rect class="arht-seg arht-seg-gpu"  x="88" y="53" width="288" height="38"/>
@@ -213,7 +212,6 @@
     <text x="466" y="118"><tspan class="arht-watts">~800W</tspan> drawn · ~400W headroom</text>
   </g>
 
-  <!-- the box itself: parts always visible, airflow revealed at the last step -->
   <rect class="arht-case" x="150" y="250" width="420" height="210" rx="8"/>
 
   <rect class="arht-halo arht-halo-cpu" x="250" y="292" width="120" height="56" rx="6" fill="var(--warn)"/>
@@ -230,9 +228,6 @@
   <circle class="arht-fan arht-fan-in" cx="150" cy="418" r="15"/>
   <text class="arht-mono" x="52" y="356">6 intake</text>
 
-  <!-- side-panel bank, drawn just inside the wall beside the front fans.
-       They blow toward the viewer, which a side section cannot show, so their
-       air is drawn merging into the front-to-back stream instead. -->
   <circle class="arht-fan arht-fan-in" cx="196" cy="292" r="15"/>
   <circle class="arht-fan arht-fan-in" cx="196" cy="355" r="15"/>
   <circle class="arht-fan arht-fan-in" cx="196" cy="418" r="15"/>

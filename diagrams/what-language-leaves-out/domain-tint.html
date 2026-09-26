@@ -144,7 +144,6 @@
      aria-label="The sentence The test came back positive shown between two mini-documents: an oncology follow-up note and a product review. A toggle moves the sentence between the documents. Inside the medical note, positive reads as bad news and dashed arcs connect it to register cues like biopsy and oncology scattered across the note; inside the review, the same word reads as good news, with arcs to cues like battery life and five stars. The resolving context is the whole document's register, not any single neighboring word.">
   <text class="dmt-note" x="40" y="26">the diffuse case: no single word pins the sense &#8212; the whole document's register does</text>
 
-  <!-- medical doc -->
   <g class="dmt-doc-med">
     <rect class="dmt-doc" x="40" y="44" width="300" height="130" rx="8"/>
     <text class="dmt-title" x="56" y="68">ONCOLOGY FOLLOW-UP &#8212; visit 3</text>
@@ -155,7 +154,6 @@
     <text class="dmt-verdict dmt-verdict-bad" x="190" y="196">"positive" = bad news</text>
   </g>
 
-  <!-- review doc -->
   <g class="dmt-doc-rev">
     <rect class="dmt-doc" x="380" y="44" width="300" height="130" rx="8"/>
     <text class="dmt-title" x="396" y="68">PRODUCT REVIEW &#8212; wireless earbuds</text>
@@ -166,13 +164,11 @@
     <text class="dmt-verdict dmt-verdict-good" x="530" y="196">"positive" = good news</text>
   </g>
 
-  <!-- the shared sentence -->
   <g class="dmt-sent">
     <rect x="210" y="228" width="300" height="40" rx="8"/>
     <text x="238" y="253">The test came back <tspan class="dmt-positive">positive</tspan>.</text>
   </g>
 
-  <!-- diffuse arcs from "positive" into each doc's cues -->
   <path class="dmt-arc dmt-arc-med" d="M 440 228 C 380 210, 240 180, 150 96"/>
   <path class="dmt-arc dmt-arc-med" d="M 440 228 C 400 214, 300 190, 175 116"/>
   <path class="dmt-arc dmt-arc-med" d="M 440 228 C 420 216, 330 200, 185 136"/>

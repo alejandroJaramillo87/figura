@@ -126,13 +126,11 @@
      aria-label="Two sentence blocks. The first reads: He fell. The second flips between: He was pushed, and: He got up. Between the blocks a dashed labeled edge materializes — BECAUSE, in red, pointing backward when the second sentence is the cause; THEN, in green, pointing forward when it is the next event. The edge is dashed because no token in either sentence carries the relation.">
   <text class="dsr-note" x="40" y="26">two sentences side by side &#8212; the reader supplies the edge between them</text>
 
-  <!-- sentence 1 -->
   <g class="dsr-block">
     <rect x="80" y="70" width="180" height="46" rx="8"/>
     <text x="170" y="99">"He fell."</text>
   </g>
 
-  <!-- sentence 2 variants -->
   <g class="dsr-block dsr-s2 dsr-s2-cause">
     <rect x="440" y="70" width="200" height="46" rx="8"/>
     <text x="540" y="99">"He was pushed."</text>
@@ -142,13 +140,11 @@
     <text x="540" y="99">"He got up."</text>
   </g>
 
-  <!-- cause edge: second sentence explains the first, arrow points back -->
   <g class="dsr-edge dsr-edge-cause">
     <path d="M 436 93 L 272 93" marker-end="url(#dsr-arrow-hot)"/>
     <rect x="302" y="78" width="96" height="30" rx="15"/>
     <text x="350" y="98">BECAUSE</text>
   </g>
-  <!-- sequence edge: second sentence follows the first, arrow points forward -->
   <g class="dsr-edge dsr-edge-seq">
     <path d="M 264 93 L 428 93" marker-end="url(#dsr-arrow-ok)"/>
     <rect x="314" y="78" width="72" height="30" rx="15"/>

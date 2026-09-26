@@ -112,28 +112,23 @@
      aria-label="Two speech bubbles: Q: Did you like the movie? and A: The popcorn was good. A button flips between the literal reading — a true statement about popcorn — and the implicated reading, where a dashed green ghost card materializes reading: the movie was not good, with an arc from the answer back to the question it pointedly failed to address.">
   <text class="imp-note" x="40" y="26">the message lives in the gap between what was asked and what was answered</text>
 
-  <!-- question row -->
   <g class="imp-row imp-movie">
     <rect x="80" y="46" width="330" height="38" rx="8"/>
     <text x="96" y="70"><tspan class="imp-tag">Q:</tspan>  "Did you like the movie?"</text>
   </g>
 
-  <!-- answer row -->
   <g class="imp-row">
     <rect x="170" y="104" width="330" height="38" rx="8"/>
     <text x="186" y="128"><tspan class="imp-tag">A:</tspan>  "The popcorn was good."</text>
   </g>
 
-  <!-- literal reading marker -->
   <g class="imp-lit">
     <text class="imp-note" x="520" y="128">literal content: a true</text>
     <text class="imp-note" x="520" y="144">claim about popcorn</text>
   </g>
 
-  <!-- arc: answer -> the question it dodged -->
   <path class="imp-arc" d="M 250 100 C 220 92, 200 90, 180 88" marker-end="url(#imp-arrow)"/>
 
-  <!-- implicated ghost card -->
   <g class="imp-ghost">
     <rect x="200" y="170" width="270" height="40" rx="8"/>
     <text x="335" y="195">implicated: "the movie was not good"</text>

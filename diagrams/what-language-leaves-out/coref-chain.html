@@ -126,7 +126,6 @@
 
   <text class="crc-note" x="40" y="26">the mention TYPE keeps changing &#8212; name, pronoun, description, possessive &#8212; the entity must not</text>
 
-  <!-- line 1 -->
   <g class="crc-m crc-m1">
     <rect class="crc-tok" x="40" y="56" width="106" height="34" rx="6"/>
     <text class="crc-word" x="93" y="78">Dr. Smith</text>
@@ -142,7 +141,6 @@
   <rect class="crc-tok" x="426" y="56" width="100" height="34" rx="6"/>
   <text class="crc-word" x="476" y="78">frowned.</text>
 
-  <!-- line 2 -->
   <g class="crc-m crc-m3">
     <rect class="crc-tok" x="40" y="140" width="118" height="34" rx="6"/>
     <text class="crc-word" x="99" y="162">The doctor</text>
@@ -158,12 +156,10 @@
   <rect class="crc-tok" x="442" y="140" width="150" height="34" rx="6"/>
   <text class="crc-word" x="517" y="162">patient waited.</text>
 
-  <!-- chain links (each mention -> previous mention) -->
   <path class="crc-link crc-l1" d="M 375 56 C 330 30, 180 30, 110 50" marker-end="url(#crc-arrow)"/>
   <path class="crc-link crc-l2" d="M 90 140 C 120 122, 300 116, 380 94" marker-end="url(#crc-arrow)"/>
   <path class="crc-link crc-l3" d="M 392 140 C 340 128, 220 128, 150 136" marker-end="url(#crc-arrow)"/>
 
-  <!-- entity node -->
   <g class="crc-entity">
     <rect x="230" y="230" width="260" height="44" rx="8"/>
     <text class="crc-word" x="360" y="249" font-weight="600">one entity &#8212; four aliases</text>
@@ -174,7 +170,6 @@
   <path class="crc-spoke" d="M 99 178 C 140 210, 200 224, 250 236"/>
   <path class="crc-spoke" d="M 406 178 C 410 196, 410 212, 405 230"/>
 
-  <!-- footer captions (fixed slot, no reflow) -->
   <text class="crc-note crc-cap crc-cap-0" x="40" y="315">Step 0 &#8212; a paragraph mentions one person four times. The tokens share almost nothing on the surface.</text>
   <text class="crc-note crc-cap crc-cap-1" x="40" y="315">Step 1 &#8212; "Dr. Smith" introduces the entity by name. The easy mention: names are nearly self-identifying.</text>
   <text class="crc-note crc-cap crc-cap-2" x="40" y="315">Step 2 &#8212; "She" links back to the name. First chain link: a pronoun with no content of its own.</text>

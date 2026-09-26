@@ -111,7 +111,6 @@
      aria-label="Step animation of attention as a soft lookup over the Winograd sentence: The city councilmen refused the demonstrators a permit because they feared violence. Step 1: the pronoun they emits a query badge — what am I? Step 2: every earlier token answers with a graded match strength shown as bars of different heights: the councilmen strongest, the demonstrators and feared partial, function words faint. Several positions light; none is exclusive. Step 3: arcs of different thicknesses, thickness encoding weight, converge from those positions into they, whose box fills green: the pronoun's updated representation is a weighted mixture of what the context offered — a blend, never a pointer. An on-canvas note states this is a schematic of the operation, not a map of any real attention head.">
   <text class="sfl-note" x="40" y="24">the operation, schematically &#8212; NOT a map of any real head (real models: many heads, many layers)</text>
 
-  <!-- token row -->
   <g class="sfl-tok sfl-c1">
     <rect x="40" y="90" width="150" height="36" rx="6"/>
     <text x="115" y="113">the councilmen</text>
@@ -145,13 +144,11 @@
     <text x="367" y="173">violence.</text>
   </g>
 
-  <!-- step 1: query badge above "they" -->
   <g class="sfl-query">
     <rect x="160" y="200" width="92" height="24" rx="12"/>
     <text x="206" y="216">query: who am I?</text>
   </g>
 
-  <!-- step 2: graded match bars above candidate tokens -->
   <g class="sfl-match">
     <rect x="95" y="76" width="40" height="8" rx="2" opacity="0.9"/>
     <text class="sfl-mlabel" x="115" y="68">strong</text>
@@ -171,13 +168,11 @@
     <text class="sfl-mlabel" x="278" y="130">partial</text>
   </g>
 
-  <!-- step 3: weighted arcs into "they" (stroke width = weight) -->
   <path class="sfl-arc" d="M 130 126 C 150 140, 170 148, 188 150" stroke-width="4"/>
   <path class="sfl-arc" d="M 350 126 C 320 140, 260 146, 224 150" stroke-width="2"/>
   <path class="sfl-arc" d="M 262 146 C 250 148, 240 150, 234 156" stroke-width="2"/>
   <path class="sfl-arc" d="M 480 126 C 420 152, 300 130, 226 148" stroke-width="0.8"/>
 
-  <!-- fixed footer caption slot -->
   <text class="sfl-note sfl-cap sfl-cap-0" x="40" y="262">Step 0 &#8212; the series' first sentence, one last time. "they" must import its meaning; the question is HOW.</text>
   <text class="sfl-note sfl-cap sfl-cap-1" x="40" y="262">Step 1 &#8212; the pronoun's position emits a query: a description of the information it is missing.</text>
   <text class="sfl-note sfl-cap sfl-cap-2" x="40" y="262">Step 2 &#8212; every earlier position answers with a match strength. Several light up. None is exclusive.</text>

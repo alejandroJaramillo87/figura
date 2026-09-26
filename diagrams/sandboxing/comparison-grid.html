@@ -157,7 +157,6 @@
     <clipPath id="scg-sweep-clip"><rect x="180" y="380" width="708" height="48" rx="6"/></clipPath>
   </defs>
 
-  <!-- column headers -->
   <g class="scg-group scg-inf" data-fg="head" data-title="Inference" data-info="Three llama.cpp and vLLM servers: fixed-function appliances that load a model and serve an API. The most constrained workload — it needs to change almost nothing, so almost everything can be locked.">
     <rect class="scg-halo scg-halo-inf" x="180" y="16" width="168" height="56" rx="8"/>
     <rect class="scg-head scg-head-inf" x="180" y="16" width="168" height="56" rx="8"/>
@@ -183,7 +182,6 @@
     <text class="scg-hsub" x="804" y="58">Claude Code · OpenCode</text>
   </g>
 
-  <!-- row: writes -->
   <text class="scg-row" x="16" y="106">What must</text>
   <text class="scg-row" x="16" y="122">it write?</text>
   <g class="scg-group scg-inf" data-title="Inference: writes" data-info="Read-only rootfs, models mounted :ro from /mnt/ai-data/models. The only durable writable path is a bind-mounted log directory; the GPU servers get a bounded tmpfs /tmp (4GB) for the CUDA JIT cache. A compromised server has nowhere to persist.">
@@ -207,7 +205,6 @@
     <text class="scg-vsub" x="804" y="128">recoverable via git</text>
   </g>
 
-  <!-- row: network -->
   <text class="scg-row" x="16" y="178">Where must</text>
   <text class="scg-row" x="16" y="194">it talk?</text>
   <g class="scg-group scg-inf" data-title="Inference: network" data-info="Inbound is the risk: every port (8001, 8002, 8003) binds to 127.0.0.1 only, so nothing off the machine can reach the servers. Outbound stays open on the bridge network for image and model pulls.">
@@ -231,7 +228,6 @@
     <text class="scg-vsub" x="804" y="200">deny-by-default proxy</text>
   </g>
 
-  <!-- row: GPU -->
   <text class="scg-row" x="16" y="258">GPU?</text>
   <g class="scg-group scg-inf" data-title="Inference: GPU" data-info="Two of the three servers reserve the RTX 5090 through the NVIDIA container runtime; the CPU server gets pinned cores (0-15) and a hard 96GB memory limit instead.">
     <rect class="scg-cell" x="180" y="228" width="168" height="60" rx="6"/>
@@ -254,7 +250,6 @@
     <text class="scg-vsub" x="804" y="272">smaller escape surface</text>
   </g>
 
-  <!-- row: lifecycle -->
   <text class="scg-row" x="16" y="330">Lifecycle</text>
   <g class="scg-group scg-inf" data-title="Inference: lifecycle" data-info="A long-lived service: restart: unless-stopped, healthchecks every 30s, long start periods for model loading. The container is meant to be up whenever the machine is.">
     <rect class="scg-cell" x="180" y="300" width="168" height="60" rx="6"/>
@@ -277,7 +272,6 @@
     <text class="scg-vsub" x="804" y="344">one scoped secret</text>
   </g>
 
-  <!-- shared baseline -->
   <g class="scg-group scg-flr" data-title="Shared baseline" data-info="Every sandbox starts from the same four lines before it diverges: cap_drop: ALL, no-new-privileges, read_only rootfs, and a non-root user. None of them cost measurable performance, so they are unconditional — the differences above are deltas on this common floor.">
     <rect class="scg-halo scg-halo-ok" x="180" y="380" width="708" height="48" rx="6"/>
     <rect class="scg-cell" x="180" y="380" width="708" height="48" rx="6"/>

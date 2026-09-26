@@ -133,7 +133,6 @@
      aria-label="A row of code tokens: quote, alpha, quote, plus beta plus, quote, gamma, quote. With all four quotes present the quotes alternate open, close, open, close, and the segments alpha and gamma are shaded green as string content while beta is plain code. A button removes the first quote, leaving a dashed red hole. Every remaining quote flips role: the second quote becomes an opener, beta becomes the string, gamma becomes code, and the final quote is left dangling, unclosed, in red. Pairing arcs from each closer to its opener re-draw. One distant token changed every later token's role.">
   <text class="dlm-note" x="40" y="26">the closing token's role is not in the token &#8212; it is at the distant opener</text>
 
-  <!-- token row: " alpha " + beta + " gamma " -->
   <g class="dlm-q1 dlm-tok">
     <rect x="48" y="88" width="34" height="40" rx="6"/>
     <text x="65" y="114">"</text>
@@ -167,21 +166,18 @@
     <text x="493" y="114">"</text>
   </g>
 
-  <!-- role tags: full state -->
   <g class="dlm-full">
     <text class="dlm-tag dlm-tag-open" x="65" y="148">OPEN</text>
     <text class="dlm-tag dlm-tag-close" x="195" y="148">CLOSE</text>
     <text class="dlm-tag dlm-tag-open" x="349" y="148">OPEN</text>
     <text class="dlm-tag dlm-tag-close" x="493" y="148">CLOSE</text>
   </g>
-  <!-- role tags: dropped state -->
   <g class="dlm-drop">
     <text class="dlm-tag dlm-tag-open" x="195" y="148">OPEN</text>
     <text class="dlm-tag dlm-tag-close" x="349" y="148">CLOSE</text>
     <text class="dlm-tag dlm-tag-hot" x="493" y="148">OPEN &#8212; unclosed</text>
   </g>
 
-  <!-- pairing arcs (closer back to opener) -->
   <g class="dlm-arc-full">
     <path class="dlm-arc" d="M 186 88 C 160 58, 100 58, 72 84" marker-end="url(#dlm-arrow)"/>
     <path class="dlm-arc" d="M 484 88 C 450 52, 388 52, 356 84" marker-end="url(#dlm-arrow)"/>

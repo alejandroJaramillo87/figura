@@ -165,7 +165,6 @@
     <clipPath id="ift-sweep-clip"><rect x="20" y="40" width="680" height="8"/></clipPath>
   </defs>
 
-  <!-- the outside world, walled off -->
   <text class="ift-label" x="20" y="30">rest of the network / internet</text>
   <g class="ift-group" data-title="The wall: 127.0.0.1 binding" data-info="Every port mapping is prefixed 127.0.0.1: — Docker publishes the ports on the loopback interface only. A machine on the LAN scanning this host finds nothing listening. No firewall rule to forget; the binding itself is the boundary.">
     <line class="ift-wall" x1="20" y1="44" x2="700" y2="44"/>
@@ -176,7 +175,6 @@
     <text class="ift-deny" x="360" y="66">inbound blocked — every port binds to 127.0.0.1 only</text>
   </g>
 
-  <!-- host zone -->
   <g class="ift-group" data-title="Host (localhost)" data-info="Clients on the machine itself — a browser, curl, an IDE — reach the services through loopback. This is the only inbound path that exists.">
     <rect class="ift-zone" x="20" y="80" width="680" height="76" rx="10"/>
   </g>
@@ -188,7 +186,6 @@
     <text class="ift-sub" x="360" y="142">127.0.0.1:3000</text>
   </g>
 
-  <!-- port bindings crossing into the bridge -->
   <path class="ift-flow ift-flow-ok" d="M 150 156 L 150 196" marker-end="url(#ift-arrow-ok)"/>
   <path class="ift-flow ift-flow-ok" d="M 360 156 L 360 196" marker-end="url(#ift-arrow-ok)"/>
   <path class="ift-flow ift-flow-ok" d="M 570 156 L 570 196" marker-end="url(#ift-arrow-ok)"/>
@@ -196,7 +193,6 @@
   <text class="ift-port" x="360" y="182">:8002</text>
   <text class="ift-port" x="570" y="182">:8003</text>
 
-  <!-- ai-network bridge zone -->
   <g class="ift-group" data-title="ai-network bridge" data-info="A custom Docker bridge with its own subnet (172.20.0.0/16). Containers resolve each other by name inside it; nothing outside the host can address it. internal: false keeps outbound open for image and model pulls — flip to internal: true to cut egress entirely.">
     <rect class="ift-zone" x="20" y="196" width="680" height="176" rx="10"/>
   </g>
@@ -224,7 +220,6 @@
     <text class="ift-sub" x="570" y="300">read_only · non-root</text>
   </g>
 
-  <!-- model mount: static links — the read path is passive, not traffic -->
   <path class="ift-link" d="M 150 400 L 150 316" marker-end="url(#ift-arrow)"/>
   <path class="ift-link" d="M 360 400 L 360 316" marker-end="url(#ift-arrow)"/>
   <path class="ift-link" d="M 570 400 L 570 316" marker-end="url(#ift-arrow)"/>

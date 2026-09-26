@@ -127,7 +127,6 @@
   <path class="vbw-flow" d="M 280 68 L 190 104" marker-end="url(#vbw-arrow)"/>
   <path class="vbw-flow vbw-flow-ok" d="M 440 68 L 530 104" marker-end="url(#vbw-arrow-ok)"/>
 
-  <!-- old path -->
   <text class="vbw-retired" x="60" y="100">retired path: compile locally</text>
   <g class="vbw-group vbw-old" data-title="Old: clone and toolchain" data-info="Before upstream shipped Blackwell wheels: clone the vLLM source, install the full CUDA devel toolchain, gcc, ninja, and ccache into a builder stage — gigabytes of toolchain for one binary artifact.">
     <rect class="vbw-box" x="40" y="112" width="280" height="52" rx="8"/>
@@ -149,7 +148,6 @@
   </g>
   <path class="vbw-flow vbw-flow-ok" d="M 320 284 C 380 284, 380 220, 416 200" marker-end="url(#vbw-arrow-ok)"/>
 
-  <!-- new path -->
   <text class="vbw-label" x="420" y="100">current path: install the wheel</text>
   <g class="vbw-group vbw-new" data-title="Pinned uv binary" data-info="uv 0.11.28 is copied from its official image (ghcr.io/astral-sh/uv) via a named stage — replacing an unpinned curl-pipe-sh installer. The installer version is a build arg like every other pin.">
     <rect class="vbw-box" x="420" y="112" width="280" height="52" rx="8"/>

@@ -163,13 +163,11 @@
     </marker>
   </defs>
 
-  <!-- phase rails and rotated labels in the left margin -->
   <path class="sup-rail" d="M 160 34 L 160 428"/>
   <text class="sup-sub" transform="rotate(-90 140 231)" x="140" y="231" text-anchor="middle">base system</text>
   <path class="sup-rail" d="M 160 474 L 160 868"/>
   <text class="sup-sub" transform="rotate(-90 140 671)" x="140" y="671" text-anchor="middle">GPU stack &amp; containers</text>
 
-  <!-- faint guide connectors (always visible) -->
   <path class="sup-conn" d="M 360 106 L 360 132" marker-end="url(#sup-arrow)"/>
   <path class="sup-conn" d="M 360 216 L 360 242" marker-end="url(#sup-arrow)"/>
   <path class="sup-conn" d="M 360 326 L 360 352" marker-end="url(#sup-arrow)"/>
@@ -178,7 +176,6 @@
   <path class="sup-conn" d="M 360 656 L 360 682" marker-end="url(#sup-arrow)"/>
   <path class="sup-conn" d="M 360 766 L 360 792" marker-end="url(#sup-arrow)"/>
 
-  <!-- green draw-in overlays; also the comet routes -->
   <path id="sup-route-1" class="sup-flow" pathLength="1" d="M 360 104 L 360 138"/>
   <path id="sup-route-2" class="sup-flow" pathLength="1" d="M 360 214 L 360 248"/>
   <path id="sup-route-3" class="sup-flow" pathLength="1" d="M 360 324 L 360 358"/>
@@ -247,7 +244,6 @@
     <text class="sup-script" x="360" y="852">setup_docker.sh</text>
   </g>
 
-  <!-- step-advance comets, one per connector; trails chain off the head -->
   <g class="sup-comet sup-comet-1">
     <circle r="6" fill="var(--accent)"><animateMotion id="sup-c1-head" dur="0.7s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#sup-route-1"/></animateMotion></circle>
     <circle r="4" fill="var(--accent)" opacity="0.45"><animateMotion dur="0.7s" begin="sup-c1-head.begin+0.08s" repeatCount="1" fill="freeze"><mpath href="#sup-route-1"/></animateMotion></circle>

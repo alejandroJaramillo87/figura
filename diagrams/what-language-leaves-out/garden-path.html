@@ -137,7 +137,6 @@
      aria-label="Step animation of an incremental parse of: The horse raced past the barn fell. Tokens stream in left to right. At first, horse is labeled subject and raced is labeled main verb — the comfortable parse. Then fell arrives, flagged red with a contradiction badge: a finite verb with no slot. Reanalysis follows: raced past the barn is re-bracketed as a reduced relative clause modifying horse, raced is demoted from main verb, fell becomes the main verb, and a green arc draws backward from fell to horse. A human reader backtracks; a causal model cannot revise earlier computations and must reinterpret at the later token instead.">
   <text class="gdp-note" x="40" y="26">an incremental parser commits as it reads &#8212; and this sentence punishes the commitment</text>
 
-  <!-- token row -->
   <rect class="gdp-tok" x="40" y="110" width="48" height="36" rx="6"/>
   <text class="gdp-word" x="64" y="133">The</text>
   <g class="gdp-horse">
@@ -161,25 +160,20 @@
     <text class="gdp-word" x="460" y="133">fell.</text>
   </g>
 
-  <!-- first-pass labels -->
   <text class="gdp-lab gdp-lab-subj" x="129" y="166">SUBJECT</text>
   <text class="gdp-lab gdp-lab-mv" x="203" y="166">MAIN VERB</text>
-  <!-- reanalysis labels -->
   <text class="gdp-lab gdp-lab-rr" x="203" y="166" dy="14" fill="#a78bfa">participle</text>
   <text class="gdp-lab gdp-lab-mv2" x="460" y="166" fill="#34d399">MAIN VERB</text>
 
-  <!-- contradiction badge (step 2) -->
   <g class="gdp-clash">
     <text class="gdp-note" x="460" y="96" text-anchor="middle" fill="#f87171">a second finite verb &#8212; no slot for it</text>
   </g>
 
-  <!-- reduced-relative bracket (step 3+) -->
   <g class="gdp-rrbracket">
     <path d="M 172 100 L 172 92 L 422 92 L 422 100"/>
     <text class="gdp-note" x="297" y="82" text-anchor="middle">reduced relative: "(that was) raced past the barn"</text>
   </g>
 
-  <!-- resolving arc: fell -> horse (step 3+) -->
   <path class="gdp-arc" d="M 448 110 C 400 44, 200 44, 137 104" marker-end="url(#gdp-arrow)"/>
   <g class="gdp-arclabel">
     <text class="gdp-note" x="250" y="40" fill="#34d399">"fell" attends back to its real subject</text>
@@ -191,7 +185,6 @@
     </marker>
   </defs>
 
-  <!-- footer captions (fixed slot, no reflow) -->
   <text class="gdp-note gdp-cap gdp-cap-0" x="40" y="230">Step 0 &#8212; "The horse raced": the parser happily takes "raced" as the main verb. Nothing is wrong yet.</text>
   <text class="gdp-note gdp-cap gdp-cap-1" x="40" y="230">Step 1 &#8212; "past the barn" extends the comfortable reading: the horse raced somewhere. Still nothing wrong.</text>
   <text class="gdp-note gdp-cap gdp-cap-2" x="40" y="230">Step 2 &#8212; "fell." arrives. A finite verb with no subject available &#8212; the committed parse has no place to put it.</text>

@@ -132,7 +132,6 @@
      aria-label="A short Python snippet. Line one defines timeout equals 30 at module level. A function fetch follows, its body marked with a scope bracket. A button inserts a dashed green shadowing line inside the function: timeout equals 5. The final line, return get with url and timeout, carries a green arc from its timeout use-site: without the shadowing line the arc runs all the way up to the module-level definition; with it, the arc re-points to the nearer, inner definition, and the value badge on the use flips from 30 to 5. Same use-site token, different binding — resolved by scope structure in the context.">
   <text class="cdb-note" x="40" y="24">an identifier is a pronoun with perfect spelling &#8212; the use must still find its definition</text>
 
-  <!-- code lines -->
   <g class="cdb-code">
     <text x="72" y="62"><tspan class="cdb-id">timeout</tspan> = 30</text>
     <text x="72" y="102"><tspan class="cdb-kw">def</tspan> fetch(url):</text>
@@ -140,24 +139,19 @@
     <text x="104" y="222"><tspan class="cdb-kw">return</tspan> get(url, <tspan class="cdb-id">timeout</tspan>)</text>
   </g>
 
-  <!-- shadowing line (ghost, toggled) -->
   <g class="cdb-shadow">
     <rect x="96" y="122" width="176" height="30" rx="6"/>
     <g class="cdb-code"><text x="104" y="142"><tspan class="cdb-id">timeout</tspan> = 5</text></g>
   </g>
 
-  <!-- outer definition ring -->
   <rect class="cdb-defring cdb-defring-outer" x="66" y="44" width="110" height="26" rx="4"/>
 
-  <!-- scope bracket for function body -->
   <path class="cdb-scope" d="M 86 116 L 80 116 L 80 232 L 86 232"/>
   <text class="cdb-scopelabel" x="46" y="178">scope</text>
 
-  <!-- binding arcs from the use-site "timeout" (at ~x 232, y 222) -->
   <path class="cdb-arc cdb-arc-outer" d="M 290 214 C 380 160, 320 70, 186 56" marker-end="url(#cdb-arrow)"/>
   <path class="cdb-arc cdb-arc-inner" d="M 290 214 C 340 190, 330 150, 282 138" marker-end="url(#cdb-arrow)"/>
 
-  <!-- value badges near the use -->
   <text class="cdb-val cdb-val-outer" x="360" y="226">binds to line 1 &#8594; 30</text>
   <text class="cdb-val cdb-val-inner" x="360" y="226">binds to the inner def &#8594; 5</text>
 

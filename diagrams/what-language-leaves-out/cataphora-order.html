@@ -137,7 +137,6 @@
      aria-label="Step animation of a causal model reading: Before she left, Mary locked the door. A shaded causal mask hides not-yet-read tokens and slides right as reading proceeds. While only Before and she are read, she carries an unresolved badge and a crossed-out forward arrow shows the model cannot look ahead. When Mary is read, a green arc draws backward from Mary to she and the badge flips to resolved: she equals Mary. The pointer arrived before its target, so the later token does the resolving.">
   <text class="ctp-note" x="40" y="26">a causal model reads left to right &#8212; the mask hides what has not arrived yet</text>
 
-  <!-- token row -->
   <g class="ctp-row">
     <rect class="ctp-tok" x="40" y="96" width="76" height="36" rx="6"/>
     <text class="ctp-word" x="78" y="119">Before</text>
@@ -159,14 +158,12 @@
     <text class="ctp-word" x="491" y="119">door.</text>
   </g>
 
-  <!-- backward resolving arc: Mary -> she -->
   <path class="ctp-arc" d="M 272 96 C 250 62, 190 62, 158 90"
         marker-end="url(#ctp-arrow)"/>
   <g class="ctp-arclabel">
     <text class="ctp-note" x="196" y="52" fill="#34d399">"Mary" attends back to "she"</text>
   </g>
 
-  <!-- unresolved / resolved badge under "she" -->
   <g class="ctp-badge ctp-badge-open">
     <text class="ctp-note" x="150" y="156" text-anchor="middle" fill="#fbbf24">she = ? (unresolved)</text>
   </g>
@@ -174,7 +171,6 @@
     <text class="ctp-note" x="150" y="156" text-anchor="middle" fill="#34d399">she = Mary</text>
   </g>
 
-  <!-- cannot-look-forward marker -->
   <g class="ctp-noarc">
     <path d="M 168 180 C 200 196, 240 196, 268 184" fill="none" stroke="#f87171"
           stroke-width="2" stroke-dasharray="5 4"/>
@@ -182,7 +178,6 @@
     <text class="ctp-note" x="290" y="196" fill="#f87171">no forward arc: the mask forbids it</text>
   </g>
 
-  <!-- causal mask (over the token row, slides right) -->
   <rect class="ctp-mask" x="180" y="88" width="440" height="80" rx="4"/>
   <line class="ctp-maskline" x1="180" y1="84" x2="180" y2="172"/>
 
@@ -192,7 +187,6 @@
     </marker>
   </defs>
 
-  <!-- footer captions (fixed slot, no reflow) -->
   <text class="ctp-note ctp-cap ctp-cap-0" x="40" y="252">Step 0 &#8212; the model has read "Before she". The pronoun points forward, at text that does not exist yet.</text>
   <text class="ctp-note ctp-cap ctp-cap-1" x="40" y="252">Step 1 &#8212; "left," arrives. Still no referent. A human waits comfortably; the model simply carries an open slot.</text>
   <text class="ctp-note ctp-cap ctp-cap-2" x="40" y="252">Step 2 &#8212; "Mary" arrives and the arc runs BACKWARD: the later token attends to the earlier pronoun and reconciles.</text>

@@ -117,7 +117,6 @@
     </marker>
   </defs>
 
-  <!-- builder zone -->
   <g class="lgs-group" data-title="Stage 1: builder (devel base)" data-info="nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04 — the full development image: nvcc, CUDA headers, cuDNN. Roughly an order of magnitude larger than the runtime base, and none of it ships: this stage exists only to compile.">
     <rect class="lgs-zone" x="16" y="16" width="420" height="290" rx="10"/>
   </g>
@@ -146,7 +145,6 @@
     <text class="lgs-title" x="226" y="274">build llama-server (-j nproc)</text>
   </g>
 
-  <!-- runtime zone -->
   <g class="lgs-group" data-title="Stage 2: runtime base" data-info="nvidia/cuda:13.0.2-cudnn-runtime-ubuntu24.04 — same CUDA version, no compiler, no headers. Adds only libcublas, CUPTI, NVTX, and Nsight Systems (for the optional profiling mode). Non-root appuser, port 8002.">
     <rect class="lgs-zone" x="456" y="16" width="248" height="290" rx="10"/>
   </g>
@@ -164,7 +162,6 @@
   <path class="lgs-flow lgs-flow-ok" d="M 416 269 C 448 269, 448 148, 472 148" marker-end="url(#lgs-arrow-ok)"/>
   <text class="lgs-sub" x="446" y="296">COPY --from=builder</text>
 
-  <!-- runtime reality -->
   <g class="lgs-group" data-title="Run time: the real driver arrives" data-info="On the rig, the NVIDIA container runtime mounts the host's real libcuda.so into the container. The stub that satisfied the linker at build time is out of the picture — the loader resolves the mounted driver, and sm_120 kernels run on the actual RTX 5090.">
     <rect class="lgs-box" x="160" y="350" width="400" height="60" rx="8"/>
     <text class="lgs-title" x="360" y="374">run time: host driver mounted by NVIDIA runtime</text>

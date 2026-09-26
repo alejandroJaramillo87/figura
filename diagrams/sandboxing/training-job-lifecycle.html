@@ -181,7 +181,6 @@
     </marker>
   </defs>
 
-  <!-- invocation -->
   <g class="tjl-stage tjl-s1">
     <rect class="tjl-box" x="20" y="24" width="300" height="56" rx="8"/>
     <text class="tjl-title" x="170" y="48">docker compose run --rm training</text>
@@ -189,7 +188,6 @@
   </g>
   <path class="tjl-mount" d="M 170 80 L 170 116" marker-end="url(#tjl-arrow)"/>
 
-  <!-- the ephemeral container -->
   <g class="tjl-container">
     <g class="tjl-stage tjl-s2">
       <rect class="tjl-box" x="20" y="120" width="440" height="140" rx="10"/>
@@ -204,7 +202,6 @@
     </g>
   </g>
 
-  <!-- GPU -->
   <g class="tjl-stage tjl-gpu">
     <rect class="tjl-box" x="520" y="140" width="180" height="56" rx="8"/>
     <text class="tjl-title" x="610" y="164">RTX 5090</text>
@@ -212,7 +209,6 @@
   </g>
   <path class="tjl-mount tjl-draw" pathLength="1" d="M 460 176 L 516 172" marker-end="url(#tjl-arrow)"/>
 
-  <!-- mounts: three read-only, the training root, and the narrow export window -->
   <g class="tjl-stage tjl-s2b">
     <rect class="tjl-box" x="20" y="296" width="160" height="56" rx="8"/>
     <text class="tjl-title" x="100" y="318">/mnt/ai-data/models</text>
@@ -245,7 +241,6 @@
   <path class="tjl-mount tjl-draw" pathLength="1" style="--d: 0.45s" d="M 629 292 L 456 250"/>
   <text class="tjl-mount-label" x="540" y="280">ro</text>
 
-  <!-- step-4 comet: a checkpoint traveling the write path -->
   <g class="tjl-comet">
     <circle class="tjl-comet-head" r="5" fill="#34d399">
       <animateMotion id="tjl-comet-run" dur="1.2s" begin="indefinite" repeatCount="2"><mpath href="#tjl-ckpt-route"/></animateMotion>

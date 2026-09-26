@@ -144,7 +144,6 @@
 
 <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="Animation of the KV cache filling: prefill writes four prompt rows at once, then each decode step appends one row while attention reads all cached rows.">
-  <!-- Token stream (left) -->
   <text x="30" y="40" class="kvcf-label">Tokens</text>
   <g class="kvcf-tok-row">
     <rect class="kvcf-tok kvcf-tok-p" x="30"  y="60" width="58" height="34" rx="6"/><text class="kvcf-tok-t" x="59"  y="82">The</text>
@@ -157,7 +156,6 @@
   </g>
   <text x="30" y="230" class="kvcf-sub">prompt ↑ · generated ↓</text>
 
-  <!-- Write arrows token → cache row -->
   <defs>
     <marker id="kvcf-arrowhead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto">
       <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
@@ -173,12 +171,10 @@
     <path class="kvcf-arrow kvcf-arrow-d2" d="M 96 339 L 268 339" marker-end="url(#kvcf-arrowhead)"/>
   </g>
 
-  <!-- KV cache grid: 7 rows (seq positions) x 2 groups (K | V) x 4 cells (head dim, symbolic) -->
   <text x="280" y="40" class="kvcf-label">KV cache</text>
   <text x="280" y="56" class="kvcf-sub kvcf-mono">K</text>
   <text x="460" y="56" class="kvcf-sub kvcf-mono">V</text>
   <g>
-    <!-- Rows are authored statically (not generated) so the fragment stays portable -->
     <g class="kvcf-row-p">
       <rect class="kvcf-cell" x="280" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="324" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="368" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="412" y="63"  width="40" height="28" rx="4"/>
       <rect class="kvcf-cell" x="460" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="504" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="548" y="63"  width="40" height="28" rx="4"/><rect class="kvcf-cell" x="592" y="63"  width="40" height="28" rx="4"/>
@@ -203,11 +199,9 @@
     </g>
   </g>
 
-  <!-- Attention read sweep (decode steps): bracket over cached region -->
   <path class="kvcf-read" d="M 650 63 L 662 63 L 662 353 L 650 353"/>
   <text x="672" y="200" class="kvcf-sub" transform="rotate(90 672 200)">attention reads all cached rows</text>
 
-  <!-- Phase captions -->
   <text x="30" y="400" class="kvcf-sub kvcf-phase kvcf-phase-idle">Cache empty — prompt tokenized, nothing computed yet.</text>
   <text x="30" y="400" class="kvcf-sub kvcf-phase kvcf-phase-prefill">Prefill: one batched pass writes K/V for every prompt token (compute-bound).</text>
   <text x="30" y="400" class="kvcf-sub kvcf-phase kvcf-phase-decode">Decode: each step appends one K/V row, then reads the whole cache (memory-bound).</text>

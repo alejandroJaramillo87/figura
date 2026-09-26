@@ -128,7 +128,6 @@
 <svg viewBox="0 0 560 470" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="Dual-SSD storage layout: a 1TB OS drive holding the root filesystem and home directory, and a separate 2TB data drive mounted at /mnt/ai-data holding models, training data, interpretability captures, caches and logs, with framework cache directories symlinked from home onto the data drive.">
 
-  <!-- OS drive -->
   <rect class="stl-drive" x="20" y="30" width="240" height="180" rx="10"/>
   <text class="stl-drive-label" x="36" y="56">OS SSD — 990 EVO</text>
   <text class="stl-drive-sub"   x="36" y="74">Samsung · 1TB NVMe · ext4</text>
@@ -147,7 +146,6 @@
     <text class="stl-sub stl-t-os"   x="140" y="185">configs · code · cache links</text>
   </g>
 
-  <!-- data drive -->
   <rect class="stl-drive" x="300" y="30" width="240" height="360" rx="10"/>
   <text class="stl-drive-label" x="316" y="56">Data SSD — 990 Pro</text>
   <text class="stl-drive-sub"   x="316" y="74">Samsung · 2TB NVMe · /mnt/ai-data</text>
@@ -180,11 +178,9 @@
     <text class="stl-sub stl-t-data"   x="420" y="323">captures · results · logs/</text>
   </g>
 
-  <!-- symlink connector; also the comet route -->
   <path id="stl-symroute" class="stl-link" d="M 244 172 C 290 172, 270 248, 316 248"/>
   <text class="stl-link-label stl-link-sym" x="278" y="230">symlinks</text>
 
-  <!-- ambient comet: bytes flowing from home onto the data drive -->
   <g class="stl-comet">
     <circle r="4.5"><animateMotion dur="2.4s" begin="0s" repeatCount="indefinite"><mpath href="#stl-symroute"/></animateMotion></circle>
     <circle r="3" opacity="0.45"><animateMotion dur="2.4s" begin="0.12s" repeatCount="indefinite"><mpath href="#stl-symroute"/></animateMotion></circle>

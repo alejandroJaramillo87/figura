@@ -126,11 +126,9 @@
 
 <svg viewBox="0 0 620 560" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="A 7 by 7 causal attention matrix. Prefill fills the first four rows in one pass; each decode step adds one more row along the causal mask.">
-  <!-- axis labels -->
   <text x="300" y="26" class="apf-lab">keys (attended-to positions) →</text>
   <text x="30" y="300" class="apf-lab" transform="rotate(-90 30 300)">queries (rows) →</text>
 
-  <!-- 7x7 causal grid, authored statically so the fragment stays portable -->
   <g class="apf-r0">
     <rect class="apf-cell" x="72" y="44" width="56" height="56" rx="6"/>
     <rect class="apf-cell apf-masked" x="134" y="44" width="56" height="56" rx="6"/>
@@ -202,7 +200,6 @@
     <text class="apf-sub" x="64" y="448" text-anchor="end">.</text>
   </g>
 
-  <!-- legend -->
   <g>
     <rect x="60" y="510" width="16" height="16" rx="3" fill="var(--ok-dim)" stroke="#34d399"/>
     <text x="84" y="523" class="apf-sub">prefill (batched)</text>
@@ -212,7 +209,6 @@
     <text x="414" y="523" class="apf-sub">masked (future)</text>
   </g>
 
-  <!-- phase captions -->
   <text x="60" y="552" class="apf-sub apf-phase apf-phase-idle">Nothing computed yet — 7 positions: 4 prompt, 3 to generate.</text>
   <text x="60" y="552" class="apf-sub apf-phase apf-phase-prefill">Prefill: rows 0–3 computed in one matmul — arithmetic-intensity heaven.</text>
   <text x="60" y="552" class="apf-sub apf-phase apf-phase-decode">Decode: one query row per step — a skinny matvec against all cached keys.</text>

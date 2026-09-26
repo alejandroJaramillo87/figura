@@ -155,7 +155,6 @@
     <clipPath id="ipw-sweep-clip"><rect x="20" y="40" width="720" height="8"/></clipPath>
   </defs>
 
-  <!-- the outside world, walled off at loopback -->
   <text class="ipw-label" x="20" y="30">rest of the network / internet</text>
   <g class="ipw-group" data-info="The wall: 127.0.0.1:8888 — Jupyter is a shell on the machine, so its port never leaves loopback. JUPYTER_TOKEN is generated fresh per launch by make interp-up; remote access rides an SSH tunnel, never a wider bind.">
     <line class="ipw-wall" x1="20" y1="44" x2="740" y2="44"/>
@@ -166,7 +165,6 @@
     <text class="ipw-deny" x="380" y="66">inbound blocked — JupyterLab binds to 127.0.0.1 only, token required</text>
   </g>
 
-  <!-- host zone -->
   <g class="ipw-group" data-info="Host (localhost) — the browser reaches JupyterLab through loopback only; nothing on the LAN can see the port. A remote laptop gets in by SSH-tunneling to the workstation, which keeps authentication on SSH keys.">
     <rect class="ipw-zone" x="20" y="80" width="720" height="72" rx="10"/>
   </g>
@@ -181,7 +179,6 @@
   <path class="ipw-flow ipw-flow-ok" d="M 380 152 L 380 188" marker-end="url(#ipw-arrow-ok)"/>
   <text class="ipw-port" x="404" y="176">:8888</text>
 
-  <!-- interp-network zone -->
   <g class="ipw-group" data-info="interp-network — the Mech Interp container's own bridge. It never joins ai-network: the GPU inference stack and the Mech Interp session are never up at the same time, so there is nothing to be adjacent to.">
     <rect class="ipw-zone" x="20" y="192" width="720" height="128" rx="10"/>
   </g>
@@ -203,7 +200,6 @@
   </g>
   <path class="ipw-link" d="M 460 268 L 516 268"/>
 
-  <!-- mounts -->
   <path class="ipw-link" d="M 105 348 L 105 308"/>
   <path class="ipw-link" d="M 296 348 L 296 308"/>
   <path class="ipw-link" d="M 482 348 L 460 296"/>

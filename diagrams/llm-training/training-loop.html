@@ -164,7 +164,6 @@
 
 <svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" role="img"
      aria-label="One training step: activations flow forward from embeddings through three layers to logits, the loss node lights up against the target, gradients flow backward, and each layer pulses as its weights update.">
-  <!-- forward chain -->
   <g>
     <rect class="trl-node trl-node-emb" x="24"  y="150" width="112" height="64" rx="10"/>
     <text class="trl-title" x="80"  y="178">Embed</text><text class="trl-sub" x="80" y="196">tokens → vectors</text>
@@ -178,32 +177,27 @@
     <text class="trl-title" x="694" y="178">Logits</text><text class="trl-sub" x="694" y="196">|V| scores</text>
   </g>
 
-  <!-- idle shimmer stripe clipped to the chain band -->
   <clipPath id="trl-chain-clip"><rect x="24" y="150" width="716" height="64" rx="10"/></clipPath>
   <g clip-path="url(#trl-chain-clip)">
     <rect class="trl-shimmer" x="-40" y="140" width="34" height="84" fill="rgba(255,255,255,0.08)"/>
   </g>
 
-  <!-- forward edges (top lane) -->
   <path class="trl-fwd trl-fwd-1" pathLength="1" d="M 136 172 L 180 172"/>
   <path class="trl-fwd trl-fwd-2" pathLength="1" d="M 292 172 L 336 172"/>
   <path class="trl-fwd trl-fwd-3" pathLength="1" d="M 448 172 L 492 172"/>
   <path class="trl-fwd trl-fwd-4" pathLength="1" d="M 604 172 L 648 172"/>
   <text class="trl-lab" x="24" y="136">forward →</text>
 
-  <!-- loss node upper right -->
   <rect class="trl-loss-halo" x="612" y="34" width="128" height="58" rx="10" fill="var(--warn)"/>
   <rect class="trl-node trl-loss-node" x="612" y="34" width="128" height="58" rx="10"/>
   <text class="trl-title" x="676" y="59">Loss</text>
   <text class="trl-sub" x="676" y="77">cross-entropy vs ŷ</text>
   <path class="trl-loss-edge" d="M 694 150 L 682 92"/>
 
-  <!-- backward edge (bottom lane, right to left) -->
   <path id="trl-broute" class="trl-bwd" pathLength="1"
         d="M 694 214 C 694 258, 620 258, 548 258 L 236 258 C 160 258, 80 258, 80 214"/>
   <text class="trl-lab" x="24" y="292">← backward (∂L/∂W)</text>
 
-  <!-- forward comets (step 1): full-chain route -->
   <path id="trl-froute" d="M 80 172 L 694 172" fill="none" stroke="none"/>
   <g class="trl-comet-fwd">
     <circle r="6" fill="var(--accent)">
@@ -217,7 +211,6 @@
     </circle>
   </g>
 
-  <!-- backward comets (step 3): along the backward route -->
   <g class="trl-comet-bwd">
     <circle r="6" fill="var(--hot)">
       <animateMotion id="trl-cb-head" dur="2.2s" begin="indefinite" repeatCount="1" fill="freeze"><mpath href="#trl-broute"/></animateMotion>
@@ -230,13 +223,11 @@
     </circle>
   </g>
 
-  <!-- weight-update ripples -->
   <circle class="trl-ripple trl-ripple-l1"  cx="236" cy="182" r="20"/>
   <circle class="trl-ripple trl-ripple-l2"  cx="392" cy="182" r="20"/>
   <circle class="trl-ripple trl-ripple-l3"  cx="548" cy="182" r="20"/>
   <circle class="trl-ripple trl-ripple-emb" cx="80"  cy="182" r="20"/>
 
-  <!-- phase captions -->
   <text class="trl-sub trl-phase trl-phase-0" x="24" y="376" style="text-anchor: start">A batch is loaded. Nothing has moved yet — the network is a frozen function.</text>
   <text class="trl-sub trl-phase trl-phase-1" x="24" y="376" style="text-anchor: start">Forward: activations flow left to right; every layer's output is stashed for backprop.</text>
   <text class="trl-sub trl-phase trl-phase-2" x="24" y="376" style="text-anchor: start">Loss: logits meet the target — one scalar summarizes how wrong the whole batch was.</text>

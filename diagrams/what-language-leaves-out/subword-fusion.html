@@ -132,21 +132,18 @@
     </marker>
   </defs>
 
-  <!-- what the reader sees -->
   <g class="swf-human">
     <text class="swf-label" x="40" y="46">what you read</text>
     <rect class="swf-tok" x="230" y="24" width="170" height="38" rx="6"/>
     <text class="swf-word" x="315" y="48">unbelievable</text>
   </g>
 
-  <!-- split arrows -->
   <g class="swf-s swf-split">
     <path d="M 280 66 L 190 118" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#swf-arrow)"/>
     <path d="M 315 66 L 315 118" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#swf-arrow)"/>
     <path d="M 350 66 L 440 118" stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#swf-arrow)"/>
   </g>
 
-  <!-- fragments -->
   <g class="swf-s swf-frags">
     <text class="swf-label" x="40" y="152">what the model sees</text>
     <g class="swf-frag">
@@ -163,14 +160,12 @@
     </g>
   </g>
 
-  <!-- step 1 annotations: fragments alone are meaningless -->
   <g class="swf-s swf-qmarks">
     <text class="swf-sub" x="194" y="188">negation? French "un"?</text>
     <text class="swf-sub" x="315" y="188">believe? beleaguer? no word</text>
     <text class="swf-sub" x="436" y="188">can? a table? -able?</text>
   </g>
 
-  <!-- step 2: binding arcs between neighbors -->
   <g class="swf-s swf-arcs">
     <path class="swf-arc" d="M 290 128 C 265 104, 230 104, 208 122" marker-end="url(#swf-arrow)"/>
     <path class="swf-arc" d="M 420 128 C 395 100, 340 100, 322 122" marker-end="url(#swf-arrow)"/>
@@ -178,14 +173,12 @@
     <text class="swf-note" x="500" y="132">meaning from its neighbors</text>
   </g>
 
-  <!-- step 3: fused concept -->
   <g class="swf-s swf-fused">
     <path d="M 315 200 L 315 232" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#swf-arrow)"/>
     <rect x="180" y="240" width="270" height="40" rx="8" fill="var(--ok-dim)" stroke="#34d399" stroke-width="1.5"/>
     <text class="swf-word" x="315" y="265">one concept, three positions</text>
   </g>
 
-  <!-- footer captions (fixed slot, no reflow) -->
   <text class="swf-note swf-cap swf-cap-0" x="40" y="315">Step 0 &#8212; a reader receives whole words. The model never will.</text>
   <text class="swf-note swf-cap swf-cap-1" x="40" y="315">Step 1 &#8212; the tokenizer splits by frequency, not meaning. Each fragment alone is ambiguous between unrelated readings.</text>
   <text class="swf-note swf-cap swf-cap-2" x="40" y="315">Step 2 &#8212; the fragments must be bound to their neighbors before any classical word-sense question can even be asked.</text>

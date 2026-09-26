@@ -114,7 +114,6 @@
      aria-label="A three-turn chat transcript. Turn 1, speaker A: I sent you the draft. Turn 2, speaker B: I'll read it tonight — did you mean the long version? Turn 3, speaker A: Yes — tell me what you think. Two speaker labels, A and B, sit at the top. A button steps through the turns; in each highlighted turn, green arcs connect every I to that turn's speaker label and amber arcs connect every you to the other speaker. The same two words re-bind to opposite people on every turn.">
   <text class="dxs-note" x="40" y="24">"I" and "you" are the same tokens in every turn &#8212; but they swap referents each time the speaker changes</text>
 
-  <!-- speaker anchors -->
   <g class="dxs-turn" style="opacity:1">
     <rect x="140" y="40" width="120" height="30" rx="15"/>
     <text class="dxs-spk-a" x="200" y="60" text-anchor="middle">speaker A</text>
@@ -122,7 +121,6 @@
     <text class="dxs-spk-b" x="500" y="60" text-anchor="middle">speaker B</text>
   </g>
 
-  <!-- turn 1 (A) -->
   <g class="dxs-turn dxs-turn-1">
     <rect x="60" y="96" width="380" height="36" rx="8"/>
     <text x="76" y="119"><tspan class="dxs-spk-a">A:</tspan> "<tspan class="dxs-i">I</tspan> sent <tspan class="dxs-you">you</tspan> the draft."</text>
@@ -132,7 +130,6 @@
     <path class="dxs-arc-you" d="M 165 94 C 240 82, 380 76, 445 70" marker-end="url(#dxs-arrow-warn)"/>
   </g>
 
-  <!-- turn 2 (B) -->
   <g class="dxs-turn dxs-turn-2">
     <rect x="220" y="152" width="470" height="36" rx="8"/>
     <text x="236" y="175"><tspan class="dxs-spk-b">B:</tspan> "<tspan class="dxs-i">I</tspan>'ll read it tonight &#8212; did <tspan class="dxs-you">you</tspan> mean the long version?"</text>
@@ -142,7 +139,6 @@
     <path class="dxs-arc-you" d="M 420 150 C 360 120, 260 90, 215 72" marker-end="url(#dxs-arrow-warn)"/>
   </g>
 
-  <!-- turn 3 (A) -->
   <g class="dxs-turn dxs-turn-3">
     <rect x="60" y="208" width="400" height="36" rx="8"/>
     <text x="76" y="231"><tspan class="dxs-spk-a">A:</tspan> "Yes &#8212; tell <tspan class="dxs-i">me</tspan> what <tspan class="dxs-you">you</tspan> think."</text>

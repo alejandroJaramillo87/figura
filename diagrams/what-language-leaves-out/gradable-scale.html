@@ -129,7 +129,6 @@
      aria-label="The phrase: a tall, followed by a head noun a button swaps between toddler and building. The token tall stays fixed, with a green arc pointing to the noun. Below, a horizontal scale bar with an amber threshold marker. With toddler, the scale runs to about 1.2 meters and the threshold sits near 1 meter. With building, the same bar re-labels to 300 meters with the threshold near 150. Same adjective; the noun re-anchored the entire scale.">
   <text class="grd-note" x="40" y="26">"tall" compares against a threshold &#8212; and the threshold comes from the noun, not the adjective</text>
 
-  <!-- token row -->
   <rect class="grd-tok" x="120" y="50" width="28" height="36" rx="6"/>
   <text class="grd-word" x="134" y="73">a</text>
   <g class="grd-tall">
@@ -145,22 +144,18 @@
     <text class="grd-word" x="253" y="73">building</text>
   </g>
 
-  <!-- arc: tall -> noun -->
   <path class="grd-arc" d="M 180 46 C 200 30, 230 30, 248 46" marker-end="url(#grd-arrow)"/>
   <text class="grd-note" x="320" y="72">the noun sets the scale</text>
 
-  <!-- scale bar -->
   <rect class="grd-bar" x="100" y="130" width="480" height="18" rx="4"/>
   <rect class="grd-range" x="340" y="130" width="240" height="18" rx="4"/>
   <line class="grd-thresh" x1="340" y1="120" x2="340" y2="158"/>
 
-  <!-- labels: toddler scale -->
   <g class="grd-lab grd-lab-tod">
     <text x="100" y="176">0 m</text>
     <text class="grd-thlab" x="340" y="176">~1 m: "tall" starts here</text>
     <text x="580" y="176">1.2 m</text>
   </g>
-  <!-- labels: building scale -->
   <g class="grd-lab grd-lab-bld">
     <text x="100" y="176">0 m</text>
     <text class="grd-thlab" x="340" y="176">~150 m: "tall" starts here</text>
