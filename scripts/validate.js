@@ -345,6 +345,15 @@ function checkManifest(manifest, files) {
     } else {
       rels.delete(entry.path);
     }
+    if (/["']/.test(entry.title || '')) report(null, 'title', `entry "${entry.id}" title uses straight quotes (use \u201c \u201d \u2019)`);
+    if (entry.path && fs.existsSync(path.join(F.REPO_ROOT, entry.path))) {
+      const src = fs.readFileSync(path.join(F.REPO_ROOT, entry.path), 'utf8');
+      const esc = (entry.title || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      for (const tag of ['title', 'h1']) {
+        const m = src.match(new RegExp(`<${tag}>([^<]*)</${tag}>`));
+        if (!m || m[1] !== esc) report(null, 'title', `${entry.path} <${tag}> differs from the manifest title`);
+      }
+    }
     const stem = path.basename(entry.path || '', '.html');
     if (entry.id !== stem) report(null, 'manifest-id', `id "${entry.id}" != filename stem "${stem}"`);
   }

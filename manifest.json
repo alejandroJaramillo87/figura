@@ -33,7 +33,7 @@
   {
     "id": "effects-sampler",
     "path": "diagrams/effects-sampler/effects-sampler.html",
-    "title": "Effects sampler — classic palette",
+    "title": "Effects sampler: the classic palette",
     "consumers": [],
     "kind": "hover-inspect",
     "description": "Living documentation: all seven catalog effects (glow, sweep, comet, draw-in, ripple, shimmer, flash) running in the classic palette, with accent and dim-fill swatches."
@@ -208,7 +208,7 @@
   {
     "id": "sense-pinning",
     "path": "diagrams/what-language-leaves-out/sense-pinning.html",
-    "title": "Sense pinning: context chooses what \"bank\" means",
+    "title": "Sense pinning: context chooses what “bank” means",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-lexical.md"
     ],
@@ -238,7 +238,7 @@
   {
     "id": "polysemy-web",
     "path": "diagrams/what-language-leaves-out/polysemy-web.html",
-    "title": "Polysemy web: the related senses of \"paper\"",
+    "title": "Polysemy web: the related senses of “paper”",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-lexical.md"
     ],
@@ -278,7 +278,7 @@
   {
     "id": "domain-tint",
     "path": "diagrams/what-language-leaves-out/domain-tint.html",
-    "title": "Domain tint: the document decides what \"positive\" means",
+    "title": "Domain tint: the document decides what “positive” means",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-lexical.md"
     ],
@@ -418,7 +418,7 @@
   {
     "id": "gapping-ellipsis",
     "path": "diagrams/what-language-leaves-out/gapping-ellipsis.html",
-    "title": "Ellipsis: the predicate that isn't there",
+    "title": "Ellipsis: the predicate that isn’t there",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-syntactic.md"
     ],
@@ -518,7 +518,7 @@
   {
     "id": "speech-act",
     "path": "diagrams/what-language-leaves-out/speech-act.html",
-    "title": "Speech-act ambiguity",
+    "title": "Speech acts: what kind of response does this call for?",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-pragmatic.md"
     ],
@@ -528,7 +528,7 @@
   {
     "id": "implicature-gap",
     "path": "diagrams/what-language-leaves-out/implicature-gap.html",
-    "title": "Indirect answers and implicature",
+    "title": "Implicature: the answer that dodges is the answer",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-pragmatic.md"
     ],
@@ -538,7 +538,7 @@
   {
     "id": "sarcasm-flip",
     "path": "diagrams/what-language-leaves-out/sarcasm-flip.html",
-    "title": "Irony and sarcasm",
+    "title": "Sarcasm: the polarity is not in the word",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-pragmatic.md"
     ],
@@ -548,7 +548,7 @@
   {
     "id": "deixis-chat",
     "path": "diagrams/what-language-leaves-out/deixis-chat.html",
-    "title": "Deixis in a chat transcript",
+    "title": "Deixis: “you” re-binds every turn",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-pragmatic.md"
     ],
@@ -558,7 +558,7 @@
   {
     "id": "presupposition-split",
     "path": "diagrams/what-language-leaves-out/presupposition-split.html",
-    "title": "Presupposition and accommodation",
+    "title": "Presupposition: what negation cannot touch",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-pragmatic.md"
     ],
@@ -568,7 +568,7 @@
   {
     "id": "discourse-relation",
     "path": "diagrams/what-language-leaves-out/discourse-relation.html",
-    "title": "Discourse relations",
+    "title": "Discourse relations: the connective with no token",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-pragmatic.md"
     ],
@@ -578,7 +578,7 @@
   {
     "id": "topic-tracking",
     "path": "diagrams/what-language-leaves-out/topic-tracking.html",
-    "title": "Topic and focus tracking",
+    "title": "Topic tracking: pronouns prefer the topic",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-pragmatic.md"
     ],
@@ -588,7 +588,7 @@
   {
     "id": "register-frame",
     "path": "diagrams/what-language-leaves-out/register-frame.html",
-    "title": "Genre and register",
+    "title": "Register: the document conditions every token",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-pragmatic.md"
     ],
@@ -598,7 +598,7 @@
   {
     "id": "delimiter-match",
     "path": "diagrams/what-language-leaves-out/delimiter-match.html",
-    "title": "Delimiter matching",
+    "title": "Delimiter matching: the closer’s role lives at the opener",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-structural.md"
     ],
@@ -608,7 +608,7 @@
   {
     "id": "code-binding",
     "path": "diagrams/what-language-leaves-out/code-binding.html",
-    "title": "Code dependencies",
+    "title": "Code dependencies: coreference for identifiers",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-structural.md"
     ],
@@ -618,7 +618,7 @@
   {
     "id": "format-continuation",
     "path": "diagrams/what-language-leaves-out/format-continuation.html",
-    "title": "Format continuation",
+    "title": "Format continuation: what comes next is set by precedent",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-structural.md"
     ],
@@ -628,7 +628,7 @@
   {
     "id": "induction-copy",
     "path": "diagrams/what-language-leaves-out/induction-copy.html",
-    "title": "Induction and copying",
+    "title": "Induction: look back, hop forward, copy",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-structural.md"
     ],
@@ -638,7 +638,7 @@
   {
     "id": "instruction-binding",
     "path": "diagrams/what-language-leaves-out/instruction-binding.html",
-    "title": "Instruction binding",
+    "title": "Instruction binding: a distant header defines the passage’s job",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-structural.md"
     ],
@@ -648,7 +648,7 @@
   {
     "id": "ladder-depth",
     "path": "diagrams/what-language-leaves-out/ladder-depth.html",
-    "title": "The ladder against depth",
+    "title": "The ladder revisited: levels against model depth",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-capstone.md"
     ],
@@ -658,7 +658,7 @@
   {
     "id": "soft-lookup",
     "path": "diagrams/what-language-leaves-out/soft-lookup.html",
-    "title": "The soft lookup",
+    "title": "Soft lookup: resolution as a weighted mixture",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-capstone.md"
     ],
@@ -668,7 +668,7 @@
   {
     "id": "heads-tendency",
     "path": "diagrams/what-language-leaves-out/heads-tendency.html",
-    "title": "Heads divide the labor loosely",
+    "title": "Heads: labor divided loosely",
     "consumers": [
       "curiosity-chronicles:content/posts/what-language-leaves-out-capstone.md"
     ],
