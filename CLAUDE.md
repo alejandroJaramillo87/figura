@@ -184,7 +184,7 @@ is inlined into the blog. Everything the diagram needs must live inside it.
 One palette — **classic dark** (`--fg-*`, table below) — lives in
 `shared/tokens.css` (copy values via the managed block, never link).
 figura owns it: the blog mirrors eleven of these values for its code
-panels, and its `tests/check-figura-tokens.mjs` fails until the mirror
+panels, and its `curiosity-chronicles/tests/check-figura-tokens.mjs` fails until the mirror
 matches, so a palette change lands here first. Dark slate panels read as
 framed figures on the light theme and sit nearly flush on the dark theme. Diagrams
 never theme-switch; the dark panel is correct on both page themes.

@@ -4,7 +4,7 @@ figura has two consumers. The
 [Curiosity Chronicles](https://github.com/alejandroJaramillo87/curiosity-chronicles)
 blog inlines diagrams into posts, which this doc covers from figura's
 side; the blog-side view lives in the blog repo at
-`docs/diagrams/figura.md`. The ai-experiments docs site commits copies of
+`curiosity-chronicles/docs/diagrams/figura.md`. The ai-experiments docs site commits copies of
 the static diagrams' SVG exports (see
 [architecture.md](architecture.md#the-scripts-pipeline)). Each manifest
 entry's `consumers` list names the pages that use it.
@@ -81,7 +81,7 @@ The integration is visual as well as mechanical:
 
 - `shared/tokens.css` is the source of truth. The blog mirrors eleven
   of its values as its dark-panel tokens in `assets/scss/custom.scss`,
-  and the blog's `tests/check-figura-tokens.mjs` fails until the mirror
+  and the blog's `curiosity-chronicles/tests/check-figura-tokens.mjs` fails until the mirror
   matches. A palette change therefore lands here first, and the blog
   updates its mirror in the same commit as the bump that brings it in.
 - Diagrams **never theme-switch**: the dark slate panel reads as a

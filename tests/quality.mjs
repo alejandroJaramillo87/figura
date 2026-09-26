@@ -37,6 +37,9 @@ if (declared.length && !existsSync(join(ROOT, "package-lock.json"))) {
 const steps = [
   ["managed blocks", "node", ["scripts/build.js", "--check"]],
   ["contract", "node", ["scripts/validate.js"]],
+  ["retired names", "node", ["tests/check-retired-names.mjs"]],
+  ["code blocks", "node", ["tests/check-command-prompts.mjs"]],
+  ["links", "node", ["tests/check-links.mjs"]],
 ];
 if (FULL) steps.push(["render (browser)", "node", ["tests/render.test.mjs"]]);
 else console.log("[SKIP] render (browser): run npm run quality:full to include it");
