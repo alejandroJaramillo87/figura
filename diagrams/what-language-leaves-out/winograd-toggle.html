@@ -92,13 +92,17 @@
 .fg-winograd-toggle.is-advocated .wgt-v-feared { opacity: 0; }
 .fg-winograd-toggle.is-advocated .wgt-v-advocated { opacity: 1; }
 
-.fg-winograd-toggle .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-winograd-toggle .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-winograd-toggle .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-winograd-toggle .fg-controls button:hover { border-color: var(--warn); background: var(--panel-hover); }
+.fg-winograd-toggle .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-winograd-toggle .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-winograd-toggle .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-winograd-toggle .fg-caption {
@@ -151,7 +155,7 @@
     <rect class="wgt-tok" x="222" y="150" width="56" height="36" rx="6"/>
     <text class="wgt-word" x="250" y="173">they</text>
   </g>
-  <g class="wgt-verb" data-fg="verb" role="button" tabindex="0" aria-label="Toggle the verb between feared and advocated">
+  <g class="wgt-verb" data-fg="verb">
     <rect class="wgt-tok" x="288" y="150" width="112" height="36" rx="6"/>
     <text class="wgt-word wgt-v-feared" x="344" y="173">feared</text>
     <text class="wgt-word wgt-v-advocated" x="344" y="173">advocated</text>
@@ -175,21 +179,38 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>feared</strong> — "they" points at <strong>the councilmen</strong>: authorities fear violence from a crowd. Every token except the verb is identical in both readings; nothing about <code>they</code> itself changed.' },
+    { cls: 'is-advocated', cap: '<strong>advocated</strong> — "they" points at <strong>the demonstrators</strong>: protesters advocate, authorities refuse. One distant verb re-wired the pronoun; the missing information was imported from context.' },
+  ];
+
+  // fg:begin toggle-core v1
   const caption = root.querySelector('[data-fg="caption"]');
-  const CAP = {
-    feared: '<strong>feared</strong> — "they" points at <strong>the councilmen</strong>: authorities fear violence from a crowd. Every token except the verb is identical in both readings; nothing about <code>they</code> itself changed.',
-    advocated: '<strong>advocated</strong> — "they" points at <strong>the demonstrators</strong>: protesters advocate, authorities refuse. One distant verb re-wired the pronoun; the missing information was imported from context.'
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  const toggle = () => {
-    const on = root.classList.toggle('is-advocated');
-    caption.innerHTML = on ? CAP.advocated : CAP.feared;
-  };
-  root.querySelector('[data-fg="toggle"]').addEventListener('click', toggle);
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
   const verb = root.querySelector('[data-fg="verb"]');
-  verb.addEventListener('click', toggle);
-  verb.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
-  });
+  verb.addEventListener('click', () => tg.next()); // pointer shortcut; the button is the keyboard control
 })();</script>
 </div>
 <!-- fg:embed-end -->

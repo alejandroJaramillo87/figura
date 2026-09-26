@@ -85,13 +85,17 @@
 .fg-one-anaphora .ona-arclabel { opacity: 0; transition: opacity 0.7s; }
 .fg-one-anaphora.is-revealed .ona-arclabel { opacity: 1; }
 
-.fg-one-anaphora .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-one-anaphora .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-one-anaphora .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-one-anaphora .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-one-anaphora .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-one-anaphora .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-one-anaphora .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-one-anaphora .fg-caption {
@@ -166,17 +170,36 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Surface form</strong> — the reply never says what is being taken. <code>one</code> occupies the noun\'s slot with none of its content; a bare placeholder is all the model receives.', label: 'Reveal the elided noun' },
+    { cls: 'is-revealed', cap: '<strong>Resolved</strong> — the content of <code>one</code> is copied in from "shirt" in the previous utterance. Interpretation requires a cross-utterance import: the noun exists only there.', label: 'Hide the elided noun' },
+  ];
+
+  // fg:begin toggle-core v1
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    off: '<strong>Surface form</strong> — the reply never says what is being taken. <code>one</code> occupies the noun\'s slot with none of its content; a bare placeholder is all the model receives.',
-    on: '<strong>Resolved</strong> — the content of <code>one</code> is copied in from "shirt" in the previous utterance. Interpretation requires a cross-utterance import: the noun exists only there.'
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const on = root.classList.toggle('is-revealed');
-    caption.innerHTML = on ? CAP.on : CAP.off;
-    btn.textContent = on ? 'Hide the elided noun' : 'Reveal the elided noun';
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

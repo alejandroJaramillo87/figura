@@ -111,13 +111,17 @@
 .fg-sense-pinning.is-river .snp-arc-river { opacity: 1; }
 .fg-sense-pinning.is-money .snp-arc-money { opacity: 1; }
 
+/* fg:begin toggle-bar v1 */
 .fg-sense-pinning .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-sense-pinning .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-sense-pinning .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-sense-pinning .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-sense-pinning .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-sense-pinning .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 .fg-sense-pinning .fg-controls button[aria-pressed="true"] { border-color: var(--ok); color: var(--ok); }
 
 /* fg:begin caption-box v1 */
@@ -211,29 +215,46 @@
 </svg>
 
 <div class="fg-controls" role="group" aria-label="Choose the preceding context">
-  <button type="button" data-fg="ctx" data-state="none" aria-pressed="true" aria-label="No preceding context">No context</button>
-  <button type="button" data-fg="ctx" data-state="river" aria-pressed="false" aria-label="Preceding sentence about paddling">&#8220;&#8230;too strong to keep paddling.&#8221;</button>
-  <button type="button" data-fg="ctx" data-state="money" aria-pressed="false" aria-label="Preceding sentence about a loan officer">&#8220;The loan officer approved us&#8230;&#8221;</button>
+  <button type="button" data-fg="toggle" aria-pressed="true" aria-label="No preceding context">No context</button>
+  <button type="button" data-fg="toggle" aria-pressed="false" aria-label="Preceding sentence about paddling">&#8220;&#8230;too strong to keep paddling.&#8221;</button>
+  <button type="button" data-fg="toggle" aria-pressed="false" aria-label="Preceding sentence about a loan officer">&#8220;The loan officer approved us&#8230;&#8221;</button>
 </div>
 
 <div class="fg-caption" data-fg="caption">No context &#8212; the five letters of <code>bank</code> genuinely admit both senses. Nothing local resolves it; the token underdetermines its own meaning until context arrives.</div>
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: 'is-none', cap: 'No context — the five letters of <code>bank</code> genuinely admit both senses. Nothing local resolves it; the token underdetermines its own meaning until context arrives.' },
+    { cls: 'is-river', cap: '<strong>riverside</strong> — one word about <strong>paddling</strong>, a full sentence away, pinned the sense. The information was never in "bank"; it was imported.' },
+    { cls: 'is-money', cap: '<strong>financial institution</strong> — swap the context and the same five letters mean something else. The disambiguating word (<strong>approved</strong>, a loan-office verb) sits in the previous sentence.' },
+  ];
+
+  // fg:begin toggle-core v1
   const caption = root.querySelector('[data-fg="caption"]');
-  const CAP = {
-    none: 'No context — the five letters of <code>bank</code> genuinely admit both senses. Nothing local resolves it; the token underdetermines its own meaning until context arrives.',
-    river: '<strong>riverside</strong> — one word about <strong>paddling</strong>, a full sentence away, pinned the sense. The information was never in "bank"; it was imported.',
-    money: '<strong>financial institution</strong> — swap the context and the same five letters mean something else. The disambiguating word (<strong>approved</strong>, a loan-office verb) sits in the previous sentence.'
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  const buttons = root.querySelectorAll('[data-fg="ctx"]');
-  buttons.forEach((b) => b.addEventListener('click', () => {
-    const state = b.dataset.state;
-    root.classList.remove('is-none', 'is-river', 'is-money');
-    root.classList.add('is-' + state);
-    buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-    caption.innerHTML = CAP[state];
-  }));
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

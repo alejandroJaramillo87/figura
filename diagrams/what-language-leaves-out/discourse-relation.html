@@ -82,13 +82,17 @@
 .fg-discourse-relation.is-sequence .dsr-edge-cause { opacity: 0; }
 .fg-discourse-relation.is-sequence .dsr-edge-seq { opacity: 1; }
 
-.fg-discourse-relation .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-discourse-relation .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-discourse-relation .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-discourse-relation .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-discourse-relation .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-discourse-relation .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-discourse-relation .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-discourse-relation .fg-caption {
@@ -169,16 +173,36 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Cause</strong> — "He fell. He was pushed." The second sentence explains the first: fell <code>because</code> pushed. The edge points backward in time, and nothing in either sentence\'s tokens says so.' },
+    { cls: 'is-sequence', cap: '<strong>Sequence</strong> — "He fell. He got up." Now the second sentence is simply the next event: fell, <code>then</code> got up. Same first sentence, same juxtaposition; the inferred edge — and the timeline it implies — changed with the content.' },
+  ];
+
+  // fg:begin toggle-core v1
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    cause: '<strong>Cause</strong> — "He fell. He was pushed." The second sentence explains the first: fell <code>because</code> pushed. The edge points backward in time, and nothing in either sentence\'s tokens says so.',
-    seq: '<strong>Sequence</strong> — "He fell. He got up." Now the second sentence is simply the next event: fell, <code>then</code> got up. Same first sentence, same juxtaposition; the inferred edge — and the timeline it implies — changed with the content.'
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const seq = root.classList.toggle('is-sequence');
-    caption.innerHTML = seq ? CAP.seq : CAP.cause;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

@@ -75,13 +75,17 @@
 .fg-deixis-chat.is-turn-1 .dxs-arcs-1, .fg-deixis-chat.is-turn-2 .dxs-arcs-2,
 .fg-deixis-chat.is-turn-3 .dxs-arcs-3 { opacity: 1; }
 
-.fg-deixis-chat .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-deixis-chat .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-deixis-chat .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-deixis-chat .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-deixis-chat .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-deixis-chat .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-deixis-chat .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-deixis-chat .fg-caption {
@@ -164,21 +168,37 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
-  const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = [
-    '<strong>Turn 1 (A speaking)</strong> — "I" binds to A, "you" binds to B. The words carry no names; the bindings come from who holds the floor.',
-    '<strong>Turn 2 (B speaking)</strong> — one turn later the same two tokens have swapped owners: "I" is now B and "you" is now A. Nothing about the words changed; the environment did.',
-    '<strong>Turn 3 (A speaking)</strong> — the bindings flip back. A model reading a transcript re-resolves "I"/"you" on every message, which is exactly the work the role tags in a chat template exist to anchor.'
+  const STATES = [
+    { cls: 'is-turn-1', cap: '<strong>Turn 1 (A speaking)</strong> — "I" binds to A, "you" binds to B. The words carry no names; the bindings come from who holds the floor.' },
+    { cls: 'is-turn-2', cap: '<strong>Turn 2 (B speaking)</strong> — one turn later the same two tokens have swapped owners: "I" is now B and "you" is now A. Nothing about the words changed; the environment did.' },
+    { cls: 'is-turn-3', cap: '<strong>Turn 3 (A speaking)</strong> — the bindings flip back. A model reading a transcript re-resolves "I"/"you" on every message, which is exactly the work the role tags in a chat template exist to anchor.' },
   ];
-  let turn = 1;
-  root.classList.add('is-turn-1');
-  btn.addEventListener('click', () => {
-    root.classList.remove('is-turn-' + turn);
-    turn = turn % 3 + 1;
-    root.classList.add('is-turn-' + turn);
-    caption.innerHTML = CAP[turn - 1];
-  });
+
+  // fg:begin toggle-core v1
+  const caption = root.querySelector('[data-fg="caption"]');
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
+  };
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

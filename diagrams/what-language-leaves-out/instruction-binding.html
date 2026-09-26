@@ -92,13 +92,17 @@
 /* the long governing arc, spanning the gap */
 .fg-instruction-binding .isb-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
 
-.fg-instruction-binding .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-instruction-binding .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-instruction-binding .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-instruction-binding .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-instruction-binding .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-instruction-binding .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-instruction-binding .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-instruction-binding .fg-caption {
@@ -180,17 +184,36 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Translate</strong> — the header assigns every later sentence the role "data to translate", and the correct continuation is French. The passage\'s own tokens carry its meaning, but not its job — that is governed from thousands of tokens away.', label: 'Swap the instruction' },
+    { cls: 'is-count', cap: '<strong>Count</strong> — same passage, untouched; swap the distant header and its role flips to "data to count", the correct continuation to "2". The longest-range dependency in the series: one early line conditions the function of everything after it.', label: 'Swap back to translate' },
+  ];
+
+  // fg:begin toggle-core v1
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    tr: '<strong>Translate</strong> — the header assigns every later sentence the role "data to translate", and the correct continuation is French. The passage\'s own tokens carry its meaning, but not its job — that is governed from thousands of tokens away.',
-    ct: '<strong>Count</strong> — same passage, untouched; swap the distant header and its role flips to "data to count", the correct continuation to "2". The longest-range dependency in the series: one early line conditions the function of everything after it.'
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const count = root.classList.toggle('is-count');
-    caption.innerHTML = count ? CAP.ct : CAP.tr;
-    btn.textContent = count ? 'Swap back to translate' : 'Swap the instruction';
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

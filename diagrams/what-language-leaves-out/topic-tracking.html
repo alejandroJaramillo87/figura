@@ -85,13 +85,17 @@
 .fg-topic-tracking.is-river .tpf-arc-bridge { opacity: 0; }
 .fg-topic-tracking.is-river .tpf-arc-river { opacity: 1; }
 
-.fg-topic-tracking .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-topic-tracking .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-topic-tracking .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-topic-tracking .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-topic-tracking .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-topic-tracking .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-topic-tracking .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-topic-tracking .fg-caption {
@@ -168,16 +172,36 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Bridge as topic</strong> — the paragraph opened on the bridge, so the discourse is about the bridge, and "It" resolves there: the old bridge needs constant attention. The river was mentioned just as recently; recency loses to topichood.' },
+    { cls: 'is-river', cap: '<strong>River as topic</strong> — open on the river instead and the identical middle and final sentences read differently: now "It" is the flooding river. The pronoun\'s sentence never changed; its antecedent moved because the paragraph\'s aboutness did.' },
+  ];
+
+  // fg:begin toggle-core v1
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    bridge: '<strong>Bridge as topic</strong> — the paragraph opened on the bridge, so the discourse is about the bridge, and "It" resolves there: the old bridge needs constant attention. The river was mentioned just as recently; recency loses to topichood.',
-    river: '<strong>River as topic</strong> — open on the river instead and the identical middle and final sentences read differently: now "It" is the flooding river. The pronoun\'s sentence never changed; its antecedent moved because the paragraph\'s aboutness did.'
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const river = root.classList.toggle('is-river');
-    caption.innerHTML = river ? CAP.river : CAP.bridge;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

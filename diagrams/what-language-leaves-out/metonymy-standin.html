@@ -80,13 +80,17 @@
 .fg-metonymy-standin .mtn-arc { fill: none; stroke: var(--ok); stroke-width: 2; opacity: 0; transition: opacity 0.7s; }
 .fg-metonymy-standin.is-deref .mtn-arc { opacity: 1; }
 
-.fg-metonymy-standin .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-metonymy-standin .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-metonymy-standin .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-metonymy-standin .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-metonymy-standin .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-metonymy-standin .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-metonymy-standin .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-metonymy-standin .fg-caption {
@@ -162,17 +166,36 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Literal</strong> — "The White House" names a building. As a noun phrase it is perfectly well-formed, and in "The White House was repainted" the building is exactly what\'s meant. Nothing in the phrase warns you it might not be.', label: 'Dereference' },
+    { cls: 'is-deref', cap: '<strong>Dereferenced</strong> — "announced" needs an announcer, and buildings can\'t announce. The reader follows the handle to a related entity that can: the people inside. The referent shipped was a pointer to a neighbor of the thing meant.', label: 'Back to the literal' },
+  ];
+
+  // fg:begin toggle-core v1
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    off: '<strong>Literal</strong> — "The White House" names a building. As a noun phrase it is perfectly well-formed, and in "The White House was repainted" the building is exactly what\'s meant. Nothing in the phrase warns you it might not be.',
-    on: '<strong>Dereferenced</strong> — "announced" needs an announcer, and buildings can\'t announce. The reader follows the handle to a related entity that can: the people inside. The referent shipped was a pointer to a neighbor of the thing meant.'
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const on = root.classList.toggle('is-deref');
-    caption.innerHTML = on ? CAP.on : CAP.off;
-    btn.textContent = on ? 'Back to the literal' : 'Dereference';
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

@@ -73,13 +73,17 @@
 .fg-implicature-gap.is-implicated .imp-ghost { opacity: 1; }
 .fg-implicature-gap.is-implicated .imp-arc { opacity: 1; }
 
-.fg-implicature-gap .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-implicature-gap .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-implicature-gap .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-implicature-gap .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-implicature-gap .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-implicature-gap .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-implicature-gap .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-implicature-gap .fg-caption {
@@ -148,17 +152,36 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Literal reading</strong> — taken at face value, the answer is an unrelated true statement about concessions. A system that only computes literal content stops here, with the actual question unanswered.', label: 'Read the implicature' },
+    { cls: 'is-implicated', cap: '<strong>Implicated reading</strong> — because the speaker conspicuously answered a different question, the verdict on the movie arrives anyway: not good. The meaning is computed from the mismatch between question and answer — information carried by no token in either sentence.', label: 'Back to the literal' },
+  ];
+
+  // fg:begin toggle-core v1
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    lit: '<strong>Literal reading</strong> — taken at face value, the answer is an unrelated true statement about concessions. A system that only computes literal content stops here, with the actual question unanswered.',
-    imp: '<strong>Implicated reading</strong> — because the speaker conspicuously answered a different question, the verdict on the movie arrives anyway: not good. The meaning is computed from the mismatch between question and answer — information carried by no token in either sentence.'
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const imp = root.classList.toggle('is-implicated');
-    caption.innerHTML = imp ? CAP.imp : CAP.lit;
-    btn.textContent = imp ? 'Back to the literal' : 'Read the implicature';
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

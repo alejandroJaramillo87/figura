@@ -73,13 +73,17 @@
 /* precedent arcs from the ghost back to the pattern rows */
 .fg-format-continuation .fmc-arc { fill: none; stroke: var(--ok); stroke-width: 1.5; stroke-dasharray: 3 5; }
 
-.fg-format-continuation .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-format-continuation .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-format-continuation .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-format-continuation .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-format-continuation .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-format-continuation .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-format-continuation .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-format-continuation .fg-caption {
@@ -146,17 +150,36 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Table precedent</strong> — two pipe-delimited rows established the pattern, so the continuation (dashed) must open with <code>|</code> and land its columns on the same boundaries. Nothing about "TensorRT" demands a pipe; the format does.', label: 'Switch to a numbered list' },
+    { cls: 'is-list', cap: '<strong>List precedent</strong> — the same content as a numbered list, and the correct next token becomes <code>3.</code> — a numeral computed from counters two rows upstream. The content is identical; the continuation\'s shape is pure structural precedent.', label: 'Switch to a markdown table' },
+  ];
+
+  // fg:begin toggle-core v1
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    table: '<strong>Table precedent</strong> — two pipe-delimited rows established the pattern, so the continuation (dashed) must open with <code>|</code> and land its columns on the same boundaries. Nothing about "TensorRT" demands a pipe; the format does.',
-    list: '<strong>List precedent</strong> — the same content as a numbered list, and the correct next token becomes <code>3.</code> — a numeral computed from counters two rows upstream. The content is identical; the continuation\'s shape is pure structural precedent.'
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const list = root.classList.toggle('is-list');
-    caption.innerHTML = list ? CAP.list : CAP.table;
-    btn.textContent = list ? 'Switch to a markdown table' : 'Switch to a numbered list';
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->

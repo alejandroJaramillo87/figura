@@ -86,13 +86,17 @@
 /* arc from great to the context line */
 .fg-sarcasm-flip .src-arc { fill: none; stroke: var(--ok); stroke-width: 2; }
 
-.fg-sarcasm-flip .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+/* fg:begin toggle-bar v1 */
+.fg-sarcasm-flip .fg-controls { margin-top: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fg-sarcasm-flip .fg-controls button {
   background: var(--panel); color: var(--text); border: 1px solid var(--border);
   border-radius: 8px; padding: 6px 14px; font: inherit; font-size: 13px; cursor: pointer;
-  transition: border-color 0.3s, background 0.3s;
+  transition: border-color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
 }
-.fg-sarcasm-flip .fg-controls button:hover { border-color: var(--accent); background: var(--panel-hover); }
+.fg-sarcasm-flip .fg-controls button:hover { border-color: var(--fg-ctl-accent, var(--accent)); background: var(--panel-hover); }
+.fg-sarcasm-flip .fg-controls button:focus-visible { outline: 2px solid var(--fg-ctl-accent, var(--accent)); outline-offset: 2px; }
+.fg-sarcasm-flip .fg-controls button[aria-pressed="true"] { border-color: var(--fg-ctl-accent, var(--accent)); }
+/* fg:end toggle-bar */
 
 /* fg:begin caption-box v1 */
 .fg-sarcasm-flip .fg-caption {
@@ -166,16 +170,36 @@
 
 <script>(() => {
   const root = document.currentScript.closest('.fg-diagram');
+  const STATES = [
+    { cls: '', cap: '<strong>Sincere</strong> — after "We just landed the client," a meeting is good news and "Great" means great. The word\'s dictionary polarity and its polarity in use agree.' },
+    { cls: 'is-sarcastic', cap: '<strong>Sarcastic</strong> — after "Back-to-back calls since eight," the same "Great" inverts to a complaint. The polarity flipped without a single token of the sentence changing; the cue lives one line up, in the discourse.' },
+  ];
+
+  // fg:begin toggle-core v1
   const caption = root.querySelector('[data-fg="caption"]');
-  const btn = root.querySelector('[data-fg="toggle"]');
-  const CAP = {
-    pos: '<strong>Sincere</strong> — after "We just landed the client," a meeting is good news and "Great" means great. The word\'s dictionary polarity and its polarity in use agree.',
-    neg: '<strong>Sarcastic</strong> — after "Back-to-back calls since eight," the same "Great" inverts to a complaint. The polarity flipped without a single token of the sentence changing; the cue lives one line up, in the discourse.'
+  const toggles = [...root.querySelectorAll('[data-fg="toggle"]')];
+  const segmented = toggles.length > 1; // one button per state, else one button cycles
+  if (caption) caption.setAttribute('aria-live', 'polite');
+  let state = 0;
+  function show(n) {
+    STATES.forEach((s) => s.cls && root.classList.remove(s.cls));
+    state = n;
+    const s = STATES[n];
+    if (s.cls) root.classList.add(s.cls);
+    if (caption && s.cap) caption.innerHTML = s.cap;
+    if (segmented) toggles.forEach((b, i) => b.setAttribute('aria-pressed', String(i === n)));
+    else if (s.label) toggles[0].textContent = s.label;
+    else if (STATES.length === 2) toggles[0].setAttribute('aria-pressed', String(n === 1));
+    root.dispatchEvent(new CustomEvent('fg:toggle', { detail: { state: n } }));
+  }
+  const tg = {
+    get state() { return state; },
+    show,
+    next() { show((state + 1) % STATES.length); },
   };
-  btn.addEventListener('click', () => {
-    const sar = root.classList.toggle('is-sarcastic');
-    caption.innerHTML = sar ? CAP.neg : CAP.pos;
-  });
+  toggles.forEach((b, i) => b.addEventListener('click', () => (segmented ? show(i) : tg.next())));
+  show(0);
+  // fg:end toggle-core
 })();</script>
 </div>
 <!-- fg:embed-end -->
