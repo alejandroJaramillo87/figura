@@ -321,10 +321,14 @@ function checkManifest(manifest, files) {
   const seenIds = new Set();
   const seenPaths = new Set();
   for (const entry of manifest) {
-    for (const k of ['id', 'path', 'title', 'post', 'description']) {
+    for (const k of ['id', 'path', 'title', 'kind', 'consumers', 'description']) {
       if (!(k in entry)) report(null, 'manifest', `entry "${entry.id || entry.path}" missing field "${k}"`);
     }
-    if (!('kind' in entry)) report(null, 'manifest', `entry "${entry.id}" missing field "kind"`);
+    if ('post' in entry) report(null, 'manifest', `entry "${entry.id}" uses retired field "post" (use consumers)`);
+    if ('consumers' in entry && (!Array.isArray(entry.consumers) ||
+        !entry.consumers.every((c) => /^[a-z0-9-]+:[^\s:]+$/.test(c)))) {
+      report(null, 'manifest', `entry "${entry.id}" consumers must be a list of "<repo>:<path>" strings`);
+    }
     if (/^TODO\b/.test(entry.description || '')) report(null, 'scaffold', `entry "${entry.id}" description is unfilled`);
     if ('kind' in entry && !KINDS.includes(entry.kind)) {
       report(null, 'manifest', `entry "${entry.id}" has unknown kind "${entry.kind}"`);

@@ -75,10 +75,10 @@ header p { color: #666; margin: 0; font-size: 0.95rem; }
     const section = document.createElement('section');
     section.className = 'entry';
     section.innerHTML =
-      '<h2></h2><p class="meta"><code></code> · post: <span></span></p><p class="desc"></p>';
+      '<h2></h2><p class="meta"><code></code> · used by: <span></span></p><p class="desc"></p>';
     section.querySelector('h2').textContent = d.title;
     section.querySelector('code').textContent = d.path;
-    section.querySelector('.meta span').textContent = d.post;
+    section.querySelector('.meta span').textContent = d.consumers.length ? d.consumers.join(', ') : 'no consumer';
     section.querySelector('.desc').textContent = d.description;
     main.appendChild(section);
     try {

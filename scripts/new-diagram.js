@@ -9,7 +9,9 @@
  *     [--title "Human-readable title"] [--palette classic]
  *
  * Creates diagrams/<consumer-dir>/<kebab-name>.html from templates/<kind>.html
- * with every managed block expanded, and appends a manifest.json entry. The
+ * with every managed block expanded, and appends a manifest.json entry whose
+ * consumers list starts empty: add "<repo>:<path>" for each page that embeds
+ * or copies the diagram once it does. The
  * author then fills in the TODO regions, which the validator refuses until
  * they are gone. Nothing is written unless every input is valid and the
  * blocks expand; the manifest is replaced atomically, and the new file is
@@ -73,7 +75,7 @@ manifest.push({
   id: name,
   path: F.relPath(outPath),
   title,
-  post: slug,
+  consumers: [],
   kind,
   description: 'TODO: one-sentence description for the gallery.',
 });
