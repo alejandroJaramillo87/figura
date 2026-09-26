@@ -3,8 +3,10 @@
 ## Prerequisites
 
 - Node.js at the exact version in `.nvmrc` (`nvm use`). The gate refuses
-  any other version. The tooling is zero-dependency, so the fast gate has
-  no `npm install` step.
+  any other version. The checks use only Node built-ins, so
+  `npm run quality` has no install step. `npm run quality:full` adds the
+  browser tier, which needs `npm ci` (for the pinned `playwright-core`)
+  and a Chromium at `PLAYWRIGHT_CHROMIUM`, or `/opt/pw-browsers/chromium`.
 - Python 3 (optional) for serving the gallery locally
   (`python3 -m http.server`). Nothing in the tooling needs it.
 

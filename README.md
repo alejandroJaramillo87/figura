@@ -61,9 +61,11 @@ templates/       step-timeline, hover-inspect, toggle, ambient, static scaffolds
 diagrams/<consumer-dir>/<kebab-name>.html
 ```
 
-Tooling is zero-dependency Node at the version in `.nvmrc`. `npm run check`
-runs the drift check and the validator while authoring; `npm run quality`
-is the gate that must pass before every push, and CI runs exactly it.
+Tooling is Node at the version in `.nvmrc`, with no runtime dependencies.
+`npm run check` runs the drift check and the validator while authoring;
+`npm run quality` is the gate that must pass before every push, and CI runs
+exactly it. `npm run quality:full` adds browser checks (render errors,
+layout shift, reduced motion, the gallery) and needs `npm ci` first.
 
 ## Preview
 

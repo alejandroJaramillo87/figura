@@ -25,3 +25,18 @@ jobs:
           node-version-file: .nvmrc
       - name: Quality gate
         run: node tests/quality.mjs
+
+  # The browser tier: the only job that installs anything. It drives the
+  # runner's preinstalled Chrome through the pinned playwright-core.
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci
+      - name: Render checks
+        run: node tests/render.test.mjs
+        env:
+          PLAYWRIGHT_CHROMIUM: /usr/bin/google-chrome
