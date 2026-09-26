@@ -230,6 +230,9 @@ function checkFile(file, kind) {
     report(file, 'reduced-motion', 'no prefers-reduced-motion handling in fragment');
   }
   checkSmilGate(file, frag, cls);
+  if (/\b(?:begin|end)="[^"]*[a-z][\w-]*\.(?:begin|end)/.test(frag) && !/fg:begin instance-ids v/.test(frag)) {
+    report(file, 'instance-ids', 'SMIL syncbase timing needs the instance-ids block, or a second copy binds to the first');
+  }
 
   /* SVG ids: prefixed and consistent within the file */
   const ids = [...frag.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);

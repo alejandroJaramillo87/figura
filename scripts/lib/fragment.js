@@ -144,7 +144,7 @@ const BLOCK_VERSIONS = {
   'palette-classic': 1, 'panel-base': 1, 'reduced-motion': 1,
   'controls-bar': 1, 'timeline-core': 1, 'timeline-start': 1,
   'caption-box': 1, 'caption-core': 1, 'hover-caption': 1, 'step-caption': 1,
-  'toggle-bar': 1, 'toggle-core': 1,
+  'toggle-bar': 1, 'toggle-core': 1, 'instance-ids': 1,
 };
 
 /* Managed blocks each manifest kind must carry, in addition to BASE_BLOCKS. */
