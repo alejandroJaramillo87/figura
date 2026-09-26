@@ -11,10 +11,10 @@
 <p>Hover any block: the CUDA devel/runtime stage split, the sm_120 build configuration, and the stub libcuda that lets the image compile on a machine with no GPU.</p>
 
 <!-- fg:embed-start -->
-<div class="fg-diagram fg-llama-gpu-stages">
+<div class="fg-diagram fg-llama-gpu-stage-split">
 <style>
 /* fg:begin palette-classic v1 */
-.fg-llama-gpu-stages {
+.fg-llama-gpu-stage-split {
   --bg: #0f172a;
   --panel: #1e293b;
   --panel-hover: #334155;
@@ -40,88 +40,88 @@
   --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
-:where(.fg-llama-gpu-stages .fg-fill-accent) { fill: var(--accent); }
-:where(.fg-llama-gpu-stages .fg-stroke-accent) { stroke: var(--accent); }
-:where(.fg-llama-gpu-stages .fg-fill-ok) { fill: var(--ok); }
-:where(.fg-llama-gpu-stages .fg-stroke-ok) { stroke: var(--ok); }
-:where(.fg-llama-gpu-stages .fg-fill-warn) { fill: var(--warn); }
-:where(.fg-llama-gpu-stages .fg-stroke-warn) { stroke: var(--warn); }
-:where(.fg-llama-gpu-stages .fg-fill-hot) { fill: var(--hot); }
-:where(.fg-llama-gpu-stages .fg-stroke-hot) { stroke: var(--hot); }
-:where(.fg-llama-gpu-stages .fg-fill-violet) { fill: var(--violet); }
-:where(.fg-llama-gpu-stages .fg-stroke-violet) { stroke: var(--violet); }
-:where(.fg-llama-gpu-stages .fg-fill-line) { fill: var(--line); }
-:where(.fg-llama-gpu-stages .fg-stroke-line) { stroke: var(--line); }
-:where(.fg-llama-gpu-stages .fg-fill-border) { fill: var(--border); }
-:where(.fg-llama-gpu-stages .fg-stroke-border) { stroke: var(--border); }
-:where(.fg-llama-gpu-stages .fg-fill-text) { fill: var(--text); }
-:where(.fg-llama-gpu-stages .fg-stroke-text) { stroke: var(--text); }
-:where(.fg-llama-gpu-stages .fg-fill-muted) { fill: var(--muted); }
-:where(.fg-llama-gpu-stages .fg-stroke-muted) { stroke: var(--muted); }
+:where(.fg-llama-gpu-stage-split .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-llama-gpu-stage-split .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-llama-gpu-stage-split .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-llama-gpu-stage-split .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-llama-gpu-stage-split .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-llama-gpu-stage-split .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-llama-gpu-stage-split .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-llama-gpu-stage-split .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-llama-gpu-stage-split .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-llama-gpu-stage-split .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-llama-gpu-stage-split .fg-fill-line) { fill: var(--line); }
+:where(.fg-llama-gpu-stage-split .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-llama-gpu-stage-split .fg-fill-border) { fill: var(--border); }
+:where(.fg-llama-gpu-stage-split .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-llama-gpu-stage-split .fg-fill-text) { fill: var(--text); }
+:where(.fg-llama-gpu-stage-split .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-llama-gpu-stage-split .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-llama-gpu-stage-split .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
-.fg-llama-gpu-stages {
+.fg-llama-gpu-stage-split {
   background: var(--bg);
   border-radius: var(--radius);
   font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.fg-llama-gpu-stages svg { display: block; width: 100%; height: auto; }
-.fg-llama-gpu-stages text { font-family: inherit; }
+.fg-llama-gpu-stage-split svg { display: block; width: 100%; height: auto; }
+.fg-llama-gpu-stage-split text { font-family: inherit; }
 /* fg:end panel-base */
-.fg-llama-gpu-stages {
+.fg-llama-gpu-stage-split {
   padding: 16px;
 }
 
 
-.fg-llama-gpu-stages .lgs-box {
+.fg-llama-gpu-stage-split .lgs-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
   transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
-.fg-llama-gpu-stages .lgs-group:hover .lgs-box { fill: var(--panel-hover); stroke: var(--accent); }
-.fg-llama-gpu-stages .lgs-stub .lgs-box { stroke: var(--warn); }
-.fg-llama-gpu-stages .lgs-zone {
+.fg-llama-gpu-stage-split .lgs-group:hover .lgs-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-llama-gpu-stage-split .lgs-stub .lgs-box { stroke: var(--warn); }
+.fg-llama-gpu-stage-split .lgs-zone {
   fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 6 4;
   transition: stroke var(--dur-quick); cursor: pointer;
 }
-.fg-llama-gpu-stages .lgs-group:hover .lgs-zone { stroke: var(--accent); }
-.fg-llama-gpu-stages .lgs-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
-.fg-llama-gpu-stages .lgs-sub { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
-.fg-llama-gpu-stages .lgs-label { fill: var(--muted); font-size: 12px; }
+.fg-llama-gpu-stage-split .lgs-group:hover .lgs-zone { stroke: var(--accent); }
+.fg-llama-gpu-stage-split .lgs-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-llama-gpu-stage-split .lgs-sub { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-llama-gpu-stage-split .lgs-label { fill: var(--muted); font-size: 12px; }
 
-.fg-llama-gpu-stages .lgs-flow {
+.fg-llama-gpu-stage-split .lgs-flow {
   stroke: var(--line); stroke-width: 2; fill: none;
   stroke-dasharray: 5 4; animation: fg-lgs-flow 1.4s linear infinite;
 }
 @keyframes fg-lgs-flow { to { stroke-dashoffset: -18; } }
-.fg-llama-gpu-stages .lgs-flow-ok { stroke: var(--ok); }
+.fg-llama-gpu-stage-split .lgs-flow-ok { stroke: var(--ok); }
 
 /* fg:begin caption-box v1 */
-.fg-llama-gpu-stages .fg-caption {
+.fg-llama-gpu-stage-split .fg-caption {
   margin-top: 12px; padding: 10px 14px;
   background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
-.fg-llama-gpu-stages .fg-caption.fg-cap-grid { display: grid; }
-.fg-llama-gpu-stages .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
-.fg-llama-gpu-stages .fg-cap-live { grid-area: 1 / 1; }
-.fg-llama-gpu-stages [data-info]:focus { outline: none; }
-.fg-llama-gpu-stages [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fg-llama-gpu-stage-split .fg-caption.fg-cap-grid { display: grid; }
+.fg-llama-gpu-stage-split .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-llama-gpu-stage-split .fg-cap-live { grid-area: 1 / 1; }
+.fg-llama-gpu-stage-split [data-info]:focus { outline: none; }
+.fg-llama-gpu-stage-split [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
-.fg-llama-gpu-stages .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
-.fg-llama-gpu-stages .fg-caption.is-active { color: var(--text); }
-.fg-llama-gpu-stages .fg-caption strong { color: var(--accent); font-weight: 600; }
-.fg-llama-gpu-stages .fg-caption code {
+.fg-llama-gpu-stage-split .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
+.fg-llama-gpu-stage-split .fg-caption.is-active { color: var(--text); }
+.fg-llama-gpu-stage-split .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-llama-gpu-stage-split .fg-caption code {
   font-family: var(--mono); font-size: 12px; color: var(--warn);
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
 
 /* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-llama-gpu-stages, .fg-llama-gpu-stages * { transition: none !important; animation: none !important; }
+  .fg-llama-gpu-stage-split, .fg-llama-gpu-stage-split * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
 </style>

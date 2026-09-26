@@ -11,10 +11,10 @@
 <p>Hover a group: how the entrypoint turns environment variables into the llama-server command line — fail-fast requirements, defaults, conditional feature flags, and the final exec.</p>
 
 <!-- fg:embed-start -->
-<div class="fg-diagram fg-llama-cpu-entry">
+<div class="fg-diagram fg-llama-cpu-entrypoint-flow">
 <style>
 /* fg:begin palette-classic v1 */
-.fg-llama-cpu-entry {
+.fg-llama-cpu-entrypoint-flow {
   --bg: #0f172a;
   --panel: #1e293b;
   --panel-hover: #334155;
@@ -40,88 +40,88 @@
   --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
-:where(.fg-llama-cpu-entry .fg-fill-accent) { fill: var(--accent); }
-:where(.fg-llama-cpu-entry .fg-stroke-accent) { stroke: var(--accent); }
-:where(.fg-llama-cpu-entry .fg-fill-ok) { fill: var(--ok); }
-:where(.fg-llama-cpu-entry .fg-stroke-ok) { stroke: var(--ok); }
-:where(.fg-llama-cpu-entry .fg-fill-warn) { fill: var(--warn); }
-:where(.fg-llama-cpu-entry .fg-stroke-warn) { stroke: var(--warn); }
-:where(.fg-llama-cpu-entry .fg-fill-hot) { fill: var(--hot); }
-:where(.fg-llama-cpu-entry .fg-stroke-hot) { stroke: var(--hot); }
-:where(.fg-llama-cpu-entry .fg-fill-violet) { fill: var(--violet); }
-:where(.fg-llama-cpu-entry .fg-stroke-violet) { stroke: var(--violet); }
-:where(.fg-llama-cpu-entry .fg-fill-line) { fill: var(--line); }
-:where(.fg-llama-cpu-entry .fg-stroke-line) { stroke: var(--line); }
-:where(.fg-llama-cpu-entry .fg-fill-border) { fill: var(--border); }
-:where(.fg-llama-cpu-entry .fg-stroke-border) { stroke: var(--border); }
-:where(.fg-llama-cpu-entry .fg-fill-text) { fill: var(--text); }
-:where(.fg-llama-cpu-entry .fg-stroke-text) { stroke: var(--text); }
-:where(.fg-llama-cpu-entry .fg-fill-muted) { fill: var(--muted); }
-:where(.fg-llama-cpu-entry .fg-stroke-muted) { stroke: var(--muted); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-fill-line) { fill: var(--line); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-fill-border) { fill: var(--border); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-fill-text) { fill: var(--text); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-llama-cpu-entrypoint-flow .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
-.fg-llama-cpu-entry {
+.fg-llama-cpu-entrypoint-flow {
   background: var(--bg);
   border-radius: var(--radius);
   font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.fg-llama-cpu-entry svg { display: block; width: 100%; height: auto; }
-.fg-llama-cpu-entry text { font-family: inherit; }
+.fg-llama-cpu-entrypoint-flow svg { display: block; width: 100%; height: auto; }
+.fg-llama-cpu-entrypoint-flow text { font-family: inherit; }
 /* fg:end panel-base */
-.fg-llama-cpu-entry {
+.fg-llama-cpu-entrypoint-flow {
   padding: 16px;
 }
 
 
-.fg-llama-cpu-entry .lce-box {
+.fg-llama-cpu-entrypoint-flow .lce-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
   transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
-.fg-llama-cpu-entry .lce-group:hover .lce-box { fill: var(--panel-hover); stroke: var(--accent); }
-.fg-llama-cpu-entry .lce-req .lce-box { stroke: var(--hot); }
-.fg-llama-cpu-entry .lce-def .lce-box { stroke: var(--line); }
-.fg-llama-cpu-entry .lce-feat .lce-box { stroke: var(--warn); }
-.fg-llama-cpu-entry .lce-adv .lce-box { stroke: var(--violet); }
-.fg-llama-cpu-entry .lce-cmd .lce-box { stroke: var(--accent); stroke-width: 2; }
-.fg-llama-cpu-entry .lce-exec .lce-box { stroke: var(--ok); stroke-width: 2; }
+.fg-llama-cpu-entrypoint-flow .lce-group:hover .lce-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-llama-cpu-entrypoint-flow .lce-req .lce-box { stroke: var(--hot); }
+.fg-llama-cpu-entrypoint-flow .lce-def .lce-box { stroke: var(--line); }
+.fg-llama-cpu-entrypoint-flow .lce-feat .lce-box { stroke: var(--warn); }
+.fg-llama-cpu-entrypoint-flow .lce-adv .lce-box { stroke: var(--violet); }
+.fg-llama-cpu-entrypoint-flow .lce-cmd .lce-box { stroke: var(--accent); stroke-width: 2; }
+.fg-llama-cpu-entrypoint-flow .lce-exec .lce-box { stroke: var(--ok); stroke-width: 2; }
 
-.fg-llama-cpu-entry .lce-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
-.fg-llama-cpu-entry .lce-sub { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
-.fg-llama-cpu-entry .lce-label { fill: var(--muted); font-size: 12px; }
+.fg-llama-cpu-entrypoint-flow .lce-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-llama-cpu-entrypoint-flow .lce-sub { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-llama-cpu-entrypoint-flow .lce-label { fill: var(--muted); font-size: 12px; }
 
-.fg-llama-cpu-entry .lce-flow {
+.fg-llama-cpu-entrypoint-flow .lce-flow {
   stroke: var(--line); stroke-width: 2; fill: none;
   stroke-dasharray: 5 4; animation: fg-lce-flow 1.4s linear infinite;
 }
 @keyframes fg-lce-flow { to { stroke-dashoffset: -18; } }
 
 /* fg:begin caption-box v1 */
-.fg-llama-cpu-entry .fg-caption {
+.fg-llama-cpu-entrypoint-flow .fg-caption {
   margin-top: 12px; padding: 10px 14px;
   background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
-.fg-llama-cpu-entry .fg-caption.fg-cap-grid { display: grid; }
-.fg-llama-cpu-entry .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
-.fg-llama-cpu-entry .fg-cap-live { grid-area: 1 / 1; }
-.fg-llama-cpu-entry [data-info]:focus { outline: none; }
-.fg-llama-cpu-entry [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fg-llama-cpu-entrypoint-flow .fg-caption.fg-cap-grid { display: grid; }
+.fg-llama-cpu-entrypoint-flow .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-llama-cpu-entrypoint-flow .fg-cap-live { grid-area: 1 / 1; }
+.fg-llama-cpu-entrypoint-flow [data-info]:focus { outline: none; }
+.fg-llama-cpu-entrypoint-flow [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
-.fg-llama-cpu-entry .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
-.fg-llama-cpu-entry .fg-caption.is-active { color: var(--text); }
-.fg-llama-cpu-entry .fg-caption strong { color: var(--accent); font-weight: 600; }
-.fg-llama-cpu-entry .fg-caption code {
+.fg-llama-cpu-entrypoint-flow .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
+.fg-llama-cpu-entrypoint-flow .fg-caption.is-active { color: var(--text); }
+.fg-llama-cpu-entrypoint-flow .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-llama-cpu-entrypoint-flow .fg-caption code {
   font-family: var(--mono); font-size: 12px; color: var(--warn);
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
 
 /* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-llama-cpu-entry, .fg-llama-cpu-entry * { transition: none !important; animation: none !important; }
+  .fg-llama-cpu-entrypoint-flow, .fg-llama-cpu-entrypoint-flow * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
 </style>

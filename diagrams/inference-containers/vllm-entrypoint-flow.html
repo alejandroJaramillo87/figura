@@ -11,10 +11,10 @@
 <p>Hover a group: one required variable, tuned serving defaults, precision and quantization selectors, and the vllm serve command they assemble.</p>
 
 <!-- fg:embed-start -->
-<div class="fg-diagram fg-vllm-entry">
+<div class="fg-diagram fg-vllm-entrypoint-flow">
 <style>
 /* fg:begin palette-classic v1 */
-.fg-vllm-entry {
+.fg-vllm-entrypoint-flow {
   --bg: #0f172a;
   --panel: #1e293b;
   --panel-hover: #334155;
@@ -40,88 +40,88 @@
   --dur-slow: 0.7s;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
-:where(.fg-vllm-entry .fg-fill-accent) { fill: var(--accent); }
-:where(.fg-vllm-entry .fg-stroke-accent) { stroke: var(--accent); }
-:where(.fg-vllm-entry .fg-fill-ok) { fill: var(--ok); }
-:where(.fg-vllm-entry .fg-stroke-ok) { stroke: var(--ok); }
-:where(.fg-vllm-entry .fg-fill-warn) { fill: var(--warn); }
-:where(.fg-vllm-entry .fg-stroke-warn) { stroke: var(--warn); }
-:where(.fg-vllm-entry .fg-fill-hot) { fill: var(--hot); }
-:where(.fg-vllm-entry .fg-stroke-hot) { stroke: var(--hot); }
-:where(.fg-vllm-entry .fg-fill-violet) { fill: var(--violet); }
-:where(.fg-vllm-entry .fg-stroke-violet) { stroke: var(--violet); }
-:where(.fg-vllm-entry .fg-fill-line) { fill: var(--line); }
-:where(.fg-vllm-entry .fg-stroke-line) { stroke: var(--line); }
-:where(.fg-vllm-entry .fg-fill-border) { fill: var(--border); }
-:where(.fg-vllm-entry .fg-stroke-border) { stroke: var(--border); }
-:where(.fg-vllm-entry .fg-fill-text) { fill: var(--text); }
-:where(.fg-vllm-entry .fg-stroke-text) { stroke: var(--text); }
-:where(.fg-vllm-entry .fg-fill-muted) { fill: var(--muted); }
-:where(.fg-vllm-entry .fg-stroke-muted) { stroke: var(--muted); }
+:where(.fg-vllm-entrypoint-flow .fg-fill-accent) { fill: var(--accent); }
+:where(.fg-vllm-entrypoint-flow .fg-stroke-accent) { stroke: var(--accent); }
+:where(.fg-vllm-entrypoint-flow .fg-fill-ok) { fill: var(--ok); }
+:where(.fg-vllm-entrypoint-flow .fg-stroke-ok) { stroke: var(--ok); }
+:where(.fg-vllm-entrypoint-flow .fg-fill-warn) { fill: var(--warn); }
+:where(.fg-vllm-entrypoint-flow .fg-stroke-warn) { stroke: var(--warn); }
+:where(.fg-vllm-entrypoint-flow .fg-fill-hot) { fill: var(--hot); }
+:where(.fg-vllm-entrypoint-flow .fg-stroke-hot) { stroke: var(--hot); }
+:where(.fg-vllm-entrypoint-flow .fg-fill-violet) { fill: var(--violet); }
+:where(.fg-vllm-entrypoint-flow .fg-stroke-violet) { stroke: var(--violet); }
+:where(.fg-vllm-entrypoint-flow .fg-fill-line) { fill: var(--line); }
+:where(.fg-vllm-entrypoint-flow .fg-stroke-line) { stroke: var(--line); }
+:where(.fg-vllm-entrypoint-flow .fg-fill-border) { fill: var(--border); }
+:where(.fg-vllm-entrypoint-flow .fg-stroke-border) { stroke: var(--border); }
+:where(.fg-vllm-entrypoint-flow .fg-fill-text) { fill: var(--text); }
+:where(.fg-vllm-entrypoint-flow .fg-stroke-text) { stroke: var(--text); }
+:where(.fg-vllm-entrypoint-flow .fg-fill-muted) { fill: var(--muted); }
+:where(.fg-vllm-entrypoint-flow .fg-stroke-muted) { stroke: var(--muted); }
 /* fg:end palette-classic */
 /* fg:begin panel-base v1 */
-.fg-vllm-entry {
+.fg-vllm-entrypoint-flow {
   background: var(--bg);
   border-radius: var(--radius);
   font-family: var(--font);
   line-height: 1.4;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
-.fg-vllm-entry svg { display: block; width: 100%; height: auto; }
-.fg-vllm-entry text { font-family: inherit; }
+.fg-vllm-entrypoint-flow svg { display: block; width: 100%; height: auto; }
+.fg-vllm-entrypoint-flow text { font-family: inherit; }
 /* fg:end panel-base */
-.fg-vllm-entry {
+.fg-vllm-entrypoint-flow {
   padding: 16px;
 }
 
 
-.fg-vllm-entry .vle-box {
+.fg-vllm-entrypoint-flow .vle-box {
   fill: var(--panel); stroke: var(--border); stroke-width: 1.5;
   transition: fill var(--dur-quick), stroke var(--dur-quick); cursor: pointer;
 }
-.fg-vllm-entry .vle-group:hover .vle-box { fill: var(--panel-hover); stroke: var(--accent); }
-.fg-vllm-entry .vle-req .vle-box { stroke: var(--hot); }
-.fg-vllm-entry .vle-mem .vle-box { stroke: var(--warn); }
-.fg-vllm-entry .vle-prec .vle-box { stroke: var(--violet); }
-.fg-vllm-entry .vle-feat .vle-box { stroke: var(--line); }
-.fg-vllm-entry .vle-cmd .vle-box { stroke: var(--accent); stroke-width: 2; }
-.fg-vllm-entry .vle-exec .vle-box { stroke: var(--ok); stroke-width: 2; }
+.fg-vllm-entrypoint-flow .vle-group:hover .vle-box { fill: var(--panel-hover); stroke: var(--accent); }
+.fg-vllm-entrypoint-flow .vle-req .vle-box { stroke: var(--hot); }
+.fg-vllm-entrypoint-flow .vle-mem .vle-box { stroke: var(--warn); }
+.fg-vllm-entrypoint-flow .vle-prec .vle-box { stroke: var(--violet); }
+.fg-vllm-entrypoint-flow .vle-feat .vle-box { stroke: var(--line); }
+.fg-vllm-entrypoint-flow .vle-cmd .vle-box { stroke: var(--accent); stroke-width: 2; }
+.fg-vllm-entrypoint-flow .vle-exec .vle-box { stroke: var(--ok); stroke-width: 2; }
 
-.fg-vllm-entry .vle-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
-.fg-vllm-entry .vle-sub { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
-.fg-vllm-entry .vle-label { fill: var(--muted); font-size: 12px; }
+.fg-vllm-entrypoint-flow .vle-title { fill: var(--text); font-size: 13px; font-weight: 600; text-anchor: middle; pointer-events: none; }
+.fg-vllm-entrypoint-flow .vle-sub { fill: var(--muted); font-size: 11px; font-family: var(--mono); text-anchor: middle; pointer-events: none; }
+.fg-vllm-entrypoint-flow .vle-label { fill: var(--muted); font-size: 12px; }
 
-.fg-vllm-entry .vle-flow {
+.fg-vllm-entrypoint-flow .vle-flow {
   stroke: var(--line); stroke-width: 2; fill: none;
   stroke-dasharray: 5 4; animation: fg-vle-flow 1.4s linear infinite;
 }
 @keyframes fg-vle-flow { to { stroke-dashoffset: -18; } }
 
 /* fg:begin caption-box v1 */
-.fg-vllm-entry .fg-caption {
+.fg-vllm-entrypoint-flow .fg-caption {
   margin-top: 12px; padding: 10px 14px;
   background: var(--panel); border-left: 3px solid var(--fg-cap-accent, var(--accent));
   border-radius: 0 8px 8px 0;
   /* min-height reserves space for the longest caption: no page reflow */
   color: var(--text); font-size: 13px; min-height: var(--fg-cap-minh, 4.2em);
 }
-.fg-vllm-entry .fg-caption.fg-cap-grid { display: grid; }
-.fg-vllm-entry .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
-.fg-vllm-entry .fg-cap-live { grid-area: 1 / 1; }
-.fg-vllm-entry [data-info]:focus { outline: none; }
-.fg-vllm-entry [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.fg-vllm-entrypoint-flow .fg-caption.fg-cap-grid { display: grid; }
+.fg-vllm-entrypoint-flow .fg-cap-ghost { grid-area: 1 / 1; visibility: hidden; }
+.fg-vllm-entrypoint-flow .fg-cap-live { grid-area: 1 / 1; }
+.fg-vllm-entrypoint-flow [data-info]:focus { outline: none; }
+.fg-vllm-entrypoint-flow [data-info]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* fg:end caption-box */
-.fg-vllm-entry .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
-.fg-vllm-entry .fg-caption.is-active { color: var(--text); }
-.fg-vllm-entry .fg-caption strong { color: var(--accent); font-weight: 600; }
-.fg-vllm-entry .fg-caption code {
+.fg-vllm-entrypoint-flow .fg-caption { color: var(--muted); transition: color var(--dur-fast) var(--ease); }
+.fg-vllm-entrypoint-flow .fg-caption.is-active { color: var(--text); }
+.fg-vllm-entrypoint-flow .fg-caption strong { color: var(--accent); font-weight: 600; }
+.fg-vllm-entrypoint-flow .fg-caption code {
   font-family: var(--mono); font-size: 12px; color: var(--warn);
   background: rgba(0, 0, 0, 0.3); padding: 1px 5px; border-radius: 4px;
 }
 
 /* fg:begin reduced-motion v1 */
 @media (prefers-reduced-motion: reduce) {
-  .fg-vllm-entry, .fg-vllm-entry * { transition: none !important; animation: none !important; }
+  .fg-vllm-entrypoint-flow, .fg-vllm-entrypoint-flow * { transition: none !important; animation: none !important; }
 }
 /* fg:end reduced-motion */
 </style>

@@ -136,6 +136,9 @@ function checkFile(file, kind) {
     report(file, 'root-class', 'root element must carry class="fg-diagram fg-<name>"');
     return;
   }
+  if (cls !== 'fg-' + path.basename(file, '.html')) {
+    report(file, 'root-class', `root class ${cls} must be fg-<file stem>`);
+  }
 
   /* self-containment */
   if (/<link\b/i.test(frag)) report(file, 'self-contained', '<link> inside fragment');
