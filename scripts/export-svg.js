@@ -63,8 +63,9 @@ function exportFile(file, entry, outDir) {
   const css = styles.join('\n')
     .replace(/<!--[\s\S]*?-->/g, '')
     .trim();
-  const out = [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" class="fg-diagram ${cls}" role="img" aria-label="${label}">`,
+  const xlink = /\bxlink:/.test(body) ? ' xmlns:xlink="http://www.w3.org/1999/xlink"' : '';
+  const out = xmlEntities([
+    `<svg xmlns="http://www.w3.org/2000/svg"${xlink} viewBox="0 0 ${W} ${H}" class="fg-diagram ${cls}" role="img" aria-label="${escapeXml(decodeEntities(label), true)}">`,
     `<title>${escapeXml(entry.title)}</title>`,
     `<style>`,
     css,
@@ -74,7 +75,9 @@ function exportFile(file, entry, outDir) {
     `<g transform="translate(${PAD} ${PAD})">${body}</g>`,
     `</svg>`,
     '',
-  ].join('\n');
+  ].join('\n'));
+  const problem = wellFormed(out);
+  if (problem) fail(F.relPath(file) + ': export is not well-formed XML: ' + problem);
 
   const rel = path.relative(F.DIAGRAMS_DIR, file).replace(/\.html$/, '.svg');
   const dest = path.join(outDir, rel);
@@ -83,8 +86,50 @@ function exportFile(file, entry, outDir) {
   console.log('[OK] ' + path.relative(F.REPO_ROOT, dest));
 }
 
-function escapeXml(s) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+function escapeXml(s, attr = false) {
+  const t = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return attr ? t.replace(/"/g, '&quot;') : t;
+}
+
+/* HTML named entities that XML does not predefine, as numeric references.
+   Unknown names are left alone so wellFormed() reports them. */
+const HTML_ENTITIES = { nbsp: 160, hellip: 8230, rarr: 8594, larr: 8592, harr: 8596,
+  mdash: 8212, ndash: 8211, times: 215, middot: 183, rsquo: 8217, lsquo: 8216,
+  ldquo: 8220, rdquo: 8221, deg: 176, plusmn: 177, le: 8804, ge: 8805 };
+const XML_ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+
+function xmlEntities(s) {
+  return s.replace(/&([a-zA-Z]+);/g, (m, n) => (n in HTML_ENTITIES ? `&#${HTML_ENTITIES[n]};` : m));
+}
+
+function decodeEntities(s) {
+  return s.replace(/&([a-zA-Z]+);/g, (m, n) =>
+    n in XML_ENTITIES ? XML_ENTITIES[n] : n in HTML_ENTITIES ? String.fromCodePoint(HTML_ENTITIES[n]) : m);
+}
+
+/*
+ * Minimal XML well-formedness check: balanced and properly nested tags,
+ * quoted attributes, no bare '&' or '<'. Enough to catch what an HTML
+ * fragment carries into an SVG image (void elements, HTML entities).
+ * Returns a description of the first problem, or null.
+ */
+function wellFormed(xml) {
+  const stack = [];
+  const re = /<!--[\s\S]*?-->|<!\[CDATA\[[\s\S]*?\]\]>|<(\/?)([A-Za-z][\w:.-]*)((?:\s+[\w:.-]+\s*=\s*(?:"[^"<]*"|'[^'<]*'))*)\s*(\/?)>|<|&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)/g;
+  let m, root = 0;
+  while ((m = re.exec(xml)) !== null) {
+    if (m[0] === '<') return `stray '<' at offset ${m.index}`;
+    if (m[0] === '&' ) return `bare or unknown entity at offset ${m.index}: ${xml.slice(m.index, m.index + 12)}`;
+    if (!m[2]) continue;
+    if (m[1]) {
+      const open = stack.pop();
+      if (open !== m[2]) return `</${m[2]}> closes <${open}>`;
+    } else if (!m[4]) {
+      if (!stack.length && root++) return 'more than one root element';
+      stack.push(m[2]);
+    }
+  }
+  return stack.length ? `unclosed <${stack[stack.length - 1]}>` : null;
 }
 
 function main() {
